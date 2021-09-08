@@ -12,3 +12,5 @@ Install with your preferred AUR helper or use:
 git clone https://aur.archlinux.org/rpass.git
 cd rpass
 makepkg -si
+
+Packaging for other distributions coming soon.
