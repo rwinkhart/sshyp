@@ -2,14 +2,14 @@
 
 rpass-2021.09.08.pr4
 
-The Housekeeping Update - Fourth public release of rpass
+The Housekeeping Update (Pt. 1) - Fourth public release of rpass
 
 This release focuses primarily on polishing rpass and tying up loose ends before
 making any major changes in the future.
 
 New features:
 
-**overhaul error message using exceptions
+**overhaul error messages using exceptions
 **add exceptions for unknown arguments
 **make clean, colorful file list by exporting to document and removing extensions
 **make a manpage
@@ -19,8 +19,8 @@ Changes:
 
 - fixed gpg decryption warnings
 - added version info argument
+- re-ordered config wizard for better rsync support
 **optimize code (specifically for when there is no folder but there is a slash)
-**update rsync config wizard
 **fix rsync delete on upload
 **properly comment the code
 **validate for Python 3.10

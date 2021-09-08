@@ -1,9 +1,5 @@
 #!/usr/bin/python
 
-# rpass 2021.09.08.pr4
-# rpass is the gnu pass alternative for those who don't want to use git
-# rpass is freely licensed for modification and redistribution under the GNU General Public License V3
-
 from os import system
 from os import remove
 from os import environ
@@ -115,7 +111,8 @@ if argument == 'version' or argument == '-v':
     print('/                                                      /')
     print('/     rpass  Copyright (C) 2021  Randall Winkhart      /')
     print('/                                                      /')
-    print('/               version 2021.09.08.pr4                 /')
+    print('/               Version 2021.09.08.pr4                 /')
+    print('/           The Housekeeping Update (Pt. 1)            /')
     print('/                                                      /')
     print('////////////////////////////////////////////////////////')
     print()
@@ -154,70 +151,71 @@ if argument == 'config':
         with open("/var/lib/rpass/rpassdir", 'w') as f:
             f.write(directory + '\n')
     print()
-    gpgpresent = str(input('rpass requires the use of a unique gpg key. Do you already have one you are willing to '
-                           'use? (y/N) '))
-    if gpgpresent == 'y' or gpgpresent == 'Y':
+    devicetype = str(input('Will this be a client or a server device? (c/S) '))
+    if devicetype != 'c':
         print()
-        gpgid = str(input('Please input the ID of your gpg key: '))
-        with open("/var/lib/rpass/rpassgpg", 'w') as f:
-            f.write(gpgid + '\n')
-    if gpgpresent != 'y':
+        print('Make sure the ssh service is running and properly configured.')
         print()
-        gpggen = str(input('Would you like to generate one now? Note that if you choose not to do this, you will have '
-                           'to re-run "rpass config" to specify a gpg key when you acquire one (Y/n) '))
-        if gpggen != 'n':
-            term('gpg --full-generate-key')
+    if devicetype == 'c':
+        print()
+        gpgpresent = str(input('rpass requires the use of a unique gpg key. Do you already have one you are willing to '
+                               'use? (y/N) '))
+        if gpgpresent == 'y' or gpgpresent == 'Y':
             print()
             gpgid = str(input('Please input the ID of your gpg key: '))
             with open("/var/lib/rpass/rpassgpg", 'w') as f:
                 f.write(gpgid + '\n')
-        if gpggen == 'n' or gpggen == 'N':
-            exit()
-    print()
-    syncsetup = str(input('Would you like to configure rsync over ssh for entry backup and syncing? (Y/n) '))
-    if syncsetup != 'n':
+        if gpgpresent != 'y':
+            print()
+            gpggen = str(
+                input('Would you like to generate one now? Note that if you choose not to do this, you will have '
+                      'to re-run "rpass config" to specify a gpg key when you acquire one (Y/n) '))
+            if gpggen != 'n':
+                term('gpg --full-generate-key')
+                print()
+                gpgid = str(input('Please input the ID of your gpg key: '))
+                with open("/var/lib/rpass/rpassgpg", 'w') as f:
+                    f.write(gpgid + '\n')
+            if gpggen == 'n' or gpggen == 'N':
+                exit()
+        print()
+        print('Make sure the ssh service on the remote server is running and properly configured.')
         print()
         sshgen = str(input('rsync support requires a unique ssh key. Would you like to have this '
                            'automatically generated? (Y/n) '))
         if sshgen != 'n':
             term('ssh-keygen -f ~/.ssh/rpass')
         print()
-        print('The server device(s) should be configured first.')
+        print('Example input: 10.10.10.10:9999')
         print()
-        devicetype = str(input('Will this be a client or a server device? (c/S) '))
-        if devicetype != 'c':
+        ip_port = str(input('What is the IP and ssh port of the remote server? '))
+        print()
+        usernamessh = str(input('What is the username of the remote server? '))
+        ip, sep, port = ip_port.partition(':')
+        with open("/var/lib/rpass/rpassuserssh", 'w') as f:
+            f.write(usernamessh + '\n')
+        with open("/var/lib/rpass/rpassrsyncup", 'w') as f:
+            f.write('rsync -v -H -r -l -t -p -e ' + '"ssh -i ~/.ssh/rpass -p ' + port + '" ' + '\n')
+        with open("/var/lib/rpass/rpassrsyncdown", 'w') as f:
+            f.write('rsync -v -H -r -l -t -p --delete -e ' + '"ssh -i ~/.ssh/rpass -p ' + port + '" ' + '\n')
+        with open("/var/lib/rpass/rpassip", 'w') as f:
+            f.write(ip + '\n')
+        print()
+        print('Default directory: ' + '/home/' + usernamessh + '/.rpass-store/')
+        print()
+        directoryssh = str(input('Is the remote server using the default password directory? (Y/n) '))
+        if directoryssh != 'n':
+            directoryssh = ('/home/' + usernamessh + '/.rpass-store/')
+        if directoryssh == 'n' or directoryssh == 'N':
             print()
-            print('Make sure the ssh service is running and that the proper port is forwarded.')
-        if devicetype == 'c':
+            print('Format: /this/path/ends/with/a/slash/')
             print()
-            print('Make sure the ssh service is running and that the proper port is forwarded on the remote server.')
-            print('Example input: 10.10.10.10:9999')
-            print()
-            ip_port = str(input('What is the IP and ssh port of the remote server? '))
-            print()
-            usernamessh = str(input('What is the username of the remote server? '))
-            ip, sep, port = ip_port.partition(':')
-            with open("/var/lib/rpass/rpassuserssh", 'w') as f:
-                f.write(usernamessh + '\n')
-            with open("/var/lib/rpass/rpassrsyncup", 'w') as f:
-                f.write('rsync -v -H -r -l -t -p -e ' + '"ssh -i ~/.ssh/rpass -p ' + port + '" ' + '\n')
-            with open("/var/lib/rpass/rpassrsyncdown", 'w') as f:
-                f.write('rsync -v -H -r -l -t -p --delete -e ' + '"ssh -i ~/.ssh/rpass -p ' + port + '" ' + '\n')
-            with open("/var/lib/rpass/rpassip", 'w') as f:
-                f.write(ip + '\n')
-            print()
-            print('Default directory: ' + '/home/' + usernamessh + '/.rpass-store/')
-            print()
-            directoryssh = str(input('Is the remote server using the default password directory? (Y/n) '))
-            if directoryssh != 'n':
-                directoryssh = ('/home/' + usernamessh + '/.rpass-store/')
-            if directoryssh == 'n' or directoryssh == 'N':
-                print()
-                print('Format: /this/path/ends/with/a/slash/')
-                print()
-                directoryssh = str(input('What directory is the server using?: '))
-            with open("/var/lib/rpass/rpassdirssh", 'w') as f:
-                f.write(directoryssh + '\n')
+            directoryssh = str(input('What directory is the server using?: '))
+        with open("/var/lib/rpass/rpassdirssh", 'w') as f:
+            f.write(directoryssh + '\n')
+        print()
+        print('Configuration complete!')
+        print()
 
 # import userdata
 
