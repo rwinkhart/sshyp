@@ -5,7 +5,7 @@ A password manager with rsync integration - alternative to GNU pass
 
 Arch Linux (x86_64, aarch64)
 
-rpass is available in the Arch User Repository as 'rpass'.
+rpass releases are available in the Arch User Repository as 'rpass'.
 
 Install with your preferred AUR helper or use:
 
