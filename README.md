@@ -32,3 +32,25 @@ All available options can be found with:
 ```
 rpass --help
 ```
+
+# Roadmap
+
+Short-term Goals:
+
+- overhaul error messages
+- create new file list w/color and w/o file extensions
+- create a man page
+- allow for multi-line notes
+- overhaul argument system
+- fix lots of bugs!
+
+Medium-term Goals:
+
+- add libsecret integration to allow rpass to act as a gnome-keyring alternative
+- create a minimal GUI app optimized for the Pinephone (also compatible with x86_64)
+
+Long-term Goals:
+
+- make an Android port (including GUI)
+- make a minimal Windows port
+- investigate auto-completion on tab
