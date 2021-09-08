@@ -1,7 +1,7 @@
 # rpass
 A password manager with rsync integration - alternative to GNU pass
 
-# INSTALLATION
+# Installation
 
 Arch Linux (x86_64, aarch64)
 
