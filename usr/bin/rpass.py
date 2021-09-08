@@ -107,6 +107,19 @@ if argument == 'help' or argument == '--help' or argument == '-h':
     print("When specifying entry names, do not include the file extension! '.gpg' is assumed!")
     print()
 
+# version info
+
+if argument == 'version' or argument == '-v':
+    print()
+    print('////////////////////////////////////////////////////////')
+    print('/                                                      /')
+    print('/     rpass  Copyright (C) 2021  Randall Winkhart      /')
+    print('/                                                      /')
+    print('/               version 2021.09.08.pr4                 /')
+    print('/                                                      /')
+    print('////////////////////////////////////////////////////////')
+    print()
+
 # licensing info
 
 if argument == 'show w':

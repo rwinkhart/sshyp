@@ -18,8 +18,8 @@ New features:
 Changes:
 
 - fixed gpg decryption warnings
+- added version info argument
 **optimize code (specifically for when there is no folder but there is a slash)
-**add version info argument
 **update rsync config wizard
 **fix rsync delete on upload
 **properly comment the code
