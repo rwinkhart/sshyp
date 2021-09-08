@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-# rpass 2021.09.07.pr3.1
+# rpass 2021.09.08.pr4
 # rpass is the gnu pass alternative for those who don't want to use git
 # rpass is freely licensed for modification and redistribution under the GNU General Public License V3
 
@@ -53,7 +53,7 @@ def rsyncdown():
 # argument - filter the argument to usable text - some replacements are only done once to prevent interference
 
 argument = str(argv).replace('[', '', 1).replace(']', '', 1).replace(',', '').replace("'", '') \
-    .replace(' ', '', 1).replace('/usr/bin/', '', 1).replace('rpass', '', 1)
+    .replace(' ', '', 1).replace('/usr/bin/', '', 1).replace('rpass', '', 1).replace('./', '', 1).replace('.py', '', 1)
 
 # startup help
 
@@ -81,6 +81,7 @@ if argument == 'help' or argument == '--help' or argument == '-h':
     print()
     print('Options: ')
     print('help/--help/-h           bring up this menu')
+    print('version/-v               display rpass version info')
     print('config                   configure rpass')
     print('add                      add an entry')
     print('gen                      generate a new password')
@@ -363,21 +364,21 @@ if argument == 'edit username' or argument == 'edit -u':
     if entryname.startswith('/'):
         if entryname.replace('/', '', 1).__contains__('/'):
             folder, sep, folderentry = entryname.replace('/', '', 1).partition('/')
-            term('gpg --output /dev/shm/' + shmfolder + '/' + shmentry + ' ' + directory +
+            term('gpg -d --output /dev/shm/' + shmfolder + '/' + shmentry + ' ' + directory +
                  folder + '/' + folderentry + '.gpg')
             replace_line('/dev/shm/' + shmfolder + '/' + shmentry, 0, username + '\n')
             remove(directory + folder + '/' + folderentry + '.gpg')
             encryptfolder()
             term('gpg -d ' + directory + folder + '/' + "'" + folderentry + '.gpg' + "'")
         else:
-            term('gpg --output /dev/shm/' + shmfolder + '/' + shmentry + ' ' + directory +
+            term('gpg -d --output /dev/shm/' + shmfolder + '/' + shmentry + ' ' + directory +
                  entryname.replace('/', '', 1) + '.gpg')
             replace_line('/dev/shm/' + shmfolder + '/' + shmentry, 0, username + '\n')
             remove(directory + entryname.replace('/', '', 1) + '.gpg')
             encrypt()
             term('gpg -d ' + directory + "'" + entryname.replace('/', '', 1) + '.gpg' + "'")
     else:
-        term('gpg --output /dev/shm/' + shmfolder + '/' + shmentry + ' ' + directory + entryname + '.gpg')
+        term('gpg -d --output /dev/shm/' + shmfolder + '/' + shmentry + ' ' + directory + entryname + '.gpg')
         replace_line('/dev/shm/' + shmfolder + '/' + shmentry, 0, username + '\n')
         remove(directory + entryname + '.gpg')
         encrypt()
@@ -399,21 +400,21 @@ if argument == 'edit password' or argument == 'edit -p':
     if entryname.startswith('/'):
         if entryname.replace('/', '', 1).__contains__('/'):
             folder, sep, folderentry = entryname.replace('/', '', 1).partition('/')
-            term('gpg --output /dev/shm/' + shmfolder + '/' + shmentry + ' ' + directory +
+            term('gpg -d --output /dev/shm/' + shmfolder + '/' + shmentry + ' ' + directory +
                  folder + '/' + folderentry + '.gpg')
             replace_line('/dev/shm/' + shmfolder + '/' + shmentry, 1, password + '\n')
             remove(directory + folder + '/' + folderentry + '.gpg')
             encryptfolder()
             term('gpg -d ' + directory + folder + '/' + "'" + folderentry + '.gpg' + "'")
         else:
-            term('gpg --output /dev/shm/' + shmfolder + '/' + shmentry + ' ' + directory +
+            term('gpg -d --output /dev/shm/' + shmfolder + '/' + shmentry + ' ' + directory +
                  entryname.replace('/', '', 1) + '.gpg')
             replace_line('/dev/shm/' + shmfolder + '/' + shmentry, 1, password + '\n')
             remove(directory + entryname.replace('/', '', 1) + '.gpg')
             encrypt()
             term('gpg -d ' + directory + "'" + entryname.replace('/', '', 1) + '.gpg' + "'")
     else:
-        term('gpg --output /dev/shm/' + shmfolder + '/' + shmentry + ' ' + directory + entryname + '.gpg')
+        term('gpg -d --output /dev/shm/' + shmfolder + '/' + shmentry + ' ' + directory + entryname + '.gpg')
         replace_line('/dev/shm/' + shmfolder + '/' + shmentry, 1, password + '\n')
         remove(directory + entryname + '.gpg')
         encrypt()
@@ -435,21 +436,21 @@ if argument == 'edit url' or argument == 'edit -l':
     if entryname.startswith('/'):
         if entryname.replace('/', '', 1).__contains__('/'):
             folder, sep, folderentry = entryname.replace('/', '', 1).partition('/')
-            term('gpg --output /dev/shm/' + shmfolder + '/' + shmentry + ' ' + directory +
+            term('gpg -d --output /dev/shm/' + shmfolder + '/' + shmentry + ' ' + directory +
                  folder + '/' + folderentry + '.gpg')
             replace_line('/dev/shm/' + shmfolder + '/' + shmentry, 2, url + '\n')
             remove(directory + folder + '/' + folderentry + '.gpg')
             encryptfolder()
             term('gpg -d ' + directory + folder + '/' + "'" + folderentry + '.gpg' + "'")
         else:
-            term('gpg --output /dev/shm/' + shmfolder + '/' + shmentry + ' ' + directory +
+            term('gpg -d --output /dev/shm/' + shmfolder + '/' + shmentry + ' ' + directory +
                  entryname.replace('/', '', 1) + '.gpg')
             replace_line('/dev/shm/' + shmfolder + '/' + shmentry, 2, url + '\n')
             remove(directory + entryname.replace('/', '', 1) + '.gpg')
             encrypt()
             term('gpg -d ' + directory + "'" + entryname.replace('/', '', 1) + '.gpg' + "'")
     else:
-        term('gpg --output /dev/shm/' + shmfolder + '/' + shmentry + ' ' + directory + entryname + '.gpg')
+        term('gpg -d --output /dev/shm/' + shmfolder + '/' + shmentry + ' ' + directory + entryname + '.gpg')
         replace_line('/dev/shm/' + shmfolder + '/' + shmentry, 2, url + '\n')
         remove(directory + entryname + '.gpg')
         encrypt()
@@ -471,21 +472,21 @@ if argument == 'edit note' or argument == 'edit -n':
     if entryname.startswith('/'):
         if entryname.replace('/', '', 1).__contains__('/'):
             folder, sep, folderentry = entryname.replace('/', '', 1).partition('/')
-            term('gpg --output /dev/shm/' + shmfolder + '/' + shmentry + ' ' + directory +
+            term('gpg -d --output /dev/shm/' + shmfolder + '/' + shmentry + ' ' + directory +
                  folder + '/' + folderentry + '.gpg')
             replace_line('/dev/shm/' + shmfolder + '/' + shmentry, 3, notes + '\n')
             remove(directory + folder + '/' + folderentry + '.gpg')
             encryptfolder()
             term('gpg -d ' + directory + folder + '/' + "'" + folderentry + '.gpg' + "'")
         else:
-            term('gpg --output /dev/shm/' + shmfolder + '/' + shmentry + ' ' + directory +
+            term('gpg -d --output /dev/shm/' + shmfolder + '/' + shmentry + ' ' + directory +
                  entryname.replace('/', '', 1) + '.gpg')
             replace_line('/dev/shm/' + shmfolder + '/' + shmentry, 3, notes + '\n')
             remove(directory + entryname.replace('/', '', 1) + '.gpg')
             encrypt()
             term('gpg -d ' + directory + "'" + entryname.replace('/', '', 1) + '.gpg' + "'")
     else:
-        term('gpg --output /dev/shm/' + shmfolder + '/' + shmentry + ' ' + directory + entryname + '.gpg')
+        term('gpg -d --output /dev/shm/' + shmfolder + '/' + shmentry + ' ' + directory + entryname + '.gpg')
         replace_line('/dev/shm/' + shmfolder + '/' + shmentry, 3, notes + '\n')
         remove(directory + entryname + '.gpg')
         encrypt()
@@ -553,21 +554,21 @@ if argument == 'gen update' or argument == 'gen -u':
     if entryname.startswith('/'):
         if entryname.replace('/', '', 1).__contains__('/'):
             folder, sep, folderentry = entryname.replace('/', '', 1).partition('/')
-            term('gpg --output /dev/shm/' + shmfolder + '/' + shmentry + ' ' + directory +
+            term('gpg -d --output /dev/shm/' + shmfolder + '/' + shmentry + ' ' + directory +
                  folder + '/' + folderentry + '.gpg')
             replace_line('/dev/shm/' + shmfolder + '/' + shmentry, 1, passgen + '\n')
             remove(directory + folder + '/' + folderentry.replace('/', '', 1) + '.gpg')
             encryptfolder()
             term('gpg -d ' + directory + folder + '/' + "'" + folderentry + '.gpg' + "'")
         else:
-            term('gpg --output /dev/shm/' + shmfolder + '/' + shmentry + ' ' + directory +
+            term('gpg -d --output /dev/shm/' + shmfolder + '/' + shmentry + ' ' + directory +
                  entryname.replace('/', '', 1) + '.gpg')
             replace_line('/dev/shm/' + shmfolder + '/' + shmentry, 1, passgen + '\n')
             remove(directory + entryname.replace('/', '', 1) + '.gpg')
             encrypt()
             term('gpg -d ' + directory + "'" + entryname.replace('/', '', 1) + '.gpg' + "'")
     else:
-        term('gpg --output /dev/shm/' + shmfolder + '/' + shmentry + ' ' + directory + entryname + '.gpg')
+        term('gpg -d --output /dev/shm/' + shmfolder + '/' + shmentry + ' ' + directory + entryname + '.gpg')
         replace_line('/dev/shm/' + shmfolder + '/' + shmentry, 1, passgen + '\n')
         remove(directory + entryname + '.gpg')
         encrypt()
