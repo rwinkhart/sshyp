@@ -1,4 +1,6 @@
-#!/usr/bin/python
+#!/usr/bin/python3
+
+# internal modules
 
 from os import system
 from os import remove
@@ -8,6 +10,13 @@ from shutil import rmtree
 from sys import argv
 import random
 import string
+
+# external modules
+
+import pyperclip
+
+
+# custom modules
 
 
 def clear():
@@ -49,7 +58,7 @@ def rsyncdown():
 # argument - filter the argument to usable text - some replacements are only done once to prevent interference
 
 argument = str(argv).replace('[', '', 1).replace(']', '', 1).replace(',', '').replace("'", '') \
-    .replace(' ', '', 1).replace('/usr/bin/', '', 1).replace('rpass', '', 1).replace('./', '', 1).replace('.py', '', 1)
+    .replace(' ', '', 1).replace('/usr/bin/', '', 1).replace('rpass', '', 1)
 
 # startup help
 
@@ -82,6 +91,7 @@ if argument == 'help' or argument == '--help' or argument == '-h':
     print('add                      add an entry')
     print('gen                      generate a new password')
     print('edit                     edit an existing entry')
+    print('copy                     copy the password of an entry to your clipboard')
     print('remove/-rm               delete an existing entry')
     print('sync/-s                  manually sync the entry directory via rsync')
     print()
@@ -502,6 +512,25 @@ if argument == 'edit note' or argument == 'edit -n':
         remove(directory + entryname + '.gpg')
         encrypt()
         term('gpg -d ' + directory + "'" + entryname + '.gpg' + "'")
+
+# copy
+
+if argument == 'copy':
+    print()
+    term('cd ~/.rpass-store; ls -1 *')
+    print()
+    readentry = str(input('Entry to copy: '))
+    # generate random strings for /dev/shm
+    shmfolder = ''.join(random.SystemRandom().choice(string.ascii_letters + string.digits)
+                        for _ in range(random.randint(10, 30)))
+    shmentry = ''.join(random.SystemRandom().choice(string.ascii_letters + string.digits)
+                       for _ in range(random.randint(10, 30)))
+    term('mkdir -p /dev/shm/' + shmfolder)
+    # end string and folder generation
+    term('gpg -d --output /dev/shm/' + shmfolder + '/' + shmentry + ' ' + directory + readentry + '.gpg')
+    copyline = open('/dev/shm/' + shmfolder + '/' + shmentry, 'r').readlines()
+    pyperclip.copy(copyline[1].replace('\n', ''))
+    print()
 
 # gen
 

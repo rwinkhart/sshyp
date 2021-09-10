@@ -9,6 +9,7 @@ making any major changes in the future.
 
 New features:
 
+- added initial clipboard (password copy) support
 **overhaul error messages using exceptions
 **add exceptions for unknown arguments
 **make clean, colorful file list by exporting to document and removing extensions
