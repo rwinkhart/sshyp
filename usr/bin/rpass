@@ -530,7 +530,7 @@ if argument == 'copy':
     term('gpg -d --output /dev/shm/' + shmfolder + '/' + shmentry + ' ' + directory + readentry + '.gpg')
     copyline = open('/dev/shm/' + shmfolder + '/' + shmentry, 'r').readlines()
     pyperclip.copy(copyline[1].replace('\n', ''))
-    print()
+    rmtree('/dev/shm/' + shmfolder)
 
 # gen
 
