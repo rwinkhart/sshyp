@@ -1,5 +1,11 @@
 # rpass
-A very simple password manager with rsync integration - alternative to GNU pass
+A very simple password manager with rsync (and soon libsecret) integration - alternative to GNU pass
+
+-----
+
+rpass will likely be renamed due to the mass quantity of other terminal-based password managers named the same thing.
+
+The new name may be 'rpazz', 'sspass', or something else.
 
 # Installation
 
