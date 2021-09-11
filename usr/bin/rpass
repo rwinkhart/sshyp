@@ -15,7 +15,7 @@ import string
 
 import pyperclip
 
-
+pyperclip.determine_clipboard()
 # custom modules
 
 
@@ -529,7 +529,10 @@ if argument == 'copy':
     # end string and folder generation
     term('gpg -d --output /dev/shm/' + shmfolder + '/' + shmentry + ' ' + directory + readentry + '.gpg')
     copyline = open('/dev/shm/' + shmfolder + '/' + shmentry, 'r').readlines()
-    pyperclip.copy(copyline[1].replace('\n', ''))
+    if environ.get('WAYLAND_DISPLAY') == 'wayland-0':
+        term('wl-copy ' + copyline[1].replace('\n', ''))
+    else:
+        term('echo -n ' + "'" + copyline[1].replace('\n', '') + "'" + ' | xclip -sel c')
     rmtree('/dev/shm/' + shmfolder)
 
 # gen
