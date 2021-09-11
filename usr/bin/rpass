@@ -11,11 +11,6 @@ from sys import argv
 import random
 import string
 
-# external modules
-
-import pyperclip
-
-pyperclip.determine_clipboard()
 # custom modules
 
 
@@ -91,7 +86,7 @@ if argument == 'help' or argument == '--help' or argument == '-h':
     print('add                      add an entry')
     print('gen                      generate a new password')
     print('edit                     edit an existing entry')
-    print('copy                     copy the password of an entry to your clipboard')
+    print('copy                     copy details of an entry to your clipboard')
     print('remove/-rm               delete an existing entry')
     print('sync/-s                  manually sync the entry directory via rsync')
     print()
@@ -106,6 +101,11 @@ if argument == 'help' or argument == '--help' or argument == '-h':
     print(' password/-p             change the password of an entry')
     print(' note/-n                 change the note attached to an entry')
     print(' url/-l                  change the url attached to an entry')
+    print('copy:')
+    print(' username/-u             copy the username of an entry to your clipboard')
+    print(' password/-p             copy the password of an entry to your clipboard')
+    print(' url/-l                  copy the URL of an entry to your clipboard')
+    print(' note/-n                 copy the note of an entry to your clipboard')
     print('gen:')
     print(' update/-u               generate a password for an existing entry')
     print()
@@ -121,7 +121,7 @@ if argument == 'version' or argument == '-v':
     print('/                                                      /')
     print('/     rpass  Copyright (C) 2021  Randall Winkhart      /')
     print('/                                                      /')
-    print('/               Version 2021.09.08.pr4                 /')
+    print('/               Version 2021.09.12.pr4                 /')
     print('/           The Housekeeping Update (Pt. 1)            /')
     print('/                                                      /')
     print('////////////////////////////////////////////////////////')
@@ -350,8 +350,8 @@ if argument == 'edit':
     print(' rename/relocate/-r      rename or relocate an entry')
     print(' username/-u             change the username of an entry')
     print(' password/-p             change the password of an entry')
-    print(' note/-n                 change the note attached to an entry')
     print(' url/-l                  change the url attached to an entry')
+    print(' note/-n                 change the note attached to an entry')
     print()
 
 if argument == 'edit rename' or argument == 'edit relocate' or argument == 'edit -r':
@@ -517,6 +517,17 @@ if argument == 'edit note' or argument == 'edit -n':
 
 if argument == 'copy':
     print()
+    print('USAGE: rpass copy [FLAG]')
+    print('Flags:')
+    print('copy:')
+    print(' username/-u             copy the username of an entry to your clipboard')
+    print(' password/-p             copy the password of an entry to your clipboard')
+    print(' url/-l                  copy the URL of an entry to your clipboard')
+    print(' note/-n                 copy the note of an entry to your clipboard')
+    print()
+
+if argument == 'copy username' or argument == 'copy -u':
+    print()
     term('cd ~/.rpass-store; ls -1 *')
     print()
     readentry = str(input('Entry to copy: '))
@@ -530,9 +541,69 @@ if argument == 'copy':
     term('gpg -d --output /dev/shm/' + shmfolder + '/' + shmentry + ' ' + directory + readentry + '.gpg')
     copyline = open('/dev/shm/' + shmfolder + '/' + shmentry, 'r').readlines()
     if environ.get('WAYLAND_DISPLAY') == 'wayland-0':
-        term('wl-copy ' + copyline[1].replace('\n', ''))
+        term('wl-copy ' + "'" + copyline[0].replace('\n', '') + "'")
+    else:
+        term('echo -n ' + "'" + copyline[0].replace('\n', '') + "'" + ' | xclip -sel c')
+    rmtree('/dev/shm/' + shmfolder)
+
+if argument == 'copy password' or argument == 'copy -p':
+    print()
+    term('cd ~/.rpass-store; ls -1 *')
+    print()
+    readentry = str(input('Entry to copy: '))
+    # generate random strings for /dev/shm
+    shmfolder = ''.join(random.SystemRandom().choice(string.ascii_letters + string.digits)
+                        for _ in range(random.randint(10, 30)))
+    shmentry = ''.join(random.SystemRandom().choice(string.ascii_letters + string.digits)
+                       for _ in range(random.randint(10, 30)))
+    term('mkdir -p /dev/shm/' + shmfolder)
+    # end string and folder generation
+    term('gpg -d --output /dev/shm/' + shmfolder + '/' + shmentry + ' ' + directory + readentry + '.gpg')
+    copyline = open('/dev/shm/' + shmfolder + '/' + shmentry, 'r').readlines()
+    if environ.get('WAYLAND_DISPLAY') == 'wayland-0':
+        term('wl-copy ' + "'" + copyline[1].replace('\n', '') + "'")
     else:
         term('echo -n ' + "'" + copyline[1].replace('\n', '') + "'" + ' | xclip -sel c')
+    rmtree('/dev/shm/' + shmfolder)
+
+if argument == 'copy url' or argument == 'copy -l':
+    print()
+    term('cd ~/.rpass-store; ls -1 *')
+    print()
+    readentry = str(input('Entry to copy: '))
+    # generate random strings for /dev/shm
+    shmfolder = ''.join(random.SystemRandom().choice(string.ascii_letters + string.digits)
+                        for _ in range(random.randint(10, 30)))
+    shmentry = ''.join(random.SystemRandom().choice(string.ascii_letters + string.digits)
+                       for _ in range(random.randint(10, 30)))
+    term('mkdir -p /dev/shm/' + shmfolder)
+    # end string and folder generation
+    term('gpg -d --output /dev/shm/' + shmfolder + '/' + shmentry + ' ' + directory + readentry + '.gpg')
+    copyline = open('/dev/shm/' + shmfolder + '/' + shmentry, 'r').readlines()
+    if environ.get('WAYLAND_DISPLAY') == 'wayland-0':
+        term('wl-copy ' + "'" + copyline[2].replace('\n', '') + "'")
+    else:
+        term('echo -n ' + "'" + copyline[2].replace('\n', '') + "'" + ' | xclip -sel c')
+    rmtree('/dev/shm/' + shmfolder)
+
+if argument == 'copy note' or argument == 'copy -n':
+    print()
+    term('cd ~/.rpass-store; ls -1 *')
+    print()
+    readentry = str(input('Entry to copy: '))
+    # generate random strings for /dev/shm
+    shmfolder = ''.join(random.SystemRandom().choice(string.ascii_letters + string.digits)
+                        for _ in range(random.randint(10, 30)))
+    shmentry = ''.join(random.SystemRandom().choice(string.ascii_letters + string.digits)
+                       for _ in range(random.randint(10, 30)))
+    term('mkdir -p /dev/shm/' + shmfolder)
+    # end string and folder generation
+    term('gpg -d --output /dev/shm/' + shmfolder + '/' + shmentry + ' ' + directory + readentry + '.gpg')
+    copyline = open('/dev/shm/' + shmfolder + '/' + shmentry, 'r').readlines()
+    if environ.get('WAYLAND_DISPLAY') == 'wayland-0':
+        term('wl-copy ' + "'" + copyline[3].replace('\n', '') + "'")
+    else:
+        term('echo -n ' + "'" + copyline[3].replace('\n', '') + "'" + ' | xclip -sel c')
     rmtree('/dev/shm/' + shmfolder)
 
 # gen
