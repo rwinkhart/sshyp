@@ -30,6 +30,15 @@ def replace_line(file_name, line_num, text):
     out.close()
 
 
+def shmgen():
+    shmfoldergen = ''.join(random.SystemRandom().choice(string.ascii_letters + string.digits)
+                           for _ in range(random.randint(10, 30)))
+    shmentrygen = ''.join(random.SystemRandom().choice(string.ascii_letters + string.digits)
+                          for _ in range(random.randint(10, 30)))
+    term('mkdir -p /dev/shm/' + shmfoldergen)
+    return shmfoldergen, shmentrygen
+
+
 def encrypt():
     term('gpg -r ' + str(gpgid) + ' -e ' + "'" + '/dev/shm/' + shmfolder + '/' + shmentry + "'")
     move('/dev/shm/' + shmfolder + '/' + shmentry + '.gpg', directory + entryname.replace('/', '', 1) + '.gpg')
@@ -121,7 +130,7 @@ if argument == 'version' or argument == '-v':
     print('/                                                      /')
     print('/     rpass  Copyright (C) 2021  Randall Winkhart      /')
     print('/                                                      /')
-    print('/               Version 2021.09.12.pr4                 /')
+    print('/               Version 2021.09.14.pr4                 /')
     print('/           The Housekeeping Update (Pt. 1)            /')
     print('/                                                      /')
     print('////////////////////////////////////////////////////////')
@@ -279,13 +288,7 @@ if argument == 'add note' or argument == 'add -n':
     clear()
     entryname = str(input('Name of note: '))
     notes = str(input('Contents of note: '))
-    # generate random strings for /dev/shm
-    shmfolder = ''.join(random.SystemRandom().choice(string.ascii_letters + string.digits)
-                        for _ in range(random.randint(10, 30)))
-    shmentry = ''.join(random.SystemRandom().choice(string.ascii_letters + string.digits)
-                       for _ in range(random.randint(10, 30)))
-    term('mkdir -p /dev/shm/' + shmfolder)
-    # end string and folder generation
+    shmfolder, shmentry = shmgen()
     if entryname.startswith('/'):
         if entryname.replace('/', '', 1).__contains__('/'):
             folder, sep, folderentry = entryname.replace('/', '', 1).partition('/')
@@ -311,13 +314,7 @@ if argument == 'add password' or argument == 'add -p':
     password = str(input('Password: '))
     url = str(input('URL: '))
     notes = str(input('Additional notes: '))
-    # generate random strings for /dev/shm
-    shmfolder = ''.join(random.SystemRandom().choice(string.ascii_letters + string.digits)
-                        for _ in range(random.randint(10, 30)))
-    shmentry = ''.join(random.SystemRandom().choice(string.ascii_letters + string.digits)
-                       for _ in range(random.randint(10, 30)))
-    term('mkdir -p /dev/shm/' + shmfolder)
-    # end string and folder generation
+    shmfolder, shmentry = shmgen()
     if entryname.startswith('/'):
         if entryname.replace('/', '', 1).__contains__('/'):
             folder, sep, folderentry = entryname.replace('/', '', 1).partition('/')
@@ -375,13 +372,7 @@ if argument == 'edit username' or argument == 'edit -u':
     print()
     entryname = str(input('What file would you like to edit? '))
     username = str(input('New Username: '))
-    # generate random strings for /dev/shm
-    shmfolder = ''.join(random.SystemRandom().choice(string.ascii_letters + string.digits)
-                        for _ in range(random.randint(10, 30)))
-    shmentry = ''.join(random.SystemRandom().choice(string.ascii_letters + string.digits)
-                       for _ in range(random.randint(10, 30)))
-    term('mkdir -p /dev/shm/' + shmfolder)
-    # end string and folder generation
+    shmfolder, shmentry = shmgen()
     if entryname.startswith('/'):
         if entryname.replace('/', '', 1).__contains__('/'):
             folder, sep, folderentry = entryname.replace('/', '', 1).partition('/')
@@ -411,13 +402,7 @@ if argument == 'edit password' or argument == 'edit -p':
     print()
     entryname = str(input('What file would you like to edit? '))
     password = str(input('New Password: '))
-    # generate random strings for /dev/shm
-    shmfolder = ''.join(random.SystemRandom().choice(string.ascii_letters + string.digits)
-                        for _ in range(random.randint(10, 30)))
-    shmentry = ''.join(random.SystemRandom().choice(string.ascii_letters + string.digits)
-                       for _ in range(random.randint(10, 30)))
-    term('mkdir -p /dev/shm/' + shmfolder)
-    # end string and folder generation
+    shmfolder, shmentry = shmgen()
     if entryname.startswith('/'):
         if entryname.replace('/', '', 1).__contains__('/'):
             folder, sep, folderentry = entryname.replace('/', '', 1).partition('/')
@@ -447,13 +432,7 @@ if argument == 'edit url' or argument == 'edit -l':
     print()
     entryname = str(input('What file would you like to edit? '))
     url = str(input('New URL: '))
-    # generate random strings for /dev/shm
-    shmfolder = ''.join(random.SystemRandom().choice(string.ascii_letters + string.digits)
-                        for _ in range(random.randint(10, 30)))
-    shmentry = ''.join(random.SystemRandom().choice(string.ascii_letters + string.digits)
-                       for _ in range(random.randint(10, 30)))
-    term('mkdir -p /dev/shm/' + shmfolder)
-    # end string and folder generation
+    shmfolder, shmentry = shmgen()
     if entryname.startswith('/'):
         if entryname.replace('/', '', 1).__contains__('/'):
             folder, sep, folderentry = entryname.replace('/', '', 1).partition('/')
@@ -483,13 +462,7 @@ if argument == 'edit note' or argument == 'edit -n':
     print()
     entryname = str(input('What file would you like to edit? '))
     notes = str(input('New Note: '))
-    # generate random strings for /dev/shm
-    shmfolder = ''.join(random.SystemRandom().choice(string.ascii_letters + string.digits)
-                        for _ in range(random.randint(10, 30)))
-    shmentry = ''.join(random.SystemRandom().choice(string.ascii_letters + string.digits)
-                       for _ in range(random.randint(10, 30)))
-    term('mkdir -p /dev/shm/' + shmfolder)
-    # end string and folder generation
+    shmfolder, shmentry = shmgen()
     if entryname.startswith('/'):
         if entryname.replace('/', '', 1).__contains__('/'):
             folder, sep, folderentry = entryname.replace('/', '', 1).partition('/')
@@ -531,13 +504,7 @@ if argument == 'copy username' or argument == 'copy -u':
     term('cd ~/.rpass-store; ls -1 *')
     print()
     readentry = str(input('Entry to copy: '))
-    # generate random strings for /dev/shm
-    shmfolder = ''.join(random.SystemRandom().choice(string.ascii_letters + string.digits)
-                        for _ in range(random.randint(10, 30)))
-    shmentry = ''.join(random.SystemRandom().choice(string.ascii_letters + string.digits)
-                       for _ in range(random.randint(10, 30)))
-    term('mkdir -p /dev/shm/' + shmfolder)
-    # end string and folder generation
+    shmfolder, shmentry = shmgen()
     term('gpg -d --output /dev/shm/' + shmfolder + '/' + shmentry + ' ' + directory + readentry + '.gpg')
     copyline = open('/dev/shm/' + shmfolder + '/' + shmentry, 'r').readlines()
     if environ.get('WAYLAND_DISPLAY') == 'wayland-0':
@@ -551,13 +518,7 @@ if argument == 'copy password' or argument == 'copy -p':
     term('cd ~/.rpass-store; ls -1 *')
     print()
     readentry = str(input('Entry to copy: '))
-    # generate random strings for /dev/shm
-    shmfolder = ''.join(random.SystemRandom().choice(string.ascii_letters + string.digits)
-                        for _ in range(random.randint(10, 30)))
-    shmentry = ''.join(random.SystemRandom().choice(string.ascii_letters + string.digits)
-                       for _ in range(random.randint(10, 30)))
-    term('mkdir -p /dev/shm/' + shmfolder)
-    # end string and folder generation
+    shmfolder, shmentry = shmgen()
     term('gpg -d --output /dev/shm/' + shmfolder + '/' + shmentry + ' ' + directory + readentry + '.gpg')
     copyline = open('/dev/shm/' + shmfolder + '/' + shmentry, 'r').readlines()
     if environ.get('WAYLAND_DISPLAY') == 'wayland-0':
@@ -571,13 +532,7 @@ if argument == 'copy url' or argument == 'copy -l':
     term('cd ~/.rpass-store; ls -1 *')
     print()
     readentry = str(input('Entry to copy: '))
-    # generate random strings for /dev/shm
-    shmfolder = ''.join(random.SystemRandom().choice(string.ascii_letters + string.digits)
-                        for _ in range(random.randint(10, 30)))
-    shmentry = ''.join(random.SystemRandom().choice(string.ascii_letters + string.digits)
-                       for _ in range(random.randint(10, 30)))
-    term('mkdir -p /dev/shm/' + shmfolder)
-    # end string and folder generation
+    shmfolder, shmentry = shmgen()
     term('gpg -d --output /dev/shm/' + shmfolder + '/' + shmentry + ' ' + directory + readentry + '.gpg')
     copyline = open('/dev/shm/' + shmfolder + '/' + shmentry, 'r').readlines()
     if environ.get('WAYLAND_DISPLAY') == 'wayland-0':
@@ -591,13 +546,7 @@ if argument == 'copy note' or argument == 'copy -n':
     term('cd ~/.rpass-store; ls -1 *')
     print()
     readentry = str(input('Entry to copy: '))
-    # generate random strings for /dev/shm
-    shmfolder = ''.join(random.SystemRandom().choice(string.ascii_letters + string.digits)
-                        for _ in range(random.randint(10, 30)))
-    shmentry = ''.join(random.SystemRandom().choice(string.ascii_letters + string.digits)
-                       for _ in range(random.randint(10, 30)))
-    term('mkdir -p /dev/shm/' + shmfolder)
-    # end string and folder generation
+    shmfolder, shmentry = shmgen()
     term('gpg -d --output /dev/shm/' + shmfolder + '/' + shmentry + ' ' + directory + readentry + '.gpg')
     copyline = open('/dev/shm/' + shmfolder + '/' + shmentry, 'r').readlines()
     if environ.get('WAYLAND_DISPLAY') == 'wayland-0':
@@ -621,13 +570,7 @@ if argument == 'gen':
     passgen = ''.join(random.SystemRandom().choice(passtype) for _ in range(passlength))
     url = str(input('URL: '))
     notes = str(input('Additional notes: '))
-    # generate random strings for /dev/shm
-    shmfolder = ''.join(random.SystemRandom().choice(string.ascii_letters + string.digits)
-                        for _ in range(random.randint(10, 30)))
-    shmentry = ''.join(random.SystemRandom().choice(string.ascii_letters + string.digits)
-                       for _ in range(random.randint(10, 30)))
-    term('mkdir -p /dev/shm/' + shmfolder)
-    # end string and folder generation
+    shmfolder, shmentry = shmgen()
     if entryname.startswith('/'):
         if entryname.replace('/', '', 1).__contains__('/'):
             folder, sep, folderentry = entryname.replace('/', '', 1).partition('/')
@@ -653,13 +596,7 @@ if argument == 'gen update' or argument == 'gen -u':
     entryname = str(input('Which password would you like to re-generate? '))
     passlength = int(input('How many characters should be in the password? '))
     passtype = str(input('Should the password be simple (for compatibility) or complex (for security)? (s/C) '))
-    # generate random strings for /dev/shm
-    shmfolder = ''.join(random.SystemRandom().choice(string.ascii_letters + string.digits)
-                        for _ in range(random.randint(10, 30)))
-    shmentry = ''.join(random.SystemRandom().choice(string.ascii_letters + string.digits)
-                       for _ in range(random.randint(10, 30)))
-    term('mkdir -p /dev/shm/' + shmfolder)
-    # end string and folder generation
+    shmfolder, shmentry = shmgen()
     if passtype != 's':
         passtype = string.ascii_letters + string.digits + string.punctuation
     if passtype == 's':
