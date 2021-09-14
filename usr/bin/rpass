@@ -130,7 +130,7 @@ if argument == 'version' or argument == '-v':
     print('/                                                      /')
     print('/     rpass  Copyright (C) 2021  Randall Winkhart      /')
     print('/                                                      /')
-    print('/               Version 2021.09.14.pr4                 /')
+    print('/               Version 2021.09.12.pr4                 /')
     print('/           The Housekeeping Update (Pt. 1)            /')
     print('/                                                      /')
     print('////////////////////////////////////////////////////////')
@@ -219,6 +219,8 @@ if argument == 'config':
             f.write('rsync -v -H -r -l -t -p --delete -e ' + '"ssh -i ~/.ssh/rpass -p ' + port + '" ' + '\n')
         with open("/var/lib/rpass/rpassip", 'w') as f:
             f.write(ip + '\n')
+        with open("/var/lib/rpass/rpassport", 'w') as f:
+            f.write(port + '\n')
         print()
         print('Default directory: ' + '/home/' + usernamessh + '/.rpass-store/')
         print()
@@ -251,6 +253,8 @@ with open("/var/lib/rpass/rpassrsyncdown") as f:
     rsyncdownn = f.read().strip()
 with open("/var/lib/rpass/rpassip") as f:
     ip = f.read().strip()
+with open("/var/lib/rpass/rpassport") as f:
+    port = f.read().strip()
 with open("/var/lib/rpass/rpassuserssh") as f:
     usernamessh = f.read().strip()
 
@@ -634,10 +638,16 @@ if argument == 'remove' or argument == '-rm':
     entryname = str(input('What would you like to delete? '))
     if entryname.startswith('/'):
         if entryname.replace('/', '', 1).__contains__('/'):
+            term('ssh -p ' + port + '' + usernamessh + '@' + ip + ' rm -rf ' + "'" + directoryssh + "'" + entryname
+                 .replace('/', '', 1) + '.gpg')
             remove(directory + entryname.replace('/', '', 1) + '.gpg')
         else:
+            term('ssh -p ' + port + '' + usernamessh + '@' + ip + ' rm -rf ' + "'" + directoryssh + "'" + entryname
+                 .replace('/', '', 1))
             rmtree(directory + entryname.replace('/', '', 1))
     else:
+        term('ssh -p ' + port + ' ' + usernamessh + '@' + ip + ' rm -rf ' + "'" + directoryssh + "'" + entryname +
+             '.gpg')
         remove(directory + entryname + '.gpg')
 
 # permissions - applied pre-sync to ensure permissions are correct before upload
@@ -651,7 +661,3 @@ if argument.__contains__('add') or argument.__contains__('-rm') or argument.__co
         __contains__('edit') or argument.__contains__('gen') or argument == 'sync' or argument == '-s':
     rsyncup()
     rsyncdown()
-    print()
-    print('Please note that as of this time, entries can only be deleted if removed from the central server in a '
-          'client-server scenario. This will be adjusted soon.')
-    print()
