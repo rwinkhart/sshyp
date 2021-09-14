@@ -23,7 +23,9 @@ Changes:
 - re-ordered config wizard for better rsync support
 - optimized code for random string generation in /dev/shm
 - entry deletion can now be done client-side
-**optimize code (specifically for when there is no folder but there is a slash)
+- removed rsyncup/rsyncdown/username/ip/port/directoryssh files,
+    ^ replaced with one file that holds usernamessh, ip, port, and directoryssh
+**optimize code for when there is no folder but there is a slash)
 **properly comment the code
 **validate for Python 3.10
 **do a better job at clearing /dev/shm

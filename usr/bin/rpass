@@ -51,14 +51,6 @@ def encryptfolder():
     rmtree('/dev/shm/' + shmfolder)
 
 
-def rsyncup():
-    term(rsyncupp + ' ' + directory + ' ' + usernamessh + '@' + ip + ':' + directoryssh)
-
-
-def rsyncdown():
-    term(rsyncdownn + ' ' + usernamessh + '@' + ip + ':' + directoryssh + ' ' + directory)
-
-
 # argument - filter the argument to usable text - some replacements are only done once to prevent interference
 
 argument = str(argv).replace('[', '', 1).replace(']', '', 1).replace(',', '').replace("'", '') \
@@ -209,18 +201,8 @@ if argument == 'config':
         print()
         ip_port = str(input('What is the IP and ssh port of the remote server? '))
         print()
-        usernamessh = str(input('What is the username of the remote server? '))
         ip, sep, port = ip_port.partition(':')
-        with open("/var/lib/rpass/rpassuserssh", 'w') as f:
-            f.write(usernamessh + '\n')
-        with open("/var/lib/rpass/rpassrsyncup", 'w') as f:
-            f.write('rsync -v -H -r -l -t -p -e ' + '"ssh -i ~/.ssh/rpass -p ' + port + '" ' + '\n')
-        with open("/var/lib/rpass/rpassrsyncdown", 'w') as f:
-            f.write('rsync -v -H -r -l -t -p --delete -e ' + '"ssh -i ~/.ssh/rpass -p ' + port + '" ' + '\n')
-        with open("/var/lib/rpass/rpassip", 'w') as f:
-            f.write(ip + '\n')
-        with open("/var/lib/rpass/rpassport", 'w') as f:
-            f.write(port + '\n')
+        usernamessh = str(input('What is the username of the remote server? '))
         print()
         print('Default directory: ' + '/home/' + usernamessh + '/.rpass-store/')
         print()
@@ -232,31 +214,26 @@ if argument == 'config':
             print('Format: /this/path/ends/with/a/slash/')
             print()
             directoryssh = str(input('What directory is the server using?: '))
-        with open("/var/lib/rpass/rpassdirssh", 'w') as f:
-            f.write(directoryssh + '\n')
+        with open("/var/lib/rpass/rpass-ssh", 'w') as f:
+            f.write(usernamessh + '\n' + ip + '\n' + port + '\n' + directoryssh)
         print()
         print('Configuration complete!')
         print()
 
 # import userdata
 
+sshinfo = open("/var/lib/rpass/rpass-ssh").readlines()
+usernamessh = sshinfo[0].replace('\n', '')
+ip = sshinfo[1].replace('\n', '')
+port = sshinfo[2].replace('\n', '')
+directoryssh = sshinfo[3].replace('\n', '')
 with open("/var/lib/rpass/rpassgpg") as f:
     gpgid = f.read().strip()
 with open("/var/lib/rpass/rpassdir") as f:
     directory = f.read().strip()
 term('mkdir -p ' + directory)
-with open("/var/lib/rpass/rpassdirssh") as f:
-    directoryssh = f.read().strip()
-with open("/var/lib/rpass/rpassrsyncup") as f:
-    rsyncupp = f.read().strip()
-with open("/var/lib/rpass/rpassrsyncdown") as f:
-    rsyncdownn = f.read().strip()
-with open("/var/lib/rpass/rpassip") as f:
-    ip = f.read().strip()
-with open("/var/lib/rpass/rpassport") as f:
-    port = f.read().strip()
-with open("/var/lib/rpass/rpassuserssh") as f:
-    usernamessh = f.read().strip()
+
+# no argument
 
 if argument == '':
     print()
@@ -659,5 +636,7 @@ term('find ' + directory + ' -type f -exec chmod -R 600 {} +')
 
 if argument.__contains__('add') or argument.__contains__('-rm') or argument.__contains__('remove') or argument. \
         __contains__('edit') or argument.__contains__('gen') or argument == 'sync' or argument == '-s':
-    rsyncup()
-    rsyncdown()
+    term('rsync -v -H -r -l -t -p -e ' + '"ssh -i ~/.ssh/rpass -p ' + port + '" ' + directory + ' ' + usernamessh
+         + '@' + ip + ':' + directoryssh)
+    term('rsync -v -H -r -l -t -p --delete -e ' + '"ssh -i ~/.ssh/rpass -p ' + port + '" ' + usernamessh
+         + '@' + ip + ':' + directoryssh + ' ' + directory)
