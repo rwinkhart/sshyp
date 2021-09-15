@@ -1,5 +1,15 @@
 <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 
+rpass 2021.09.15.mr4.1
+
+The Housekeeping Update (Pt. 1) - Hotfix
+
+Changes:
+
+- the user is once again properly presented with a prompt to enter a gpg key when pressing enter through the config dialog
+
+<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+
 rpass-2021.09.15.mr4
 
 The Housekeeping Update (Pt. 1) - Fourth main release of rpass
