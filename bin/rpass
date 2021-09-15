@@ -101,8 +101,8 @@ if argument == 'version' or argument == '-v':
     print('/                                                      /')
     print('/     rpass  Copyright (C) 2021  Randall Winkhart      /')
     print('/                                                      /')
-    print('/               Version 2021.09.15.pr4                 /')
-    print('/           The Housekeeping Update (Pt. 1)            /')
+    print('/             Version 2021.09.15.mr4.1                 /')
+    print('/          The Housekeeping Update (Pt. 1)             /')
     print('/                                                      /')
     print('////////////////////////////////////////////////////////\n')
 
@@ -142,7 +142,7 @@ if argument == 'config':
                 f.write('\n\n\n\n' + devicetype)
             print('\nMake sure the ssh service is running and properly configured.\n')
             print('Configuration complete!\n')
-        if devicetype == 'o' or devicetype == 'O' or devicetype == 'c' or devicetype == 'C':
+        else:
             print()
             gpgpresent = str(input(
                 'rpass requires the use of a unique gpg key. Do you already have one you are willing to use? (y/N) '))
