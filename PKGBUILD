@@ -8,10 +8,10 @@ arch=('x86_64' 'aarch64')
 license=('GPL3')
 depends=( python gnupg openssh rsync xclip wl-clipboard)
 
-source_x86_64=('https://github.com/rwinkhart/rpass/releases/download/v2021.09.15.mr4/rpass-2021.09.15.mr4.tar.xz')
-source_aarch64=('https://github.com/rwinkhart/rpass/releases/download/v2021.09.15.mr4/rpass-2021.09.15.mr4.tar.xz')
-sha512sums_x86_64=('615537dc49a05d49070f8d51f4a9b2bee8d40b7c85675a0fd860866a235dd2a3ed43186b4378a3db10accbc8d2c75a0d0220a2918afc32425c0ccb7695dc6b4a')
-sha512sums_aarch64=('615537dc49a05d49070f8d51f4a9b2bee8d40b7c85675a0fd860866a235dd2a3ed43186b4378a3db10accbc8d2c75a0d0220a2918afc32425c0ccb7695dc6b4a')
+source_x86_64=('https://github.com/rwinkhart/rpass/releases/download/v2021.09.15.mr4.1/rpass-2021.09.15.mr4.1.tar.xz')
+source_aarch64=('https://github.com/rwinkhart/rpass/releases/download/v2021.09.15.mr4.1/rpass-2021.09.15.mr4.1.tar.xz')
+sha512sums_x86_64=('fb162031b2bff1896a4ae2c6c78889ead6c278ec7e5cb6134ec8ccf08004bf87f38839f0cab952ce2047c53a075b0802ec882410048b04b4ababc89a68de71f8')
+sha512sums_aarch64=('fb162031b2bff1896a4ae2c6c78889ead6c278ec7e5cb6134ec8ccf08004bf87f38839f0cab952ce2047c53a075b0802ec882410048b04b4ababc89a68de71f8')
 
 package() {
 
