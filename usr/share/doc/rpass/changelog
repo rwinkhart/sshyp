@@ -1,6 +1,6 @@
 <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 
-rpass-2021.09.14.pr4
+rpass-2021.09.15.pr4
 
 The Housekeeping Update (Pt. 1) - Fourth public release of rpass
 
@@ -10,36 +10,36 @@ making any major changes in the future.
 New features:
 
 - added clipboard support for copying entry information
-**overhaul error messages using exceptions
-**add exceptions for unknown arguments
-**make clean, colorful file list by exporting to document and removing extensions
-**make a manpage
-**multi-line notes?
+- many common errors are now handled with proper exceptions
+- offline support (sync no longer needs to be configured for rpass to function)
 
 Changes:
 
 - fixed gpg decryption warnings
 - added version info argument
-- re-ordered config wizard for better rsync support
-- optimized code for random string generation in /dev/shm
+- re-ordered config wizard to make more sense
 - entry deletion can now be done client-side
 - removed rsyncup/rsyncdown/username/ip/port/directoryssh files,
-    ^ replaced with one file that holds usernamessh, ip, port, and directoryssh
-**optimize code for when there is no folder but there is a slash)
-**properly comment the code
-**validate for Python 3.10
-**do a better job at clearing /dev/shm
+    ^ replaced with one file that holds usernamessh, ip, port, directoryssh, and devcetype
+- files should no longer be left in /dev/shm when an error is encountered
+- fixed issues relating to using a non-default entry directory
+- lots of optimizations have been made to reduce the size of rpass
 
-Planned for next update (The Secret Update):
+Planned for next update (The Housekeeping Update Pt. 2):
 
-- allow to function as alternative to gnome keyring (libsecret integration)
+- a clean, colorful entry list w/o file extensions
+- manpage
+- multi-line notes
+- commented the code
+- ability to pass entries as arguments for more functions
+- improve exceptions for unknown arguments
 
 Planned, no timeline:
 
-- create separate gui frontend targetting mobile devices (first linux phones, maybe android at a later date - official iOS client not likely)
+- possible libsecret integration
+- create separate gui frontend targetting mobile devices (first Linux phones, maybe Android at a later date - official iOS client not likely)
     ^ the gui will also function on desktop linux
-- make platform agnostic (add windows support and package for more Linux distributions)
-- ability to pass entries as arguments for more functions
+- make platform agnostic (add Windows support and package for more Linux distributions)
 - auto-completion on tab (currently unsure of best way to make this work)
 
 <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
