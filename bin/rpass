@@ -101,7 +101,7 @@ if argument == 'version' or argument == '-v':
     print('/                                                      /')
     print('/     rpass  Copyright (C) 2021  Randall Winkhart      /')
     print('/                                                      /')
-    print('/             Version 2021.09.15.mr4.1                 /')
+    print('/             Version 2021.09.15.mr4.2                 /')
     print('/          The Housekeeping Update (Pt. 1)             /')
     print('/                                                      /')
     print('////////////////////////////////////////////////////////\n')
@@ -169,6 +169,7 @@ if argument == 'config':
                 f.write('\n\n\n\n' + devicetype)
             print('\nConfiguration complete!\n')
         elif devicetype != 's' and devicetype != 'S':
+            devicetype = 'c'
             print('\nMake sure the ssh service on the remote server is running and properly configured.\n')
             sshgen = str(input('rsync support requires a unique ssh key. Would you like to have this '
                                'automatically generated? (Y/n) '))
@@ -206,10 +207,10 @@ if argument == '':
 try:
     sshinfo = open("/var/lib/rpass/rpass-ssh").readlines()
     usernamessh = sshinfo[0].replace('\n', '')
-    ip = (sshinfo[1].replace('\n', ''))
-    port = (sshinfo[2].replace('\n', ''))
-    directoryssh = (sshinfo[3].replace('\n', ''))
-    devicetype = (sshinfo[4].replace('\n', ''))
+    ip = sshinfo[1].replace('\n', '')
+    port = sshinfo[2].replace('\n', '')
+    directoryssh = sshinfo[3].replace('\n', '')
+    devicetype = sshinfo[4].replace('\n', '')
 except (FileNotFoundError, IndexError):
     usernamessh, ip, port, directoryssh, devicetype = (0, 0, 0, 0, 0)
 try:
@@ -759,19 +760,19 @@ if argument == 'remove' or argument == '-rm':
         entryname = str(input('What would you like to delete? '))
         if entryname.startswith('/'):
             if entryname.replace('/', '', 1).__contains__('/'):
-                if devicetype == 'c' or devicetype == 'C':
-                    term('ssh -p ' + port + '' + usernamessh + '@' + ip + ' rm -rf ' + "'" + directoryssh + "'" +
-                         entryname.replace('/', '', 1) + '.gpg')
+                if devicetype == 'c':
+                    term('ssh -p ' + port + ' ' + usernamessh + '@' + ip + ' "' + ' rm -rf ' + "'" + directoryssh +
+                         entryname.replace('/', '', 1) + '.gpg' + "'" + '"')
                 remove(directory + entryname.replace('/', '', 1) + '.gpg')
             else:
-                if devicetype == 'c' or devicetype == 'C':
-                    term('ssh -p ' + port + '' + usernamessh + '@' + ip + ' rm -rf ' + "'" + directoryssh + "'" +
-                         entryname.replace('/', '', 1))
+                if devicetype == 'c':
+                    term('ssh -p ' + port + ' ' + usernamessh + '@' + ip + ' "' + ' rm -rf ' + "'" + directoryssh +
+                         entryname.replace('/', '', 1) + "'" + '"')
                 rmtree(directory + entryname.replace('/', '', 1))
         else:
-            if devicetype == 'c' or devicetype == 'C':
-                term('ssh -p ' + port + ' ' + usernamessh + '@' + ip + ' rm -rf ' + "'" + directoryssh + "'" +
-                     entryname + '.gpg')
+            if devicetype == 'c':
+                term('ssh -p ' + port + ' ' + usernamessh + '@' + ip + ' "' + ' rm -rf ' + "'" + directoryssh +
+                     entryname + '.gpg' + "'" + '"')
             remove(directory + entryname + '.gpg')
     except KeyboardInterrupt:
         print('\n\nDeletion cancelled.\n')
@@ -800,11 +801,11 @@ term('find ' + directory + ' -type d -exec chmod -R 700 {} +')
 term('find ' + directory + ' -type f -exec chmod -R 600 {} +')
 
 # rsync - ran at end of program to ensure all files are properly synced
-if devicetype == 'c' or devicetype == 'C':
+if devicetype == 'c':
     if argument.__contains__('add') or argument.__contains__('-rm') or argument.__contains__('remove') or argument. \
             __contains__('edit') or argument.__contains__('gen') or argument == 'sync' or argument == '-s':
         print('Syncing entries with other device(s)...\n')
-        term('rsync -v -H -r -l -t -p -e ' + '"ssh -i ~/.ssh/rpass -p ' + port + '" ' + directory + ' ' + usernamessh
-             + '@' + ip + ':' + directoryssh)
+        term('rsync -v -H -r -l -t -p -e ' + '"ssh -i ~/.ssh/rpass -p ' + port + '" ' + directory + ' ' +
+             usernamessh + '@' + ip + ':' + directoryssh)
         term('rsync -v -H -r -l -t -p --delete -e ' + '"ssh -i ~/.ssh/rpass -p ' + port + '" ' + usernamessh
              + '@' + ip + ':' + directoryssh + ' ' + directory)

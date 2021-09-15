@@ -1,5 +1,16 @@
 <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 
+rpass 2021.09.15.mr4.2
+
+The Housekeeping Update (Pt. 1) - Hotfix 2
+
+Changes:
+
+- sync support is fixed
+- files with spaces in their names can now be properly deleted from remote servers
+
+<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+
 rpass 2021.09.15.mr4.1
 
 The Housekeeping Update (Pt. 1) - Hotfix
