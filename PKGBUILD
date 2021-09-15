@@ -3,7 +3,8 @@
 pkgname=rpass
 pkgver=2021.09.15.mr4.2
 pkgrel=1
-pkgdesc="An rsync-based password manager and alternative to GNU pass"
+pkgdesc='An rsync-based password manager and alternative to GNU pass'
+url='https://github.com/rwinkhart/rpass'
 arch=('x86_64' 'aarch64')
 license=('GPL3')
 depends=( python gnupg openssh rsync xclip wl-clipboard)
