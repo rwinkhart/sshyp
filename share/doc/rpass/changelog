@@ -14,7 +14,7 @@ New features:
 
 Changes:
 
-**fix copy syntax, e.g. with pharentheses in passwords
+- fixed issues with copying passwords with certain special characters, e.g. '"()|
 **add more comments to code
 **improve exceptions for unknown arguments
 
