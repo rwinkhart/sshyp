@@ -101,8 +101,8 @@ if argument == 'version' or argument == '-v':
     print('/                                                      /')
     print('/     rpass  Copyright (C) 2021  Randall Winkhart      /')
     print('/                                                      /')
-    print('/             Version 2021.09.15.mr4.2                 /')
-    print('/          The Housekeeping Update (Pt. 1)             /')
+    print('/             Version 2021.09.25.mr5                   /')
+    print('/          The Housekeeping Update (Pt. 2)             /')
     print('/                                                      /')
     print('////////////////////////////////////////////////////////\n')
 
@@ -593,9 +593,9 @@ if argument == 'copy password' or argument == 'copy -p':
         term('gpg -d --output /dev/shm/' + shmfolder + '/' + shmentry + ' ' + directory + readentry + '.gpg')
         copyline = open('/dev/shm/' + shmfolder + '/' + shmentry, 'r').readlines()
         if environ.get('WAYLAND_DISPLAY') == 'wayland-0':
-            term('wl-copy ' + "'" + copyline[1].replace('\n', '') + "'")
+            term('wl-copy ' + "'" + copyline[1].replace('\n', '').replace("'", "'\\''") + "'")
         else:
-            term('echo -n ' + "'" + copyline[1].replace('\n', '') + "'" + ' | xclip -sel c')
+            term('echo -n ' + "'" + copyline[1].replace('\n', '').replace("'", "'\\''") + "'" + ' | xclip -sel c')
         rmtree('/dev/shm/' + shmfolder)
     except FileNotFoundError:
         print('\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
