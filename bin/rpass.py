@@ -23,10 +23,10 @@ def term(cmd):
 
 
 def replace_line(file_name, line_num, text):
-    lines = open(file_name, 'r').readlines()
-    lines[line_num] = text
+    xlines = open(file_name, 'r').readlines()
+    xlines[line_num] = text
     out = open(file_name, 'w')
-    out.writelines(lines)
+    out.writelines(xlines)
     out.close()
 
 
@@ -101,8 +101,8 @@ if argument == 'version' or argument == '-v':
     print('/                                                      /')
     print('/     rpass  Copyright (C) 2021  Randall Winkhart      /')
     print('/                                                      /')
-    print('/             Version 2021.10.08.mr5                   /')
-    print('/          The Housekeeping Update (Pt. 2)             /')
+    print('/               Version 2021.10.08.mr5                 /')
+    print('/                The Notetaker Update                  /')
     print('/                                                      /')
     print('////////////////////////////////////////////////////////\n')
 
@@ -263,28 +263,30 @@ if argument == 'add note' or argument == 'add -n':
     try:
         clear()
         entryname = str(input('Name of note: '))
-        notes = str(input('Contents of note: '))
     except KeyboardInterrupt:
         entryname, notes = (0, 0)
         print('\n\nEntry add cancelled.\n')
         exit()
     shmfolder, shmentry = shmgen()
+    term('nano /dev/shm/' + shmfolder + '/' + shmentry + '-n')
+    with open('/dev/shm/' + shmfolder + '/' + shmentry + '-n', 'r') as file:
+        notes = file.read().replace('/n', '')
     try:
         if entryname.startswith('/'):  # check if user input contains slashes
             if entryname.replace('/', '', 1).__contains__('/'):  # create folder and entry if there are two slashes
                 folder, sep, folderentry = entryname.replace('/', '', 1).partition('/')
                 with open('/dev/shm/' + shmfolder + '/' + shmentry, 'w') as f:
-                    f.writelines('\n\n\n' + notes + '\n\n')
+                    f.writelines('\n\n\n\n' + notes + '\n\n')
                 encryptfolder()
                 term('gpg -d ' + directory + folder + '/' + "'" + folderentry + '.gpg' + "'")
             else:  # create entry if there is only one slash
                 with open('/dev/shm/' + shmfolder + '/' + shmentry, 'w') as f:
-                    f.writelines('\n\n\n' + notes + '\n\n')
+                    f.writelines('\n\n\n\n' + notes + '\n\n')
                 encrypt()
                 term('gpg -d ' + directory + "'" + entryname.replace('/', '', 1) + '.gpg' + "'")
         else:  # create entry if there are no slashes
             with open('/dev/shm/' + shmfolder + '/' + shmentry, 'w') as f:
-                f.writelines('\n\n\n' + notes + '\n\n')
+                f.writelines('\n\n\n\n' + notes + '\n\n')
             encrypt()
             term('gpg -d ' + directory + "'" + entryname + '.gpg' + "'")
     except FileNotFoundError:
@@ -301,28 +303,30 @@ if argument == 'add password' or argument == 'add -p':
         username = str(input('Username: '))
         password = str(input('Password: '))
         url = str(input('URL: '))
-        notes = str(input('Additional notes: '))
     except KeyboardInterrupt:
         entryname, username, password, url, notes = (0, 0, 0, 0, 0)
         print('\n\nEntry add cancelled.\n')
         exit()
     shmfolder, shmentry = shmgen()
+    term('nano /dev/shm/' + shmfolder + '/' + shmentry + '-n')
+    with open('/dev/shm/' + shmfolder + '/' + shmentry + '-n', 'r') as file:
+        notes = file.read().replace('/n', '')
     try:
         if entryname.startswith('/'):
             if entryname.replace('/', '', 1).__contains__('/'):
                 folder, sep, folderentry = entryname.replace('/', '', 1).partition('/')
                 with open('/dev/shm/' + shmfolder + '/' + shmentry, 'w') as f:
-                    f.writelines(username + '\n' + password + '\n' + url + '\n' + notes + '\n\n')
+                    f.writelines(username + '\n' + password + '\n' + url + '\n\n' + notes + '\n\n')
                 encryptfolder()
                 term('gpg -d ' + directory + folder + '/' + "'" + folderentry + '.gpg' + "'")
             else:
                 with open('/dev/shm/' + shmfolder + '/' + shmentry, 'w') as f:
-                    f.writelines(username + '\n' + password + '\n' + url + '\n' + notes + '\n\n')
+                    f.writelines(username + '\n' + password + '\n' + url + '\n\n' + notes + '\n\n')
                 encrypt()
                 term('gpg -d ' + directory + "'" + entryname.replace('/', '', 1) + '.gpg' + "'")
         else:
             with open('/dev/shm/' + shmfolder + '/' + shmentry, 'w') as f:
-                f.writelines(username + '\n' + password + '\n' + url + '\n' + notes + '\n\n')
+                f.writelines(username + '\n' + password + '\n' + url + '\n\n' + notes + '\n\n')
             encrypt()
             term('gpg -d ' + directory + "'" + entryname + '.gpg' + "'")
     except FileNotFoundError:
@@ -505,7 +509,6 @@ if argument == 'edit note' or argument == 'edit -n':
         term('cd ' + directory + '; ls -1 *')
         print()
         entryname = str(input('What file would you like to edit? '))
-        notes = str(input('New Note: '))
     except KeyboardInterrupt:
         entryname, notes = (0, 0)
         print('\n\nEdit cancelled.\n')
@@ -517,20 +520,50 @@ if argument == 'edit note' or argument == 'edit -n':
                 folder, sep, folderentry = entryname.replace('/', '', 1).partition('/')
                 term('gpg -d --output /dev/shm/' + shmfolder + '/' + shmentry + ' ' + directory +
                      folder + '/' + folderentry + '.gpg')
-                replace_line('/dev/shm/' + shmfolder + '/' + shmentry, 3, notes + '\n')
+                with open('/dev/shm/' + shmfolder + '/' + shmentry) as first:
+                    lines = first.readlines()
+                with open('/dev/shm/' + shmfolder + '/' + shmentry, 'w') as first:
+                    first.writelines(lines[0:3])
+                with open('/dev/shm/' + shmfolder + '/' + shmentry + '-n', 'w') as second:
+                    second.writelines(lines[4:-2])
+                term('nano /dev/shm/' + shmfolder + '/' + shmentry + '-n')
+                with open('/dev/shm/' + shmfolder + '/' + shmentry + '-n') as second:
+                    notes = second.read()
+                with open('/dev/shm/' + shmfolder + '/' + shmentry, 'a') as first:
+                    first.write('\n' + notes + '\n\n')
                 remove(directory + folder + '/' + folderentry + '.gpg')
                 encryptfolder()
                 term('gpg -d ' + directory + folder + '/' + "'" + folderentry + '.gpg' + "'")
             else:
                 term('gpg -d --output /dev/shm/' + shmfolder + '/' + shmentry + ' ' + directory +
                      entryname.replace('/', '', 1) + '.gpg')
-                replace_line('/dev/shm/' + shmfolder + '/' + shmentry, 3, notes + '\n')
+                with open('/dev/shm/' + shmfolder + '/' + shmentry) as first:
+                    lines = first.readlines()
+                with open('/dev/shm/' + shmfolder + '/' + shmentry, 'w') as first:
+                    first.writelines(lines[0:3])
+                with open('/dev/shm/' + shmfolder + '/' + shmentry + '-n', 'w') as second:
+                    second.writelines(lines[4:-2])
+                term('nano /dev/shm/' + shmfolder + '/' + shmentry + '-n')
+                with open('/dev/shm/' + shmfolder + '/' + shmentry + '-n') as second:
+                    notes = second.read()
+                with open('/dev/shm/' + shmfolder + '/' + shmentry, 'a') as first:
+                    first.write('\n' + notes + '\n\n')
                 remove(directory + entryname.replace('/', '', 1) + '.gpg')
                 encrypt()
                 term('gpg -d ' + directory + "'" + entryname.replace('/', '', 1) + '.gpg' + "'")
         else:
             term('gpg -d --output /dev/shm/' + shmfolder + '/' + shmentry + ' ' + directory + entryname + '.gpg')
-            replace_line('/dev/shm/' + shmfolder + '/' + shmentry, 3, notes + '\n')
+            with open('/dev/shm/' + shmfolder + '/' + shmentry) as first:
+                lines = first.readlines()
+            with open('/dev/shm/' + shmfolder + '/' + shmentry, 'w') as first:
+                first.writelines(lines[0:3])
+            with open('/dev/shm/' + shmfolder + '/' + shmentry + '-n', 'w') as second:
+                second.writelines(lines[4:-2])
+            term('nano /dev/shm/' + shmfolder + '/' + shmentry + '-n')
+            with open('/dev/shm/' + shmfolder + '/' + shmentry + '-n') as second:
+                notes = second.read()
+            with open('/dev/shm/' + shmfolder + '/' + shmentry, 'a') as first:
+                first.write('\n' + notes + '\n\n')
             remove(directory + entryname + '.gpg')
             encrypt()
             term('gpg -d ' + directory + "'" + entryname + '.gpg' + "'")

@@ -2,27 +2,32 @@
 
 rpass 2021.10.08.mr5
 
-The Housekeeping Update (Pt. 2) - Fifth main release of rpass
+The Notetaker Update - Fifth main release of rpass
 
 This release focuses on user-facing polish and usability enhancements.
 
 New features:
 
-**add new file list w/color and w/o extensions
-**add support for multi-line notes (use text editor for notes)
+- notes are now edited in nano and can be split across multiple lines
 
 Changes:
 
 - fixed issues with copying passwords with certain special characters, e.g. '"()|
 - auto-generated ssh key now uses ed25519, rather than rsa-3072
-**add more comments to code
-**improve exceptions for unknown arguments
 
-Planned for next update (The rcrypt Update):
+Planned for next update (The Housekeeping Update Pt. 2):
 
-- initial implementation of a data store for other applications (libsecret alt.)
+- add new file list w/color and w/o extensions
+- improve exceptions for unknown arguments
 - ability to pass entries as arguments for more functions
 - manpage
+- add more comments to code
+- simplify code from the Notetaker Update
+
+Planned for next update (The cryptpass Update):
+
+- initial implementation of a data store for other applications (libsecret alt.)
+- modularize code in preparation for GUI frontends 
 
 Planned, no timeline:
 
