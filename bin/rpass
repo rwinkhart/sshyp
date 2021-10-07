@@ -101,7 +101,7 @@ if argument == 'version' or argument == '-v':
     print('/                                                      /')
     print('/     rpass  Copyright (C) 2021  Randall Winkhart      /')
     print('/                                                      /')
-    print('/             Version 2021.09.25.mr5                   /')
+    print('/             Version 2021.10.08.mr5                   /')
     print('/          The Housekeeping Update (Pt. 2)             /')
     print('/                                                      /')
     print('////////////////////////////////////////////////////////\n')
@@ -174,7 +174,7 @@ if argument == 'config':
             sshgen = str(input('rsync support requires a unique ssh key. Would you like to have this '
                                'automatically generated? (Y/n) '))
             if sshgen != 'n' and sshgen != 'N':
-                term('ssh-keygen -f ~/.ssh/rpass')
+                term('ssh-keygen -t ed25519 -f ~/.ssh/rpass')
             print('\nExample input: 10.10.10.10:9999\n')
             ip_port = str(input('What is the IP and ssh port of the remote server? '))
             print()
@@ -270,19 +270,19 @@ if argument == 'add note' or argument == 'add -n':
         exit()
     shmfolder, shmentry = shmgen()
     try:
-        if entryname.startswith('/'):
-            if entryname.replace('/', '', 1).__contains__('/'):
+        if entryname.startswith('/'):  # check if user input contains slashes
+            if entryname.replace('/', '', 1).__contains__('/'):  # create folder and entry if there are two slashes
                 folder, sep, folderentry = entryname.replace('/', '', 1).partition('/')
                 with open('/dev/shm/' + shmfolder + '/' + shmentry, 'w') as f:
                     f.writelines('\n\n\n' + notes + '\n\n')
                 encryptfolder()
                 term('gpg -d ' + directory + folder + '/' + "'" + folderentry + '.gpg' + "'")
-            else:
+            else:  # create entry if there is only one slash
                 with open('/dev/shm/' + shmfolder + '/' + shmentry, 'w') as f:
                     f.writelines('\n\n\n' + notes + '\n\n')
                 encrypt()
                 term('gpg -d ' + directory + "'" + entryname.replace('/', '', 1) + '.gpg' + "'")
-        else:
+        else:  # create entry if there are no slashes
             with open('/dev/shm/' + shmfolder + '/' + shmentry, 'w') as f:
                 f.writelines('\n\n\n' + notes + '\n\n')
             encrypt()

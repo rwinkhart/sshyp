@@ -1,6 +1,6 @@
 <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 
-rpass 2021.09.25.mr5
+rpass 2021.10.08.mr5
 
 The Housekeeping Update (Pt. 2) - Fifth main release of rpass
 
@@ -9,25 +9,26 @@ This release focuses on user-facing polish and usability enhancements.
 New features:
 
 **add new file list w/color and w/o extensions
-**add a manpage
 **add support for multi-line notes (use text editor for notes)
 
 Changes:
 
 - fixed issues with copying passwords with certain special characters, e.g. '"()|
+- auto-generated ssh key now uses ed25519, rather than rsa-3072
 **add more comments to code
 **improve exceptions for unknown arguments
 
-Planned for next update (The Housekeeping Update Pt. 3):
+Planned for next update (The rcrypt Update):
 
+- initial implementation of a data store for other applications (libsecret alt.)
 - ability to pass entries as arguments for more functions
+- manpage
 
 Planned, no timeline:
 
-- possible libsecret integration // cancelled, will instead act as a libsecret alternative that other apps can use to store data in
 - create separate gui frontend targetting mobile devices (first Linux phones, maybe Android at a later date - official iOS client not likely)
     ^ the gui will also function on desktop linux
-- make platform agnostic (add Windows support and package for more Linux distributions)
+- make platform agnostic (add Windows support and package for more Linux distributions, such as Alpine and Debian)
 - auto-completion on tab (currently unsure of best way to make this work)
 
 <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
