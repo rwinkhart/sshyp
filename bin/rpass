@@ -8,11 +8,13 @@ from os import environ
 from shutil import move
 from shutil import rmtree
 from sys import argv
+from re import search
+from re import escape
 import random
 import string
 
-# custom modules
 
+# custom modules
 
 def clear():
     print('\n' * 100)
@@ -22,12 +24,25 @@ def term(cmd):
     _ = system(cmd)
 
 
+def string_found(string1, string2):
+    if search(r"\b" + escape(string1) + r"\b", string2):
+        return True
+    return False
+
+
 def replace_line(file_name, line_num, text):
     xlines = open(file_name, 'r').readlines()
     xlines[line_num] = text
-    out = open(file_name, 'w')
-    out.writelines(xlines)
-    out.close()
+    open(file_name, 'w').writelines(xlines)
+
+
+def edit_note():
+    lines = open('/dev/shm/' + shmfolder + '/' + shmentry).readlines()
+    open('/dev/shm/' + shmfolder + '/' + shmentry, 'w').writelines(lines[0:3])
+    open('/dev/shm/' + shmfolder + '/' + shmentry + '-n', 'w').writelines(lines[4:-2])
+    term('nano /dev/shm/' + shmfolder + '/' + shmentry + '-n')
+    edit_notes = open('/dev/shm/' + shmfolder + '/' + shmentry + '-n').read()
+    open('/dev/shm/' + shmfolder + '/' + shmentry, 'a').write('\n' + edit_notes + '\n\n')
 
 
 def shmgen():
@@ -101,7 +116,7 @@ if argument == 'version' or argument == '-v':
     print('/                                                      /')
     print('/     rpass  Copyright (C) 2021  Randall Winkhart      /')
     print('/                                                      /')
-    print('/               Version 2021.10.08.mr5                 /')
+    print('/               Version 2021.10.07.mr5                 /')
     print('/                The Notetaker Update                  /')
     print('/                                                      /')
     print('////////////////////////////////////////////////////////\n')
@@ -130,27 +145,24 @@ if argument == 'config':
         if directorychoice == 'n' or directorychoice == 'N':
             print('\nFormat: /this/path/ends/with/a/slash/\n')
             directory = str(input('Please input a custom directory: '))
-            with open("/var/lib/rpass/rpass-dir", 'w') as f:
-                f.write(directory + '\n')
+            open("/var/lib/rpass/rpass-dir", 'w').write(directory + '\n')
         else:
-            with open("/var/lib/rpass/rpass-dir", 'w') as f:
-                f.write('/home/' + environ.get('USER') + '/.rpass-store/' + '\n')
+            open("/var/lib/rpass/rpass-dir", 'w').write('/home/' + environ.get('USER') + '/.rpass-store/' + '\n')
         print()
         devicetype = str(input('Will this be a client, server, or offline device? (C/s/o) '))
         if devicetype == 's' or devicetype == 'S':
-            with open("/var/lib/rpass/rpass-ssh", 'w') as f:
-                f.write('\n\n\n\n' + devicetype)
+            open("/var/lib/rpass/rpass-ssh", 'w').write('\n\n\n\n' + devicetype)
             print('\nMake sure the ssh service is running and properly configured.\n')
             print('Configuration complete!\n')
         else:
+            gpgid = ''
             print()
             gpgpresent = str(input(
                 'rpass requires the use of a unique gpg key. Do you already have one you are willing to use? (y/N) '))
             if gpgpresent == 'y' or gpgpresent == 'Y':
                 print()
                 gpgid = str(input('Please input the ID of your gpg key: '))
-                with open("/var/lib/rpass/rpass-gpg", 'w') as f:
-                    f.write(gpgid + '\n')
+                open("/var/lib/rpass/rpass-gpg", 'w').write(gpgid + '\n')
             else:
                 print()
                 gpggen = str(
@@ -162,11 +174,15 @@ if argument == 'config':
                     term('gpg --full-generate-key')
                     print()
                     gpgid = str(input('Please input the ID of your gpg key: '))
-                    with open("/var/lib/rpass/rpass-gpg", 'w') as f:
-                        f.write(gpgid + '\n')
+                    open("/var/lib/rpass/rpass-gpg", 'w').write(gpgid + '\n')
+            try:
+                open('/var/lib/rpass/lock', 'x').write('locked')
+            except FileExistsError:
+                pass
+            term('gpg -r ' + str(gpgid) + ' -e ' + '/var/lib/rpass/lock')
+            remove('/var/lib/rpass/lock')
         if devicetype == 'o' or devicetype == 'O':
-            with open("/var/lib/rpass/rpass-ssh", 'w') as f:
-                f.write('\n\n\n\n' + devicetype)
+            open("/var/lib/rpass/rpass-ssh", 'w').write('\n\n\n\n' + devicetype)
             print('\nConfiguration complete!\n')
         elif devicetype != 's' and devicetype != 'S':
             devicetype = 'c'
@@ -187,13 +203,12 @@ if argument == 'config':
                 directoryssh = str(input('What directory is the server using?: '))
             else:
                 directoryssh = ('/home/' + usernamessh + '/.rpass-store/')
-            with open("/var/lib/rpass/rpass-ssh", 'w') as f:
-                f.write(usernamessh + '\n' + ip + '\n' + port + '\n' + directoryssh + '\n' + devicetype)
+            open("/var/lib/rpass/rpass-ssh", 'w').write(usernamessh + '\n' + ip + '\n' + port + '\n' + directoryssh +
+                                                        '\n' + devicetype)
             print('\nConfiguration complete!\n')
     except KeyboardInterrupt:
         print('\n\nConfiguration cancelled.\n')
         exit()
-
 
 # startup help
 
@@ -213,11 +228,10 @@ try:
     devicetype = sshinfo[4].replace('\n', '')
 except (FileNotFoundError, IndexError):
     usernamessh, ip, port, directoryssh, devicetype = (0, 0, 0, 0, 0)
+directory = ''
 try:
-    with open("/var/lib/rpass/rpass-gpg") as f:
-        gpgid = f.read().strip()
-    with open("/var/lib/rpass/rpass-dir") as f:
-        directory = f.read().strip()
+    gpgid = open("/var/lib/rpass/rpass-gpg").read().strip()
+    directory = open("/var/lib/rpass/rpass-dir").read().strip()
     term('mkdir -p ' + directory)
 except FileNotFoundError:
     print('\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
@@ -269,24 +283,20 @@ if argument == 'add note' or argument == 'add -n':
         exit()
     shmfolder, shmentry = shmgen()
     term('nano /dev/shm/' + shmfolder + '/' + shmentry + '-n')
-    with open('/dev/shm/' + shmfolder + '/' + shmentry + '-n', 'r') as file:
-        notes = file.read().replace('/n', '')
+    notes = open('/dev/shm/' + shmfolder + '/' + shmentry + '-n', 'r').read()
     try:
         if entryname.startswith('/'):  # check if user input contains slashes
             if entryname.replace('/', '', 1).__contains__('/'):  # create folder and entry if there are two slashes
                 folder, sep, folderentry = entryname.replace('/', '', 1).partition('/')
-                with open('/dev/shm/' + shmfolder + '/' + shmentry, 'w') as f:
-                    f.writelines('\n\n\n\n' + notes + '\n\n')
+                open('/dev/shm/' + shmfolder + '/' + shmentry, 'w').writelines('\n\n\n\n' + notes + '\n\n')
                 encryptfolder()
                 term('gpg -d ' + directory + folder + '/' + "'" + folderentry + '.gpg' + "'")
             else:  # create entry if there is only one slash
-                with open('/dev/shm/' + shmfolder + '/' + shmentry, 'w') as f:
-                    f.writelines('\n\n\n\n' + notes + '\n\n')
+                open('/dev/shm/' + shmfolder + '/' + shmentry, 'w').writelines('\n\n\n\n' + notes + '\n\n')
                 encrypt()
                 term('gpg -d ' + directory + "'" + entryname.replace('/', '', 1) + '.gpg' + "'")
         else:  # create entry if there are no slashes
-            with open('/dev/shm/' + shmfolder + '/' + shmentry, 'w') as f:
-                f.writelines('\n\n\n\n' + notes + '\n\n')
+            open('/dev/shm/' + shmfolder + '/' + shmentry, 'w').writelines('\n\n\n\n' + notes + '\n\n')
             encrypt()
             term('gpg -d ' + directory + "'" + entryname + '.gpg' + "'")
     except FileNotFoundError:
@@ -308,25 +318,28 @@ if argument == 'add password' or argument == 'add -p':
         print('\n\nEntry add cancelled.\n')
         exit()
     shmfolder, shmentry = shmgen()
-    term('nano /dev/shm/' + shmfolder + '/' + shmentry + '-n')
-    with open('/dev/shm/' + shmfolder + '/' + shmentry + '-n', 'r') as file:
-        notes = file.read().replace('/n', '')
+    add_note = input('Add a note to this entry? (y/N) ')
+    if add_note == 'y' or add_note == 'Y':
+        term('nano /dev/shm/' + shmfolder + '/' + shmentry + '-n')
+        notes = open('/dev/shm/' + shmfolder + '/' + shmentry + '-n', 'r').read()
+    else:
+        notes = ''
     try:
         if entryname.startswith('/'):
             if entryname.replace('/', '', 1).__contains__('/'):
                 folder, sep, folderentry = entryname.replace('/', '', 1).partition('/')
-                with open('/dev/shm/' + shmfolder + '/' + shmentry, 'w') as f:
-                    f.writelines(username + '\n' + password + '\n' + url + '\n\n' + notes + '\n\n')
+                open('/dev/shm/' + shmfolder + '/' + shmentry, 'w').writelines(username + '\n' + password + '\n' + url
+                                                                               + '\n\n' + notes + '\n\n')
                 encryptfolder()
                 term('gpg -d ' + directory + folder + '/' + "'" + folderentry + '.gpg' + "'")
             else:
-                with open('/dev/shm/' + shmfolder + '/' + shmentry, 'w') as f:
-                    f.writelines(username + '\n' + password + '\n' + url + '\n\n' + notes + '\n\n')
+                open('/dev/shm/' + shmfolder + '/' + shmentry, 'w').writelines(username + '\n' + password + '\n' + url
+                                                                               + '\n\n' + notes + '\n\n')
                 encrypt()
                 term('gpg -d ' + directory + "'" + entryname.replace('/', '', 1) + '.gpg' + "'")
         else:
-            with open('/dev/shm/' + shmfolder + '/' + shmentry, 'w') as f:
-                f.writelines(username + '\n' + password + '\n' + url + '\n\n' + notes + '\n\n')
+            open('/dev/shm/' + shmfolder + '/' + shmentry, 'w').writelines(username + '\n' + password + '\n' + url
+                                                                           + '\n\n' + notes + '\n\n')
             encrypt()
             term('gpg -d ' + directory + "'" + entryname + '.gpg' + "'")
     except FileNotFoundError:
@@ -520,50 +533,20 @@ if argument == 'edit note' or argument == 'edit -n':
                 folder, sep, folderentry = entryname.replace('/', '', 1).partition('/')
                 term('gpg -d --output /dev/shm/' + shmfolder + '/' + shmentry + ' ' + directory +
                      folder + '/' + folderentry + '.gpg')
-                with open('/dev/shm/' + shmfolder + '/' + shmentry) as first:
-                    lines = first.readlines()
-                with open('/dev/shm/' + shmfolder + '/' + shmentry, 'w') as first:
-                    first.writelines(lines[0:3])
-                with open('/dev/shm/' + shmfolder + '/' + shmentry + '-n', 'w') as second:
-                    second.writelines(lines[4:-2])
-                term('nano /dev/shm/' + shmfolder + '/' + shmentry + '-n')
-                with open('/dev/shm/' + shmfolder + '/' + shmentry + '-n') as second:
-                    notes = second.read()
-                with open('/dev/shm/' + shmfolder + '/' + shmentry, 'a') as first:
-                    first.write('\n' + notes + '\n\n')
+                edit_note()
                 remove(directory + folder + '/' + folderentry + '.gpg')
                 encryptfolder()
                 term('gpg -d ' + directory + folder + '/' + "'" + folderentry + '.gpg' + "'")
             else:
                 term('gpg -d --output /dev/shm/' + shmfolder + '/' + shmentry + ' ' + directory +
                      entryname.replace('/', '', 1) + '.gpg')
-                with open('/dev/shm/' + shmfolder + '/' + shmentry) as first:
-                    lines = first.readlines()
-                with open('/dev/shm/' + shmfolder + '/' + shmentry, 'w') as first:
-                    first.writelines(lines[0:3])
-                with open('/dev/shm/' + shmfolder + '/' + shmentry + '-n', 'w') as second:
-                    second.writelines(lines[4:-2])
-                term('nano /dev/shm/' + shmfolder + '/' + shmentry + '-n')
-                with open('/dev/shm/' + shmfolder + '/' + shmentry + '-n') as second:
-                    notes = second.read()
-                with open('/dev/shm/' + shmfolder + '/' + shmentry, 'a') as first:
-                    first.write('\n' + notes + '\n\n')
+                edit_note()
                 remove(directory + entryname.replace('/', '', 1) + '.gpg')
                 encrypt()
                 term('gpg -d ' + directory + "'" + entryname.replace('/', '', 1) + '.gpg' + "'")
         else:
             term('gpg -d --output /dev/shm/' + shmfolder + '/' + shmentry + ' ' + directory + entryname + '.gpg')
-            with open('/dev/shm/' + shmfolder + '/' + shmentry) as first:
-                lines = first.readlines()
-            with open('/dev/shm/' + shmfolder + '/' + shmentry, 'w') as first:
-                first.writelines(lines[0:3])
-            with open('/dev/shm/' + shmfolder + '/' + shmentry + '-n', 'w') as second:
-                second.writelines(lines[4:-2])
-            term('nano /dev/shm/' + shmfolder + '/' + shmentry + '-n')
-            with open('/dev/shm/' + shmfolder + '/' + shmentry + '-n') as second:
-                notes = second.read()
-            with open('/dev/shm/' + shmfolder + '/' + shmentry, 'a') as first:
-                first.write('\n' + notes + '\n\n')
+            edit_note()
             remove(directory + entryname + '.gpg')
             encrypt()
             term('gpg -d ' + directory + "'" + entryname + '.gpg' + "'")
@@ -714,18 +697,18 @@ if argument == 'gen':
         if entryname.startswith('/'):
             if entryname.replace('/', '', 1).__contains__('/'):
                 folder, sep, folderentry = entryname.replace('/', '', 1).partition('/')
-                with open('/dev/shm/' + shmfolder + '/' + shmentry, 'w') as f:
-                    f.writelines(username + '\n' + passgen + '\n' + url + '\n' + notes + '\n\n')
+                open('/dev/shm/' + shmfolder + '/' + shmentry, 'w').writelines(username + '\n' + passgen + '\n' + url
+                                                                               + '\n' + notes + '\n\n')
                 encryptfolder()
                 term('gpg -d ' + directory + folder + '/' + "'" + folderentry + '.gpg' + "'")
             else:
-                with open('/dev/shm/' + shmfolder + '/' + shmentry, 'w') as f:
-                    f.writelines(username + '\n' + passgen + '\n' + url + '\n' + notes + '\n\n')
+                open('/dev/shm/' + shmfolder + '/' + shmentry, 'w').writelines(username + '\n' + passgen + '\n' + url
+                                                                               + '\n' + notes + '\n\n')
                 encrypt()
                 term('gpg -d ' + directory + "'" + entryname.replace('/', '', 1) + '.gpg' + "'")
         else:
-            with open('/dev/shm/' + shmfolder + '/' + shmentry, 'w') as f:
-                f.writelines(username + '\n' + passgen + '\n' + url + '\n' + notes + '\n\n')
+            open('/dev/shm/' + shmfolder + '/' + shmentry, 'w').writelines(username + '\n' + passgen + '\n' + url
+                                                                           + '\n' + notes + '\n\n')
             encrypt()
             term('gpg -d ' + directory + "'" + entryname + '.gpg' + "'")
     except FileNotFoundError:
@@ -791,6 +774,13 @@ if argument == 'remove' or argument == '-rm':
     print()
     try:
         entryname = str(input('What would you like to delete? '))
+        try:
+            term('gpg -d --output /dev/shm/rpass.lock /var/lib/rpass/lock.gpg')
+            unlocker = open('/dev/shm/rpass.lock', 'r').readlines()
+            remove('/dev/shm/rpass.lock')
+        except FileNotFoundError:
+            print('\nAccess denied.\n')
+            exit()
         if entryname.startswith('/'):
             if entryname.replace('/', '', 1).__contains__('/'):
                 if devicetype == 'c':
@@ -816,12 +806,12 @@ if argument == 'remove' or argument == '-rm':
         print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n')
         exit()
 
-if argument.__contains__('add') or argument.__contains__('-rm') or argument.__contains__('remove') or argument.\
-        __contains__('edit') or argument.__contains__('gen') or argument.__contains__('version') or argument.\
-        __contains__('-v') or argument.__contains__('config') or argument.__contains__('copy') or argument.\
-        __contains__('show') or argument.__contains__('/') or argument == 'sync' or argument == '-s' or argument == '' \
-        or argument == 'help' or argument == '--help' or argument == '-h':
-    null = 'null'
+if argument.__contains__('-rm') or string_found('remove', argument) or string_found('add', argument) or \
+        string_found('edit', argument) or string_found('gen', argument) or string_found('copy', argument) or \
+        string_found('/', argument) or argument == 'sync' or argument == '-s' or argument == '' or argument == 'help' \
+        or argument == '--help' or argument == '-h' or argument == 'version' or argument == '-v' or argument == \
+        'config' or argument == 'show w' or argument == 'show c':
+    pass
 else:
     print('\n!!!!!!!!!!!!!!!')
     print('Argument error!')
@@ -835,8 +825,8 @@ term('find ' + directory + ' -type f -exec chmod -R 600 {} +')
 
 # rsync - ran at end of program to ensure all files are properly synced
 if devicetype == 'c':
-    if argument.__contains__('add') or argument.__contains__('-rm') or argument.__contains__('remove') or argument. \
-            __contains__('edit') or argument.__contains__('gen') or argument == 'sync' or argument == '-s':
+    if argument.__contains__('-rm') or string_found('remove', argument) or string_found('add', argument) or \
+            string_found('edit', argument) or string_found('gen', argument) or argument == 'sync' or argument == '-s':
         print('Syncing entries with other device(s)...\n')
         term('rsync -v -H -r -l -t -p -e ' + '"ssh -i ~/.ssh/rpass -p ' + port + '" ' + directory + ' ' +
              usernamessh + '@' + ip + ':' + directoryssh)
