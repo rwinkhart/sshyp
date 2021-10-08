@@ -11,8 +11,8 @@ depends=( python gnupg openssh rsync nano xclip wl-clipboard)
 
 source_x86_64=('https://github.com/rwinkhart/rpass/releases/download/v"$pkgver"/rpass-"$pkgver".tar.xz')
 source_aarch64=('https://github.com/rwinkhart/rpass/releases/download/v"$pkgver"/rpass-"$pkgver".tar.xz')
-sha512sums_x86_64=('e5dce9b93010b78f451de0e48b5fdc78db15f2475b6aff06e508caebf1be4cc92dfa673f627d7b1b2d4332d856c3e151391245c035ae85d60b4c08297d1d5629')
-sha512sums_aarch64=('e5dce9b93010b78f451de0e48b5fdc78db15f2475b6aff06e508caebf1be4cc92dfa673f627d7b1b2d4332d856c3e151391245c035ae85d60b4c08297d1d5629')
+sha512sums_x86_64=('a1600816cd37fa7055f603dd9fa3f0a4d1f37505083ebb93d30270536f87666718c45bf995c89af6c425af5fcd93bba2ac3df12d83eea6dc3207c4030d55d46b')
+sha512sums_aarch64=('a1600816cd37fa7055f603dd9fa3f0a4d1f37505083ebb93d30270536f87666718c45bf995c89af6c425af5fcd93bba2ac3df12d83eea6dc3207c4030d55d46b')
 
 package() {
 
