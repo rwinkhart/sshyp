@@ -36,7 +36,6 @@ Short-term Goals:
 
 - create new file list w/color and w/o file extensions
 - create a man page
-- allow for multi-line notes
 - overhaul argument system
 - fix lots of bugs!
 
