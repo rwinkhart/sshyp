@@ -4,7 +4,8 @@ rpass 2021.10.07.mr5
 
 The Notetaker Update - Fifth main release of rpass
 
-This release focuses on user-facing polish and usability enhancements.
+This release overhauls the note-taking system and provides general improvements
+to overall code quality, including optimizations, bug fixes, and security improvements.
 
 New features:
 
