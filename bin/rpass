@@ -116,7 +116,7 @@ if argument == 'version' or argument == '-v':
     print('/                                                      /')
     print('/     rpass  Copyright (C) 2021  Randall Winkhart      /')
     print('/                                                      /')
-    print('/               Version 2021.10.07.mr5                 /')
+    print('/              Version 2021.10.12.mr5.1                /')
     print('/                The Notetaker Update                  /')
     print('/                                                      /')
     print('////////////////////////////////////////////////////////\n')
@@ -661,9 +661,9 @@ if argument == 'copy note' or argument == 'copy -n':
         term('gpg -d --output /dev/shm/' + shmfolder + '/' + shmentry + ' ' + directory + readentry + '.gpg')
         copyline = open('/dev/shm/' + shmfolder + '/' + shmentry, 'r').readlines()
         if environ.get('WAYLAND_DISPLAY') == 'wayland-0':
-            term('wl-copy ' + "'" + copyline[3].replace('\n', '') + "'")
+            term('wl-copy ' + "'" + copyline[4].replace('\n', '') + "'")
         else:
-            term('echo -n ' + "'" + copyline[3].replace('\n', '') + "'" + ' | xclip -sel c')
+            term('echo -n ' + "'" + copyline[4].replace('\n', '') + "'" + ' | xclip -sel c')
         rmtree('/dev/shm/' + shmfolder)
     except FileNotFoundError:
         print('\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
