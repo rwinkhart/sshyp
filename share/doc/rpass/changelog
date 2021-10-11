@@ -14,7 +14,7 @@ New features:
 
 Changes:
 
-**fixed an issue with copying notes
+- fixed an issue with copying notes (currently only copies first line, may be changed in the future)
 **fixed an issue with syncing that could cause data loss
 **rpass is validated to work with Python 3.10
 
@@ -22,6 +22,7 @@ Planned for next update (The Beauty Update):
 
 - add new file list w/color and w/o extensions + proper displaying of nested folders
 - ability to pass entries as arguments for more functions
+- entry backup and recovery system, in case a mistake is made with an entry
 - manpage
 - add more comments to code
 
