@@ -1,5 +1,45 @@
 <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 
+rpass 2021.10.12.mr5.1
+
+The Notetaker Update - Patch 1
+
+This release fixes bugs from previous releases and offers new packages of rpass.
+
+New features:
+
+**rpass is now packaged for Termux (basic Android support)
+**rpass is now packaged for Alpine Linux
+**custom SSH keys are now properly supported
+
+Changes:
+
+**fixed an issue with copying notes
+**fixed an issue with syncing that could cause data loss
+**rpass is validated to work with Python 3.10
+
+Planned for next update (The Beauty Update):
+
+- add new file list w/color and w/o extensions + proper displaying of nested folders
+- ability to pass entries as arguments for more functions
+- manpage
+- add more comments to code
+
+Planned for next update (The Optimus Update):
+
+- add an entry name masking system
+- modularize and shrink rpass code as much as possible
+- shrink rpass package size as much as possible
+
+Planned, no timeline:
+
+- create separate gui frontend targetting mobile devices (first Android + Linux phones - official iOS client not likely)
+    ^ the gui will also function on desktop linux
+- make platform agnostic (add Windows support and package for more Linux distributions, such as Debian and Fedora)
+- auto-completion on tab (currently unsure of best way to make this work)
+
+<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+
 rpass 2021.10.07.mr5
 
 The Notetaker Update - Fifth main release of rpass
