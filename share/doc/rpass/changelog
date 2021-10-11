@@ -4,7 +4,7 @@ rpass 2021.10.12.mr5.1
 
 The Notetaker Update - Patch 1
 
-This release fixes bugs from previous releases and offers new packages of rpass.
+This release fixes major bugs from previous releases and offers new packages of rpass.
 
 New features:
 
@@ -16,7 +16,12 @@ Changes:
 
 - fixed an issue with copying notes (currently only copies first line, may be changed in the future)
 **fixed an issue with syncing that could cause data loss
-**rpass is validated to work with Python 3.10
+    ^ This issue has been in rpass (undiagnosed) since rsync support was first introduced -
+    the solution involved dropping rsync and switching to sftp.
+    This change should have no user-facing impact and is overall a net positive,
+    as rsync is no longer a dependency and the data loss bug is now fixed.
+    Time to rename rpass!
+- rpass is validated to work with Python 3.10
 
 Planned for next update (The Beauty Update):
 
