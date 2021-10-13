@@ -1,27 +1,33 @@
 <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 
-rpass 2021.10.12.mr5.1
+rpass 2021.10.13.mr5.1
 
-The Notetaker Update - Patch 1
+The Notetaker Update - (Mega) Patch 1
 
-This release fixes major bugs from previous releases and offers new packages of rpass.
+This release fixes major bugs from previous releases.
+This includes a complete overhaul of the entry syncing system.
 
 New features:
 
-**rpass is now packaged for Termux (basic Android support)
-**rpass is now packaged for Alpine Linux
-**custom SSH keys are now properly supported
+- none!
 
 Changes:
 
-- fixed an issue with copying notes (currently only copies first line, may be changed in the future)
-**fixed an issue with syncing that could cause data loss
+- fixed an issue with copying notes (currently only copies first line, will be changed in the future)
+** fixed an issue with syncing that could cause data loss
     ^ This issue has been in rpass (undiagnosed) since rsync support was first introduced -
     the solution involved dropping rsync and switching to sftp.
     This change should have no user-facing impact and is overall a net positive,
     as rsync is no longer a dependency and the data loss bug is now fixed.
     Time to rename rpass!
-- rpass is validated to work with Python 3.10
+- rpass is validated to work with Python 3.10 (no changes were needed)
+
+Planned for next update (Patch mr5.2)
+
+**package for Termux (basic Android support)
+**package for Alpine Linux
+**re-add support for custom directories and custom ssh keys
+**adjust copy note feature to copy all lines
 
 Planned for next update (The Beauty Update):
 
@@ -36,6 +42,7 @@ Planned for next update (The Optimus Update):
 - add an entry name masking system
 - modularize and shrink rpass code as much as possible
 - shrink rpass package size as much as possible
+    ^ run question modules in file write commands to return values
 
 Planned, no timeline:
 

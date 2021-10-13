@@ -1,8 +1,9 @@
 #!/usr/bin/python3
 
-# internal modules
+# external modules
 
-from os import system
+import sshync
+from os import system as term
 from os import remove
 from os import environ
 from shutil import move
@@ -14,14 +15,10 @@ import random
 import string
 
 
-# custom modules
+# internal modules
 
 def clear():
     print('\n' * 100)
-
-
-def term(cmd):
-    _ = system(cmd)
 
 
 def string_found(string1, string2):
@@ -116,7 +113,7 @@ if argument == 'version' or argument == '-v':
     print('/                                                      /')
     print('/     rpass  Copyright (C) 2021  Randall Winkhart      /')
     print('/                                                      /')
-    print('/              Version 2021.10.12.mr5.1                /')
+    print('/              Version 2021.10.13.mr5.1                /')
     print('/                The Notetaker Update                  /')
     print('/                                                      /')
     print('////////////////////////////////////////////////////////\n')
@@ -141,17 +138,9 @@ if argument == 'show c':
 if argument == 'config':
     try:
         print()
-        directorychoice = str(input('Would you like to use the default entry directory (~/.rpass-store/)? (Y/n) '))
-        if directorychoice == 'n' or directorychoice == 'N':
-            print('\nFormat: /this/path/ends/with/a/slash/\n')
-            directory = str(input('Please input a custom directory: '))
-            open("/var/lib/rpass/rpass-dir", 'w').write(directory + '\n')
-        else:
-            open("/var/lib/rpass/rpass-dir", 'w').write('/home/' + environ.get('USER') + '/.rpass-store/' + '\n')
-        print()
         devicetype = str(input('Will this be a client, server, or offline device? (C/s/o) '))
         if devicetype == 's' or devicetype == 'S':
-            open("/var/lib/rpass/rpass-ssh", 'w').write('\n\n\n\n' + devicetype)
+            open("/var/lib/rpass/rpass-device", 'w').write(devicetype)
             print('\nMake sure the ssh service is running and properly configured.\n')
             print('Configuration complete!\n')
         else:
@@ -182,7 +171,7 @@ if argument == 'config':
             term('gpg -r ' + str(gpgid) + ' -e ' + '/var/lib/rpass/lock')
             remove('/var/lib/rpass/lock')
         if devicetype == 'o' or devicetype == 'O':
-            open("/var/lib/rpass/rpass-ssh", 'w').write('\n\n\n\n' + devicetype)
+            open("/var/lib/rpass/rpass-device", 'w').write(devicetype)
             print('\nConfiguration complete!\n')
         elif devicetype != 's' and devicetype != 'S':
             devicetype = 'c'
@@ -203,8 +192,11 @@ if argument == 'config':
                 directoryssh = str(input('What directory is the server using?: '))
             else:
                 directoryssh = ('/home/' + usernamessh + '/.rpass-store/')
-            open("/var/lib/rpass/rpass-ssh", 'w').write(usernamessh + '\n' + ip + '\n' + port + '\n' + directoryssh +
-                                                        '\n' + devicetype)
+            open("/var/lib/rpass/rpass-device", 'w').write(devicetype)
+            sshync.make_sentinel_profile('/var/lib/rpass/rpass.sshync', '/home/' + environ.get('USER') +
+                                         '/.rpass-store/', directoryssh, '/home/' + environ.get('USER') +
+                                         '/.ssh/rpass', ip, port, usernamessh, '/var/lib/rpass/mod_time',
+                                         '/home/nixon/mod_time')
             print('\nConfiguration complete!\n')
     except KeyboardInterrupt:
         print('\n\nConfiguration cancelled.\n')
@@ -220,23 +212,20 @@ if argument == '':
 # import userdata
 
 try:
-    sshinfo = open("/var/lib/rpass/rpass-ssh").readlines()
+    devicetype = open('/var/lib/rpass/rpass-device').read().strip()
+    gpgid = open("/var/lib/rpass/rpass-gpg").read().strip()
+    sshinfo = sshync.get_profile('/var/lib/rpass/rpass.sshync')
     usernamessh = sshinfo[0].replace('\n', '')
     ip = sshinfo[1].replace('\n', '')
     port = sshinfo[2].replace('\n', '')
-    directoryssh = sshinfo[3].replace('\n', '')
-    devicetype = sshinfo[4].replace('\n', '')
-except (FileNotFoundError, IndexError):
-    usernamessh, ip, port, directoryssh, devicetype = (0, 0, 0, 0, 0)
-directory = ''
-try:
-    gpgid = open("/var/lib/rpass/rpass-gpg").read().strip()
-    directory = open("/var/lib/rpass/rpass-dir").read().strip()
+    directory = str(sshinfo[3].replace('\n', ''))
+    directoryssh = sshinfo[4].replace('\n', '')
     term('mkdir -p ' + directory)
 except FileNotFoundError:
     print('\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
     print("Not all necessary configuration files are present. Please run 'rpass config'!")
     print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n')
+    devicetype, sshinfo, directory, directoryssh, ip, port, usernamessh = [0, 0, 0, 0, 0, 0, 0]
     exit()
 
 # no argument
@@ -305,6 +294,7 @@ if argument == 'add note' or argument == 'add -n':
         print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n')
         rmtree('/dev/shm/' + shmfolder)
         exit()
+    open("/var/lib/rpass/mod_time", 'w').write('add')
 
 if argument == 'add password' or argument == 'add -p':
     try:
@@ -348,10 +338,12 @@ if argument == 'add password' or argument == 'add -p':
         print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n')
         rmtree('/dev/shm/' + shmfolder)
         exit()
+    open("/var/lib/rpass/mod_time", 'w').write('add')
 
 if argument == 'add folder' or argument == 'add -f':
     newfolder = str(input('Name of new folder: '))
     term('mkdir ' + "'" + directory + newfolder + "'")
+    open("/var/lib/rpass/mod_time", 'w').write('add')
 
 # edit
 
@@ -389,6 +381,7 @@ if argument == 'edit rename' or argument == 'edit relocate' or argument == 'edit
         print('The file you requested to edit does not exist!')
         print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n')
         exit()
+    open("/var/lib/rpass/mod_time", 'w').write('edit')
 
 if argument == 'edit username' or argument == 'edit -u':
     try:
@@ -431,6 +424,7 @@ if argument == 'edit username' or argument == 'edit -u':
         print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n')
         rmtree('/dev/shm/' + shmfolder)
         exit()
+    open("/var/lib/rpass/mod_time", 'w').write('edit')
 
 if argument == 'edit password' or argument == 'edit -p':
     try:
@@ -473,6 +467,7 @@ if argument == 'edit password' or argument == 'edit -p':
         print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n')
         rmtree('/dev/shm/' + shmfolder)
         exit()
+    open("/var/lib/rpass/mod_time", 'w').write('edit')
 
 if argument == 'edit url' or argument == 'edit -l':
     try:
@@ -515,6 +510,7 @@ if argument == 'edit url' or argument == 'edit -l':
         print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n')
         rmtree('/dev/shm/' + shmfolder)
         exit()
+    open("/var/lib/rpass/mod_time", 'w').write('edit')
 
 if argument == 'edit note' or argument == 'edit -n':
     try:
@@ -556,6 +552,7 @@ if argument == 'edit note' or argument == 'edit -n':
         print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n')
         rmtree('/dev/shm/' + shmfolder)
         exit()
+    open("/var/lib/rpass/mod_time", 'w').write('edit')
 
 # copy
 
@@ -593,6 +590,7 @@ if argument == 'copy username' or argument == 'copy -u':
         print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n')
         rmtree('/dev/shm/' + shmfolder)
         exit()
+    open("/var/lib/rpass/mod_time", 'w').write('copy')
 
 if argument == 'copy password' or argument == 'copy -p':
     try:
@@ -619,6 +617,7 @@ if argument == 'copy password' or argument == 'copy -p':
         print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n')
         rmtree('/dev/shm/' + shmfolder)
         exit()
+    open("/var/lib/rpass/mod_time", 'w').write('copy')
 
 if argument == 'copy url' or argument == 'copy -l':
     try:
@@ -645,6 +644,7 @@ if argument == 'copy url' or argument == 'copy -l':
         print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n')
         rmtree('/dev/shm/' + shmfolder)
         exit()
+    open("/var/lib/rpass/mod_time", 'w').write('copy')
 
 if argument == 'copy note' or argument == 'copy -n':
     try:
@@ -671,6 +671,7 @@ if argument == 'copy note' or argument == 'copy -n':
         print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n')
         rmtree('/dev/shm/' + shmfolder)
         exit()
+    open("/var/lib/rpass/mod_time", 'w').write('copy')
 
 # gen
 
@@ -717,6 +718,7 @@ if argument == 'gen':
         print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n')
         rmtree('/dev/shm/' + shmfolder)
         exit()
+    open("/var/lib/rpass/mod_time", 'w').write('gen')
 
 if argument == 'gen update' or argument == 'gen -u':
     try:
@@ -765,6 +767,7 @@ if argument == 'gen update' or argument == 'gen -u':
         print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n')
         rmtree('/dev/shm/' + shmfolder)
         exit()
+    open("/var/lib/rpass/mod_time", 'w').write('gen')
 
 # remove
 
@@ -805,6 +808,7 @@ if argument == 'remove' or argument == '-rm':
         print('The file you requested to delete does not exist!')
         print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n')
         exit()
+    open("/var/lib/rpass/mod_time", 'w').write('rm')
 
 if argument.__contains__('-rm') or string_found('remove', argument) or string_found('add', argument) or \
         string_found('edit', argument) or string_found('gen', argument) or string_found('copy', argument) or \
@@ -828,7 +832,4 @@ if devicetype == 'c':
     if argument.__contains__('-rm') or string_found('remove', argument) or string_found('add', argument) or \
             string_found('edit', argument) or string_found('gen', argument) or argument == 'sync' or argument == '-s':
         print('Syncing entries with other device(s)...\n')
-        term('rsync -v -H -r -l -t -p -e ' + '"ssh -i ~/.ssh/rpass -p ' + port + '" ' + directory + ' ' +
-             usernamessh + '@' + ip + ':' + directoryssh)
-        term('rsync -v -H -r -l -t -p --delete -e ' + '"ssh -i ~/.ssh/rpass -p ' + port + '" ' + usernamessh
-             + '@' + ip + ':' + directoryssh + ' ' + directory)
+        sshync.run_profile('/var/lib/rpass/rpass.sshync')
