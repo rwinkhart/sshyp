@@ -1,3 +1,6 @@
+# NOTE
+In the coming days, "rpass" will be renamed to "sshyp" and re-launched, starting with a new, custom syncing system (called sshync) based on sftp (rsync support is being abandoned, hence the project rename). "rpass" will recieve one more update to fix up the note copying feature, but after this patch, all efforts will be on "sshyp". "sshyp" will feature more reliable syncing (almost ready), a newly themed CLI interface, and a re-write of lots of the "rpass" code.
+
 # rpass
 A very simple password manager with rsync integration - alternative to GNU pass
 

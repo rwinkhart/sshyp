@@ -113,7 +113,7 @@ if argument == 'version' or argument == '-v':
     print('/                                                      /')
     print('/     rpass  Copyright (C) 2021  Randall Winkhart      /')
     print('/                                                      /')
-    print('/              Version 2021.10.13.mr5.1                /')
+    print('/              Version 2021.10.18.mr5.1                /')
     print('/                The Notetaker Update                  /')
     print('/                                                      /')
     print('////////////////////////////////////////////////////////\n')
@@ -193,10 +193,8 @@ if argument == 'config':
             else:
                 directoryssh = ('/home/' + usernamessh + '/.rpass-store/')
             open("/var/lib/rpass/rpass-device", 'w').write(devicetype)
-            sshync.make_sentinel_profile('/var/lib/rpass/rpass.sshync', '/home/' + environ.get('USER') +
-                                         '/.rpass-store/', directoryssh, '/home/' + environ.get('USER') +
-                                         '/.ssh/rpass', ip, port, usernamessh, '/var/lib/rpass/mod_time',
-                                         '/home/nixon/mod_time')
+            sshync.make_profile('/var/lib/rpass/rpass.sshync', '/home/' + environ.get('USER') + '/.rpass-store/',
+                                directoryssh, '/home/' + environ.get('USER') + '/.ssh/rpass', ip, port, usernamessh)
             print('\nConfiguration complete!\n')
     except KeyboardInterrupt:
         print('\n\nConfiguration cancelled.\n')
