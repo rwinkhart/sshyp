@@ -1,12 +1,12 @@
 #!/usr/bin/python3
 
 # Main Targets:
-# TODO allow proper uploading of files (currently broken)
-# TODO Truncate mod times for sftp compatibility
 # TODO Make it so that when a new folder is created in sshyp, it is automatically created on the remote server
 # TODO Replace references to rpass/sshyp directory with a changeable variable
+# TODO Clean everything up and move sshync to a separate package
+# TODO Add dry run support
 
-# sshync 2021.10.27.unreleased2
+# sshync 2021.11.01.unreleased3
 # sshync was created to solve a problem with rpass/sshyp, and as such, sshync will be bundled with sshyp until it is
 # polished enough for a standalone release
 
@@ -60,9 +60,11 @@ def get_file_paths_mod_remote(profile_dir):
          "\"'\"" + remote_dir + "/\"'\", " + "\"'\"/var/lib/rpass/sshyncdatabase_names\"'\", " +
          "\"'\"/var/lib/rpass/sshyncdatabase_times\"'\")\'\"")
     term(
-        'sftp -P ' + port + ' ' + user + '@' + ip + ':/var/lib/rpass/sshyncdatabase_names ' + '/var/lib/rpass/sshyncdatabase_names')
+        'sftp -P ' + port + ' ' + user + '@' + ip + ':/var/lib/rpass/sshyncdatabase_names ' +
+        '/var/lib/rpass/sshyncdatabase_names')
     term(
-        'sftp -P ' + port + ' ' + user + '@' + ip + ':/var/lib/rpass/sshyncdatabase_times ' + '/var/lib/rpass/sshyncdatabase_times')
+        'sftp -P ' + port + ' ' + user + '@' + ip + ':/var/lib/rpass/sshyncdatabase_times ' +
+        '/var/lib/rpass/sshyncdatabase_times')
     remote_mod_names = (open('/var/lib/rpass/sshyncdatabase_names').read()).replace('[', '').replace(']', '').replace(
         ' ', '').replace("'", '').split(',')
     remote_mod_times = (open('/var/lib/rpass/sshyncdatabase_times').read()).replace('[', '').replace(']', '').replace(
@@ -109,6 +111,16 @@ def time_sort(old_names, new_names, old_times):
     return remote_mod_times_new
 
 
+getter_loop_count = -1
+
+
+def loop_getter(split_remote_dir):
+    global getter_loop_count
+    getter_loop_count += 1
+    new_var = split_remote_dir[getter_loop_count] + '/'
+    return new_var
+
+
 def run_profile(profile_dir):
     # import profile data
     profile_data = get_profile(profile_dir)
@@ -145,7 +157,20 @@ def run_profile(profile_dir):
             matching_times_local.append(local_mod_times[i])
         else:
             print('Uploading ' + lshort)
-            term('sftp -p -P ' + port + ' ' + user + '@' + ip + ':' + remote_dir + lshort.replace('/', '', 1) + " <<< $'put " + local_dir + lshort.replace('/', '', 1) + "'")
+            lshort_split = lshort.replace('/', '', 1).split('/')
+
+            c = -1
+            for _ in lshort_split:
+                c += 1
+
+            global getter_loop_count
+            getter_loop_count = -1
+            q = ''
+            for _ in range(c):
+                q += loop_getter(lshort_split)
+
+            term('sftp -p -i ' + "'" + identity + "' " + '-P ' + port + ' ' + user + '@' + ip + ':' + remote_dir + q +
+                 " <<< $'put " + local_dir + lshort.replace('/', '', 1) + "'")
     i = -1
     for rshort in rmod_short:
         i += 1
@@ -153,18 +178,31 @@ def run_profile(profile_dir):
             matching_times_remote.append(float(remote_mod_times[i]))
         else:
             print('Downloading ' + rshort)
-            term('sftp -p -P ' + port + ' ' + user + '@' + ip + ':' + remote_dir + rshort.replace('/', '', 1) + ' ' + local_dir + rshort.replace('/', '', 1))
+            term('sftp -p -i ' + "'" + identity + "' " + '-P ' + port + ' ' + user + '@' + ip + ':' + remote_dir +
+                 rshort.replace('/', '', 1) + ' ' + local_dir + rshort.replace('/', '', 1))
     i = -1
     for ltime in matching_times_local:
         i += 1
-        if float(ltime) == matching_times_remote[i]:
+        ltime = int(ltime)
+        if ltime == int(matching_times_remote[i]):
             print('Local ' + matching_names[i] + ' is up to date, not syncing.')
-        elif float(ltime) > matching_times_remote[i]:
+        elif ltime > int(matching_times_remote[i]):
             print('Local ' + matching_names[i] + ' is newer, uploading.')
-            # TODO SYNC UPLOAD lmod
-        elif float(ltime) < matching_times_remote[i]:
+            matching_names_split = matching_names[i].replace('/', '', 1).split('/')
+
+            c = -1
+            for _ in matching_names_split:
+                c += 1
+
+            getter_loop_count = -1
+            q = ''
+            for _ in range(c):
+                q += loop_getter(matching_names_split)
+
+            term('sftp -p -i ' + "'" + identity + "' " + '-P ' + port + ' ' + user + '@' + ip + ':' + remote_dir + q +
+                 " <<< $'put " + local_dir + matching_names[i].replace('/', '', 1) + "'")
+
+        elif ltime < int(matching_times_remote[i]):
             print('Local ' + matching_names[i] + ' is older, downloading.')
-            # TODO SYNC DOWNLOAD rmod
-
-
-run_profile('/var/lib/rpass/rpass.sshync')
+            term('sftp -p -i ' + "'" + identity + "' " + '-P ' + port + ' ' + user + '@' + ip + ':' + remote_dir +
+                 matching_names[i].replace('/', '', 1) + ' ' + local_dir + matching_names[i].replace('/', '', 1))
