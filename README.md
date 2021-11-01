@@ -7,6 +7,8 @@ sshyp aims to make it as simple as possible to manage passwords and notes via CL
 # Installation
 Arch Linux (x86_64, aarch64)
 
+Note: currently unavailable in the AUR (the older version, "rpass", will remain available until sshyp is stable)
+
 sshyp releases are available in the Arch User Repository as 'sshyp'.
 
 Install with your preferred AUR helper or use:

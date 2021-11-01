@@ -1,258 +1,46 @@
-<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+sshyp 2021.11.01.fr1
 
-rpass 2021.11.01.mr5.1
+First public release of sshyp.
 
-The Notetaker Update - Patch 1
-
-This is the FINAL release of "rpass".
-After this release, the project will be rebranded as "sshyp".
-
-rpass's syncing system is fundamentally broken, hence the need for "sshyp"
-and its new syncing system. I would highly advise against using this release.
+This release fixes major bugs from rpass and rebrands the project.
 
 New features:
 
-- none
+- an entirely new syncing back-end called sshync (custom Python wrapper around sftp)
+    ^ in thoery, all syncing-related data loss should now be fixed, however, this new
+    system has just been created and is still under testing. Maybe wait for a few patches
+    before trusting this system.
 
 Changes:
 
-- fixed an issue with copying notes (currently only copies first line, will be changed in the future)
-- rpass is validated to work with Python 3.10 (no changes were needed)
+- branding has been updated to reflect new project name and goals
 
-Planned for next update (sshyp fr1)
+Planned for next update (The Fluffy Update):
 
-- full project rebrand ("sshyp")
-- new syncing back-end
+- modularized and optimized code
+    ^ some older, bad code from "rpass" will be re-written.
+- new visual features
+    ^ this includes the new file list and thematic text art. sshyp will be
+    getting a retro computing theme.
+- packages for more environments
+    ^ "sshyp" will be officially packaged for Arch Linux, Alpine Linux, and Termux (Android).
+    Debian/Ubuntu and Fedora packaging will come later.
 
-<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+Planned for next update (The Sheep w/Shears Update):
 
-rpass 2021.10.07.mr5
-
-The Notetaker Update - Fifth main release of rpass
-
-This release overhauls the note-taking system and provides general improvements
-to overall code quality, including optimizations, bug fixes, and security improvements.
-
-New features:
-
-- notes are now edited in nano and can be split across multiple lines
-- password confirmation has been added for entry deletion
-
-Changes:
-
-- fixed issues with copying passwords with certain special characters, e.g. '"()|
-- auto-generated ssh key now uses ed25519, rather than rsa-3072
-- entry format modified to include a blank line before the notes field (old format still mostly compatible)
-- rpass is now much better at catching bad arguments
-- some general code cleanup
-
-Planned for next update (The Housekeeping Update Pt. 2):
-
-- add new file list w/color and w/o extensions + proper displaying of nested folders
+- allow for copying entire notes (not just first line)
+- allow for multi-client deletion... somehow
 - ability to pass entries as arguments for more functions
+- detatch sshync and make it a separate package
 - manpage
-- add more comments to code
-- validate for Python 3.10
-
-Planned for next update (The cryptpass Update):
-
-- initial implementation of a data store for other applications (libsecret alt.)
-- modularize code in preparation for GUI frontends 
 
 Planned, no timeline:
 
-- create separate gui frontend targetting mobile devices (first Linux phones, maybe Android at a later date - official iOS client not likely)
+- create separate gui frontend targetting mobile devices (first Android + Linux phones - official iOS client not likely)
     ^ the gui will also function on desktop linux
-- make platform agnostic (add Windows support and package for more Linux distributions, such as Alpine and Debian)
+- make platform agnostic (add Windows support and package for more Linux distributions, such as Debian and Fedora)
 - auto-completion on tab (currently unsure of best way to make this work)
 
 <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 
-rpass 2021.09.15.mr4.2
-
-The Housekeeping Update (Pt. 1) - Hotfix 2
-
-Changes:
-
-- sync support is fixed
-- files with spaces in their names can now be properly deleted from remote servers
-
-<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
-
-rpass 2021.09.15.mr4.1
-
-The Housekeeping Update (Pt. 1) - Hotfix
-
-Changes:
-
-- the user is once again properly presented with a prompt to enter a gpg key when pressing enter through the config dialog
-
-<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
-
-rpass-2021.09.15.mr4
-
-The Housekeeping Update (Pt. 1) - Fourth main release of rpass
-
-This release focuses primarily on polishing rpass and tying up loose ends before
-making any major changes in the future.
-
-New features:
-
-- added clipboard support for copying entry information
-- many common errors are now handled with proper exceptions
-- offline support (sync no longer needs to be configured for rpass to function)
-
-Changes:
-
-- fixed gpg decryption warnings
-- added version info argument
-- re-ordered config wizard to make more sense
-- entry deletion can now be done client-side
-- removed rsyncup/rsyncdown/username/ip/port/directoryssh files,
-    ^ replaced with one file that holds usernamessh, ip, port, directoryssh, and devicetype
-- files should no longer be left in /dev/shm when an error is encountered
-- fixed issues relating to using a non-default entry directory
-- lots of optimizations have been made to reduce the size of rpass
-
-Planned for next update (The Housekeeping Update Pt. 2):
-
-- a clean, colorful entry list w/o file extensions
-- manpage
-- multi-line notes
-- commented the code
-- ability to pass entries as arguments for more functions
-- improve exceptions for unknown arguments
-
-Planned, no timeline:
-
-- possible libsecret integration
-- create separate gui frontend targetting mobile devices (first Linux phones, maybe Android at a later date - official iOS client not likely)
-    ^ the gui will also function on desktop linux
-- make platform agnostic (add Windows support and package for more Linux distributions)
-- auto-completion on tab (currently unsure of best way to make this work)
-
-<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
-
-rpass 2021.09.07.pr3.1
-
-The Sync and Foundations Update - Hotfix
-
-Changes:
-
-- gpg configuration now prompts for expiration, rather than defaulting to two years
-- rsync is now configured to not delete anything from any remote device when uploading
-    ^ this behavior may be modified in the future - this is a quick fix to prevent data loss
-
-<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
-
-rpass 2021.09.07.pr3
-
-The Sync and Foundations Update - Third public release of rpass.
-
-As of this version, rpass has its intended base set of features and is considered usable.
-It will now primarily recieve bug fixes and polish updates to prepare it to go
-cross-platform and to make it compatible with GUI frontends.
-
-New features:
-
-- rsync support!
-- new entry format with URL field (for future use)
-- the temporary directory (/dev/shm) for editing entries has been somewhat secured
-
-Changes:
-
-- 'rpass edit relocate' is now properly bound
-- dropped the use of 'echo'
-- added 'rsync' and 'openssh' as dependencies
-- fixed a bug with deleting entries from folders
-- entry directory now has more secure permissions
-        ^ these permissions are re-enforced every time rpass is used
-- fixed some small typos and potential bugs, made some small optimizations
-
-Planned for next update (The Housekeeping Update):
-
-- move to github
-- get rid of gpg decryption warnings
-- proper error messages using 'except'
-- add exceptions for unknown arguments
-- cleanup file list by exporting to document and removing .gpg, adding color
-- add a manpage
-- allow notes to be multiple lines long (break lines after so many characters)
-- validate for Python 3.10
-- properly comment the code
-
-Planned, no timeline:
-
-- allow to function as alternative to gnome keyring (libsecret integration)
-- create separate gui frontend targetting mobile devices (first linux phones, maybe android at a later date - official iOS client not likely)
-    ^ the gui will also function on desktop linux
-- make platform agnostic (add windows support and package for more Linux distributions)
-- ability to pass entries as arguments for more functions
-- auto-completion on tab (currently unsure of best way to make this work)
-
-<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
-
-rpass 2021.09.02.pr2
-
-The Folder Update - Second public release of rpass.
-
-New features:
-
-- entry and folder titles can now have spaces and be as long as you want
-- entires and folders can now be deleted with 'rpass remove' or 'rpass -rm'
-- entries now properly save to folders via 'rpass add' and should no longer throw errors
-- entries saved in folders are now readable
-- existing entries can now be moved to, from, and between folders
-- previews are now shown after creating or editing an entry
-
-Changes:
-
-- every pre-existing function of rpass has been updated to work with the new folder system
-- dropped awk as a dependency
-- removed 'argument' file in /var/lib/rpass
-- reduced unneccessary characters in argument parsing to decrease compatibility issues
-- ensured all user input is handled correctly as a string or an integer
-- lots of miscellaneous optimizations
-
-Expected for next update (The rsync Update):
-
-- rsync (over ssh) support!
-    ^ including any fixes, changes, or optimizations necessary to make that happen
-- new file formatting with support for URLs
-    ^all entries created in new format should be compatible with future versions of rpass
-- secure /dev/shm with random text generator
-
-Expected for the next (next) update (The Housekeeping Update)
-
-- get rid of gpg decryption warnings
-- proper error messages using 'except'
-- add exceptions for unknown arguments
-- cleanup file list by exporting to document and removing .gpg, adding color
-
-Planned, no timeline:
-
-- make platform agnostic (basically, add windows support)
-- create separate gui frontend targetting mobile devices (first linux phones, android at a later date)
-    ^ the gui will also function on desktop linux
-- ability to pass entries as arguments for more functions
-- auto-completion on tab
-
-<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
-
-rpass 2021.09.01.pr1.1
-
-First public release of rpass.
-
-Early build, missing critical features (e.g. sync support and the ability to have spaces in filenames).
-
-What is currently functional:
-
-- guided configuration wizard
-- generate passwords
-- add existing passwords
-- make notes
-- sort notes and passwords into folders
-- gpg encryption
-- edit password/note entries
-
-<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+Future changelogs will include a link to the complete history of patches across rpass and sshyp.
