@@ -43,4 +43,5 @@ Planned, no timeline:
 
 <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 
-Future changelogs will include a link to the complete history of patches across rpass and sshyp.
+The full history of changes to "sshyp" and "rpass" can be found on the following page:
+https://raw.githubusercontent.com/rwinkhart/sshyp/main/extra/changelog-total
