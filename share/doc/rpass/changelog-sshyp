@@ -28,6 +28,7 @@ Planned for next update (The Fluffy Update):
 
 Planned for next update (The Sheep w/Shears Update):
 
+- allow for copying entire notes (not just first line)
 - allow for multi-client deletion... somehow
 - ability to pass entries as arguments for more functions
 - detatch sshync and make it a separate package

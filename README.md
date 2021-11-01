@@ -1,19 +1,19 @@
-# NOTE
-In the coming days, "rpass" will be renamed to "sshyp" and re-launched, starting with a new, custom syncing system (called sshync) based on sftp (rsync support is being abandoned, hence the project rename). "rpass" will recieve one more update to fix up the note copying feature, but after this patch, all efforts will be on "sshyp". "sshyp" will feature more reliable syncing (almost ready), a newly themed CLI interface, and a re-write of lots of the "rpass" code.
+# sshyp
+A very simple self-hosted, synchronized password manager. Alternative to GNU pass.
 
-# rpass
-A very simple password manager with rsync integration - alternative to GNU pass
+# Mission Statement
+sshyp aims to make it as simple as possible to manage passwords and notes via CLI across multiple devices in a self-hosted fashion.
 
 # Installation
 Arch Linux (x86_64, aarch64)
 
-rpass releases are available in the Arch User Repository as 'rpass'.
+sshyp releases are available in the Arch User Repository as 'sshyp'.
 
 Install with your preferred AUR helper or use:
 
 ```
-git clone https://aur.archlinux.org/rpass.git 
-cd rpass
+git clone https://aur.archlinux.org/sshyp.git
+cd sshyp
 makepkg -si
 ```
 
@@ -23,7 +23,7 @@ Packaging for other distributions coming soon.
 Upon initial installation, be sure to run:
 
 ```
-rpass config
+sshyp config
 ```
 
 This command will allow you to configure the settings necessary for rpass to function.
@@ -32,16 +32,16 @@ As of right now, rpass is rapidly changing, and as such, it is a good idea to ru
 All available options can be found with:
 
 ```
-rpass --help
+sshyp --help
 ```
 
 # Roadmap
 Short-term Goals:
 
+- re-write bad, leftover "rpass" code
 - create new file list w/color and w/o file extensions
 - create a man page
 - overhaul argument system
-- add a system to mask names of entries from other programs/users
 - fix lots of bugs!
 - make lots of optimizations!
 
@@ -52,4 +52,4 @@ Medium-term Goals:
 
 Long-term Goals:
 
-- world domination
+- seize the thrones, shear the humans

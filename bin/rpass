@@ -69,7 +69,7 @@ def encryptfolder():
 # argument - filter the argument to usable text
 
 argument = str(argv).replace('[', '', 1).replace(']', '', 1).replace(',', '').replace("'", '') \
-    .replace(' ', '', 1)
+    .replace(' ', '', 1).replace('/usr/bin/', '', 1).replace('rpass', '', 1)
 
 # help
 
