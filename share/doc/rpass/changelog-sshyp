@@ -1,0 +1,45 @@
+sshyp 2021.11.01.fr1
+
+First public release of sshyp.
+
+This release fixes major bugs from rpass and rebrands the project.
+
+New features:
+
+- an entirely new syncing back-end called sshync (custom Python wrapper around sftp)
+    ^ in thoery, all syncing-related data loss should now be fixed, however, this new
+    system has just been created and is still under testing. Maybe wait for a few patches
+    before trusting this system.
+
+Changes:
+
+- branding has been updated to reflect new project name and goals
+
+Planned for next update (The Fluffy Update):
+
+- modularized and optimized code
+    ^ some older, bad code from "rpass" will be re-written.
+- new visual features
+    ^ this includes the new file list and thematic text art. sshyp will be
+    getting a retro computing theme.
+- packages for more environments
+    ^ "sshyp" will be officially packaged for Arch Linux, Alpine Linux, and Termux (Android).
+    Debian/Ubuntu and Fedora packaging will come later.
+
+Planned for next update (The Sheep w/Shears Update):
+
+- allow for multi-client deletion... somehow
+- ability to pass entries as arguments for more functions
+- detatch sshync and make it a separate package
+- manpage
+
+Planned, no timeline:
+
+- create separate gui frontend targetting mobile devices (first Android + Linux phones - official iOS client not likely)
+    ^ the gui will also function on desktop linux
+- make platform agnostic (add Windows support and package for more Linux distributions, such as Debian and Fedora)
+- auto-completion on tab (currently unsure of best way to make this work)
+
+<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+
+Future changelogs will include a link to the complete history of patches across rpass and sshyp.
