@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 
-# internal modules
+# external modules
 
-from os import system
+from os import system as term
 from os import remove
 from os import environ
 from shutil import move
@@ -12,16 +12,13 @@ from re import search
 from re import escape
 import random
 import string
+import sshync
 
 
-# custom modules
+# internal modules
 
 def clear():
     print('\n' * 100)
-
-
-def term(cmd):
-    _ = system(cmd)
 
 
 def string_found(string1, string2):
@@ -69,7 +66,7 @@ def encryptfolder():
 # argument - filter the argument to usable text
 
 argument = str(argv).replace('[', '', 1).replace(']', '', 1).replace(',', '').replace("'", '') \
-    .replace(' ', '', 1).replace('/usr/bin/', '', 1).replace('sshyp', '', 1).replace('./', '', 1).replace('.py', '', 1)
+    .replace(' ', '', 1).replace('/usr/bin/', '', 1).replace('sshyp', '', 1)
 
 # help
 
@@ -141,17 +138,9 @@ if argument == 'show c':
 if argument == 'config':
     try:
         print()
-        directorychoice = str(input('Would you like to use the default entry directory (~/.password-pasture/)? (Y/n) '))
-        if directorychoice == 'n' or directorychoice == 'N':
-            print('\nFormat: /this/path/ends/with/a/slash/\n')
-            directory = str(input('Please input a custom directory: '))
-            open("/var/lib/sshyp/sshyp-dir", 'w').write(directory + '\n')
-        else:
-            open("/var/lib/sshyp/sshyp-dir", 'w').write('/home/' + environ.get('USER') + '/.password-pasture/' + '\n')
-        print()
         devicetype = str(input('Will this be a client, server, or offline device? (C/s/o) '))
         if devicetype == 's' or devicetype == 'S':
-            open("/var/lib/sshyp/sshyp-ssh", 'w').write('\n\n\n\n' + devicetype)
+            open("/var/lib/sshyp/sshyp-device", 'w').write(devicetype)
             print('\nMake sure the ssh service is running and properly configured.\n')
             print('Configuration complete!\n')
         else:
@@ -182,7 +171,7 @@ if argument == 'config':
             term('gpg -r ' + str(gpgid) + ' -e ' + '/var/lib/sshyp/lock')
             remove('/var/lib/sshyp/lock')
         if devicetype == 'o' or devicetype == 'O':
-            open("/var/lib/sshyp/sshyp-ssh", 'w').write('\n\n\n\n' + devicetype)
+            open("/var/lib/sshyp/sshyp-device", 'w').write(devicetype)
             print('\nConfiguration complete!\n')
         elif devicetype != 's' and devicetype != 'S':
             devicetype = 'c'
@@ -203,8 +192,9 @@ if argument == 'config':
                 directoryssh = str(input('What directory is the server using?: '))
             else:
                 directoryssh = ('/home/' + usernamessh + '/.password-pasture/')
-            open("/var/lib/sshyp/sshyp-ssh", 'w').write(usernamessh + '\n' + ip + '\n' + port + '\n' + directoryssh +
-                                                        '\n' + devicetype)
+            open("/var/lib/sshyp/sshyp-device", 'w').write(devicetype)
+            sshync.make_profile('/var/lib/sshyp/sshyp.sshync', '/home/' + environ.get('USER') + '/.password-pasture/',
+                                directoryssh, '/home/' + environ.get('USER') + '/.ssh/sshyp', ip, port, usernamessh)
             print('\nConfiguration complete!\n')
     except KeyboardInterrupt:
         print('\n\nConfiguration cancelled.\n')
@@ -220,23 +210,20 @@ if argument == '':
 # import userdata
 
 try:
-    sshinfo = open("/var/lib/sshyp/sshyp-ssh").readlines()
+    devicetype = open('/var/lib/sshyp/sshyp-device').read().strip()
+    gpgid = open('/var/lib/sshyp/sshyp-gpg').read().strip()
+    sshinfo = sshync.get_profile('/var/lib/sshyp/sshyp.sshync')
     usernamessh = sshinfo[0].replace('\n', '')
     ip = sshinfo[1].replace('\n', '')
     port = sshinfo[2].replace('\n', '')
-    directoryssh = sshinfo[3].replace('\n', '')
-    devicetype = sshinfo[4].replace('\n', '')
-except (FileNotFoundError, IndexError):
-    usernamessh, ip, port, directoryssh, devicetype = (0, 0, 0, 0, 0)
-directory = ''
-try:
-    gpgid = open("/var/lib/sshyp/sshyp-gpg").read().strip()
-    directory = open("/var/lib/sshyp/sshyp-dir").read().strip()
+    directory = str(sshinfo[3].replace('\n', ''))
+    directoryssh = sshinfo[4].replace('\n', '')
     term('mkdir -p ' + directory)
 except FileNotFoundError:
     print('\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
     print("Not all necessary configuration files are present. Please run 'sshyp config'!")
     print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n')
+    devicetype, sshinfo, directory, directoryssh, ip, port, usernamessh = [0, 0, 0, 0, 0, 0, 0]
     exit()
 
 # no argument
@@ -828,7 +815,4 @@ if devicetype == 'c':
     if argument.__contains__('-rm') or string_found('remove', argument) or string_found('add', argument) or \
             string_found('edit', argument) or string_found('gen', argument) or argument == 'sync' or argument == '-s':
         print('Syncing entries with other device(s)...\n')
-        term('rsync -v -H -r -l -t -p -e ' + '"ssh -i ~/.ssh/sshyp -p ' + port + '" ' + directory + ' ' +
-             usernamessh + '@' + ip + ':' + directoryssh)
-        term('rsync -v -H -r -l -t -p --delete -e ' + '"ssh -i ~/.ssh/sshyp -p ' + port + '" ' + usernamessh
-             + '@' + ip + ':' + directoryssh + ' ' + directory)
+        sshync.run_profile('/var/lib/sshyp/sshyp.sshync')
