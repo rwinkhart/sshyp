@@ -8,7 +8,7 @@
 # TODO use partition command instead of split for separating paths
 # TODO use classes!
 
-# sshync 2021.11.04.unreleased4
+# sshync 2021.11.05.unreleased5
 # sshync was created to solve a problem with rpass/sshyp, and as such, sshync will be bundled with sshyp until it is
 # polished enough for a standalone release
 

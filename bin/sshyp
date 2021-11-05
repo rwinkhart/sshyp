@@ -114,7 +114,7 @@ if argument == 'version' or argument == '-v':
     print('/                                                      /')
     print('/     sshyp  Copyright (C) 2021  Randall Winkhart      /')
     print('/                                                      /')
-    print('/               Version 2021.11.04.fr1                 /')
+    print('/               Version 2021.11.05.fr1                 /')
     print('/                  The sshync Update                   /')
     print('/                                                      /')
     print('////////////////////////////////////////////////////////\n')
@@ -189,7 +189,7 @@ if argument == 'config':
             open("/var/lib/sshyp/sshyp-device", 'w').write(devicetype)
             sshync.make_profile('/var/lib/sshyp/sshyp.sshync', '/home/' + environ.get('USER') + '/.password-pasture/',
                                 directoryssh, '/home/' + environ.get('USER') + '/.ssh/sshyp', ip, port, usernamessh)
-            print('\nConfiguration complete!\n')
+            print('Configuration complete!\n')
     except KeyboardInterrupt:
         print('\n\nConfiguration cancelled.\n')
         exit()

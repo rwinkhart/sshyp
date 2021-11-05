@@ -1,4 +1,4 @@
-sshyp 2021.11.01.fr1
+sshyp 2021.11.05.fr1
 
 First public release of sshyp.
 
@@ -15,12 +15,7 @@ Changes:
 
 - branding has been updated to reflect new project name and goals
 - custom directories, custom ssh keys, and offline only mode are removed (may be temporary)
-- server installation makes copy of sshync.py in home directory
-
-Bugs to fix!!::
-*error when syncing with no files in remote directory
-*config warning not disappearing when using server config
-*directory not generating with server config
+    ^ the configuration wizard is being re-written in the next major update
 
 Planned for next update (The Fluffy Update):
 

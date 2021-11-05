@@ -1,6 +1,6 @@
 <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 
-sshyp 2021.11.01.fr1
+sshyp 2021.11.05.fr1
 
 First public release of sshyp.
 
@@ -16,6 +16,8 @@ New features:
 Changes:
 
 - branding has been updated to reflect new project name and goals
+- custom directories, custom ssh keys, and offline only mode are removed (may be temporary)
+    ^ the configuration wizard is being re-written in the next major update
 
 Planned for next update (The Fluffy Update):
 
