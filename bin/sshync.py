@@ -2,11 +2,15 @@
 
 # Main Targets:
 # TODO Make it so that when a new folder is created in sshyp, it is automatically created on the remote server
-# TODO Replace references to rpass/sshyp directory with a changeable variable
+# TODO Replace references to sshyp directory with a changeable variable
 # TODO Clean everything up and move sshync to a separate package
 # TODO Add dry run support
+# TODO use partition command instead of split for separating paths
+# TODO use classes!
+# Long-er Term Targets:
+# TODO
 
-# sshync 2021.11.01.unreleased3
+# sshync 2021.11.04.unreleased4
 # sshync was created to solve a problem with rpass/sshyp, and as such, sshync will be bundled with sshyp until it is
 # polished enough for a standalone release
 
@@ -57,17 +61,17 @@ def get_file_paths_mod_remote(profile_dir):
     identity = profile_data[5].replace('\n', '')
     term("ssh -i " + "'" + identity + "'" + " -p " + port + " " + user + "@" + ip + " \"python -c \'import sshync; "
                                                                                     "sshync.get_file_paths_mod(" +
-         "\"'\"" + remote_dir + "/\"'\", " + "\"'\"/var/lib/rpass/sshyncdatabase_names\"'\", " +
-         "\"'\"/var/lib/rpass/sshyncdatabase_times\"'\")\'\"")
+         "\"'\"" + remote_dir + "/\"'\", " + "\"'\"/var/lib/sshyp/sshyncdatabase_names\"'\", " +
+         "\"'\"/var/lib/sshyp/sshyncdatabase_times\"'\")\'\"")
     term(
-        'sftp -P ' + port + ' ' + user + '@' + ip + ':/var/lib/rpass/sshyncdatabase_names ' +
-        '/var/lib/rpass/sshyncdatabase_names')
+        'sftp -P ' + port + ' ' + user + '@' + ip + ':/var/lib/sshyp/sshyncdatabase_names ' +
+        '/var/lib/sshyp/sshyncdatabase_names')
     term(
-        'sftp -P ' + port + ' ' + user + '@' + ip + ':/var/lib/rpass/sshyncdatabase_times ' +
-        '/var/lib/rpass/sshyncdatabase_times')
-    remote_mod_names = (open('/var/lib/rpass/sshyncdatabase_names').read()).replace('[', '').replace(']', '').replace(
+        'sftp -P ' + port + ' ' + user + '@' + ip + ':/var/lib/sshyp/sshyncdatabase_times ' +
+        '/var/lib/sshyp/sshyncdatabase_times')
+    remote_mod_names = (open('/var/lib/sshyp/sshyncdatabase_names').read()).replace('[', '').replace(']', '').replace(
         ' ', '').replace("'", '').split(',')
-    remote_mod_times = (open('/var/lib/rpass/sshyncdatabase_times').read()).replace('[', '').replace(']', '').replace(
+    remote_mod_times = (open('/var/lib/sshyp/sshyncdatabase_times').read()).replace('[', '').replace(']', '').replace(
         ' ', '').replace("'", '').split(',')
     return remote_mod_names, remote_mod_times
 
@@ -131,10 +135,10 @@ def run_profile(profile_dir):
     remote_dir = profile_data[4].replace('\n', '')
     identity = profile_data[5].replace('\n', '')
     # get file modification times
-    local_mod_names, local_mod_times = get_file_paths_mod(local_dir + '/', '/var/lib/rpass/sshyncdatabase_names',
-                                                          '/var/lib/rpass/sshyncdatabase_times')
+    local_mod_names, local_mod_times = get_file_paths_mod(local_dir + '/', '/var/lib/sshyp/sshyncdatabase_names',
+                                                          '/var/lib/sshyp/sshyncdatabase_times')
     remote_mod_times = []
-    remote_mod_names, remote_mod_times_temp = get_file_paths_mod_remote('/var/lib/rpass/rpass.sshync')
+    remote_mod_names, remote_mod_times_temp = get_file_paths_mod_remote('/var/lib/sshyp/sshyp.sshync')
     for time in remote_mod_times_temp:  # remove quotes from remote_mod_times
         remote_mod_times.append(float(time))
     lmod_short = []

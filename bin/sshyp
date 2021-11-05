@@ -7,6 +7,7 @@ from os import remove
 from os import environ
 from shutil import move
 from shutil import rmtree
+from shutil import copy
 from sys import argv
 from re import search
 from re import escape
@@ -113,7 +114,7 @@ if argument == 'version' or argument == '-v':
     print('/                                                      /')
     print('/     sshyp  Copyright (C) 2021  Randall Winkhart      /')
     print('/                                                      /')
-    print('/               Version 2021.11.01.fr1                 /')
+    print('/               Version 2021.11.04.fr1                 /')
     print('/                  The sshync Update                   /')
     print('/                                                      /')
     print('////////////////////////////////////////////////////////\n')
@@ -142,6 +143,7 @@ if argument == 'config':
         if devicetype == 's' or devicetype == 'S':
             open("/var/lib/sshyp/sshyp-device", 'w').write(devicetype)
             print('\nMake sure the ssh service is running and properly configured.\n')
+            copy('/usr/bin/sshync.py', '/home/' + environ.get('USER') + '/')
             print('Configuration complete!\n')
         else:
             gpgid = ''
@@ -186,12 +188,7 @@ if argument == 'config':
             ip, sep, port = ip_port.partition(':')
             usernamessh = str(input('What is the username of the remote server? '))
             print('\nDefault directory: ' + '/home/' + usernamessh + '/.password-pasture/\n')
-            directoryssh = str(input('Is the remote server using the default password directory? (Y/n) '))
-            if directoryssh == 'n' or directoryssh == 'N':
-                print('\nFormat: /this/path/ends/with/a/slash/\n')
-                directoryssh = str(input('What directory is the server using?: '))
-            else:
-                directoryssh = ('/home/' + usernamessh + '/.password-pasture/')
+            directoryssh = ('/home/' + usernamessh + '/.password-pasture/')
             open("/var/lib/sshyp/sshyp-device", 'w').write(devicetype)
             sshync.make_profile('/var/lib/sshyp/sshyp.sshync', '/home/' + environ.get('USER') + '/.password-pasture/',
                                 directoryssh, '/home/' + environ.get('USER') + '/.ssh/sshyp', ip, port, usernamessh)
