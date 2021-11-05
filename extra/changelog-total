@@ -40,9 +40,9 @@ Planned for next update (The Sheep w/Shears Update):
 
 Planned, no timeline:
 
-- create separate gui frontend targetting mobile devices (first Android + Linux phones - official iOS client not likely)
+- create separate gui frontend targetting mobile devices (Android + Linux phones)
     ^ the gui will also function on desktop linux
-- make platform agnostic (add Windows support and package for more Linux distributions, such as Debian and Fedora)
+- package for more Linux distributions, such as Debian and Fedora)
 - auto-completion on tab (currently unsure of best way to make this work)
 
 <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
