@@ -14,8 +14,13 @@ New features:
 Changes:
 
 - branding has been updated to reflect new project name and goals
-- custom directories and ssh keys are removed (may be temporary)
+- custom directories, custom ssh keys, and offline only mode are removed (may be temporary)
 - server installation makes copy of sshync.py in home directory
+
+Bugs to fix!!::
+*error when syncing with no files in remote directory
+*config warning not disappearing when using server config
+*directory not generating with server config
 
 Planned for next update (The Fluffy Update):
 

@@ -139,13 +139,15 @@ if argument == 'show c':
 if argument == 'config':
     try:
         print()
-        devicetype = str(input('Will this be a client, server, or offline device? (C/s/o) '))
+        devicetype = str(input('Will this be a client or a server device? (C/s) '))
         if devicetype == 's' or devicetype == 'S':
             open("/var/lib/sshyp/sshyp-device", 'w').write(devicetype)
             print('\nMake sure the ssh service is running and properly configured.\n')
             copy('/usr/bin/sshync.py', '/home/' + environ.get('USER') + '/')
+            term('mkdir -p /home/' + environ.get('USER') + '/.password-pasture')
             print('Configuration complete!\n')
         else:
+            devicetype = 'c'
             gpgid = ''
             print()
             gpgpresent = str(input(
@@ -172,11 +174,6 @@ if argument == 'config':
                 pass
             term('gpg -r ' + str(gpgid) + ' -e ' + '/var/lib/sshyp/lock')
             remove('/var/lib/sshyp/lock')
-        if devicetype == 'o' or devicetype == 'O':
-            open("/var/lib/sshyp/sshyp-device", 'w').write(devicetype)
-            print('\nConfiguration complete!\n')
-        elif devicetype != 's' and devicetype != 'S':
-            devicetype = 'c'
             print('\nMake sure the ssh service on the remote server is running and properly configured.\n')
             sshgen = str(input('rsync support requires a unique ssh key. Would you like to have this '
                                'automatically generated? (Y/n) '))
@@ -206,6 +203,7 @@ if argument == '':
 
 # import userdata
 
+devicetype = 'c'
 try:
     devicetype = open('/var/lib/sshyp/sshyp-device').read().strip()
     gpgid = open('/var/lib/sshyp/sshyp-gpg').read().strip()
@@ -217,9 +215,10 @@ try:
     directoryssh = sshinfo[4].replace('\n', '')
     term('mkdir -p ' + directory)
 except FileNotFoundError:
-    print('\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
-    print("Not all necessary configuration files are present. Please run 'sshyp config'!")
-    print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n')
+    if devicetype != 's' and devicetype != 'S':
+        print('\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
+        print("Not all necessary configuration files are present. Please run 'sshyp config'!")
+        print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n')
     devicetype, sshinfo, directory, directoryssh, ip, port, usernamessh = [0, 0, 0, 0, 0, 0, 0]
     exit()
 

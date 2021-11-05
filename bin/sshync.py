@@ -7,8 +7,6 @@
 # TODO Add dry run support
 # TODO use partition command instead of split for separating paths
 # TODO use classes!
-# Long-er Term Targets:
-# TODO
 
 # sshync 2021.11.04.unreleased4
 # sshync was created to solve a problem with rpass/sshyp, and as such, sshync will be bundled with sshyp until it is
@@ -111,7 +109,10 @@ def time_sort(old_names, new_names, old_times):
         new_pos += 1
         if title in old_names:
             old_pos = old_names.index(title)
-            remote_mod_times_new.append(old_times[old_pos])
+            try:
+                remote_mod_times_new.append(old_times[old_pos])
+            except IndexError:
+                pass
     return remote_mod_times_new
 
 
@@ -139,8 +140,11 @@ def run_profile(profile_dir):
                                                           '/var/lib/sshyp/sshyncdatabase_times')
     remote_mod_times = []
     remote_mod_names, remote_mod_times_temp = get_file_paths_mod_remote('/var/lib/sshyp/sshyp.sshync')
-    for time in remote_mod_times_temp:  # remove quotes from remote_mod_times
-        remote_mod_times.append(float(time))
+    try:
+        for time in remote_mod_times_temp:  # remove quotes from remote_mod_times
+            remote_mod_times.append(float(time))
+    except ValueError:
+        pass
     lmod_short = []
     rmod_short = []
     matching_names = []
