@@ -4,6 +4,7 @@ A very simple self-hosted, synchronized password manager. Alternative to GNU pas
 "sshyp" stands for "sshync passwords", or "ssh sync passwords".
 "sshync" is the custom syncing backend (based on sftp) used by "sshyp".
 
+# WARNING
 It is your responsibility to assess the security and stability of "sshyp" before using it and ensure it meets your needs.
 I am not responsible for any data loss or breaches of your information resulting from the use of "sshyp".
 "sshyp" is a new project that is constantly being updated, and though safety and security are priorities, they cannot be guaranteed.
@@ -23,7 +24,7 @@ What sshyp will do:
 - have a distinct retro theme
 - receive many usability enhancements
 
-What sshyp definnitely won't do:
+What sshyp definitely won't do:
 
 - 2FA/MFA (for security purposes, this should not be handled by your password manager)
 - Windows support (I don't use Windows and I have no interest in developing for it)
