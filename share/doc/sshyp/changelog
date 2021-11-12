@@ -1,26 +1,21 @@
-sshyp 2021.11.05.fr1
+sshyp 2021.11.12.fr2
 
-First public release of sshyp.
+The Rewritten Update
 
-This release fixes major bugs from rpass and rebrands the project.
+This release is a major re-write of old "rpass" code.
+sshyp is now more reliable and better documented.
 
 New features:
 
-- an entirely new syncing back-end called sshync (custom Python wrapper around sftp)
-    ^ in thoery, all syncing-related data loss should now be fixed, however, this new
-    system has just been created and is still under testing. Maybe wait for a few patches
-    before trusting this system.
+- an almost full re-write of the old "rpass" code used in the last release
+    ^ includes more reliable argument parsing and various optimizations
 
-Changes:
+Planned for next update (The Patchwork Update):
 
-- branding has been updated to reflect new project name and goals
-- custom directories, custom ssh keys, and offline only mode are removed (may be temporary)
-    ^ the configuration wizard is being re-written in the next major update
+- address all "TODO" comments in sshyp
 
-Planned for next update (The Fluffy Update):
+Planned for next, next update (The Fluffy Update):
 
-- modularized and optimized code
-    ^ some older, bad code from "rpass" will be re-written.
 - new visual features
     ^ this includes the new file list and thematic text art. sshyp will be
     getting a retro computing theme.
@@ -28,7 +23,7 @@ Planned for next update (The Fluffy Update):
     ^ "sshyp" will be officially packaged for Arch Linux, Alpine Linux, and Termux (Android).
     Debian/Ubuntu and Fedora packaging will come later.
 
-Planned for next update (The Sheep w/Shears Update):
+Planned for next, next, next update (The Sheep w/Shears Update):
 
 - allow for copying entire notes (not just first line)
 - allow for multi-client deletion... somehow

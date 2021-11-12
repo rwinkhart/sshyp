@@ -1,5 +1,47 @@
 <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 
+sshyp 2021.11.12.fr2
+
+The Rewritten Update
+
+This release is a major re-write of old "rpass" code.
+sshyp is now more reliable and better documented.
+
+New features:
+
+- an almost full re-write of the old "rpass" code used in the last release
+    ^ includes more reliable argument parsing and various optimizations
+
+Planned for next update (The Patchwork Update):
+
+- address all "TODO" comments in sshyp
+
+Planned for next, next update (The Fluffy Update):
+
+- new visual features
+    ^ this includes the new file list and thematic text art. sshyp will be
+    getting a retro computing theme.
+- packages for more environments
+    ^ "sshyp" will be officially packaged for Arch Linux, Alpine Linux, and Termux (Android).
+    Debian/Ubuntu and Fedora packaging will come later.
+
+Planned for next, next, next update (The Sheep w/Shears Update):
+
+- allow for copying entire notes (not just first line)
+- allow for multi-client deletion... somehow
+- ability to pass entries as arguments for more functions
+- detatch sshync and make it a separate package
+- manpage
+
+Planned, no timeline:
+
+- create separate gui frontend targetting mobile devices (Android + Linux phones)
+    ^ the gui will also function on desktop linux
+- package for more Linux distributions, such as Debian and Fedora)
+- auto-completion on tab (currently unsure of best way to make this work)
+
+<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+
 sshyp 2021.11.05.fr1
 
 First public release of sshyp.
