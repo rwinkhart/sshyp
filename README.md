@@ -74,7 +74,7 @@ Short-term Goals:
 
 Medium-term Goals:
 
-- create minimal GUI apps (Linux x86_64, Linux aarch64, Android aarch64)
+- create minimal GUI apps (Linux x86_64, Linux aarch64)
 - auto-completion on tab for CLI version
 
 Long-term Goals:
@@ -86,6 +86,7 @@ Broken Features in Latest Release:
 
 - nested folders
 - multi-word folder/entry names
+- folder creation (broken on server-side)
 
 Broken Features in Source:
 

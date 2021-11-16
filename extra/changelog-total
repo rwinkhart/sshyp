@@ -2,21 +2,28 @@
 
 sshyp 2021.11.12.fr2
 
-The Rewritten Update
+The Lighter Update
 
-This release is a major re-write of old "rpass" code.
+This release features a major re-write of old "rpass" code.
 sshyp is now more reliable and better documented.
 
 New features:
 
 - an almost full re-write of the old "rpass" code used in the last release
     ^ includes more reliable argument parsing and various optimizations
+- new folders are now also created on the server
+**fix gen command using old notes system
+** address TODO comments
 
-Planned for next update (The Patchwork Update):
+Changes:
 
-- address all "TODO" comments in sshyp
+** major sshync bugs fixed
+    ^fixed many instances where sshync would refuse to upload/download
+    ^fixed errors that were being thrown despite sshync working as intended
+** updated and optimized code for sshync
+    ^f-strings, address TODO comments
 
-Planned for next, next update (The Fluffy Update):
+Planned for next update (The Fluffier Update):
 
 - new visual features
     ^ this includes the new file list and thematic text art. sshyp will be
@@ -24,21 +31,25 @@ Planned for next, next update (The Fluffy Update):
 - packages for more environments
     ^ "sshyp" will be officially packaged for Arch Linux, Alpine Linux, and Termux (Android).
     Debian/Ubuntu and Fedora packaging will come later.
+- imporove password generator to guarantee more secure results
+- fix nested folders
 
-Planned for next, next, next update (The Sheep w/Shears Update):
+Planned for next, next update (The Shears Update Pt. 1):
 
 - allow for copying entire notes (not just first line)
 - allow for multi-client deletion... somehow
-- ability to pass entries as arguments for more functions
 - detatch sshync and make it a separate package
 - manpage
 
-Planned, no timeline:
+Planned for next, next, next update (The Shears Update Pt. 2):
 
-- create separate gui frontend targetting mobile devices (Android + Linux phones)
-    ^ the gui will also function on desktop linux
-- package for more Linux distributions, such as Debian and Fedora)
+- ability to pass entries as arguments for more functions
 - auto-completion on tab (currently unsure of best way to make this work)
+
+Backlog:
+
+- package for more Linux distributions, such as Debian and Fedora
+- create separate gui frontend targetting mobile and desktop Linux
 
 <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 
