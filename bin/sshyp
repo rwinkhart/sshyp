@@ -2,7 +2,6 @@
 
 # TODO guarantee numbers in generated passwords
 # TODO fix syncing for multi-word entries
-# TODO fix folders not being created on server
 # TODO combine all print-only functions into one and print based on argument passed to function
 # TODO make new, colored list its own callable function
 # TODO test /dev/shm security
@@ -11,7 +10,7 @@
 
 from os import environ, remove, system
 from shutil import copy, move, rmtree
-from sys import argv
+from sys import argv, exit as s_exit
 import random
 import sshync
 import string
@@ -437,7 +436,7 @@ def remove_data():  # deletes an entry or folder from both the client and the se
         remove('/dev/shm/sshyp.lock')
     except FileNotFoundError:
         print('\nAccess denied.\n')
-        exit()
+        s_exit()
     if _entry_name.startswith('/'):
         if _entry_name.replace('/', '', 1).__contains__('/'):
             if device_type == 'c':
@@ -474,7 +473,7 @@ except FileNotFoundError:
         print('\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
         print("Not all necessary configuration files are present. Please run 'sshyp tweak'!")
         print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n')
-    exit()
+    s_exit()
 
 # retrieve typed argument
 argument = argument_filter()
@@ -488,13 +487,13 @@ elif argument == '':
         no_arg()
     except KeyboardInterrupt:
         print('\n')
-        exit()
+        s_exit()
 elif argument == 'tweak':
     try:
         tweak()
     except KeyboardInterrupt:
         print('\n')
-        exit()
+        s_exit()
 elif argument == 'help' or argument == '--help' or argument == '-h':
     helper()
 elif argument == 'license':
@@ -508,13 +507,13 @@ elif argument == 'add note' or argument == 'add -n' or argument == 'add password
         add_entry()
     except KeyboardInterrupt:
         print('\n')
-        exit()
+        s_exit()
 elif argument == 'add folder' or argument == 'add -f':
     try:
         add_folder()
     except KeyboardInterrupt:
         print('\n')
-        exit()
+        s_exit()
 elif argument == 'edit':
     edit_info()
 elif argument == 'edit rename' or argument == 'edit relocate' or argument == 'edit -r':
@@ -522,20 +521,20 @@ elif argument == 'edit rename' or argument == 'edit relocate' or argument == 'ed
         rename()
     except KeyboardInterrupt:
         print('\n')
-        exit()
+        s_exit()
 elif argument == 'edit username' or argument == 'edit -u' or argument == 'edit password' or argument == 'edit -p' or \
         argument == 'edit url' or argument == 'edit -l' or argument == 'edit note' or argument == 'edit -n':
     try:
         edit()
     except KeyboardInterrupt:
         print('\n')
-        exit()
+        s_exit()
 elif argument == 'gen' or argument == 'gen update' or argument == 'gen -u':
     try:
         gen()
     except KeyboardInterrupt:
         print('\n')
-        exit()
+        s_exit()
 elif argument == 'copy':
     copy_info()
 elif argument == 'copy username' or argument == 'copy -u' or argument == 'copy password' or argument == 'copy -p' or \
@@ -544,19 +543,19 @@ elif argument == 'copy username' or argument == 'copy -u' or argument == 'copy p
         copy_data()
     except KeyboardInterrupt:
         print('\n')
-        exit()
+        s_exit()
 elif argument == 'remove' or argument == '-rm':
     try:
         remove_data()
     except KeyboardInterrupt:
         print('\n')
-        exit()
+        s_exit()
 elif argument == 'sync' or argument == '-s':
     sync()
 else:
     error = 1  # set error flag to 1 to stop syncing
     print("\nArgument error! Please run 'sshyp help' for a list of usable commands.\n")
-    exit()
+    s_exit()
 
 # sync at end of program if any changes were made
 if argument != '' and argument != 'help' and argument != '--help' and argument != '-h' and argument != 'license' and \
