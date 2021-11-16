@@ -12,7 +12,6 @@
 from os import environ, remove, system
 from shutil import copy, move, rmtree
 from sys import argv
-from time import sleep
 import random
 import sshync
 import string
