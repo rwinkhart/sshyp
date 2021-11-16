@@ -12,6 +12,7 @@
 from os import environ, remove, system
 from shutil import copy, move, rmtree
 from sys import argv
+from time import sleep
 import random
 import sshync
 import string
@@ -45,29 +46,29 @@ def shm_gen():  # generates random folder in /dev/shm for security and returns r
                               for _ in range(random.randint(10, 30)))
     _shm_entry_gen = ''.join(random.SystemRandom().choice(string.ascii_letters + string.digits)
                              for _ in range(random.randint(10, 30)))
-    system('mkdir -p /dev/shm/' + _shm_folder_gen)  # TODO generate with Python
+    system(f"mkdir -p /dev/shm/{_shm_folder_gen}")  # TODO generate with Python
     return _shm_folder_gen, _shm_entry_gen
 
 
 def encrypt(_shm_folder, _shm_entry, _entry_name):
-    system('gpg -r ' + str(gpg_id) + ' -e ' + "'" + '/dev/shm/' + _shm_folder + '/' + _shm_entry + "'")
-    move('/dev/shm/' + _shm_folder + '/' + _shm_entry + '.gpg', directory + _entry_name.replace('/', '', 1) + '.gpg')
-    rmtree('/dev/shm/' + _shm_folder)
+    system(f"gpg -r {str(gpg_id)} -e '/dev/shm/{_shm_folder}/{_shm_entry}'")
+    move(f"/dev/shm/{_shm_folder}/{_shm_entry}.gpg", f"{directory}{_entry_name.replace('/', '', 1)}.gpg")
+    rmtree(f"/dev/shm/{_shm_folder}")
 
 
 def encrypt_folder(_shm_folder, _shm_entry, _folder, _folder_entry_name):
-    system('gpg -r ' + str(gpg_id) + ' -e ' + "'" + '/dev/shm/' + _shm_folder + '/' + _shm_entry + "'")
-    move('/dev/shm/' + _shm_folder + '/' + _shm_entry + '.gpg', directory + _folder + '/' + _folder_entry_name + '.gpg')
-    rmtree('/dev/shm/' + _shm_folder)
+    system(f"gpg -r {str(gpg_id)} -e '/dev/shm/{_shm_folder}/{_shm_entry}'")
+    move(f"/dev/shm/{_shm_folder}/{_shm_entry}.gpg", f"{directory}{_folder}/{_folder_entry_name}.gpg")
+    rmtree(f"/dev/shm/{_shm_folder}")
 
 
 def edit_note(_shm_folder, _shm_entry):
-    lines = open('/dev/shm/' + _shm_folder + '/' + _shm_entry).readlines()
-    open('/dev/shm/' + _shm_folder + '/' + _shm_entry, 'w').writelines(lines[0:3])
-    open('/dev/shm/' + _shm_folder + '/' + _shm_entry + '-n', 'w').writelines(lines[4:-2])
-    system('nano /dev/shm/' + _shm_folder + '/' + _shm_entry + '-n')
-    edit_notes = open('/dev/shm/' + _shm_folder + '/' + _shm_entry + '-n').read()
-    open('/dev/shm/' + _shm_folder + '/' + _shm_entry, 'a').write('\n' + edit_notes + '\n\n')
+    lines = open(f"/dev/shm/{_shm_folder}/{_shm_entry}").readlines()
+    open(f"/dev/shm/{_shm_folder}/{_shm_entry}", 'w').writelines(lines[0:3])
+    open(f"/dev/shm/{_shm_folder}/{_shm_entry}-n", 'w').writelines(lines[4:-2])
+    system(f"nano /dev/shm/{_shm_folder}/{_shm_entry}-n")
+    edit_notes = open(f"/dev/shm/{_shm_folder}/{_shm_entry}-n").read()
+    open(f"/dev/shm/{_shm_folder}/{_shm_entry}", 'a').write('\n' + edit_notes + '\n\n')
 
 
 # argument-specific functions
@@ -77,13 +78,13 @@ def tweak():  # runs configuration wizard
     clear()
 
     # storage directory creation
-    system('mkdir -p /home/' + environ.get('USER') + '/.password-pasture')
+    system(f"mkdir -p /home/{environ.get('USER')}/.password-pasture")
 
     # device type configuration
     _device_type = input('\nIs this installation for a client or for a server? (C/s) ')
     if _device_type == 'S' or _device_type == 's':
         open("/var/lib/sshyp/sshyp-device", 'w').write(_device_type)
-        copy('/usr/bin/sshync.py', '/home/' + environ.get('USER') + '/')
+        copy('/usr/bin/sshync.py', f"/home/{environ.get('USER')}/")
         print('\nMake sure the ssh service is running and properly configured.\n\nConfiguration complete!')
     else:
         # device type configuration
@@ -96,26 +97,25 @@ def tweak():  # runs configuration wizard
         if _gpg_id != 'y' and _gpg_id != 'Y':
             print('\nA unique gpg key has been generated for you.')
             system('gpg --full-generate-key')
-            _gpg_id = str(input('\nPlease input the ID of your gpg key: '))
-            open("/var/lib/sshyp/sshyp-gpg", 'w').write(_gpg_id + '\n')
+        _gpg_id = str(input('\nPlease input the ID of your gpg key: '))
+        open("/var/lib/sshyp/sshyp-gpg", 'w').write(_gpg_id + '\n')
 
         # lock file generation
         try:
             open('/var/lib/sshyp/lock', 'x').write('')
         except FileExistsError:
             pass
-        system('gpg -r ' + str(_gpg_id) + ' -e ' + '/var/lib/sshyp/lock')
+        system(f"gpg -r {str(_gpg_id)} -e /var/lib/sshyp/lock")
         remove('/var/lib/sshyp/lock')
 
         # ssh key configuration
-        print('\nMake sure the ssh service on the remote server is running and properly configured.\n')
-        _ssh_gen = (input('\nMake sure the ssh service on the remote server is running and properly configured.\nrsync '
-                          'support requires a unique ssh key. Would you like to have this automatically generated? '
-                          '(Y/n) '))
+        _ssh_gen = (input('\nMake sure the ssh service on the remote server is running and properly configured.'
+                          '\n\nrsync support requires a unique ssh key. Would you like to have this automatically '
+                          'generated? (Y/n) '))
         if _ssh_gen != 'n' and _ssh_gen != 'N':
             system('ssh-keygen -t ed25519 -f ~/.ssh/sshyp')
         else:
-            print('\nEnsure that the key file you are using is located at /home/' + environ.get('USER') + '/.ssh/sshyp')
+            print(f"\nEnsure that the key file you are using is located at /home/{environ.get('USER')}/.ssh/sshyp")
 
         # ssh ip+port configuration
         print('\nExample input: 10.10.10.10:9999\n')
@@ -124,12 +124,12 @@ def tweak():  # runs configuration wizard
 
         # ssh user configuration
         _username_ssh = str(input('\nWhat is the username of the remote server? '))
-        print('\nEntry directory: ' + '/home/' + _username_ssh + '/.password-pasture/')
+        print(f"\nEntry directory: /home/{_username_ssh}/.password-pasture/")
 
         # sshync profile generation
-        sshync.make_profile('/var/lib/sshyp/sshyp.sshync', '/home/' + environ.get('USER') + '/.password-pasture/',
-                            '/home/' + _username_ssh + '/.password-pasture/', '/home/' + environ.get('USER') +
-                            '/.ssh/sshyp', _ip, _port, _username_ssh)
+        sshync.make_profile('/var/lib/sshyp/sshyp.sshync', f"/home/{environ.get('USER')}/.password-pasture/",
+                            f"/home/{_username_ssh}/.password-pasture/", f"/home/{environ.get('USER')}/.ssh/sshyp",
+                            _ip, _port, _username_ssh)
         print('\nConfiguration complete!')
 
 
@@ -176,7 +176,7 @@ def version():  # displays version information TODO update with text art
     print('/                                                      /')
     print('/     sshyp  Copyright (C) 2021  Randall Winkhart      /')
     print('/                                                      /')
-    print('/               Version 2021.11.12.fr2                 /')
+    print('/               Version 2021.11.15.fr2                 /')
     print('/                The Rewritten Update                  /')
     print('/                                                      /')
     print('////////////////////////////////////////////////////////\n')
@@ -184,10 +184,10 @@ def version():  # displays version information TODO update with text art
 
 def no_arg():  # displays a list of entries and gives an option to select one for viewing TODO new, colored list
     print("\nFor a list of usable commands, run 'sshyp help'.\n")
-    system('cd ' + directory + '; ls -1 *')
+    system(f"cd {directory}; ls -1 *")
     _read_entry = str(input('\nEntry to read: '))
     clear()
-    system('gpg -d ' + directory + "'" + _read_entry.replace('/', '', 1) + "'" + '.gpg')
+    system(f"gpg -d '{directory}{_read_entry.replace('/', '', 1)}.gpg'")
     print()
 
 
@@ -203,9 +203,9 @@ def show_license():  # displays licensing information
 def read_shortcut():  # shortcut to quickly read an entry TODO may not work w/nested
     if argument.replace('/', '', 1).__contains__('/'):
         _folder, _sep, _folder_entry = argument.replace('/', '', 1).partition('/')
-        system('gpg -d ' + directory + _folder + '/' + "'" + _folder_entry + '.gpg' + "'")
+        system(f"gpg -d '{directory}{_folder}/{_folder_entry}.gpg'")  # TODO EXAMPLE of fix for multi-word entry names
     else:
-        system('gpg -d ' + directory + "'" + argument.replace('/', '', 1) + '.gpg' + "'")
+        system(f"gpg -d '{directory}{argument.replace('/', '', 1)}.gpg'")
 
 
 def sync():  # calls sshync to sync changes to the user's server
@@ -229,37 +229,37 @@ def add_entry():  # adds a new entry
     _entry_name = str(input('\nName of entry: '))
     _shm_folder, _shm_entry = shm_gen()
     if argument == 'add note' or argument == 'add -n':
-        system('nano /dev/shm/' + _shm_folder + '/' + _shm_entry + '-n')
-        _notes = open('/dev/shm/' + _shm_folder + '/' + _shm_entry + '-n', 'r').read()
-        open('/dev/shm/' + _shm_folder + '/' + _shm_entry, 'w').writelines('\n\n\n\n' + _notes + '\n\n')
+        system(f"nano /dev/shm/{_shm_folder}/{_shm_entry}-n")
+        _notes = open(f"/dev/shm/{_shm_folder}/{_shm_entry}-n", 'r').read()
+        open(f"/dev/shm/{_shm_folder}/{_shm_entry}", 'w').writelines('\n\n\n\n' + _notes + '\n\n')
     if argument == 'add password' or argument == 'add -p':
         _username = str(input('Username: '))
         _password = str(input('Password: '))
         _url = str(input('URL: '))
         _add_note = input('Add a note to this entry? (y/N) ')
         if _add_note == 'y' or _add_note == 'Y':
-            system('nano /dev/shm/' + _shm_folder + '/' + _shm_entry + '-n')
-            _notes = open('/dev/shm/' + _shm_folder + '/' + _shm_entry + '-n', 'r').read()
+            system(f"nano /dev/shm/{_shm_folder}/{_shm_entry}-n")
+            _notes = open(f"/dev/shm/{_shm_folder}/{_shm_entry}-n", 'r').read()
         else:
             _notes = ''
-        open('/dev/shm/' + _shm_folder + '/' + _shm_entry, 'w').writelines(_username + '\n' + _password + '\n' + _url +
-                                                                           '\n\n' + _notes + '\n\n')
+        open(f"/dev/shm/{_shm_folder}/{_shm_entry}", 'w').writelines(_username + '\n' + _password + '\n' + _url + '\n\n'
+                                                                     + _notes + '\n\n')
     if _entry_name.startswith('/'):
         if _entry_name.replace('/', '', 1).__contains__('/'):
             _folder, _sep, _folder_entry = _entry_name.replace('/', '', 1).partition('/')  # TODO may not work w/nested
             encrypt_folder(_shm_folder, _shm_entry, _folder, _folder_entry)
-            system('gpg -d ' + directory + _folder + '/' + "'" + _folder_entry + '.gpg' + "'")
+            system(f"gpg -d '{directory}{_folder}/{_folder_entry}.gpg'")
         else:
             encrypt(_shm_folder, _shm_entry, _entry_name)
-            system('gpg -d ' + directory + "'" + _entry_name.replace('/', '', 1) + '.gpg' + "'")
+            system(f"gpg -d '{directory}{_entry_name.replace('/', '', 1)}.gpg'")
     else:
         encrypt(_shm_folder, _shm_entry, _entry_name)
-        system('gpg -d ' + directory + "'" + _entry_name + '.gpg' + "'")
+        system(f"gpg -d '{directory}{_entry_name}.gpg'")
 
 
 def add_folder():  # creates a new folder TODO create folder on server, as well
     _folder_name = str(input('Name of new folder: '))
-    system('mkdir ' + "'" + directory + _folder_name + "'")  # TODO create using Python
+    system(f"mkdir '{directory}{_folder_name}'")  # TODO create using Python
 
 
 def edit_info():  # displays 'edit' syntax
@@ -275,60 +275,58 @@ def edit_info():  # displays 'edit' syntax
 
 def rename():  # renames an entry or folder TODO delete original from server to prevent re-downloading
     print()
-    system('cd ' + directory + '; ls -1 *')  # TODO replace with new list
+    system(f"cd {directory}; ls -1 *")  # TODO replace with new list
     _entry_name = str(input('\nWhat would you like to rename/relocate? '))
     _new_name = str(input('New Name: '))
     if _entry_name.startswith('/'):
         if _entry_name.replace('/', '', 1).__contains__('/'):
             _folder, _sep, _folder_entry = _entry_name.replace('/', '', 1).partition('/')
-            move(directory + _folder + '/' + _folder_entry + '.gpg', directory + '/' + _new_name + '.gpg')
+            move(f"{directory}{_folder}/{_folder_entry}.gpg", f"{directory}/{_new_name}.gpg")
         else:
-            move(directory + _entry_name.replace('/', '', 1) + '.gpg',
-                 directory + _new_name.replace('/', '', 1) + '.gpg')
+            move(f"{directory}{_entry_name.replace('/', '', 1)}.gpg", f"{directory}{_new_name.replace('/', '', 1)}.gpg")
     else:
-        move(directory + _entry_name + '.gpg', directory + _new_name + '.gpg')
+        move(f"{directory}{_entry_name}.gpg", f"{directory}{_new_name}.gpg")
 
 
 def edit():  # edits the contents of an entry
     print()
-    system('cd ' + directory + '; ls -1 *')
+    system(f"cd {directory}; ls -1 *")  # TODO replace with new list
     _entry_name = str(input('\nWhat file would you like to edit? '))
     _shm_folder, _shm_entry = shm_gen()
     if _entry_name.startswith('/'):
         if _entry_name.replace('/', '', 1).__contains__('/'):
             _folder, _sep, _folder_entry = _entry_name.replace('/', '', 1).partition('/')
-            system('gpg -d --output /dev/shm/' + _shm_folder + '/' + _shm_entry + ' ' + directory +
-                   _folder + '/' + _folder_entry + '.gpg')
+            system(f"gpg -d --output /dev/shm/{_shm_folder}/{_shm_entry} '{directory}{_folder}/{_folder_entry}.gpg'")
         else:
-            system('gpg -d --output /dev/shm/' + _shm_folder + '/' + _shm_entry + ' ' + directory +
-                   _entry_name.replace('/', '', 1) + '.gpg')
+            system(f"gpg -d --output /dev/shm/{_shm_folder}/{_shm_entry} '{directory}{_entry_name.replace('/', '', 1)}"
+                   f".gpg'")
     else:
-        system('gpg -d --output /dev/shm/' + _shm_folder + '/' + _shm_entry + ' ' + directory + _entry_name + '.gpg')
+        system(f"gpg -d --output /dev/shm/{_shm_folder}/{_shm_entry} '{directory}{_entry_name}.gpg'")
     if argument == 'edit username' or argument == 'edit -u':
         _detail = str(input('New Username: '))
-        replace_line('/dev/shm/' + _shm_folder + '/' + _shm_entry, 0, _detail + '\n')
+        replace_line(f"/dev/shm/{_shm_folder}/{_shm_entry}", 0, _detail + '\n')
     if argument == 'edit password' or argument == 'edit -p':
         _detail = str(input('New Password: '))
-        replace_line('/dev/shm/' + _shm_folder + '/' + _shm_entry, 1, _detail + '\n')
+        replace_line(f"/dev/shm/{_shm_folder}/{_shm_entry}", 1, _detail + '\n')
     if argument == 'edit url' or argument == 'edit -l':
         _detail = str(input('New URL: '))
-        replace_line('/dev/shm/' + _shm_folder + '/' + _shm_entry, 2, _detail + '\n')
+        replace_line(f"/dev/shm/{_shm_folder}/{_shm_entry}", 2, _detail + '\n')
     if argument == 'edit note' or argument == 'edit -n':
         edit_note(_shm_folder, _shm_entry)
     if _entry_name.startswith('/'):
         if _entry_name.replace('/', '', 1).__contains__('/'):
             _folder, _sep, _folder_entry = _entry_name.replace('/', '', 1).partition('/')
-            remove(directory + _folder + '/' + _folder_entry + '.gpg')
+            remove(f"{directory}{_folder}/{_folder_entry}.gpg")
             encrypt_folder(_shm_folder, _shm_entry, _folder, _folder_entry)
-            system('gpg -d ' + directory + _folder + '/' + "'" + _folder_entry + '.gpg' + "'")
+            system(f"gpg -d '{directory}{_folder}/{_folder_entry}.gpg'")
         else:
-            remove(directory + _entry_name.replace('/', '', 1) + '.gpg')
+            remove(f"{directory}{_entry_name.replace('/', '', 1)}.gpg")
             encrypt(_shm_folder, _shm_entry, _entry_name)
-            system('gpg -d ' + directory + "'" + _entry_name.replace('/', '', 1) + '.gpg' + "'")
+            system(f"gpg -d '{directory}{_entry_name.replace('/', '', 1)}.gpg'")
     else:
-        remove(directory + _entry_name + '.gpg')
+        remove(f"{directory}{_entry_name}.gpg")
         encrypt(_shm_folder, _shm_entry, _entry_name)
-        system('gpg -d ' + directory + "'" + _entry_name + '.gpg' + "'")
+        system(f"gpg -d '{directory}{_entry_name}.gpg'")
 
 
 def gen():  # generates a password for a new or an existing entry
@@ -336,7 +334,7 @@ def gen():  # generates a password for a new or an existing entry
     _shm_folder, _shm_entry = shm_gen()
     if argument == 'gen update' or argument == 'gen -u':
         print()
-        system('cd ' + directory + '; ls -1 *')
+        system(f"cd {directory}; ls -1 *")  # TODO replace with new list
     _entry_name = str(input('\nName of service: '))
     if argument != 'gen update' and argument != 'gen -u':
         _username = str(input('Username: '))
@@ -351,46 +349,44 @@ def gen():  # generates a password for a new or an existing entry
         _url = str(input('URL: '))
         _notes = str(input('Additional notes: '))  # TODO update w/new notes system
     if argument != 'gen update' and argument != 'gen -u':
-        open('/dev/shm/' + _shm_folder + '/' + _shm_entry, 'w').writelines(
-            _username + '\n' + _pass_gen + '\n' + _url + '\n\n' + _notes + '\n\n')
+        open(f"/dev/shm/{_shm_folder}/{_shm_entry}", 'w').writelines(_username + '\n' + _pass_gen + '\n' + _url +
+                                                                     '\n\n' + _notes + '\n\n')
     if argument != 'gen update' and argument != 'gen -u':
         if _entry_name.startswith('/'):
             if _entry_name.replace('/', '', 1).__contains__('/'):
-                _folder, _sep, _folder_entry = _entry_name.replace('/', '', 1).partition(
-                    '/')  # TODO may not work w/nested
+                _folder, _sep, _folder_entry = _entry_name.replace('/', '', 1).partition('/')  # TODO nested
                 encrypt_folder(_shm_folder, _shm_entry, _folder, _folder_entry)
-                system('gpg -d ' + directory + _folder + '/' + "'" + _folder_entry + '.gpg' + "'")
+                system(f"gpg -d '{directory}{_folder}/{_folder_entry}.gpg'")
             else:
                 encrypt(_shm_folder, _shm_entry, _entry_name)
-                system('gpg -d ' + directory + "'" + _entry_name.replace('/', '', 1) + '.gpg' + "'")
+                system(f"gpg -d '{directory}{_entry_name.replace('/', '', 1)}.gpg'")
         else:
             encrypt(_shm_folder, _shm_entry, _entry_name)
-            system('gpg -d ' + directory + "'" + _entry_name + '.gpg' + "'")
+            system(f"gpg -d '{directory}{_entry_name}.gpg'")
     else:
         if _entry_name.startswith('/'):
             if _entry_name.replace('/', '', 1).__contains__('/'):
                 _folder, _sep, _folder_entry = _entry_name.replace('/', '', 1).partition(
                     '/')  # TODO may not work w/nested
-                system('gpg -d --output /dev/shm/' + _shm_folder + '/' + _shm_entry + ' ' + directory +
-                       _folder + '/' + _folder_entry + '.gpg')
-                replace_line('/dev/shm/' + _shm_folder + '/' + _shm_entry, 1, _pass_gen + '\n')
-                remove(directory + _folder + '/' + _folder_entry.replace('/', '', 1) + '.gpg')
+                system(f"gpg -d --output /dev/shm/{_shm_folder}/{_shm_entry} '{directory}{_folder}/{_folder_entry}"
+                       f".gpg'")
+                replace_line(f"/dev/shm/{_shm_folder}/{_shm_entry}", 1, _pass_gen + '\n')
+                remove(f"{directory}{_folder}/{_folder_entry.replace('/', '', 1)}.gpg")
                 encrypt_folder(_shm_folder, _shm_entry, _folder, _folder_entry)
-                system('gpg -d ' + directory + _folder + '/' + "'" + _folder_entry + '.gpg' + "'")
+                system(f"gpg -d '{directory}{_folder}/{_folder_entry}.gpg'")
             else:
-                system('gpg -d --output /dev/shm/' + _shm_folder + '/' + _shm_entry + ' ' + directory +
-                       _entry_name.replace('/', '', 1) + '.gpg')
-                replace_line('/dev/shm/' + _shm_folder + '/' + _shm_entry, 1, _pass_gen + '\n')
-                remove(directory + _entry_name.replace('/', '', 1) + '.gpg')
+                system(f"gpg -d --output /dev/shm/{_shm_folder}/{_shm_entry} '{directory}"
+                       f"{_entry_name.replace('/', '', 1)}.gpg'")
+                replace_line(f"/dev/shm/{_shm_folder}/'{_shm_entry}", 1, _pass_gen + '\n')
+                remove(f"{directory}{_entry_name.replace('/', '', 1)}.gpg")
                 encrypt(_shm_folder, _shm_entry, _entry_name)
-                system('gpg -d ' + directory + "'" + _entry_name.replace('/', '', 1) + '.gpg' + "'")
+                system(f"gpg -d '{directory}{_entry_name.replace('/', '', 1)}.gpg'")
         else:
-            system(
-                'gpg -d --output /dev/shm/' + _shm_folder + '/' + _shm_entry + ' ' + directory + _entry_name + '.gpg')
-            replace_line('/dev/shm/' + _shm_folder + '/' + _shm_entry, 1, _pass_gen + '\n')
-            remove(directory + _entry_name + '.gpg')
+            system(f"gpg -d --output /dev/shm/{_shm_folder}/{_shm_entry} '{directory}{_entry_name}.gpg'")
+            replace_line(f"/dev/shm/{_shm_folder}/{_shm_entry}", 1, _pass_gen + '\n')
+            remove(f"{directory}{_entry_name}.gpg")
             encrypt(_shm_folder, _shm_entry, _entry_name)
-            system('gpg -d ' + directory + "'" + _entry_name + '.gpg' + "'")
+            system(f"gpg -d '{directory}{_entry_name}.gpg'")
 
 
 def copy_info():  # displays 'copy' syntax
@@ -405,12 +401,12 @@ def copy_info():  # displays 'copy' syntax
 
 def copy_data():  # copies a specified field of an entry to the clipboard
     print()
-    system('cd ' + directory + '; ls -1 *')
+    system(f"cd {directory}; ls -1 *")  # TODO replace with new list
     _read_entry = str(input('\nEntry to copy: '))
     _shm_folder, _shm_entry = shm_gen()
-    system('gpg -d --output /dev/shm/' + _shm_folder + '/' + _shm_entry + ' ' + directory + _read_entry + '.gpg')
-    _copy_line = open('/dev/shm/' + _shm_folder + '/' + _shm_entry, 'r').readlines()
-    if environ.get('WAYLAND_DISPLAY') == 'wayland-0':
+    system(f"gpg -d --output /dev/shm/{_shm_folder}/{_shm_entry} '{directory}{_read_entry}.gpg'")
+    _copy_line = open(f"/dev/shm/{_shm_folder}/{_shm_entry}", 'r').readlines()
+    if environ.get('WAYLAND_DISPLAY') == 'wayland-0':  # checks if the user is using Wayland or X for clipboard
         if argument == 'copy username' or argument == 'copy -u':
             system('wl-copy ' + "'" + _copy_line[0].replace('\n', '').replace("'", "'\\''") + "'")
         elif argument == 'copy password' or argument == 'copy -p':
@@ -428,12 +424,12 @@ def copy_data():  # copies a specified field of an entry to the clipboard
             system('echo -n ' + "'" + _copy_line[2].replace('\n', '').replace("'", "'\\''") + "'" + ' | xclip -sel c')
         elif argument == 'copy note' or argument == 'copy -n':
             system('echo -n ' + "'" + _copy_line[4].replace('\n', '').replace("'", "'\\''") + "'" + ' | xclip -sel c')
-    rmtree('/dev/shm/' + _shm_folder)
+    rmtree(f"/dev/shm/{_shm_folder}")
 
 
 def remove_data():  # deletes an entry or folder from both the client and the server
     print()
-    system('cd ' + directory + '; ls -1 *')
+    system(f"cd {directory}; ls -1 *")  # TODO replace with new list
     _entry_name = str(input('\nWhat would you like to delete? '))
     try:
         system('gpg -d --output /dev/shm/sshyp.lock /var/lib/sshyp/lock.gpg')
@@ -445,19 +441,18 @@ def remove_data():  # deletes an entry or folder from both the client and the se
     if _entry_name.startswith('/'):
         if _entry_name.replace('/', '', 1).__contains__('/'):
             if device_type == 'c':
-                system('ssh -p ' + port + ' ' + username_ssh + '@' + ip + ' "' + ' rm -rf ' + "'" + directory_ssh +
-                       _entry_name.replace('/', '', 1) + '.gpg' + "'" + '"')
-            remove(directory + _entry_name.replace('/', '', 1) + '.gpg')
+                system(f"ssh -p {port} {username_ssh}@{ip} \"rm -rf '{directory_ssh}{_entry_name.replace('/', '', 1)}"
+                       f".gpg'\"")
+            remove(f"{directory}{_entry_name.replace('/', '', 1)}.gpg")
         else:
             if device_type == 'c':
-                system('ssh -p ' + port + ' ' + username_ssh + '@' + ip + ' "' + ' rm -rf ' + "'" + directory_ssh +
-                       _entry_name.replace('/', '', 1) + "'" + '"')
-            rmtree(directory + _entry_name.replace('/', '', 1))
+                system(f"ssh -p {port} {username_ssh}@{ip} \"rm -rf '{directory_ssh}{_entry_name.replace('/', '', 1)}"
+                       f"'\"")
+            rmtree(f"{directory}{_entry_name.replace('/', '', 1)}")
     else:
         if device_type == 'c':
-            system('ssh -p ' + port + ' ' + username_ssh + '@' + ip + ' "' + ' rm -rf ' + "'" + directory_ssh +
-                   _entry_name + '.gpg' + "'" + '"')
-        remove(directory + _entry_name + '.gpg')
+            system(f"ssh -p {port} {username_ssh}@{ip} \"rm -rf '{directory_ssh}{_entry_name}.gpg'\"")
+        remove(f"{directory}{_entry_name}.gpg")
 
 
 # program start sequence

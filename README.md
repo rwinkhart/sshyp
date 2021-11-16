@@ -80,3 +80,13 @@ Medium-term Goals:
 Long-term Goals:
 
 - seize the thrones, shear the humans
+
+# Known Issues
+Broken Features in Latest Release:
+
+- nested folders
+- multi-word folder/entry names
+
+Broken Features in Source:
+
+- nested folders
