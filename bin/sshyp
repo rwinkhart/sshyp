@@ -1,10 +1,11 @@
-#!/usr/bin/python3
+#!/usr/bin/python3.10
 
 # TODO guarantee numbers in generated passwords
 # TODO fix syncing for multi-word entries
 # TODO combine all print-only functions into one and print based on argument passed to function
 # TODO make new, colored list its own callable function
 # TODO test /dev/shm security
+# TODO re-add missing file not found exceptions
 
 # external modules
 
@@ -18,19 +19,14 @@ import string
 
 # utility functions
 
-
-def argument_filter():  # filters arguments to usable text TODO move to global process
+def argument_filter():  # filters arguments to usable text TODO move to global process, update incrementer
     _argument_list = argv
-    i, _argument = 0, ''
+    _i, _argument = 0, ''
     for _ in _argument_list:
-        while i < len(_argument_list) - 1:
-            i += 1
-            _argument += _argument_list[i] + ' '
+        while _i < len(_argument_list) - 1:
+            _i += 1
+            _argument += _argument_list[_i] + ' '
     return _argument[:-1]
-
-
-def clear():
-    print('\n' * 100)
 
 
 def replace_line(file_name, line_num, text):  # replaces text in a given line with different text
@@ -48,15 +44,9 @@ def shm_gen():  # generates random folder in /dev/shm for security and returns r
     return _shm_folder_gen, _shm_entry_gen
 
 
-def encrypt(_shm_folder, _shm_entry, _entry_name):
+def encrypt(_shm_folder, _shm_entry, _location):
     system(f"gpg -r {str(gpg_id)} -e '/dev/shm/{_shm_folder}/{_shm_entry}'")
-    move(f"/dev/shm/{_shm_folder}/{_shm_entry}.gpg", f"{directory}{_entry_name.replace('/', '', 1)}.gpg")
-    rmtree(f"/dev/shm/{_shm_folder}")
-
-
-def encrypt_folder(_shm_folder, _shm_entry, _folder, _folder_entry_name):
-    system(f"gpg -r {str(gpg_id)} -e '/dev/shm/{_shm_folder}/{_shm_entry}'")
-    move(f"/dev/shm/{_shm_folder}/{_shm_entry}.gpg", f"{directory}{_folder}/{_folder_entry_name}.gpg")
+    move(f"/dev/shm/{_shm_folder}/{_shm_entry}.gpg", f"{directory}{_location}.gpg")
     rmtree(f"/dev/shm/{_shm_folder}")
 
 
@@ -73,8 +63,6 @@ def edit_note(_shm_folder, _shm_entry):
 
 
 def tweak():  # runs configuration wizard
-    clear()
-
     # storage directory creation
     system(f"mkdir -p /home/{environ.get('USER')}/.password-pasture")
 
@@ -132,7 +120,6 @@ def tweak():  # runs configuration wizard
 
 
 def helper():  # displays help menu TODO update with text art, thematic arguments
-    clear()
     print('\nsshyp  Copyright (C) 2021  Randall Winkhart')
     print("This is free software, and you are welcome to redistribute it under certain conditions;\nthis program comes "
           "with ABSOLUTELY NO WARRANTY;\ntype `sshyp license' for details.")
@@ -174,7 +161,7 @@ def version():  # displays version information TODO update with text art
     print('/                                                      /')
     print('/     sshyp  Copyright (C) 2021  Randall Winkhart      /')
     print('/                                                      /')
-    print('/               Version 2021.11.15.fr2                 /')
+    print('/               Version 2021.11.20.fr2                 /')
     print('/                The Rewritten Update                  /')
     print('/                                                      /')
     print('////////////////////////////////////////////////////////\n')
@@ -184,7 +171,6 @@ def no_arg():  # displays a list of entries and gives an option to select one fo
     print("\nFor a list of usable commands, run 'sshyp help'.\n")
     system(f"cd {directory}; ls -1 *")
     _read_entry = str(input('\nEntry to read: '))
-    clear()
     system(f"gpg -d '{directory}{_read_entry.replace('/', '', 1)}.gpg'")
     print()
 
@@ -198,12 +184,8 @@ def show_license():  # displays licensing information
           'License for more details.\n\nhttps://opensource.org/licenses/GPL-3.0\n')
 
 
-def read_shortcut():  # shortcut to quickly read an entry TODO may not work w/nested
-    if argument.replace('/', '', 1).__contains__('/'):
-        _folder, _sep, _folder_entry = argument.replace('/', '', 1).partition('/')
-        system(f"gpg -d '{directory}{_folder}/{_folder_entry}.gpg'")  # TODO EXAMPLE of fix for multi-word entry names
-    else:
-        system(f"gpg -d '{directory}{argument.replace('/', '', 1)}.gpg'")
+def read_shortcut():  # shortcut to quickly read an entry
+    system(f"gpg -d '{directory}{argument.replace('/', '', 1)}.gpg'")
 
 
 def sync():  # calls sshync to sync changes to the user's server
@@ -225,6 +207,8 @@ def add_info():  # displays 'add' syntax
 
 def add_entry():  # adds a new entry
     _entry_name = str(input('\nName of entry: '))
+    if _entry_name.startswith('/'):
+        _entry_name = _entry_name.replace('/', '', 1)
     _shm_folder, _shm_entry = shm_gen()
     if argument == 'add note' or argument == 'add -n':
         system(f"nano /dev/shm/{_shm_folder}/{_shm_entry}-n")
@@ -242,20 +226,11 @@ def add_entry():  # adds a new entry
             _notes = ''
         open(f"/dev/shm/{_shm_folder}/{_shm_entry}", 'w').writelines(_username + '\n' + _password + '\n' + _url + '\n\n'
                                                                      + _notes + '\n\n')
-    if _entry_name.startswith('/'):
-        if _entry_name.replace('/', '', 1).__contains__('/'):
-            _folder, _sep, _folder_entry = _entry_name.replace('/', '', 1).partition('/')  # TODO may not work w/nested
-            encrypt_folder(_shm_folder, _shm_entry, _folder, _folder_entry)
-            system(f"gpg -d '{directory}{_folder}/{_folder_entry}.gpg'")
-        else:
-            encrypt(_shm_folder, _shm_entry, _entry_name)
-            system(f"gpg -d '{directory}{_entry_name.replace('/', '', 1)}.gpg'")
-    else:
-        encrypt(_shm_folder, _shm_entry, _entry_name)
-        system(f"gpg -d '{directory}{_entry_name}.gpg'")
+    encrypt(_shm_folder, _shm_entry, _entry_name)
+    system(f"gpg -d '{directory}{_entry_name}.gpg'")
 
 
-def add_folder():  # creates a new folder TODO create folder on server, as well
+def add_folder():  # creates a new folder
     _folder_name = str(input('Name of new folder: '))
     system(f"mkdir '{directory}{_folder_name}'")  # TODO create using Python
     system(f"ssh -p {port} {username_ssh}@{ip} \"mkdir -p '{directory_ssh}{_folder_name}'\"")
@@ -291,16 +266,10 @@ def edit():  # edits the contents of an entry
     print()
     system(f"cd {directory}; ls -1 *")  # TODO replace with new list
     _entry_name = str(input('\nWhat file would you like to edit? '))
-    _shm_folder, _shm_entry = shm_gen()
     if _entry_name.startswith('/'):
-        if _entry_name.replace('/', '', 1).__contains__('/'):
-            _folder, _sep, _folder_entry = _entry_name.replace('/', '', 1).partition('/')
-            system(f"gpg -d --output /dev/shm/{_shm_folder}/{_shm_entry} '{directory}{_folder}/{_folder_entry}.gpg'")
-        else:
-            system(f"gpg -d --output /dev/shm/{_shm_folder}/{_shm_entry} '{directory}{_entry_name.replace('/', '', 1)}"
-                   f".gpg'")
-    else:
-        system(f"gpg -d --output /dev/shm/{_shm_folder}/{_shm_entry} '{directory}{_entry_name}.gpg'")
+        _entry_name = _entry_name.replace('/', '', 1)
+    _shm_folder, _shm_entry = shm_gen()
+    system(f"gpg -d --output /dev/shm/{_shm_folder}/{_shm_entry} '{directory}{_entry_name}.gpg'")
     if argument == 'edit username' or argument == 'edit -u':
         _detail = str(input('New Username: '))
         replace_line(f"/dev/shm/{_shm_folder}/{_shm_entry}", 0, _detail + '\n')
@@ -312,20 +281,9 @@ def edit():  # edits the contents of an entry
         replace_line(f"/dev/shm/{_shm_folder}/{_shm_entry}", 2, _detail + '\n')
     if argument == 'edit note' or argument == 'edit -n':
         edit_note(_shm_folder, _shm_entry)
-    if _entry_name.startswith('/'):
-        if _entry_name.replace('/', '', 1).__contains__('/'):
-            _folder, _sep, _folder_entry = _entry_name.replace('/', '', 1).partition('/')
-            remove(f"{directory}{_folder}/{_folder_entry}.gpg")
-            encrypt_folder(_shm_folder, _shm_entry, _folder, _folder_entry)
-            system(f"gpg -d '{directory}{_folder}/{_folder_entry}.gpg'")
-        else:
-            remove(f"{directory}{_entry_name.replace('/', '', 1)}.gpg")
-            encrypt(_shm_folder, _shm_entry, _entry_name)
-            system(f"gpg -d '{directory}{_entry_name.replace('/', '', 1)}.gpg'")
-    else:
-        remove(f"{directory}{_entry_name}.gpg")
-        encrypt(_shm_folder, _shm_entry, _entry_name)
-        system(f"gpg -d '{directory}{_entry_name}.gpg'")
+    remove(f"{directory}{_entry_name}.gpg")
+    encrypt(_shm_folder, _shm_entry, _entry_name)
+    system(f"gpg -d '{directory}{_entry_name}.gpg'")
 
 
 def gen():  # generates a password for a new or an existing entry
@@ -335,6 +293,8 @@ def gen():  # generates a password for a new or an existing entry
         print()
         system(f"cd {directory}; ls -1 *")  # TODO replace with new list
     _entry_name = str(input('\nName of service: '))
+    if _entry_name.startswith('/'):
+        _entry_name = _entry_name.replace('/', '', 1)
     if argument != 'gen update' and argument != 'gen -u':
         _username = str(input('Username: '))
     _pass_length = int(input('How many characters should be in the password? '))
@@ -351,41 +311,14 @@ def gen():  # generates a password for a new or an existing entry
         open(f"/dev/shm/{_shm_folder}/{_shm_entry}", 'w').writelines(_username + '\n' + _pass_gen + '\n' + _url +
                                                                      '\n\n' + _notes + '\n\n')
     if argument != 'gen update' and argument != 'gen -u':
-        if _entry_name.startswith('/'):
-            if _entry_name.replace('/', '', 1).__contains__('/'):
-                _folder, _sep, _folder_entry = _entry_name.replace('/', '', 1).partition('/')  # TODO nested
-                encrypt_folder(_shm_folder, _shm_entry, _folder, _folder_entry)
-                system(f"gpg -d '{directory}{_folder}/{_folder_entry}.gpg'")
-            else:
-                encrypt(_shm_folder, _shm_entry, _entry_name)
-                system(f"gpg -d '{directory}{_entry_name.replace('/', '', 1)}.gpg'")
-        else:
-            encrypt(_shm_folder, _shm_entry, _entry_name)
-            system(f"gpg -d '{directory}{_entry_name}.gpg'")
+        encrypt(_shm_folder, _shm_entry, _entry_name)
+        system(f"gpg -d '{directory}{_entry_name}.gpg'")
     else:
-        if _entry_name.startswith('/'):
-            if _entry_name.replace('/', '', 1).__contains__('/'):
-                _folder, _sep, _folder_entry = _entry_name.replace('/', '', 1).partition(
-                    '/')  # TODO may not work w/nested
-                system(f"gpg -d --output /dev/shm/{_shm_folder}/{_shm_entry} '{directory}{_folder}/{_folder_entry}"
-                       f".gpg'")
-                replace_line(f"/dev/shm/{_shm_folder}/{_shm_entry}", 1, _pass_gen + '\n')
-                remove(f"{directory}{_folder}/{_folder_entry.replace('/', '', 1)}.gpg")
-                encrypt_folder(_shm_folder, _shm_entry, _folder, _folder_entry)
-                system(f"gpg -d '{directory}{_folder}/{_folder_entry}.gpg'")
-            else:
-                system(f"gpg -d --output /dev/shm/{_shm_folder}/{_shm_entry} '{directory}"
-                       f"{_entry_name.replace('/', '', 1)}.gpg'")
-                replace_line(f"/dev/shm/{_shm_folder}/'{_shm_entry}", 1, _pass_gen + '\n')
-                remove(f"{directory}{_entry_name.replace('/', '', 1)}.gpg")
-                encrypt(_shm_folder, _shm_entry, _entry_name)
-                system(f"gpg -d '{directory}{_entry_name.replace('/', '', 1)}.gpg'")
-        else:
-            system(f"gpg -d --output /dev/shm/{_shm_folder}/{_shm_entry} '{directory}{_entry_name}.gpg'")
-            replace_line(f"/dev/shm/{_shm_folder}/{_shm_entry}", 1, _pass_gen + '\n')
-            remove(f"{directory}{_entry_name}.gpg")
-            encrypt(_shm_folder, _shm_entry, _entry_name)
-            system(f"gpg -d '{directory}{_entry_name}.gpg'")
+        system(f"gpg -d --output /dev/shm/{_shm_folder}/{_shm_entry} '{directory}{_entry_name}.gpg'")
+        replace_line(f"/dev/shm/{_shm_folder}/{_shm_entry}", 1, _pass_gen + '\n')
+        remove(f"{directory}{_entry_name}.gpg")
+        encrypt(_shm_folder, _shm_entry, _entry_name)
+        system(f"gpg -d '{directory}{_entry_name}.gpg'")
 
 
 def copy_info():  # displays 'copy' syntax
@@ -430,6 +363,8 @@ def remove_data():  # deletes an entry or folder from both the client and the se
     print()
     system(f"cd {directory}; ls -1 *")  # TODO replace with new list
     _entry_name = str(input('\nWhat would you like to delete? '))
+    if _entry_name.startswith('/'):
+        _entry_name = _entry_name.replace('/', '', 1)
     try:
         system('gpg -d --output /dev/shm/sshyp.lock /var/lib/sshyp/lock.gpg')
         _unlock = open('/dev/shm/sshyp.lock', 'r').readlines()
@@ -437,21 +372,9 @@ def remove_data():  # deletes an entry or folder from both the client and the se
     except FileNotFoundError:
         print('\nAccess denied.\n')
         s_exit()
-    if _entry_name.startswith('/'):
-        if _entry_name.replace('/', '', 1).__contains__('/'):
-            if device_type == 'c':
-                system(f"ssh -p {port} {username_ssh}@{ip} \"rm -rf '{directory_ssh}{_entry_name.replace('/', '', 1)}"
-                       f".gpg'\"")
-            remove(f"{directory}{_entry_name.replace('/', '', 1)}.gpg")
-        else:
-            if device_type == 'c':
-                system(f"ssh -p {port} {username_ssh}@{ip} \"rm -rf '{directory_ssh}{_entry_name.replace('/', '', 1)}"
-                       f"'\"")
-            rmtree(f"{directory}{_entry_name.replace('/', '', 1)}")
-    else:
-        if device_type == 'c':
-            system(f"ssh -p {port} {username_ssh}@{ip} \"rm -rf '{directory_ssh}{_entry_name}.gpg'\"")
-        remove(f"{directory}{_entry_name}.gpg")
+    if device_type == 'c':
+        system(f"ssh -p {port} {username_ssh}@{ip} \"rm -rf '{directory_ssh}{_entry_name}.gpg'\"")
+    remove(f"{directory}{_entry_name}.gpg")
 
 
 # program start sequence
@@ -561,6 +484,6 @@ else:
 if argument != '' and argument != 'help' and argument != '--help' and argument != '-h' and argument != 'license' and \
         argument != 'add' and argument != 'sync' and argument != 'edit' and argument != 'copy username' and argument \
         != 'copy -u' and argument != 'copy password' and argument != 'copy -p' and argument != 'copy url' and argument \
-        != 'copy -l' and argument != 'copy note' and argument != 'copy -n' and argument != 'copy' and error == 0 and \
-        argument.startswith('/') is False:
+        != 'copy -l' and argument != 'copy note' and argument != 'copy -n' and argument != 'copy' and argument != \
+        'tweak' and error == 0 and argument.startswith('/') is False:
     sync()

@@ -12,11 +12,12 @@ New features:
 - an almost full re-write of the old "rpass" code used in the last release
     ^ includes more reliable argument parsing and various optimizations
 - new folders are now also created on the server
-**fix gen command using old notes system
+** fix gen command using old notes system
 ** address TODO comments
 
 Changes:
 
+- nested folders actually work now
 ** major sshync bugs fixed
     ^fixed many instances where sshync would refuse to upload/download
     ^fixed errors that were being thrown despite sshync working as intended
@@ -32,7 +33,6 @@ Planned for next update (The Fluffier Update):
     ^ "sshyp" will be officially packaged for Arch Linux, Alpine Linux, and Termux (Android).
     Debian/Ubuntu and Fedora packaging will come later.
 - imporove password generator to guarantee more secure results
-- fix nested folders
 
 Planned for next, next update (The Shears Update Pt. 1):
 
