@@ -1,4 +1,4 @@
-#!/usr/bin/python3.10
+#!/usr/bin/python3
 
 # TODO guarantee numbers in generated passwords
 # TODO fix syncing for multi-word entries
