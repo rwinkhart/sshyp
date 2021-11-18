@@ -467,7 +467,7 @@ elif argument == 'copy username' or argument == 'copy -u' or argument == 'copy p
     except KeyboardInterrupt:
         print('\n')
         s_exit()
-elif argument == 'remove' or argument == '-rm':
+elif argument == 'shear' or argument == '-rm':
     try:
         remove_data()
     except KeyboardInterrupt:
@@ -485,5 +485,5 @@ if argument != '' and argument != 'help' and argument != '--help' and argument !
         argument != 'add' and argument != 'sync' and argument != 'edit' and argument != 'copy username' and argument \
         != 'copy -u' and argument != 'copy password' and argument != 'copy -p' and argument != 'copy url' and argument \
         != 'copy -l' and argument != 'copy note' and argument != 'copy -n' and argument != 'copy' and argument != \
-        'tweak' and error == 0 and argument.startswith('/') is False:
+        'tweak' and argument != 'shear' and argument != '-rm' and error == 0 and argument.startswith('/') is False:
     sync()
