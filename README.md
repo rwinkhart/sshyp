@@ -50,11 +50,11 @@ Packaging for other distributions coming soon.
 Upon initial installation, be sure to run:
 
 ```
-sshyp config
+sshyp tweak
 ```
 
 This command will allow you to configure the settings necessary for sshyp to function.
-As of right now, sshyp is rapidly changing, and as such, it is a good idea to run "sshyp config" after each update.
+As of right now, sshyp is rapidly changing, and as such, it is a good idea to run "sshyp tweak" after each update.
 
 All available options can be found with:
 
@@ -65,7 +65,6 @@ sshyp --help
 # Roadmap
 Short-term Goals:
 
-- re-write bad, leftover "rpass" code
 - create new file list w/color and w/o file extensions
 - create a man page
 - overhaul argument system
@@ -84,10 +83,8 @@ Long-term Goals:
 # Known Issues
 Broken Features in Latest Release:
 
-- nested folders
-- multi-word folder/entry names
-- folder creation (broken on server-side)
+- the 'gen' function uses the older notetaking system
 
 Broken Features in Source:
 
-- probably something, but not the things above
+- the 'gen' function uses the older notetaking system
