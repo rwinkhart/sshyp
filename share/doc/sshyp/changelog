@@ -1,32 +1,22 @@
-sshyp 2021.12.01.fr2
+sshyp 2021.12.01.fr2.1
 
-The Lighter Update
+The Lighter Update - Patch 1
 
-This release features a major re-write of old "rpass" code.
-sshyp is now more reliable and better documented.
-
-New features:
-
-- a full re-write of the old "rpass" code used in the last release
-    ^ includes more reliable argument parsing and various optimizations
-- a full re-write of "sshync", many issues fixed
-    ^fixed many instances where sshync would refuse to upload/download
-    ^fixed errors that were being thrown despite sshync working as intended
-- new folders are now also created on the server
+This release is a hotfix for 2021.12.01.fr2.
 
 Changes:
 
-- nested folders actually work now
-- multi-word entry and folder titles are fixed
+- fixed a bug where "sshyp tweak" would not function on new installations
+- moved the argument parser to the global process
+- running "sshyp version" or "sshyp -v" no longer triggers syncing
+- folders are now created natively with Python, rather than through system commands
 
-An fr2.1 patch is planned for this version. It will include the following:
+An fr2.2 patch is planned for this version. It will include the following:
 
 - fixes for any new bugs that may be discovered in the new sshyp and sshync code
 - the gen command in sshyp will be updated to use the newer notetaking system
 - printing functions in sshyp will be combined into one function (arguments will determine section to print)
 - file not found exceptions will be re-implemented
-- the argument parser will be moved to the global process (no need for it to be in a function)
-- folders will be created natively in python
 
 Planned for next major update (The Fluffier Update):
 
@@ -40,6 +30,7 @@ Planned for next major update (The Fluffier Update):
 
 Planned for next, next major update (The Shears Update Pt. 1):
 
+- enforce permissions on the server-side
 - allow for copying entire notes (not just first line)
 - allow for multi-client deletion... somehow
 - detatch sshync and make it a separate package

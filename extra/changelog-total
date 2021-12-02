@@ -1,5 +1,55 @@
 <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 
+sshyp 2021.12.01.fr2.1
+
+The Lighter Update - Patch 1
+
+This release is a hotfix for 2021.12.01.fr2.
+
+Changes:
+
+- fixed a bug where "sshyp tweak" would not function on new installations
+- moved the argument parser to the global process
+- running "sshyp version" or "sshyp -v" no longer triggers syncing
+- folders are now created natively with Python, rather than through system commands
+
+An fr2.2 patch is planned for this version. It will include the following:
+
+- fixes for any new bugs that may be discovered in the new sshyp and sshync code
+- the gen command in sshyp will be updated to use the newer notetaking system
+- printing functions in sshyp will be combined into one function (arguments will determine section to print)
+- file not found exceptions will be re-implemented
+
+Planned for next major update (The Fluffier Update):
+
+- new visual features
+    ^ this includes the new file list and thematic text art. sshyp will be
+    getting a retro computing theme.
+- packages for more environments
+    ^ "sshyp" will be officially packaged for Arch Linux, Alpine Linux, and Termux (Android).
+    Debian/Ubuntu and Fedora packaging will come later.
+- imporove password generator to guarantee more secure results
+
+Planned for next, next major update (The Shears Update Pt. 1):
+
+- enforce permissions on the server-side
+- allow for copying entire notes (not just first line)
+- allow for multi-client deletion... somehow
+- detatch sshync and make it a separate package
+- manpage
+
+Planned for next, next, next major update (The Shears Update Pt. 2):
+
+- ability to pass entries as arguments for more functions
+- auto-completion on tab (currently unsure of best way to make this work)
+
+Backlog:
+
+- package for more Linux distributions, such as Debian and Fedora
+- create separate gui frontend targetting mobile and desktop Linux
+
+<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+
 sshyp 2021.12.01.fr2
 
 The Lighter Update
