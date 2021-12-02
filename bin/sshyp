@@ -12,16 +12,6 @@ import string
 
 # utility functions
 
-def argument_filter():  # filters arguments to usable text
-    _argument_list = argv
-    _i, _argument = 0, ''
-    for _ in _argument_list:
-        while _i < len(_argument_list) - 1:
-            _i += 1
-            _argument += _argument_list[_i] + ' '
-    return _argument[:-1]
-
-
 def replace_line(file_name, line_num, text):  # replaces text in a given line with different text
     _lines = open(file_name, 'r').readlines()
     _lines[line_num] = text
@@ -372,27 +362,41 @@ def remove_data():  # deletes an entry or folder from both the client and the se
 
 # program start sequence
 
-# import saved userdata
-device_type = ''
-try:
-    device_type = open('/var/lib/sshyp/sshyp-device').read().strip()
-    if device_type == 'c':
-        gpg_id = open('/var/lib/sshyp/sshyp-gpg').read().strip()
-        ssh_info = sshync.get_profile('/var/lib/sshyp/sshyp.sshync')
-        username_ssh = ssh_info[0].replace('\n', '')
-        ip = ssh_info[1].replace('\n', '')
-        port = ssh_info[2].replace('\n', '')
-        directory = str(ssh_info[3].replace('\n', ''))
-        directory_ssh = '/home/' + username_ssh + '/.password-pasture/'
-except FileNotFoundError:
-    if device_type != 's' and device_type != 'S':
-        print('\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
-        print("Not all necessary configuration files are present. Please run 'sshyp tweak'!")
-        print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n')
-    s_exit()
-
 # retrieve typed argument
-argument = argument_filter()
+argument_list = argv
+i, argument = 0, ''
+for _ in argument_list:
+    while i < len(argument_list) - 1:
+        i += 1
+        argument += argument_list[i] + ' '
+argument = argument[:-1]
+
+# import saved userdata
+if argument != 'tweak':
+    device_type = ''
+    try:
+        device_type = open('/var/lib/sshyp/sshyp-device').read().strip()
+        if device_type == 'c':
+            gpg_id = open('/var/lib/sshyp/sshyp-gpg').read().strip()
+            ssh_info = sshync.get_profile('/var/lib/sshyp/sshyp.sshync')
+            username_ssh = ssh_info[0].replace('\n', '')
+            ip = ssh_info[1].replace('\n', '')
+            port = ssh_info[2].replace('\n', '')
+            directory = str(ssh_info[3].replace('\n', ''))
+            directory_ssh = '/home/' + username_ssh + '/.password-pasture/'
+    except FileNotFoundError:
+        if device_type != 's' and device_type != 'S':
+            print('\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
+            print("Not all necessary configuration files are present. Please run 'sshyp tweak'!")
+            print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n')
+        s_exit()
+else:
+    try:
+        tweak()
+        s_exit()
+    except KeyboardInterrupt:
+        print('\n')
+        s_exit()
 
 # run function based on argument
 error = 0  # create an error flag to determine if syncing should occur at end
@@ -401,12 +405,6 @@ if argument.startswith('/'):
 elif argument == '':
     try:
         no_arg()
-    except KeyboardInterrupt:
-        print('\n')
-        s_exit()
-elif argument == 'tweak':
-    try:
-        tweak()
     except KeyboardInterrupt:
         print('\n')
         s_exit()
@@ -478,5 +476,5 @@ if argument != '' and argument != 'help' and argument != '--help' and argument !
         argument != 'add' and argument != 'sync' and argument != 'edit' and argument != 'copy username' and argument \
         != 'copy -u' and argument != 'copy password' and argument != 'copy -p' and argument != 'copy url' and argument \
         != 'copy -l' and argument != 'copy note' and argument != 'copy -n' and argument != 'copy' and argument != \
-        'tweak' and argument != 'shear' and argument != '-rm' and error == 0 and argument.startswith('/') is False:
+        'shear' and argument != '-rm' and error == 0 and argument.startswith('/') is False:
     sync()
