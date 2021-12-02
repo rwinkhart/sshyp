@@ -1,12 +1,5 @@
 #!/usr/bin/python3
 
-# TODO guarantee numbers in generated passwords
-# TODO fix syncing for multi-word entries
-# TODO combine all print-only functions into one and print based on argument passed to function
-# TODO make new, colored list its own callable function
-# TODO test /dev/shm security
-# TODO re-add missing file not found exceptions
-
 # external modules
 
 from os import environ, remove, system
@@ -19,7 +12,7 @@ import string
 
 # utility functions
 
-def argument_filter():  # filters arguments to usable text TODO move to global process, update incrementer
+def argument_filter():  # filters arguments to usable text
     _argument_list = argv
     _i, _argument = 0, ''
     for _ in _argument_list:
@@ -119,7 +112,7 @@ def tweak():  # runs configuration wizard
         print('\nConfiguration complete!\n')
 
 
-def helper():  # displays help menu TODO update with text art, thematic arguments
+def helper():  # displays help menu
     print('\nsshyp  Copyright (C) 2021  Randall Winkhart')
     print("This is free software, and you are welcome to redistribute it under certain conditions;\nthis program comes "
           "with ABSOLUTELY NO WARRANTY;\ntype `sshyp license' for details.")
@@ -156,18 +149,18 @@ def helper():  # displays help menu TODO update with text art, thematic argument
     print("When specifying entry names, do not include the file extension! '.gpg' is assumed!\n")
 
 
-def version():  # displays version information TODO update with text art
+def version():  # displays version information
     print('\n////////////////////////////////////////////////////////')
     print('/                                                      /')
     print('/     sshyp  Copyright (C) 2021  Randall Winkhart      /')
     print('/                                                      /')
     print('/               Version 2021.12.01.fr2                 /')
-    print('/            The Behind the Scenes Update              /')
+    print('/                 The Lighter Update                   /')
     print('/                                                      /')
     print('////////////////////////////////////////////////////////\n')
 
 
-def no_arg():  # displays a list of entries and gives an option to select one for viewing TODO new, colored list
+def no_arg():  # displays a list of entries and gives an option to select one for viewing
     print("\nFor a list of usable commands, run 'sshyp help'.\n")
     system(f"cd {directory}; ls -1 *")
     _read_entry = str(input('\nEntry to read: '))
