@@ -116,7 +116,7 @@ def tweak():  # runs configuration wizard
         sshync.make_profile('/var/lib/sshyp/sshyp.sshync', f"/home/{environ.get('USER')}/.password-pasture/",
                             f"/home/{_username_ssh}/.password-pasture/", f"/home/{environ.get('USER')}/.ssh/sshyp",
                             _ip, _port, _username_ssh)
-        print('\nConfiguration complete!')
+        print('\nConfiguration complete!\n')
 
 
 def helper():  # displays help menu TODO update with text art, thematic arguments
@@ -161,8 +161,8 @@ def version():  # displays version information TODO update with text art
     print('/                                                      /')
     print('/     sshyp  Copyright (C) 2021  Randall Winkhart      /')
     print('/                                                      /')
-    print('/               Version 2021.11.20.fr2                 /')
-    print('/                The Rewritten Update                  /')
+    print('/               Version 2021.12.01.fr2                 /')
+    print('/            The Behind the Scenes Update              /')
     print('/                                                      /')
     print('////////////////////////////////////////////////////////\n')
 
