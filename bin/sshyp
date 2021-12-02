@@ -144,7 +144,7 @@ def version():  # displays version information
     print('/                                                      /')
     print('/     sshyp  Copyright (C) 2021  Randall Winkhart      /')
     print('/                                                      /')
-    print('/               Version 2021.12.01.fr2                 /')
+    print('/              Version 2021.12.01.fr2.1                /')
     print('/                 The Lighter Update                   /')
     print('/                                                      /')
     print('////////////////////////////////////////////////////////\n')
@@ -476,5 +476,6 @@ if argument != '' and argument != 'help' and argument != '--help' and argument !
         argument != 'add' and argument != 'sync' and argument != 'edit' and argument != 'copy username' and argument \
         != 'copy -u' and argument != 'copy password' and argument != 'copy -p' and argument != 'copy url' and argument \
         != 'copy -l' and argument != 'copy note' and argument != 'copy -n' and argument != 'copy' and argument != \
-        'shear' and argument != '-rm' and error == 0 and argument.startswith('/') is False:
+        'shear' and argument != '-rm' and argument != 'version' and argument != '-v' and error == 0 and \
+        argument.startswith('/') is False:
     sync()
