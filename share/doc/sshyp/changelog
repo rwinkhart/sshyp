@@ -13,10 +13,12 @@ Changes:
 
 An fr2.2 patch is planned for this version. It will include the following:
 
+- a major fix for "/var/lib/sshync_database" needing to already exist server-side
 - fixes for any new bugs that may be discovered in the new sshyp and sshync code
 - the gen command in sshyp will be updated to use the newer notetaking system
 - printing functions in sshyp will be combined into one function (arguments will determine section to print)
 - file not found exceptions will be re-implemented
+- when syncing, a check will be made to see if any folders are not on all devices and this will be corrected
 
 Planned for next major update (The Fluffier Update):
 
