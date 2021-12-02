@@ -1,6 +1,6 @@
 <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 
-sshyp 2021.11.20.fr2
+sshyp 2021.12.01.fr2
 
 The Lighter Update
 
@@ -9,22 +9,28 @@ sshyp is now more reliable and better documented.
 
 New features:
 
-- an almost full re-write of the old "rpass" code used in the last release
+- a full re-write of the old "rpass" code used in the last release
     ^ includes more reliable argument parsing and various optimizations
+- a full re-write of "sshync", many issues fixed
+    ^fixed many instances where sshync would refuse to upload/download
+    ^fixed errors that were being thrown despite sshync working as intended
 - new folders are now also created on the server
-** fix gen command using old notes system
-** address TODO comments
 
 Changes:
 
 - nested folders actually work now
-** major sshync bugs fixed
-    ^fixed many instances where sshync would refuse to upload/download
-    ^fixed errors that were being thrown despite sshync working as intended
-** updated and optimized code for sshync
-    ^f-strings, address TODO comments
+- multi-word entry and folder titles are fixed
 
-Planned for next update (The Fluffier Update):
+An fr2.1 patch is planned for this version. It will include the following:
+
+- fixes for any new bugs that may be discovered in the new sshyp and sshync code
+- the gen command in sshyp will be updated to use the newer notetaking system
+- printing functions in sshyp will be combined into one function (arguments will determine section to print)
+- file not found exceptions will be re-implemented
+- the argument parser will be moved to the global process (no need for it to be in a function)
+- folders will be created natively in python
+
+Planned for next major update (The Fluffier Update):
 
 - new visual features
     ^ this includes the new file list and thematic text art. sshyp will be
@@ -34,14 +40,14 @@ Planned for next update (The Fluffier Update):
     Debian/Ubuntu and Fedora packaging will come later.
 - imporove password generator to guarantee more secure results
 
-Planned for next, next update (The Shears Update Pt. 1):
+Planned for next, next major update (The Shears Update Pt. 1):
 
 - allow for copying entire notes (not just first line)
 - allow for multi-client deletion... somehow
 - detatch sshync and make it a separate package
 - manpage
 
-Planned for next, next, next update (The Shears Update Pt. 2):
+Planned for next, next, next major update (The Shears Update Pt. 2):
 
 - ability to pass entries as arguments for more functions
 - auto-completion on tab (currently unsure of best way to make this work)
