@@ -148,7 +148,7 @@ def version():  # displays version information
     print('/                                                      /')
     print('/     sshyp  Copyright (C) 2021  Randall Winkhart      /')
     print('/                                                      /')
-    print('/              Version 2021.12.01.fr2.1                /')
+    print('/              Version 2021.12.01.fr2.2                /')
     print('/                 The Lighter Update                   /')
     print('/                                                      /')
     print('////////////////////////////////////////////////////////\n')
