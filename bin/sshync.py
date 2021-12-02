@@ -1,216 +1,106 @@
 #!/usr/bin/python3
 
-# Main Targets:
-# TODO Make it so that when a new folder is created in sshyp, it is automatically created on the remote server
-# TODO Replace references to sshyp directory with a changeable variable
-# TODO Clean everything up and move sshync to a separate package
-# TODO Add dry run support
-# TODO use partition command instead of split for separating paths
-# TODO use classes!
-
-# sshync 2021.11.05.unreleased5
-# sshync was created to solve a problem with rpass/sshyp, and as such, sshync will be bundled with sshyp until it is
-# polished enough for a standalone release
-
-# sshync is a wrapper around sftp that allows easy remote directory synchronization via Python
-# openssh (on POSIX compliant Unix) is required
-
-# sshync will always overwrite the older files with the newer files, regardless of all other conditions
-#   ^the age is determined by the date and time of the last modification to the files
-
-# syncing via sshync is always done recursively
+# sshync 2021.12.01.unreleased6
 
 # external modules
 
-from os import walk
-from os import system as term
-from os.path import getmtime
-from os.path import join as path_join
+from os import system, remove, walk
+from os.path import getmtime, join
+from sys import exit as s_exit
 
 
-# internal modules
+# utility functions
+
+def get_titles_mods(_directory, _destination, _user_data):
+    _title_list, _mod_list = [], []
+    # local fetching
+    if _destination == 'l':
+        if type(_user_data) == str:
+            _user_data = str(_user_data).strip('(').strip(')').replace(' ', '').split(',')
+        remove(_user_data[6] + 'sshync_database')
+        for _root, _directories, _files in walk(_directory):
+            for _filename in _files:
+                _title_list.append(join(_root.replace(_directory, '', 1), _filename))
+                _mod_list.append(int(getmtime(join(_root, _filename))))
+        i = -1
+        for _title in _title_list:
+            open(_user_data[6] + 'sshync_database', 'a').write(str(_title) + '\n')
+        open(_user_data[6] + 'sshync_database', 'a').write('^&*\n')
+        for _mod in _mod_list:
+            open(_user_data[6] + 'sshync_database', 'a').write(str(_mod) + '\n')
+    # remote fetching
+    if _destination == 'r':
+        system(f"ssh -i '{_user_data[5]}' -p {_user_data[2]} {_user_data[0]}@{_user_data[1]} \"python -c 'import sshync"
+               f"; sshync.get_titles_mods(\"'\"{_user_data[4]}\"'\", \"'\"l\"'\", \"'\"{_user_data}\"'\")'\"")
+        system(f"sftp -P {_user_data[2]} {_user_data[0]}@{_user_data[1]}:'{_user_data[6]}sshync_database' "
+               f"'{_user_data[6]}sshync_database'")
+        _titles, _sep, _mods = ' '.join(open(_user_data[6] + 'sshync_database').readlines()).replace('\n', '').partition('^&*')
+        _title_list, _mod_list = _titles.split(' ')[:-1], _mods.split(' ')[1:]
+    return _title_list, _mod_list
 
 
-# recursively scans a local directory for all files and saves file paths and mod times to lists
-def get_file_paths_mod(directory, name_database, time_database):
-    file_paths = []
-    temp_mod_times = []
-    mod_times = []
-    for root, directories, files in walk(directory):
-        for filename in files:
-            filepath = path_join(root, filename)
-            file_paths.append(filepath)
-            temp_mod_times.append(str(getmtime(filepath)))
-    for time in temp_mod_times:
-        mod_times.append(round(float(time), 2))
-    open(name_database, 'w').write(str(file_paths))
-    open(time_database, 'w').write(str(mod_times))
-    return file_paths, mod_times
+def sort_titles_mods(_list_1, _list_2):
+    _title_list_2_sorted, _mod_list_2_sorted = [], []
+    # title sorting
+    for _title in _list_1[0]:
+        if _title in _list_2[0]:
+            _title_list_2_sorted.append(_title)
+    for _title in _list_2[0]:
+        if _title not in _title_list_2_sorted:
+            _title_list_2_sorted.append(_title)
+    # mod time sorting
+    for _title in _title_list_2_sorted:
+        _mod_list_2_sorted.append(_list_2[1][_list_2[0].index(_title)])
+    return _title_list_2_sorted, _mod_list_2_sorted
 
 
-# recursively scans a remote directory for all files and saves file paths and mod times to lists
-def get_file_paths_mod_remote(profile_dir):
-    # import profile data
-    profile_data = get_profile(profile_dir)
-    user = profile_data[0].replace('\n', '')
-    ip = profile_data[1].replace('\n', '')
-    port = profile_data[2].replace('\n', '')
-    remote_dir = profile_data[4].replace('\n', '')
-    identity = profile_data[5].replace('\n', '')
-    term("ssh -i " + "'" + identity + "'" + " -p " + port + " " + user + "@" + ip + " \"python -c \'import sshync; "
-                                                                                    "sshync.get_file_paths_mod(" +
-         "\"'\"" + remote_dir + "/\"'\", " + "\"'\"/var/lib/sshyp/sshyncdatabase_names\"'\", " +
-         "\"'\"/var/lib/sshyp/sshyncdatabase_times\"'\")\'\"")
-    term(
-        'sftp -P ' + port + ' ' + user + '@' + ip + ':/var/lib/sshyp/sshyncdatabase_names ' +
-        '/var/lib/sshyp/sshyncdatabase_names')
-    term(
-        'sftp -P ' + port + ' ' + user + '@' + ip + ':/var/lib/sshyp/sshyncdatabase_times ' +
-        '/var/lib/sshyp/sshyncdatabase_times')
-    remote_mod_names = (open('/var/lib/sshyp/sshyncdatabase_names').read()).replace('[', '').replace(']', '').replace(
-        ' ', '').replace("'", '').split(',')
-    remote_mod_times = (open('/var/lib/sshyp/sshyncdatabase_times').read()).replace('[', '').replace(']', '').replace(
-        ' ', '').replace("'", '').split(',')
-    return remote_mod_names, remote_mod_times
+def make_profile(_profile_dir, _local_dir, _remote_dir, _identity, _ip, _port, _user):
+    open(_profile_dir, 'w').write(_user + '\n' + _ip + '\n' + _port + '\n' + _local_dir + '\n' + _remote_dir + '\n' +
+                                  _identity + '\n')
 
 
-# regular profiles check the mod time of every individual file in the directory, making them slow but versatile
-def make_profile(profile_dir, local_dir, remote_dir, identity, ip, port, user):
-    open(profile_dir, 'w').write(user + '\n' + ip + '\n' + port + '\n' + local_dir + '\n' + remote_dir + '\n' + identity
-                                 + '\n')
-
-
-# returns the settings for a specified profile
-def get_profile(profile_dir):
+def get_profile(_profile_dir):
     try:
-        profile_data = open(profile_dir).readlines()
+        _profile_data = open(_profile_dir).readlines()
     except (FileNotFoundError, IndexError):
-        profile_data = 0
-    return profile_data
+        print('\nEither the profile does not exist, or it is corrupted.\n')
+        _profile_data = None
+        s_exit()
+    # extract data from profile
+    _user = _profile_data[0].replace('\n', '')
+    _ip = _profile_data[1].replace('\n', '')
+    _port = _profile_data[2].replace('\n', '')
+    _local_dir = _profile_data[3].replace('\n', '')
+    _remote_dir = _profile_data[4].replace('\n', '')
+    _identity = _profile_data[5].replace('\n', '')
+    _data_dir = ' '.join(_profile_dir.split('/')[:-1]).replace(' ', '/') + '/'
+    return _user, _ip, _port, _local_dir, _remote_dir, _identity, _data_dir
 
 
-# sorts name lists so that local and remote are in the same order
-def name_sort(local_names, remote_names):
-    remote_names_new = []
-    for ele in local_names:
-        if ele in remote_names:
-            remote_names_new.append(ele)
-    for ele in remote_names:
-        if ele not in remote_names_new:
-            remote_names_new.append(ele)
-    return remote_names_new
-
-
-# sorts time lists to compensate for name list re-ordering
-def time_sort(old_names, new_names, old_times):
-    remote_mod_times_new = []
-    new_pos = -1
-    for title in new_names:
-        new_pos += 1
-        if title in old_names:
-            old_pos = old_names.index(title)
-            try:
-                remote_mod_times_new.append(old_times[old_pos])
-            except IndexError:
-                pass
-    return remote_mod_times_new
-
-
-getter_loop_count = -1
-
-
-def loop_getter(split_remote_dir):
-    global getter_loop_count
-    getter_loop_count += 1
-    new_var = split_remote_dir[getter_loop_count] + '/'
-    return new_var
-
-
-def run_profile(profile_dir):
-    # import profile data
-    profile_data = get_profile(profile_dir)
-    user = profile_data[0].replace('\n', '')
-    ip = profile_data[1].replace('\n', '')
-    port = profile_data[2].replace('\n', '')
-    local_dir = profile_data[3].replace('\n', '')
-    remote_dir = profile_data[4].replace('\n', '')
-    identity = profile_data[5].replace('\n', '')
-    # get file modification times
-    local_mod_names, local_mod_times = get_file_paths_mod(local_dir + '/', '/var/lib/sshyp/sshyncdatabase_names',
-                                                          '/var/lib/sshyp/sshyncdatabase_times')
-    remote_mod_times = []
-    remote_mod_names, remote_mod_times_temp = get_file_paths_mod_remote('/var/lib/sshyp/sshyp.sshync')
-    try:
-        for time in remote_mod_times_temp:  # remove quotes from remote_mod_times
-            remote_mod_times.append(float(time))
-    except ValueError:
-        pass
-    lmod_short = []
-    rmod_short = []
-    matching_names = []
-    matching_times_local = []
-    matching_times_remote = []
-    for lmod in local_mod_names:
-        lmod_short.append(lmod.replace(local_dir, ''))
-    for rmod in remote_mod_names:
-        rmod_short.append(rmod.replace(remote_dir, ''))
-    rmod_short_old = rmod_short
-    rmod_short = name_sort(lmod_short, rmod_short)
-    remote_mod_times = time_sort(rmod_short_old, rmod_short, remote_mod_times)
-    i = -1
-    for lshort in lmod_short:
-        i += 1
-        if lshort in rmod_short:
-            matching_names.append(lshort)
-            matching_times_local.append(local_mod_times[i])
+def run_profile(_profile_dir):
+    _user_data = get_profile(_profile_dir)
+    _remote_titles_mods_saver = get_titles_mods(_user_data[4], 'r', _user_data)  # saved to prevent re-walking directory
+    _index_l = sort_titles_mods(_remote_titles_mods_saver, get_titles_mods(_user_data[3], 'l', _user_data))
+    _index_r = sort_titles_mods(_index_l, _remote_titles_mods_saver)
+    _i = -1
+    for _title in _index_l[0]:
+        _i += 1
+        if _title in _index_r[0]:
+            # compare mod times and sync
+            if int(_index_l[1][_i]) > int(_index_r[1][_i]):
+                print(f"[{_title}] Local is newer, uploading...")
+                system(f"sftp -p -i '{_user_data[5]}' -P {_user_data[2]} {_user_data[0]}@{_user_data[1]}:"
+                       f"{_user_data[4]}{_title} <<< $'put {_user_data[3]}{_title}'")
+            elif int(_index_l[1][_i]) < int(_index_r[1][_i]):
+                print(f"[{_title}] Remote is newer, downloading...")
+                system(f"sftp -p -i '{_user_data[5]}' -P {_user_data[2]} {_user_data[0]}@{_user_data[1]}:"
+                       f"{_user_data[4]}{_title} {_user_data[3]}{_title}")
         else:
-            print('Uploading ' + lshort)
-            lshort_split = lshort.replace('/', '', 1).split('/')
-
-            c = -1
-            for _ in lshort_split:
-                c += 1
-
-            global getter_loop_count
-            getter_loop_count = -1
-            q = ''
-            for _ in range(c):
-                q += loop_getter(lshort_split)
-
-            term('sftp -p -i ' + "'" + identity + "' " + '-P ' + port + ' ' + user + '@' + ip + ':' + remote_dir + q +
-                 " <<< $'put " + local_dir + lshort.replace('/', '', 1) + "'")
-    i = -1
-    for rshort in rmod_short:
-        i += 1
-        if rshort in lmod_short:
-            matching_times_remote.append(float(remote_mod_times[i]))
-        else:
-            print('Downloading ' + rshort)
-            term('sftp -p -i ' + "'" + identity + "' " + '-P ' + port + ' ' + user + '@' + ip + ':' + remote_dir +
-                 rshort.replace('/', '', 1) + ' ' + local_dir + rshort.replace('/', '', 1))
-    i = -1
-    for ltime in matching_times_local:
-        i += 1
-        ltime = int(ltime)
-        if ltime == int(matching_times_remote[i]):
-            print('Local ' + matching_names[i] + ' is up to date, not syncing.')
-        elif ltime > int(matching_times_remote[i]):
-            print('Local ' + matching_names[i] + ' is newer, uploading.')
-            matching_names_split = matching_names[i].replace('/', '', 1).split('/')
-
-            c = -1
-            for _ in matching_names_split:
-                c += 1
-
-            getter_loop_count = -1
-            q = ''
-            for _ in range(c):
-                q += loop_getter(matching_names_split)
-
-            term('sftp -p -i ' + "'" + identity + "' " + '-P ' + port + ' ' + user + '@' + ip + ':' + remote_dir + q +
-                 " <<< $'put " + local_dir + matching_names[i].replace('/', '', 1) + "'")
-
-        elif ltime < int(matching_times_remote[i]):
-            print('Local ' + matching_names[i] + ' is older, downloading.')
-            term('sftp -p -i ' + "'" + identity + "' " + '-P ' + port + ' ' + user + '@' + ip + ':' + remote_dir +
-                 matching_names[i].replace('/', '', 1) + ' ' + local_dir + matching_names[i].replace('/', '', 1))
+            print(f"[{_title}] Not on remote server, uploading...")
+            system(f"sftp -p -i '{_user_data[5]}' -P {_user_data[2]} {_user_data[0]}@{_user_data[1]}:{_user_data[4]}"
+                   f"{_title} <<< $'put {_user_data[3]}{_title}'")
+    for _title in _index_r[0]:
+        if _title not in _index_l[0]:
+            print(f"[{_title}] Not in local directory, downloading...")
+            system(f"sftp -p -i '{_user_data[5]}' -P {_user_data[2]} {_user_data[0]}@{_user_data[1]}:{_user_data[4]}"
+                   f"{_title} {_user_data[3]}{_title}")
