@@ -57,7 +57,8 @@ def tweak():  # runs configuration wizard
     if _device_type == 'S' or _device_type == 's':
         open("/var/lib/sshyp/sshyp-device", 'w').write(_device_type)
         copy('/usr/bin/sshync.py', f"/home/{environ.get('USER')}/")
-        print('\nMake sure the ssh service is running and properly configured.\n\nConfiguration complete!')
+        print('\nMake sure the ssh service is running and properly configured.\n\nConfiguration complete!\n')
+        s_exit()
     else:
         # device type configuration
         _device_type = 'c'  # ensure device type flag is properly set
