@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-# sshync 2021.12.01.unreleased6
+# sshync 2021.12.01.unreleased7
 
 # external modules
 
@@ -17,7 +17,10 @@ def get_titles_mods(_directory, _destination, _user_data):
     if _destination == 'l':
         if type(_user_data) == str:
             _user_data = str(_user_data).strip('(').strip(')').replace(' ', '').split(',')
-        remove(_user_data[6] + 'sshync_database')
+        try:
+            remove(_user_data[6] + 'sshync_database')
+        except FileNotFoundError:
+            pass
         for _root, _directories, _files in walk(_directory):
             for _filename in _files:
                 _title_list.append(join(_root.replace(_directory, '', 1), _filename))
@@ -89,18 +92,18 @@ def run_profile(_profile_dir):
             # compare mod times and sync
             if int(_index_l[1][_i]) > int(_index_r[1][_i]):
                 print(f"[{_title}] Local is newer, uploading...")
-                system(f"sftp -p -i '{_user_data[5]}' -P {_user_data[2]} {_user_data[0]}@{_user_data[1]}:"
-                       f"{_user_data[4]}{_title} <<< $'put {_user_data[3]}{_title}'")
+                system(f"sftp -p -q -i '{_user_data[5]}' -P {_user_data[2]} {_user_data[0]}@{_user_data[1]}:"
+                       f"{_user_data[4]}{'/'.join(_title.split('/')[:-1]) + '/'} <<< $'put {_user_data[3]}{_title}'")
             elif int(_index_l[1][_i]) < int(_index_r[1][_i]):
                 print(f"[{_title}] Remote is newer, downloading...")
-                system(f"sftp -p -i '{_user_data[5]}' -P {_user_data[2]} {_user_data[0]}@{_user_data[1]}:"
-                       f"{_user_data[4]}{_title} {_user_data[3]}{_title}")
+                system(f"sftp -p -q -i '{_user_data[5]}' -P {_user_data[2]} {_user_data[0]}@{_user_data[1]}:"
+                       f"{_user_data[4]}{_title} {_user_data[3]}{'/'.join(_title.split('/')[:-1]) + '/'}")
         else:
             print(f"[{_title}] Not on remote server, uploading...")
-            system(f"sftp -p -i '{_user_data[5]}' -P {_user_data[2]} {_user_data[0]}@{_user_data[1]}:{_user_data[4]}"
-                   f"{_title} <<< $'put {_user_data[3]}{_title}'")
+            system(f"sftp -p -q -i '{_user_data[5]}' -P {_user_data[2]} {_user_data[0]}@{_user_data[1]}:{_user_data[4]}"
+                   f"{'/'.join(_title.split('/')[:-1]) + '/'} <<< $'put {_user_data[3]}{_title}'")
     for _title in _index_r[0]:
         if _title not in _index_l[0]:
             print(f"[{_title}] Not in local directory, downloading...")
-            system(f"sftp -p -i '{_user_data[5]}' -P {_user_data[2]} {_user_data[0]}@{_user_data[1]}:{_user_data[4]}"
-                   f"{_title} {_user_data[3]}{_title}")
+            system(f"sftp -p -q -i '{_user_data[5]}' -P {_user_data[2]} {_user_data[0]}@{_user_data[1]}:{_user_data[4]}"
+                   f"{_title} {_user_data[3]}{'/'.join(_title.split('/')[:-1]) + '/'}")
