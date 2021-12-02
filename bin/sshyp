@@ -2,7 +2,7 @@
 
 # external modules
 
-from os import environ, remove, system
+from os import environ, mkdir, remove, system
 from shutil import copy, move, rmtree
 from sys import argv, exit as s_exit
 import random
@@ -23,7 +23,7 @@ def shm_gen():  # generates random folder in /dev/shm for security and returns r
                               for _ in range(random.randint(10, 30)))
     _shm_entry_gen = ''.join(random.SystemRandom().choice(string.ascii_letters + string.digits)
                              for _ in range(random.randint(10, 30)))
-    system(f"mkdir -p /dev/shm/{_shm_folder_gen}")  # TODO generate with Python
+    mkdir(f"/dev/shm/{_shm_folder_gen}", 0o700)
     return _shm_folder_gen, _shm_entry_gen
 
 
@@ -47,7 +47,10 @@ def edit_note(_shm_folder, _shm_entry):
 
 def tweak():  # runs configuration wizard
     # storage directory creation
-    system(f"mkdir -p /home/{environ.get('USER')}/.password-pasture")
+    try:
+        mkdir(f"/home/{environ.get('USER')}/.password-pasture", 0o700)
+    except FileExistsError:
+        pass
 
     # device type configuration
     _device_type = input('\nIs this installation for a client or for a server? (C/s) ')
@@ -215,7 +218,7 @@ def add_entry():  # adds a new entry
 
 def add_folder():  # creates a new folder
     _folder_name = str(input('Name of new folder: '))
-    system(f"mkdir '{directory}{_folder_name}'")  # TODO create using Python
+    mkdir(directory + _folder_name, 0o700)
     system(f"ssh -p {port} {username_ssh}@{ip} \"mkdir -p '{directory_ssh}{_folder_name}'\"")
 
 
