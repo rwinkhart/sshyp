@@ -1,22 +1,16 @@
-sshyp 2021.12.01.fr2.2
+sshyp 2021.12.04.fr2.3
 
-The Lighter Update - Patch 2
+The Lighter Update - Patch 3
 
-This release is a hotfix for 2021.12.01.fr2.1.
+This release is a hotfix for 2021.12.01.fr2.2.
 
 Changes:
 
-- a major fix for "/var/lib/sshync_database" needing to already exist server-side
-- a major fix for syncing functionality  (it should actually work now)
-- silenced some sftp output
-
-An fr2.3 patch is planned for this version. It will include the following:
-
-- fixes for any new bugs that may be discovered in the new sshyp and sshync code
-- the gen command in sshyp will be updated to use the newer notetaking system
-- printing functions in sshyp will be combined into one function (arguments will determine section to print)
-- file not found exceptions will be re-implemented
-- when syncing, a check will be made to see if any folders are not on all devices and this will be corrected
+- the gen command in sshyp has been updated to use the newer notetaking system
+- printing functions in sshyp have been combined into one function (arguments determine section to print)
+- file not found exceptions have been re-implemented
+- when syncing, a check is made to see if any folders are not on all devices - if the check comes back true, it is corrected
+- folders generated in /dev/shm are once again properly deleted with keyboard interrupts
 
 Planned for next major update (The Fluffier Update):
 
