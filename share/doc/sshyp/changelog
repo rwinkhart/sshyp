@@ -1,19 +1,13 @@
-sshyp 2021.12.01.fr2.1
+sshyp 2021.12.01.fr2.2
 
-The Lighter Update - Patch 1
+The Lighter Update - Patch 2
 
-This release is a hotfix for 2021.12.01.fr2.
+This release is a hotfix for 2021.12.01.fr2.1.
 
 Changes:
 
-- fixed a bug where "sshyp tweak" would not function on new installations
-- moved the argument parser to the global process
-- running "sshyp version" or "sshyp -v" no longer triggers syncing
-- folders are now created natively with Python, rather than through system commands
-
-An fr2.2 patch is planned for this version. It will include the following:
-
 - a major fix for "/var/lib/sshync_database" needing to already exist server-side
+- a major fix for syncing functionality
 - fixes for any new bugs that may be discovered in the new sshyp and sshync code
 - the gen command in sshyp will be updated to use the newer notetaking system
 - printing functions in sshyp will be combined into one function (arguments will determine section to print)
