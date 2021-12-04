@@ -83,7 +83,7 @@ def tweak():  # runs configuration wizard
 
         # ssh key configuration
         _ssh_gen = (input('\nMake sure the ssh service on the remote server is running and properly configured.'
-                          '\n\nrsync support requires a unique ssh key. Would you like to have this automatically '
+                          '\n\nSync support requires a unique ssh key. Would you like to have this automatically '
                           'generated? (Y/n) '))
         if _ssh_gen != 'n' and _ssh_gen != 'N':
             system('ssh-keygen -t ed25519 -f ~/.ssh/sshyp')
