@@ -97,7 +97,7 @@ def run_profile(_profile_dir):
             elif int(_index_l[1][_i]) < int(_index_r[1][_i]):
                 print(f"[{_title}] Remote is newer, downloading...")
                 system(f"sftp -p -q -i '{_user_data[5]}' -P {_user_data[2]} {_user_data[0]}@{_user_data[1]}:"
-                       f"{_user_data[4]}{_title} {_user_data[3]}{'/'.join(_title.split('/')[:-1]) + '/'}")
+                       f"'{_user_data[4]}'{_title} {_user_data[3]}{'/'.join(_title.split('/')[:-1]) + '/'}")
         else:
             print(f"[{_title}] Not on remote server, uploading...")
             system(f"sftp -p -q -i '{_user_data[5]}' -P {_user_data[2]} {_user_data[0]}@{_user_data[1]}:{_user_data[4]}"
@@ -105,5 +105,5 @@ def run_profile(_profile_dir):
     for _title in _index_r[0]:
         if _title not in _index_l[0]:
             print(f"[{_title}] Not in local directory, downloading...")
-            system(f"sftp -p -q -i '{_user_data[5]}' -P {_user_data[2]} {_user_data[0]}@{_user_data[1]}:{_user_data[4]}"
-                   f"{_title} {_user_data[3]}{'/'.join(_title.split('/')[:-1]) + '/'}")
+            system(f"sftp -p -q -i '{_user_data[5]}' -P {_user_data[2]} {_user_data[0]}@{_user_data[1]}:"
+                   f"'{_user_data[4]}{_title}' {_user_data[3]}{'/'.join(_title.split('/')[:-1]) + '/'}")
