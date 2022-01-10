@@ -10,7 +10,7 @@ New features:
 Changes:
 
 ** the gen command in sshyp has been updated to use the newer notetaking system
-** printing functions in sshyp have been combined into one function (arguments determine section to print)
+- printing functions in sshyp have been combined into one function (arguments determine section to print)
 ** file not found exceptions have been re-implemented
 ** when syncing, a check is made to see if any folders are not on all devices - if the check comes back true, it is corrected
 ** folders generated in /dev/shm are once again properly deleted with keyboard interrupts

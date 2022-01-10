@@ -106,52 +106,82 @@ def tweak():  # runs configuration wizard
         print('\nConfiguration complete!\n')
 
 
-def helper():  # displays help menu
-    print('\nsshyp  Copyright (C) 2021  Randall Winkhart')
-    print("This is free software, and you are welcome to redistribute it under certain conditions;\nthis program comes "
-          "with ABSOLUTELY NO WARRANTY;\ntype `sshyp license' for details.")
-    print('\nUSAGE: sshyp [/<entry name>] [OPTION] [FLAG]\n')
-    print('Options: ')
-    print('help/--help/-h           bring up this menu')
-    print('version/-v               display sshyp version info')
-    print('tweak                    configure sshyp')
-    print('add                      add an entry')
-    print('gen                      generate a new password')
-    print('edit                     edit an existing entry')
-    print('copy                     copy details of an entry to your clipboard')
-    print('shear/-rm                delete an existing entry')
-    print('sync/-s                  manually sync the entry directory via sshync\n')
-    print('Flags:')
-    print('add:')
-    print(' password/-p             add a password entry')
-    print(' note/-n                 add a note entry')
-    print(' folder/-f               add a new folder for entries')
-    print('edit:')
-    print(' rename/relocate/-r      rename or relocate an entry')
-    print(' username/-u             change the username of an entry')
-    print(' password/-p             change the password of an entry')
-    print(' note/-n                 change the note attached to an entry')
-    print(' url/-l                  change the url attached to an entry')
-    print('copy:')
-    print(' username/-u             copy the username of an entry to your clipboard')
-    print(' password/-p             copy the password of an entry to your clipboard')
-    print(' url/-l                  copy the URL of an entry to your clipboard')
-    print(' note/-n                 copy the note of an entry to your clipboard')
-    print('gen:')
-    print(' update/-u               generate a password for an existing entry\n')
-    print("Tip: You can quickly read an entry with 'sshyp /<entry name>'!")
-    print("When specifying entry names, do not include the file extension! '.gpg' is assumed!\n")
-
-
-def version():  # displays version information
-    print('\n////////////////////////////////////////////////////////')
-    print('/                                                      /')
-    print('/     sshyp  Copyright (C) 2021  Randall Winkhart      /')
-    print('/                                                      /')
-    print('/              Version 2022.01.10.fr2.3                /')
-    print('/                 The Lighter Update                   /')
-    print('/                                                      /')
-    print('////////////////////////////////////////////////////////\n')
+def print_info():  # prints help text based on argument
+    if argument == 'help' or argument == '--help' or argument == '-h':
+        print('\nsshyp  Copyright (C) 2021  Randall Winkhart')
+        print("This is free software, and you are welcome to redistribute it under certain conditions;\nthis program "
+              "comes with ABSOLUTELY NO WARRANTY;\ntype `sshyp license' for details.")
+        print('\nUSAGE: sshyp [/<entry name>] [OPTION] [FLAG]\n')
+        print('Options: ')
+        print('help/--help/-h           bring up this menu')
+        print('version/-v               display sshyp version info')
+        print('tweak                    configure sshyp')
+        print('add                      add an entry')
+        print('gen                      generate a new password')
+        print('edit                     edit an existing entry')
+        print('copy                     copy details of an entry to your clipboard')
+        print('shear/-rm                delete an existing entry')
+        print('sync/-s                  manually sync the entry directory via sshync\n')
+        print('Flags:')
+        print('add:')
+        print(' password/-p             add a password entry')
+        print(' note/-n                 add a note entry')
+        print(' folder/-f               add a new folder for entries')
+        print('edit:')
+        print(' rename/relocate/-r      rename or relocate an entry')
+        print(' username/-u             change the username of an entry')
+        print(' password/-p             change the password of an entry')
+        print(' note/-n                 change the note attached to an entry')
+        print(' url/-l                  change the url attached to an entry')
+        print('copy:')
+        print(' username/-u             copy the username of an entry to your clipboard')
+        print(' password/-p             copy the password of an entry to your clipboard')
+        print(' url/-l                  copy the URL of an entry to your clipboard')
+        print(' note/-n                 copy the note of an entry to your clipboard')
+        print('gen:')
+        print(' update/-u               generate a password for an existing entry\n')
+        print("Tip: You can quickly read an entry with 'sshyp /<entry name>'!")
+        print("When specifying entry names, do not include the file extension! '.gpg' is assumed!\n")
+    elif argument == 'version' or argument == '-v':
+        print('\n////////////////////////////////////////////////////////')
+        print('/                                                      /')
+        print('/     sshyp  Copyright (C) 2021  Randall Winkhart      /')
+        print('/                                                      /')
+        print('/              Version 2022.01.10.fr2.3                /')
+        print('/                 The Lighter Update                   /')
+        print('/                                                      /')
+        print('////////////////////////////////////////////////////////\n')
+    elif argument == 'license':
+        print('\nThis program is free software: you can redistribute it and/or modify it under the terms of the GNU '
+              'General\nPublic License as published by the Free Software Foundation, either version 3 of the License,'
+              '\nor (at your option) any later version.\n\nThis program is distributed in the hope that it will be '
+              'useful, but WITHOUT ANY WARRANTY;\nwithout even the implied warranty of MERCHANTABILITY or FITNESS FOR A'
+              ' PARTICULAR PURPOSE.\nSee the GNU General Public License for more details.'
+              '\n\nhttps://opensource.org/licenses/GPL-3.0\n')
+    elif argument == 'add':
+        print('\nUSAGE: sshyp add [FLAG]')
+        print('Flags:')
+        print('add:')
+        print(' password/-p             add a password entry')
+        print(' note/-n                 add a note entry')
+        print(' folder/-f               add a new folder for entries\n')
+    elif argument == 'edit':
+        print('\nUSAGE: sshyp edit [FLAG]')
+        print('Flags:')
+        print('edit:')
+        print(' rename/relocate/-r      rename or relocate an entry')
+        print(' username/-u             change the username of an entry')
+        print(' password/-p             change the password of an entry')
+        print(' url/-l                  change the url attached to an entry')
+        print(' note/-n                 change the note attached to an entry\n')
+    elif argument == 'copy':
+        print('\nUSAGE: sshyp copy [FLAG]')
+        print('Flags:')
+        print('copy:')
+        print(' username/-u             copy the username of an entry to your clipboard')
+        print(' password/-p             copy the password of an entry to your clipboard')
+        print(' url/-l                  copy the URL of an entry to your clipboard')
+        print(' note/-n                 copy the note of an entry to your clipboard\n')
 
 
 def no_arg():  # displays a list of entries and gives an option to select one for viewing
@@ -160,15 +190,6 @@ def no_arg():  # displays a list of entries and gives an option to select one fo
     _read_entry = str(input('\nEntry to read: '))
     system(f"gpg -d '{directory}{_read_entry.replace('/', '', 1)}.gpg'")
     print()
-
-
-def show_license():  # displays licensing information
-    print('\nThis program is free software: you can redistribute it and/or modify it under the terms of the GNU General'
-          '\nPublic License as published by the Free Software Foundation, either version 3 of the License,\nor '
-          '(at your option) any later version.\n'
-          '\nThis program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;\nwithout even '
-          'the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\nSee the GNU General Public '
-          'License for more details.\n\nhttps://opensource.org/licenses/GPL-3.0\n')
 
 
 def read_shortcut():  # shortcut to quickly read an entry
@@ -181,15 +202,6 @@ def sync():  # calls sshync to sync changes to the user's server
     system('find ' + directory + ' -type d -exec chmod -R 700 {} +')
     system('find ' + directory + ' -type f -exec chmod -R 600 {} +')
     sshync.run_profile('/var/lib/sshyp/sshyp.sshync')
-
-
-def add_info():  # displays 'add' syntax
-    print('\nUSAGE: sshyp add [FLAG]')
-    print('Flags:')
-    print('add:')
-    print(' password/-p             add a password entry')
-    print(' note/-n                 add a note entry')
-    print(' folder/-f               add a new folder for entries\n')
 
 
 def add_entry():  # adds a new entry
@@ -221,17 +233,6 @@ def add_folder():  # creates a new folder
     _folder_name = str(input('Name of new folder: '))
     mkdir(directory + _folder_name, 0o700)
     system(f"ssh -p {port} {username_ssh}@{ip} \"mkdir -p '{directory_ssh}{_folder_name}'\"")
-
-
-def edit_info():  # displays 'edit' syntax
-    print('\nUSAGE: sshyp edit [FLAG]')
-    print('Flags:')
-    print('edit:')
-    print(' rename/relocate/-r      rename or relocate an entry')
-    print(' username/-u             change the username of an entry')
-    print(' password/-p             change the password of an entry')
-    print(' url/-l                  change the url attached to an entry')
-    print(' note/-n                 change the note attached to an entry\n')
 
 
 def rename():  # renames an entry or folder TODO delete original from server to prevent re-downloading
@@ -306,16 +307,6 @@ def gen():  # generates a password for a new or an existing entry
         remove(f"{directory}{_entry_name}.gpg")
         encrypt(_shm_folder, _shm_entry, _entry_name)
         system(f"gpg -d '{directory}{_entry_name}.gpg'")
-
-
-def copy_info():  # displays 'copy' syntax
-    print('\nUSAGE: sshyp copy [FLAG]')
-    print('Flags:')
-    print('copy:')
-    print(' username/-u             copy the username of an entry to your clipboard')
-    print(' password/-p             copy the password of an entry to your clipboard')
-    print(' url/-l                  copy the URL of an entry to your clipboard')
-    print(' note/-n                 copy the note of an entry to your clipboard\n')
 
 
 def copy_data():  # copies a specified field of an entry to the clipboard
@@ -412,14 +403,9 @@ elif argument == '':
     except KeyboardInterrupt:
         print('\n')
         s_exit()
-elif argument == 'help' or argument == '--help' or argument == '-h':
-    helper()
-elif argument == 'license':
-    show_license()
-elif argument == 'version' or argument == '-v':
-    version()
-elif argument == 'add':
-    add_info()
+elif argument == 'help' or argument == '--help' or argument == '-h' or argument == 'license' or argument == 'version' \
+        or argument == '-v' or argument == 'add' or argument == 'edit' or argument == 'copy':
+    print_info()
 elif argument == 'add note' or argument == 'add -n' or argument == 'add password' or argument == 'add -p':
     try:
         add_entry()
@@ -432,8 +418,6 @@ elif argument == 'add folder' or argument == 'add -f':
     except KeyboardInterrupt:
         print('\n')
         s_exit()
-elif argument == 'edit':
-    edit_info()
 elif argument == 'edit rename' or argument == 'edit relocate' or argument == 'edit -r':
     try:
         rename()
@@ -453,8 +437,6 @@ elif argument == 'gen' or argument == 'gen update' or argument == 'gen -u':
     except KeyboardInterrupt:
         print('\n')
         s_exit()
-elif argument == 'copy':
-    copy_info()
 elif argument == 'copy username' or argument == 'copy -u' or argument == 'copy password' or argument == 'copy -p' or \
         argument == 'copy url' or argument == 'copy -l' or argument == 'copy note' or argument == 'copy -n':
     try:
