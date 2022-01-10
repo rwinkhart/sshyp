@@ -54,7 +54,7 @@ def tweak():  # runs configuration wizard
 
     # device type configuration
     _device_type = input('\nIs this installation for a client or for a server? (C/s) ')
-    if _device_type == 'S' or _device_type == 's':
+    if _device_type.lower() == 's':
         open("/var/lib/sshyp/sshyp-device", 'w').write(_device_type)
         copy('/usr/bin/sshync.py', f"/home/{environ.get('USER')}/")
         print('\nMake sure the ssh service is running and properly configured.\n\nConfiguration complete!\n')
@@ -67,7 +67,7 @@ def tweak():  # runs configuration wizard
         # gpg configuration
         _gpg_id = input('\nsshyp requires the use of a unique gpg key. Do you already have one that you are '
                         'willing to use? (y/N)')
-        if _gpg_id != 'y' and _gpg_id != 'Y':
+        if _gpg_id.lower() != 'y':
             print('\nA unique gpg key has been generated for you.')
             system('gpg --full-generate-key')
         _gpg_id = str(input('\nPlease input the ID of your gpg key: '))
@@ -85,7 +85,7 @@ def tweak():  # runs configuration wizard
         _ssh_gen = (input('\nMake sure the ssh service on the remote server is running and properly configured.'
                           '\n\nSync support requires a unique ssh key. Would you like to have this automatically '
                           'generated? (Y/n) '))
-        if _ssh_gen != 'n' and _ssh_gen != 'N':
+        if _ssh_gen.lower() != 'n':
             system('ssh-keygen -t ed25519 -f ~/.ssh/sshyp')
         else:
             print(f"\nEnsure that the key file you are using is located at /home/{environ.get('USER')}/.ssh/sshyp")
@@ -206,7 +206,7 @@ def add_entry():  # adds a new entry
         _password = str(input('Password: '))
         _url = str(input('URL: '))
         _add_note = input('Add a note to this entry? (y/N) ')
-        if _add_note == 'y' or _add_note == 'Y':
+        if _add_note.lower() == 'y':
             system(f"nano /dev/shm/{_shm_folder}/{_shm_entry}-n")
             _notes = open(f"/dev/shm/{_shm_folder}/{_shm_entry}-n", 'r').read()
         else:
@@ -389,7 +389,7 @@ if argument != 'tweak':
             directory = str(ssh_info[3].replace('\n', ''))
             directory_ssh = '/home/' + username_ssh + '/.password-pasture/'
     except FileNotFoundError:
-        if device_type != 's' and device_type != 'S':
+        if device_type.lower() != 's':
             print('\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
             print("Not all necessary configuration files are present. Please run 'sshyp tweak'!")
             print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n')
