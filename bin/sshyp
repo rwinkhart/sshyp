@@ -5,6 +5,7 @@
 from os import environ, mkdir, remove, system
 from shutil import copy, move, rmtree
 from sys import argv, exit as s_exit
+from pathlib import Path
 import random
 import sshync
 import string
@@ -258,6 +259,9 @@ def edit():  # edits the contents of an entry
         _entry_name = _entry_name.replace('/', '', 1)
     _shm_folder, _shm_entry = shm_gen()
     system(f"gpg -d --output /dev/shm/{_shm_folder}/{_shm_entry} '{directory}{_entry_name}.gpg'")
+    if not Path(f"/dev/shm/{_shm_folder}/{_shm_entry}").is_file():
+        print("\nYou are trying to edit a file that does not exist!\n")
+        s_exit()
     if argument == 'edit username' or argument == 'edit -u':
         _detail = str(input('New Username: '))
         replace_line(f"/dev/shm/{_shm_folder}/{_shm_entry}", 0, _detail + '\n')

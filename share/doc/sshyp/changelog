@@ -1,4 +1,4 @@
-sshyp 2021.12.04.fr2.3
+sshyp 2022.01.10.fr2.3
 
 The Lighter Update - Patch 3
 
@@ -16,7 +16,7 @@ Changes:
 ** folders generated in /dev/shm are once again properly deleted with keyboard interrupts
 - .lower() is now used to remove casing when checking inputs
 - fixed syncing of files (specifically downloading) with special characters, such as '('
-** fixed program still continuing after trying to edit an entry that doesn't exist
+- fixed program still continuing after trying to edit an entry that doesn't exist
 - removed an old reference to "rsync" in the configuration dialog
 
 Planned for next major update (The Fluffier Update):
