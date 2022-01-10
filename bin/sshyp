@@ -254,28 +254,39 @@ def rename():  # renames an entry or folder TODO delete original from server to 
 def edit():  # edits the contents of an entry
     print()
     system(f"cd {directory}; ls -1 *")  # TODO replace with new list
-    _entry_name = str(input('\nWhat file would you like to edit? '))
-    if _entry_name.startswith('/'):
-        _entry_name = _entry_name.replace('/', '', 1)
-    _shm_folder, _shm_entry = shm_gen()
-    system(f"gpg -d --output /dev/shm/{_shm_folder}/{_shm_entry} '{directory}{_entry_name}.gpg'")
-    if not Path(f"/dev/shm/{_shm_folder}/{_shm_entry}").is_file():
-        print("\nYou are trying to edit a file that does not exist!\n")
+    try:
+        _entry_name = str(input('\nWhat file would you like to edit? '))
+        if _entry_name.startswith('/'):
+            _entry_name = _entry_name.replace('/', '', 1)
+    except KeyboardInterrupt:
+        _entry_name = None
+        print('\n')
         s_exit()
-    if argument == 'edit username' or argument == 'edit -u':
-        _detail = str(input('New Username: '))
-        replace_line(f"/dev/shm/{_shm_folder}/{_shm_entry}", 0, _detail + '\n')
-    if argument == 'edit password' or argument == 'edit -p':
-        _detail = str(input('New Password: '))
-        replace_line(f"/dev/shm/{_shm_folder}/{_shm_entry}", 1, _detail + '\n')
-    if argument == 'edit url' or argument == 'edit -l':
-        _detail = str(input('New URL: '))
-        replace_line(f"/dev/shm/{_shm_folder}/{_shm_entry}", 2, _detail + '\n')
-    if argument == 'edit note' or argument == 'edit -n':
-        edit_note(_shm_folder, _shm_entry)
-    remove(f"{directory}{_entry_name}.gpg")
-    encrypt(_shm_folder, _shm_entry, _entry_name)
-    system(f"gpg -d '{directory}{_entry_name}.gpg'")
+    _shm_folder, _shm_entry = shm_gen()
+    try:
+        system(f"gpg -d --output /dev/shm/{_shm_folder}/{_shm_entry} '{directory}{_entry_name}.gpg'")
+        if not Path(f"/dev/shm/{_shm_folder}/{_shm_entry}").is_file():
+            rmtree(f"/dev/shm/{_shm_folder}")
+            print("\nYou are trying to edit a file that does not exist!\n")
+            s_exit()
+        if argument == 'edit username' or argument == 'edit -u':
+            _detail = str(input('New Username: '))
+            replace_line(f"/dev/shm/{_shm_folder}/{_shm_entry}", 0, _detail + '\n')
+        if argument == 'edit password' or argument == 'edit -p':
+            _detail = str(input('New Password: '))
+            replace_line(f"/dev/shm/{_shm_folder}/{_shm_entry}", 1, _detail + '\n')
+        if argument == 'edit url' or argument == 'edit -l':
+            _detail = str(input('New URL: '))
+            replace_line(f"/dev/shm/{_shm_folder}/{_shm_entry}", 2, _detail + '\n')
+        if argument == 'edit note' or argument == 'edit -n':
+            edit_note(_shm_folder, _shm_entry)
+        remove(f"{directory}{_entry_name}.gpg")
+        encrypt(_shm_folder, _shm_entry, _entry_name)
+        system(f"gpg -d '{directory}{_entry_name}.gpg'")
+    except KeyboardInterrupt:
+        rmtree(f"/dev/shm/{_shm_folder}")
+        print('\n')
+        s_exit()
 
 
 def gen():  # generates a password for a new or an existing entry
@@ -430,11 +441,7 @@ elif argument == 'edit rename' or argument == 'edit relocate' or argument == 'ed
         s_exit()
 elif argument == 'edit username' or argument == 'edit -u' or argument == 'edit password' or argument == 'edit -p' or \
         argument == 'edit url' or argument == 'edit -l' or argument == 'edit note' or argument == 'edit -n':
-    try:
-        edit()
-    except KeyboardInterrupt:
-        print('\n')
-        s_exit()
+    edit()  # KeyboardInterrupt exception in function for temporary file deletion
 elif argument == 'gen' or argument == 'gen update' or argument == 'gen -u':
     try:
         gen()
