@@ -10,10 +10,10 @@ New features:
 
 Changes:
 
-** the gen command in sshyp has been updated to use the newer notetaking system
+- the gen command has been updated to use the newer notetaking system
 - printing functions in sshyp have been combined into one function (arguments determine section to print)
 - file not found exceptions have been re-implemented
-** when syncing, a check is made to see if any folders are not on all devices - if the check comes back true, it is corrected
+** when syncing, a check is made to see if any folders are not on all devices - if the check comes back true, it is corrected (in sshyp)
 - folders in /dev/shm are no longer created before input from the user
 - .lower() is now used to remove casing when checking inputs
 - fixed syncing of files (specifically downloading) with special characters, such as '('
@@ -34,7 +34,7 @@ Planned for next, next major update (The Shears Update Pt. 1):
 
 - enforce permissions on the server-side
 - allow for copying entire notes (not just first line)
-- allow for multi-client deletion... somehow
+- allow for multi-client deletion... somehow (in sshync)
 - detatch sshync and make it a separate package
 
 Planned for next, next, next major update (The Shears Update Pt. 2):
