@@ -2,18 +2,19 @@ sshyp 2022.01.10.fr2.3
 
 The Lighter Update - Patch 3
 
-This release is a hotfix for 2021.12.01.fr2.2.
+This release is a hotfix for 2021.12.01.fr2.2. It features critical security fixes and quality-of-life improvements.
 
 New features:
+
 - a man page has been added
 
 Changes:
 
 ** the gen command in sshyp has been updated to use the newer notetaking system
 - printing functions in sshyp have been combined into one function (arguments determine section to print)
-** file not found exceptions have been re-implemented
+- file not found exceptions have been re-implemented
 ** when syncing, a check is made to see if any folders are not on all devices - if the check comes back true, it is corrected
-- folders generated in /dev/shm are once again properly deleted with keyboard interrupts
+- folders in /dev/shm are no longer created before input from the user
 - .lower() is now used to remove casing when checking inputs
 - fixed syncing of files (specifically downloading) with special characters, such as '('
 - fixed program still continuing after trying to edit an entry that doesn't exist
