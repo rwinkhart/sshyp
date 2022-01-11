@@ -30,11 +30,9 @@ What sshyp definitely won't do:
 - Windows support (I don't use Windows and I have no interest in developing for it)
 
 # Installation
-Arch Linux (x86_64, aarch64)
+Arch Linux (all ISAs)
 
-Note: currently unavailable in the AUR (the older version, "rpass", will remain available until sshyp is stable)
-
-sshyp releases will be available in the Arch User Repository as 'sshyp'.
+sshyp releases are available in the Arch User Repository as 'sshyp'.
 
 Install with your preferred AUR helper or use:
 
@@ -62,11 +60,16 @@ All available options can be found with:
 sshyp --help
 ```
 
+Or alternatively, in the new manpage:
+
+```
+man sshyp
+```
+
 # Roadmap
 Short-term Goals:
 
 - create new file list w/color and w/o file extensions
-- create a man page
 - overhaul argument system
 - fix lots of bugs!
 - make lots of optimizations!
@@ -81,10 +84,7 @@ Long-term Goals:
 - seize the thrones, shear the humans
 
 # Known Issues
-Broken Features in Latest Release:
 
-- the 'gen' function uses the older notetaking system
+Currently, files deleted from a client or server may re-appear if another client that had the same file reconnects and later re-uploads it to the server. This will be addressed.
 
-Broken Features in Source:
-
-- the 'gen' function uses the older notetaking system
+Currently, if a client is missing folders that exist on the server, the contents of the missing folders will fail to download. A temporary workaround is to manually create the folders on the client. This will be addressed.
