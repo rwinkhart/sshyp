@@ -329,6 +329,9 @@ def copy_data():  # copies a specified field of an entry to the clipboard
     print()
     system(f"cd {directory}; ls -1 *")  # TODO replace with new list
     _read_entry = str(input('\nEntry to copy: '))
+    if not Path(f"{directory}{_read_entry}.gpg").is_file():
+        print("\nThe file does not exist!\n")
+        s_exit()
     _shm_folder, _shm_entry = shm_gen()
     system(f"gpg -d --output /dev/shm/{_shm_folder}/{_shm_entry} '{directory}{_read_entry}.gpg'")
     _copy_line = open(f"/dev/shm/{_shm_folder}/{_shm_entry}", 'r').readlines()
@@ -449,22 +452,14 @@ elif argument == 'edit username' or argument == 'edit -u' or argument == 'edit p
         s_exit()
 elif argument == 'gen' or argument == 'gen update' or argument == 'gen -u':
     try:
-        try:
-            gen()
-        except FileNotFoundError:
-            print('\nThe file does not exist!\n')
-            s_exit()
+        gen()
     except KeyboardInterrupt:
         print('\n')
         s_exit()
 elif argument == 'copy username' or argument == 'copy -u' or argument == 'copy password' or argument == 'copy -p' or \
         argument == 'copy url' or argument == 'copy -l' or argument == 'copy note' or argument == 'copy -n':
     try:
-        try:
-            copy_data()
-        except FileNotFoundError:
-            print('\nThe file does not exist!\n')
-            s_exit()
+        copy_data()
     except KeyboardInterrupt:
         print('\n')
         s_exit()
