@@ -1,18 +1,16 @@
 # Maintainer: Randall Winkhart <idgr at tutanota dot com>
 
 pkgname=sshyp
-pkgver=2021.12.01.fr2.2
+pkgver=2022.01.10.fr2.3
 pkgrel=1
-pkgdesc='A self-hosted, synchronized password manager'
+pkgdesc='A light-weight, self-hosted, synchronized password manager'
 url='https://github.com/rwinkhart/sshyp'
-arch=('x86_64' 'aarch64')
+arch=('any')
 license=('GPL3')
 depends=( python gnupg openssh nano xclip wl-clipboard)
 
-source_x86_64=('https://github.com/rwinkhart/sshyp/releases/download/v2021.12.01.fr2.2/sshyp-2021.12.01.fr2.2.tar.xz')
-source_aarch64=('https://github.com/rwinkhart/sshyp/releases/download/v2021.12.01.fr2.2/sshyp-2021.12.01.fr2.2.tar.xz')
-sha512sums_x86_64=('470f7b4fd2bb0cc34a98e8ab5506ae4bc82e311616e2a81ee4fc559dd9e2c2e46a05517a49ba4d4fe108f341f92250bd1d63acca134d277b37d2475e03713adf')
-sha512sums_aarch64=('470f7b4fd2bb0cc34a98e8ab5506ae4bc82e311616e2a81ee4fc559dd9e2c2e46a05517a49ba4d4fe108f341f92250bd1d63acca134d277b37d2475e03713adf')
+source=("https://github.com/rwinkhart/sshyp/releases/download/v$pkgver/sshyp-$pkgver.tar.xz")
+sha512sums=('be6695cc231f4414322f2c4b919caf0759f4111e50259b3a6bbcb6e90a0ceba5d094c8766c287e5443c61adfdf414c1a93bc70e505dfd4bf34097c713b6e7d2f')
 
 package() {
 
