@@ -69,18 +69,18 @@ fi
 
 if [ "$distro" == "5" ] || [ "$distro" == "6" ]; then
     echo -e '\nPackaging as generic...'
-    mkdir -p var/lib/sshyp
-    mkdir -p usr
-    cp -r bin usr/
-    cp -r share usr/
-    mkdir -p usr/share/man/man1
-    cp extra/manpage usr/share/man/man1/sshyp.1
-    gzip usr/share/man/man1/sshyp.1
-    tar -cf sshyp-"$version".tar.xz usr/ var/
-    rm -rf usr/ var/
+    mkdir -p packages/archtemp/var/lib/sshyp
+    mkdir -p packages/archtemp/usr
+    cp -r bin packages/archtemp/usr/
+    cp -r share packages/archtemp/usr/
+    mkdir -p packages/archtemp/usr/share/man/man1
+    cp extra/manpage packages/archtemp/usr/share/man/man1/sshyp.1
+    gzip packages/archtemp/usr/share/man/man1/sshyp.1
+    tar -cf packages/sshyp-"$version".tar.xz packages/archtemp/usr/ packages/archtemp/var/
+    rm -rf packages/archtemp
     echo -e '\nsha512 sum:'
-    sha512sum sshyp-"$version".tar.xz
+    sha512sum packages/sshyp-"$version".tar.xz
     echo -e '\nsha256 sum:'
-    sha256sum sshyp-"$version".tar.xz
+    sha256sum packages/sshyp-"$version".tar.xz
     echo -e "\nGeneric packaging complete.\n"
 fi
