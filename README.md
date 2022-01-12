@@ -44,8 +44,23 @@ makepkg -si
 
 Packaging for other distributions coming soon.
 
+# Building
+Since sshyp is written entirely in Python, it doesn't need to be compiled. It does, however, need to be packaged for installation.
+
+A packaging script is included in the root directory of the repo in order to package sshyp for your distribution (currently only a generic package used for the AUR PKGBUILD is supported). To package sshyp from source, simply run:
+
+```
+git clone https://github.com/rwinkhart/sshyp.git
+cd sshyp
+./package.sh
+```
+
+The AUR version and the packages attatched to the release tags were already packaged using this script.
+
+Packaging for other distributions coming soon.
+
 # Usage
-Upon initial installation, be sure to run:
+Upon initial installation (on both the server and client devices), be sure to run:
 
 ```
 sshyp tweak
@@ -53,6 +68,8 @@ sshyp tweak
 
 This command will allow you to configure the settings necessary for sshyp to function.
 As of right now, sshyp is rapidly changing, and as such, it is a good idea to run "sshyp tweak" after each update.
+
+Please note that decrypting and reading entries is disabled on server devices for security reasons. Only devices configured as clients can use the gpg key to decrypt entries.
 
 All available options can be found with:
 
