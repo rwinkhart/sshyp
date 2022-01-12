@@ -12,21 +12,18 @@ distro=5  # TODO remove when other distros are supported
 echo -e '\nThe value entered in this field will only affect the version reported to the package manager. The latest source is used regardless.\n'
 read -r -p "Version number: " version
 
-rm -rf sshyp/
-git clone https://github.com/rwinkhart/sshyp.git
-
 if [ "$distro" == "5" ] || [ "$distro" == "6" ]; then
-    echo -e '\nPackaging as generic...\n'
-    mkdir -p sshyp/var/lib/sshyp
-    mkdir -p sshyp/usr
-    cp -r sshyp/bin sshyp/usr/
-    cp -r sshyp/share sshyp/usr/
-    mkdir -p sshyp/usr/share/man/man1
-    cp sshyp/extra/manpage sshyp/usr/share/man/man1/sshyp.1
-    gzip sshyp/usr/share/man/man1/sshyp.1
-    tar -cf sshyp/sshyp-"$version".tar.xz sshyp/usr/ sshyp/var/
-    rm -rf sshyp/usr/ sshyp/var/
+    echo -e '\nPackaging as generic...'
+    mkdir -p var/lib/sshyp
+    mkdir -p usr
+    cp -r bin usr/
+    cp -r share usr/
+    mkdir -p usr/share/man/man1
+    cp extra/manpage usr/share/man/man1/sshyp.1
+    gzip usr/share/man/man1/sshyp.1
+    tar -cf sshyp-"$version".tar.xz usr/ var/
+    rm -rf usr/ var/
     echo -e '\nsha512 sum:'
-    sha512sum sshyp/sshyp-"$version".tar.xz
+    sha512sum sshyp-"$version".tar.xz
     echo -e "\nPackaging complete.\n"
 fi
