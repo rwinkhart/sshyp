@@ -340,7 +340,16 @@ def copy_data():  # copies a specified field of an entry to the clipboard
     _shm_folder, _shm_entry = shm_gen()
     system(f"gpg -d --output /dev/shm/{_shm_folder}/{_shm_entry} '{directory}{_read_entry}.gpg'")
     _copy_line = open(f"/dev/shm/{_shm_folder}/{_shm_entry}", 'r').readlines()
-    if environ.get('WAYLAND_DISPLAY') == 'wayland-0':  # checks if the user is using Wayland or X for clipboard
+    if Path(f"/home/{environ.get('USER')}/.config/sshyp/flag_termux").is_file():  # checks for Termux, Wayland, or X
+        if argument == 'copy username' or argument == 'copy -u':
+            system('termux-clipboard-set ' + "'" + _copy_line[0].replace('\n', '').replace("'", "'\\''") + "'")
+        elif argument == 'copy password' or argument == 'copy -p':
+            system('termux-clipboard-set ' + "'" + _copy_line[1].replace('\n', '').replace("'", "'\\''") + "'")
+        elif argument == 'copy url' or argument == 'copy -l':
+            system('termux-clipboard-set ' + "'" + _copy_line[2].replace('\n', '').replace("'", "'\\''") + "'")
+        elif argument == 'copy note' or argument == 'copy -n':
+            system('termux-clipboard-set ' + "'" + _copy_line[4].replace('\n', '').replace("'", "'\\''") + "'")
+    elif environ.get('WAYLAND_DISPLAY') == 'wayland-0':
         if argument == 'copy username' or argument == 'copy -u':
             system('wl-copy ' + "'" + _copy_line[0].replace('\n', '').replace("'", "'\\''") + "'")
         elif argument == 'copy password' or argument == 'copy -p':
