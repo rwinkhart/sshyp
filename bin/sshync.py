@@ -5,7 +5,7 @@
 # external modules
 
 from os import system, remove, walk
-from os.path import getmtime, join
+from os.path import getmtime, join, expanduser
 from sys import exit as s_exit
 
 
@@ -18,19 +18,18 @@ def get_titles_mods(_directory, _destination, _user_data):
         if type(_user_data) == str:
             _user_data = str(_user_data).strip('(').strip(')').replace(' ', '').split(',')
         try:
-            remove(_user_data[6] + 'sshync_database')
+            remove(f"{expanduser('~/.config/sshyp/')}sshync_database")
         except FileNotFoundError:
             pass
         for _root, _directories, _files in walk(_directory):
             for _filename in _files:
                 _title_list.append(join(_root.replace(_directory, '', 1), _filename))
                 _mod_list.append(int(getmtime(join(_root, _filename))))
-        i = -1
         for _title in _title_list:
-            open(_user_data[6] + 'sshync_database', 'a').write(str(_title) + '\n')
-        open(_user_data[6] + 'sshync_database', 'a').write('^&*\n')
+            open(f"{expanduser('~/.config/sshyp/')}sshync_database", 'a').write(str(_title) + '\n')
+        open(f"{expanduser('~/.config/sshyp/')}sshync_database", 'a').write('^&*\n')
         for _mod in _mod_list:
-            open(_user_data[6] + 'sshync_database', 'a').write(str(_mod) + '\n')
+            open(f"{expanduser('~/.config/sshyp/')}sshync_database", 'a').write(str(_mod) + '\n')
     # remote fetching
     if _destination == 'r':
         system(f"ssh -i '{_user_data[5]}' -p {_user_data[2]} {_user_data[0]}@{_user_data[1]} \"python -c 'import sshync"
@@ -76,8 +75,7 @@ def get_profile(_profile_dir):
     _local_dir = _profile_data[3].replace('\n', '')
     _remote_dir = _profile_data[4].replace('\n', '')
     _identity = _profile_data[5].replace('\n', '')
-    _data_dir = ' '.join(_profile_dir.split('/')[:-1]).replace(' ', '/') + '/'
-    return _user, _ip, _port, _local_dir, _remote_dir, _identity, _data_dir
+    return _user, _ip, _port, _local_dir, _remote_dir, _identity
 
 
 def run_profile(_profile_dir):
