@@ -47,9 +47,13 @@ def edit_note(_shm_folder, _shm_entry):
 
 
 def tweak():  # runs configuration wizard
-    # storage directory creation
+    # storage/config directory creation
     try:
         mkdir(f"{path.expanduser('~')}/.password-pasture", 0o700)
+    except FileExistsError:
+        pass
+    try:
+        mkdir(path.expanduser('~/.config/sshyp'), 0o700)
     except FileExistsError:
         pass
 
