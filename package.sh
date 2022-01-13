@@ -6,12 +6,12 @@
 # NOTE As of release fr4, sshync will become a separate package and thus a dependency for sshyp. sshync is automatically installed with the PKGBUILD version.
 
 echo -e '\nOptions (please enter the number only):'
-echo -e '\nDistribution Packages:\n\n1. Debian Linux\n2. Termux\n3. Generic (used for PKGBUILD/APKBUILD)\n'
-echo -e '\nBuild Scripts:\n\n4. Alpine Linux (APKBUILD)\n5. Arch Linux (PKGBUILD)\n'
+echo -e '\nDistribution Packages:\n\n1. Debian Linux\n2. Termux\n3. Generic (used for PKGBUILD/APKBUILD)'
+echo -e '\nBuild Scripts:\n\n4. Alpine Linux (APKBUILD)\n5. Arch Linux (PKGBUILD)'
 echo -e '\nOther:\n\n6. All (generates all distribution packages and build scripts)\n'
 read -n 1 -r -p "Distribution: " distro
 
-echo -e '\nThe value entered in this field will only affect the version reported to the package manager. The latest source is used regardless.\n'
+echo -e '\n\nThe value entered in this field will only affect the version reported to the package manager. The latest source is used regardless.\n'
 read -r -p "Version number: " version
 
 if [ "$distro" == "4" ] || [ "$distro" == "5" ] || [ "$distro" == "6" ]; then
@@ -87,4 +87,8 @@ package() {
 }
 ' > packages/PKGBUILD
     echo -e "\nPKGBUILD generated.\n"
+fi
+
+if [ "$distro" == "1" ] || [ "$distro" == "4" ]; then
+    echo -e '\nThis packaging format is not yet supported, but will be in the near future!\n\nCurrently supported options are:\nTermux\nGeneric\nArch (PKGBUILD)\n'
 fi
