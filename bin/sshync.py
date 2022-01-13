@@ -75,7 +75,8 @@ def get_profile(_profile_dir):
     _local_dir = _profile_data[3].replace('\n', '')
     _remote_dir = _profile_data[4].replace('\n', '')
     _identity = _profile_data[5].replace('\n', '')
-    return _user, _ip, _port, _local_dir, _remote_dir, _identity
+    _data_dir = ' '.join(_profile_dir.split('/')[:-1]).replace(' ', '/') + '/'
+    return _user, _ip, _port, _local_dir, _remote_dir, _identity, _data_dir
 
 
 def run_profile(_profile_dir):
