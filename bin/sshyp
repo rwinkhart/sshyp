@@ -152,8 +152,8 @@ def print_info():  # prints help text based on argument
         print('/                                                      /')
         print('/     sshyp  Copyright (C) 2021  Randall Winkhart      /')
         print('/                                                      /')
-        print('/              Version 2022.01.10.fr2.3                /')
-        print('/                 The Lighter Update                   /')
+        print('/               Version 2022.01.13.fr3                 /')
+        print('/                  The Boxing Update                   /')
         print('/                                                      /')
         print('////////////////////////////////////////////////////////\n')
     elif argument == 'license':
