@@ -35,7 +35,6 @@ mkdir -p packages
 if [ "$distro" == "1" ] || [ "$distro" == "6" ]; then
     echo -e '\nPackaging for Debian...\n'
     mkdir -p packages/debiantemp/sshyp_"$version"-"$revision"_all/{DEBIAN,usr}
-    mkdir -p packages/debiantemp/sshyp_"$version"-"$revision"_all/var/lib/sshyp
     mkdir -p packages/debiantemp/sshyp_"$version"-"$revision"_all/usr/share/man/man1
     echo "Package: sshyp
 Version: $version
@@ -60,7 +59,6 @@ fi
 if [ "$distro" == "2" ] || [ "$distro" == "6" ]; then
     echo -e '\nPackaging for Termux...\n'
     mkdir -p packages/termuxtemp/sshyp_"$version"-"$revision"_all_termux/{data,DEBIAN}
-    mkdir -p packages/termuxtemp/sshyp_"$version"-"$revision"_all_termux/data/data/com.termux/files/usr/var/lib/sshyp
     mkdir -p packages/termuxtemp/sshyp_"$version"-"$revision"_all_termux/data/data/com.termux/files/usr/share/man/man1
     echo "Package: sshyp
 Version: $version
@@ -74,7 +72,6 @@ Installed-Size: 35
 " > packages/termuxtemp/sshyp_"$version"-"$revision"_all_termux/DEBIAN/control
     cp -r bin packages/termuxtemp/sshyp_"$version"-"$revision"_all_termux/data/data/com.termux/files/usr/
     cp -r share packages/termuxtemp/sshyp_"$version"-"$revision"_all_termux/data/data/com.termux/files/usr/
-    touch packages/termuxtemp/sshyp_"$version"-"$revision"_all_termux/data/data/com.termux/files/usr/var/lib/sshyp/flag_termux
     cp extra/manpage packages/termuxtemp/sshyp_"$version"-"$revision"_all_termux/data/data/com.termux/files/usr/share/man/man1/sshyp.1
     gzip packages/termuxtemp/sshyp_"$version"-"$revision"_all_termux/data/data/com.termux/files/usr/share/man/man1/sshyp.1
     dpkg-deb --build --root-owner-group packages/termuxtemp/sshyp_"$version"-"$revision"_all_termux/
@@ -85,14 +82,13 @@ fi
 
 if [ "$distro" == "3" ] || [ "$distro" == "5" ] || [ "$distro" == "6" ]; then
     echo -e '\nPackaging as generic...\n'
-    mkdir -p packages/archtemp/var/lib/sshyp
     mkdir -p packages/archtemp/usr
     cp -r bin packages/archtemp/usr/
     cp -r share packages/archtemp/usr/
     mkdir -p packages/archtemp/usr/share/man/man1
     cp extra/manpage packages/archtemp/usr/share/man/man1/sshyp.1
     gzip packages/archtemp/usr/share/man/man1/sshyp.1
-    tar -C packages/archtemp -cvf packages/sshyp-"$version".tar.xz usr/ var/
+    tar -C packages/archtemp -cvf packages/sshyp-"$version".tar.xz usr/
     rm -rf packages/archtemp
     sha512="$(sha512sum packages/sshyp-"$version".tar.xz | awk '{print $1;}')"
     echo -e "\nsha512 sum:\n$sha512"
@@ -118,7 +114,6 @@ sha512sums=('"$sha512"')
 package() {
 
     tar xf sshyp-"\"\$pkgver\"".tar.xz -C "\"\${pkgdir}\""
-    chown -R \"\$USER\" "\"\${pkgdir}\""/var/lib/sshyp
 
 }
 " > packages/PKGBUILD
