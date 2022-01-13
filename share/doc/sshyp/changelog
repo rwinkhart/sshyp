@@ -1,4 +1,4 @@
-sshyp 2022.01.XX.fr3
+sshyp 2022.01.13.fr3
 
 The Boxing Update
 
@@ -6,12 +6,12 @@ This release adapts sshyp to be compatible with Termux and allows for packaging 
 
 Features:
 
-** the copy function now has support for termux-clipboard-set from termux-api
+- the copy function now has support for termux-clipboard-set from termux-api
     ^ this allows clipboard functionality to work on Termux
 
 Changes:
 
-** sshyp no longer writes to/reads from /var
+- sshyp no longer writes to/reads from /var
     ^ configuration files are now stored under the user's home directory in ~/.config/sshyp
     ^ this change allows for compatibility with less standard environments, such as Termux on Android
 
