@@ -47,7 +47,7 @@ Packaging for other distributions coming soon.
 # Building
 Since sshyp is written entirely in Python, it doesn't need to be compiled. It does, however, need to be packaged for installation.
 
-A packaging script is included in the root directory of the repo in order to package sshyp for your distribution (currently only a generic package used for the AUR PKGBUILD is supported). To package sshyp from source, simply run:
+A packaging script is included in the root directory of the repo in order to package sshyp for your distribution. To package sshyp from source, simply run:
 
 ```
 git clone https://github.com/rwinkhart/sshyp.git
@@ -55,9 +55,11 @@ cd sshyp
 ./package.sh
 ```
 
+The packaging script has been tested on Arch Linux with dpkg as a dependency for Debian and Termux packaging.
+
 The AUR version and the packages attatched to the release tags were already packaged using this script.
 
-Packaging for other distributions coming soon.
+Currently, the script can create packages for Arch (PKGBUILD), Debian, Termux, and generic. Packaging for other distributions coming soon.
 
 # Usage
 Upon initial installation (on both the server and client devices), be sure to run:
