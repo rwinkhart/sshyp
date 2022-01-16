@@ -1,19 +1,15 @@
-sshyp 2022.01.13.fr3
+sshyp 2022.01.16.fr3.1
 
 The Boxing Update
 
-This release adapts sshyp to be compatible with Termux and allows for packaging for various distributions in addition to Arch Linux.
-
-Features:
-
-- the copy function now has support for termux-clipboard-set from termux-api
-    ^ this allows clipboard functionality to work on Termux
+This release is a hotfix for 2022.01.13.fr3. It fixes sshync/syncing support after the changes in the last release.
 
 Changes:
 
-- sshyp no longer writes to/reads from /var
-    ^ configuration files are now stored under the user's home directory in ~/.config/sshyp
-    ^ this change allows for compatibility with less standard environments, such as Termux on Android
+- sshync has been updated to work with the new config directory
+- sshync now uses its own directory to store the database file
+    ^ this is preperation for separating sshync into its own package
+- expanduser lines in sshyp have been simplified (no user-facing impact)
 
 Additions planned for minor releases:
 
