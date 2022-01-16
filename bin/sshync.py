@@ -1,29 +1,26 @@
 #!/usr/bin/python3
 
-# sshync 2022.01.16.unreleased10
+# sshync 2022.01.16.unreleased11
 
 # external modules
 
 from os import system, remove, mkdir, walk
 from os.path import getmtime, join, expanduser
 from sys import exit as s_exit
-from pathlib import Path
 
 
 # utility functions
 
 def get_titles_mods(_directory, _destination, _user_data):
     _title_list, _mod_list = [], []
+    try:  # create config directory
+        mkdir(expanduser('~/.config/sshync'), 0o700)
+    except FileExistsError:
+        pass
     # local fetching
     if _destination == 'l':
-        if Path(expanduser('~/.config/sshync/database')).is_file():
-            remove(expanduser('~/.config/sshync/database'))
-        else:
-            try:
-                mkdir(expanduser('~/.config/sshync'), 0o700)
-            except FileExistsError:
-                pass
-        system('touch ~/.config/sshync/database')
+        remove(expanduser('~/.config/sshync/database'))  # assumed to exist because remote runs first
+        open(expanduser('~/.config/sshync/database'), 'w')  # create blank database file
         for _root, _directories, _files in walk(_directory):
             for _filename in _files:
                 _title_list.append(join(_root.replace(_directory, '', 1), _filename))
