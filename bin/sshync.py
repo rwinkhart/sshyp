@@ -1,12 +1,13 @@
 #!/usr/bin/python3
 
-# sshync 2022.01.13.unreleased9
+# sshync 2022.01.16.unreleased10
 
 # external modules
 
-from os import system, remove, walk
+from os import system, remove, mkdir, walk
 from os.path import getmtime, join, expanduser
 from sys import exit as s_exit
+from pathlib import Path
 
 
 # utility functions
@@ -15,27 +16,32 @@ def get_titles_mods(_directory, _destination, _user_data):
     _title_list, _mod_list = [], []
     # local fetching
     if _destination == 'l':
-        try:
-            remove(expanduser('~/.config/sshyp/sshync_database'))
-        except FileNotFoundError:
-            pass
+        if Path(expanduser('~/.config/sshync/database')).is_file():
+            remove(expanduser('~/.config/sshync/database'))
+        else:
+            try:
+                mkdir(expanduser('~/.config/sshync'), 0o700)
+            except FileExistsError:
+                pass
+        system('touch ~/.config/sshync/database')
         for _root, _directories, _files in walk(_directory):
             for _filename in _files:
                 _title_list.append(join(_root.replace(_directory, '', 1), _filename))
                 _mod_list.append(int(getmtime(join(_root, _filename))))
         for _title in _title_list:
-            open(expanduser('~/.config/sshyp/sshync_database'), 'a').write(str(_title) + '\n')
-        open(expanduser('~/.config/sshyp/sshync_database'), 'a').write('^&*\n')
+            open(expanduser('~/.config/sshync/database'), 'a').write(str(_title) + '\n')
+        open(expanduser('~/.config/sshync/database'), 'a').write('^&*\n')
         for _mod in _mod_list:
-            open(expanduser('~/.config/sshyp/sshync_database'), 'a').write(str(_mod) + '\n')
+            open(expanduser('~/.config/sshync/database'), 'a').write(str(_mod) + '\n')
     # remote fetching
     if _destination == 'r':
         system(f"ssh -i '{_user_data[5]}' -p {_user_data[2]} {_user_data[0]}@{_user_data[1]} \"python -c 'import sshync"
-               f"; sshync.get_titles_mods(\"'\"{_user_data[4]}\"'\", \"'\"l\"'\", {None}")
-        system(f"sftp -P {_user_data[2]} {_user_data[0]}@{_user_data[1]}:'/home/{_user_data[0]}"
-               f"/.config/sshync_database' {expanduser('~/.config/sshyp/sshync_database')}")
-        _titles, _sep, _mods = ' '.join(open(expanduser('~/.config/sshyp/sshync_database')).readlines())\
-            .replace('\n', '').partition('^&*')
+               f"; sshync.get_titles_mods(\"'\"{_user_data[4]}\"'\", \"'\"l\"'\", \"'\"{_user_data}\"'\")'\"")
+        system(f"sftp -P {_user_data[2]} {_user_data[0]}@{_user_data[1]}:"
+               f"'{expanduser(f'/home/{_user_data[0]}/.config/sshync/database')}' "
+               f"'{expanduser('~/.config/sshync/database')}'")
+        _titles, _sep, _mods = ' '.join(open(expanduser('~/.config/sshync/database')).readlines()).replace('\n', '')\
+            .partition('^&*')
         _title_list, _mod_list = _titles.split(' ')[:-1], _mods.split(' ')[1:]
     return _title_list, _mod_list
 
