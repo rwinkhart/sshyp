@@ -18,7 +18,7 @@ def get_titles_mods(_directory, _destination, _user_data):
     # local fetching
     if _destination == 'l':
         remove(expanduser('~/.config/sshync/database'))  # assumed to exist because remote runs first
-        open(expanduser('~/.config/sshync/database'), 'w')  # create blank database file
+        open(expanduser('~/.config/sshync/database'), 'x')  # create blank database file
         for _root, _directories, _files in walk(_directory):
             for _filename in _files:
                 _title_list.append(join(_root.replace(_directory, '', 1), _filename))
@@ -34,7 +34,7 @@ def get_titles_mods(_directory, _destination, _user_data):
                f"; sshync.get_titles_mods(\"'\"{_user_data[4]}\"'\", \"'\"l\"'\", \"'\"{_user_data}\"'\")'\"")
         system(f"sftp -P {_user_data[2]} {_user_data[0]}@{_user_data[1]}:"
                f"'{expanduser(f'/home/{_user_data[0]}/.config/sshync/database')}' "
-               f"'{expanduser('~/.config/sshync/database')}'")
+               f"'{expanduser('~/.config/sshync/')}'")
         _titles, _sep, _mods = ' '.join(open(expanduser('~/.config/sshync/database')).readlines()).replace('\n', '')\
             .partition('^&*')
         _title_list, _mod_list = _titles.split(' ')[:-1], _mods.split(' ')[1:]
