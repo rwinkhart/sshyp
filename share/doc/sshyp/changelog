@@ -1,15 +1,14 @@
-sshyp 2022.01.16.fr3.1
+sshyp 2022.01.16.fr3.2
 
 The Boxing Update
 
-This release is a hotfix for 2022.01.13.fr3. It fixes sshync/syncing support after the changes in the last release.
+This release is a hotfix for 2022.01.16.fr3.1. It fixes major bugs, including one massively impacting Termux.
 
 Changes:
 
-- sshync has been updated to work with the new config directory
-- sshync now uses its own directory to store the database file
-    ^ this is preperation for separating sshync into its own package
-- expanduser lines in sshyp have been simplified (no user-facing impact)
+- sshyp now uses a symlink to the temporary storage directory, allowing for easy implementation of different temporary directories on different platforms
+    ^ the first usage of this is enabling the use of temporary storage on Termux
+- sshync now properly auto-generates its config directory 
 
 Additions planned for minor releases:
 
