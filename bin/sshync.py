@@ -4,7 +4,7 @@
 
 # external modules
 
-from os import path, remove, system, walk
+from os import path, system, walk
 from os.path import getmtime, join, expanduser
 from sys import exit as s_exit
 from pathlib import Path
@@ -17,8 +17,7 @@ def get_titles_mods(_directory, _destination, _user_data):
     Path(path.expanduser('~/.config/sshync')).mkdir(0o700, parents=True, exist_ok=True)  # create config directory
     # local fetching
     if _destination == 'l':
-        remove(expanduser('~/.config/sshync/database'))  # assumed to exist because remote runs first
-        open(expanduser('~/.config/sshync/database'), 'x')  # create blank database file
+        open(expanduser('~/.config/sshync/database'), 'w').write('')  # blanks out database file
         for _root, _directories, _files in walk(_directory):
             for _filename in _files:
                 _title_list.append(join(_root.replace(_directory, '', 1), _filename))
