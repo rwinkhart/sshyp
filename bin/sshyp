@@ -384,7 +384,11 @@ def remove_data():  # deletes an entry or folder from both the client and the se
         s_exit()
     if device_type == 'c':
         system(f"ssh -p {port} {username_ssh}@{ip} \"rm -rf '{directory_ssh}{_entry_name}.gpg'\"")
-    remove(f"{directory}{_entry_name}.gpg")
+    try:
+        remove(f"{directory}{_entry_name}.gpg")
+    except FileNotFoundError:
+        print("\nThe file does not exist!\n")
+        s_exit()
 
 
 # program start sequence
