@@ -42,7 +42,7 @@ cd sshyp
 makepkg -si
 ```
 
-Packaging for other distributions coming soon.
+Pre-built packages exist for Arch, Debian, and Termux. These can be downloaded from the releases page.
 
 # Building
 Since sshyp is written entirely in Python, it doesn't need to be compiled. It does, however, need to be packaged for installation.
