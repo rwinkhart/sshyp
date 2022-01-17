@@ -4,19 +4,17 @@
 
 # external modules
 
-from os import system, remove, mkdir, walk
+from os import mkdir, path, remove, system, walk
 from os.path import getmtime, join, expanduser
 from sys import exit as s_exit
+from pathlib import Path
 
 
 # utility functions
 
 def get_titles_mods(_directory, _destination, _user_data):
     _title_list, _mod_list = [], []
-    try:  # create config directory
-        mkdir(expanduser('~/.config/sshync'), 0o700)
-    except FileExistsError:
-        pass
+    Path(path.expanduser('~/.config/sshync')).mkdir(0o700, parents=True, exist_ok=True)  # create config directory
     # local fetching
     if _destination == 'l':
         remove(expanduser('~/.config/sshync/database'))  # assumed to exist because remote runs first

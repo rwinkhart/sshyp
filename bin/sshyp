@@ -52,10 +52,7 @@ def tweak():  # runs configuration wizard
         mkdir(path.expanduser('~/.password-pasture'), 0o700)
     except FileExistsError:
         pass
-    try:
-        mkdir(path.expanduser('~/.config/sshyp'), 0o700)
-    except FileExistsError:
-        pass
+    Path(path.expanduser('~/.config/sshyp')).mkdir(0o700, parents=True, exist_ok=True)
     if not Path(f"{path.expanduser('~/.config/sshyp/tmp')}").exists():
         if Path("/data/data/com.termux").exists():
             system(f"ln -s '/data/data/com.termux/files/usr/tmp' {path.expanduser('~/.config/sshyp/tmp')}")
