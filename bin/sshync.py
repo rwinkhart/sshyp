@@ -1,10 +1,10 @@
 #!/usr/bin/python3
 
-# sshync 2022.01.16.unreleased11
+# sshync 2022.01.16.unreleased12
 
 # external modules
 
-from os import mkdir, path, remove, system, walk
+from os import path, remove, system, walk
 from os.path import getmtime, join, expanduser
 from sys import exit as s_exit
 from pathlib import Path

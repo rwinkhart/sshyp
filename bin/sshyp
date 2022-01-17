@@ -2,7 +2,7 @@
 
 # external modules
 
-from os import environ, mkdir, remove, system, path
+from os import environ, remove, system, path
 from shutil import copy, move, rmtree
 from sys import argv, exit as s_exit
 from pathlib import Path
@@ -24,7 +24,7 @@ def shm_gen():  # generates a random temporary folder for security and returns r
                               for _ in range(random.randint(10, 30)))
     _shm_entry_gen = ''.join(random.SystemRandom().choice(string.ascii_letters + string.digits)
                              for _ in range(random.randint(10, 30)))
-    mkdir(f"{tmp_dir}{_shm_folder_gen}", 0o700)
+    Path(tmp_dir + _shm_folder_gen).mkdir(0o700)
     return _shm_folder_gen, _shm_entry_gen
 
 
@@ -48,10 +48,7 @@ def edit_note(_shm_folder, _shm_entry):
 
 def tweak():  # runs configuration wizard
     # storage/config directory creation
-    try:
-        mkdir(path.expanduser('~/.password-pasture'), 0o700)
-    except FileExistsError:
-        pass
+    Path(path.expanduser('~/.password-pasture')).mkdir(0o700, parents=True, exist_ok=True)
     Path(path.expanduser('~/.config/sshyp')).mkdir(0o700, parents=True, exist_ok=True)
     if not Path(f"{path.expanduser('~/.config/sshyp/tmp')}").exists():
         if Path("/data/data/com.termux").exists():
@@ -80,10 +77,7 @@ def tweak():  # runs configuration wizard
         open(path.expanduser('~/.config/sshyp/sshyp-gpg'), 'w').write(_gpg_id + '\n')
 
         # lock file generation
-        try:
-            open(path.expanduser('~/.config/sshyp/lock'), 'x').write('')
-        except FileExistsError:
-            pass
+        open(path.expanduser('~/.config/sshyp/lock'), 'w')
         system(f"gpg -r {str(_gpg_id)} -e {path.expanduser('~/.config/sshyp/lock')}")
         remove(f"{path.expanduser('~/.config/sshyp')}/lock")
 
@@ -239,7 +233,7 @@ def add_entry():  # adds a new entry
 
 def add_folder():  # creates a new folder
     _folder_name = str(input('Name of new folder: '))
-    mkdir(directory + _folder_name, 0o700)
+    Path(directory + _folder_name).mkdir(0o700)
     system(f"ssh -p {port} {username_ssh}@{ip} \"mkdir -p '{directory_ssh}{_folder_name}'\"")
 
 
