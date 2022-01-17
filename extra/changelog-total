@@ -1,8 +1,61 @@
 <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 
+sshyp 2022.01.17.fr3.3
+
+The Boxing Update - Patch 3
+
+This release is a hotfix for 2022.01.16.fr3.2. It fixes major bugs, especially with Termux.
+
+Changes:
+
+- the temporary directory for Termux is now sym-linked with its full path (no longer dangling)
+- the copy function can now properly detect if Termux is being used
+- ~/.config is created, if it does not already exist
+- "sshyp shear" now functions again, as a bug with the lock file has been fixed
+- sshync -should- now properly detect the database file on all platforms (was broken on Termux)
+- total lines of code have been slightly reduced with various small optimizations
+
+Additions planned for minor releases:
+
+** updated the manpage with more information regarding how sshyp works and how to set it up
+** ensured that it is now impossible for ghosts of entires to remain in /dev/shm
+** reduced total lines of code with small optimizations
+
+&&
+
+Planned for next major update (fr4, The sshyp Doing a Split Update):
+
+sshyp:
+** sshyp has recieved a major visual overhaul
+    ^ this includes the new file list and thematic text art
+
+sshync:
+** sshync has been split into a separate package and now has standalone functionality as a backup/syncing utility
+    ^ more details will be available in the sshync repo, once it is created
+
+&&
+
+Planned for next, next major update (fr5, The Farmer Shearing the sshyp Update):
+
+** allow for multi-client deletion... somehow (in sshync)
+** when syncing, a check is made to see if any folders are not on all devices - if the check comes back true, it is corrected (in sshyp)
+** imporove password generator to guarantee more secure results
+** enforce permissions on the server-side
+** allow for copying entire notes (not just first line)
+** ability to pass entries as arguments for more functions
+
+&&
+
+Backlog:
+
+** create separate gui frontend targetting mobile and desktop Linux
+** auto-completion on tab (currently unsure of best way to make this work)
+
+<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+
 sshyp 2022.01.16.fr3.2
 
-The Boxing Update
+The Boxing Update - Patch 2
 
 This release is a hotfix for 2022.01.16.fr3.1. It fixes major bugs, including one massively impacting Termux.
 
@@ -52,7 +105,7 @@ Backlog:
 
 sshyp 2022.01.16.fr3.1
 
-The Boxing Update
+The Boxing Update - Patch 1
 
 This release is a hotfix for 2022.01.13.fr3. It fixes sshync/syncing support after the changes in the last release.
 
