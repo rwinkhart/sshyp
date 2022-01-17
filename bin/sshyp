@@ -56,8 +56,8 @@ def tweak():  # runs configuration wizard
         mkdir(path.expanduser('~/.config/sshyp'), 0o700)
     except FileExistsError:
         pass
-    if not Path(f"{path.expanduser('~/.config/sshyp/tmp')}").is_file():
-        if Path("/data/data/com.termux").is_file():
+    if not Path(f"{path.expanduser('~/.config/sshyp/tmp')}").exists():
+        if Path("/data/data/com.termux").exists():
             system(f"ln -s '/data/data/com.termux/files/usr/tmp' {path.expanduser('~/.config/sshyp/tmp')}")
         else:
             system(f"ln -s /dev/shm {path.expanduser('~/.config/sshyp/tmp')}")
@@ -348,7 +348,7 @@ def copy_data():  # copies a specified field of an entry to the clipboard
     _shm_folder, _shm_entry = shm_gen()
     system(f"gpg -d --output {tmp_dir}{_shm_folder}/{_shm_entry} '{directory}{_read_entry}.gpg'")
     _copy_line = open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'r').readlines()
-    if Path("/data/data/com.termux").is_file():  # checks for Termux, Wayland, or X
+    if Path("/data/data/com.termux").exists():  # checks for Termux, Wayland, or X
         if argument == 'copy username' or argument == 'copy -u':
             system('termux-clipboard-set ' + "'" + _copy_line[0].replace('\n', '').replace("'", "'\\''") + "'")
         elif argument == 'copy password' or argument == 'copy -p':
