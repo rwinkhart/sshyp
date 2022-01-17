@@ -19,28 +19,28 @@ def replace_line(file_name, line_num, text):  # replaces text in a given line wi
     open(file_name, 'w').writelines(_lines)
 
 
-def shm_gen():  # generates random folder in /dev/shm for security and returns random names for the folder and temp file
+def shm_gen():  # generates a random temporary folder for security and returns random names for the folder and temp file
     _shm_folder_gen = ''.join(random.SystemRandom().choice(string.ascii_letters + string.digits)
                               for _ in range(random.randint(10, 30)))
     _shm_entry_gen = ''.join(random.SystemRandom().choice(string.ascii_letters + string.digits)
                              for _ in range(random.randint(10, 30)))
-    mkdir(f"/dev/shm/{_shm_folder_gen}", 0o700)
+    mkdir(f"{tmp_dir}{_shm_folder_gen}", 0o700)
     return _shm_folder_gen, _shm_entry_gen
 
 
 def encrypt(_shm_folder, _shm_entry, _location):
-    system(f"gpg -r {str(gpg_id)} -e '/dev/shm/{_shm_folder}/{_shm_entry}'")
-    move(f"/dev/shm/{_shm_folder}/{_shm_entry}.gpg", f"{directory}{_location}.gpg")
-    rmtree(f"/dev/shm/{_shm_folder}")
+    system(f"gpg -r {str(gpg_id)} -e '{tmp_dir}{_shm_folder}/{_shm_entry}'")
+    move(f"{tmp_dir}{_shm_folder}/{_shm_entry}.gpg", f"{directory}{_location}.gpg")
+    rmtree(f"{tmp_dir}{_shm_folder}")
 
 
 def edit_note(_shm_folder, _shm_entry):
-    lines = open(f"/dev/shm/{_shm_folder}/{_shm_entry}").readlines()
-    open(f"/dev/shm/{_shm_folder}/{_shm_entry}", 'w').writelines(lines[0:3])
-    open(f"/dev/shm/{_shm_folder}/{_shm_entry}-n", 'w').writelines(lines[4:-2])
-    system(f"nano /dev/shm/{_shm_folder}/{_shm_entry}-n")
-    edit_notes = open(f"/dev/shm/{_shm_folder}/{_shm_entry}-n").read()
-    open(f"/dev/shm/{_shm_folder}/{_shm_entry}", 'a').write('\n' + edit_notes + '\n\n')
+    lines = open(f"{tmp_dir}{_shm_folder}/{_shm_entry}").readlines()
+    open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'w').writelines(lines[0:3])
+    open(f"{tmp_dir}{_shm_folder}/{_shm_entry}-n", 'w').writelines(lines[4:-2])
+    system(f"nano {tmp_dir}{_shm_folder}/{_shm_entry}-n")
+    edit_notes = open(f"{tmp_dir}{_shm_folder}/{_shm_entry}-n").read()
+    open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'a').write('\n' + edit_notes + '\n\n')
 
 
 # argument-specific functions
@@ -56,7 +56,11 @@ def tweak():  # runs configuration wizard
         mkdir(path.expanduser('~/.config/sshyp'), 0o700)
     except FileExistsError:
         pass
-
+    if not Path(f"{path.expanduser('~/.config/sshyp/tmp')}").is_file():
+        if Path("/data/data/com.termux").is_file():
+            system(f"ln -s {path.expanduser('~/../usr/tmp')} {path.expanduser('~/.config/sshyp/tmp')}")
+        else:
+            system(f"ln -s /dev/shm {path.expanduser('~/.config/sshyp/tmp')}")
     # device type configuration
     _device_type = input('\nIs this installation for a client or for a server? (C/s) ')
     if _device_type.lower() == 's':
@@ -152,7 +156,7 @@ def print_info():  # prints help text based on argument
         print('/                                                      /')
         print('/     sshyp  Copyright (C) 2021  Randall Winkhart      /')
         print('/                                                      /')
-        print('/              Version 2022.01.13.fr3.1                /')
+        print('/              Version 2022.01.16.fr3.2                /')
         print('/                 The Boxing Update                    /')
         print('/                                                      /')
         print('////////////////////////////////////////////////////////\n')
@@ -216,9 +220,9 @@ def add_entry():  # adds a new entry
         _entry_name = _entry_name.replace('/', '', 1)
     if argument == 'add note' or argument == 'add -n':
         _shm_folder, _shm_entry = shm_gen()
-        system(f"nano /dev/shm/{_shm_folder}/{_shm_entry}-n")
-        _notes = open(f"/dev/shm/{_shm_folder}/{_shm_entry}-n", 'r').read()
-        open(f"/dev/shm/{_shm_folder}/{_shm_entry}", 'w').writelines('\n\n\n\n' + _notes + '\n\n')
+        system(f"nano {tmp_dir}{_shm_folder}/{_shm_entry}-n")
+        _notes = open(f"{tmp_dir}{_shm_folder}/{_shm_entry}-n", 'r').read()
+        open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'w').writelines('\n\n\n\n' + _notes + '\n\n')
     elif argument == 'add password' or argument == 'add -p':
         _username = str(input('Username: '))
         _password = str(input('Password: '))
@@ -226,11 +230,11 @@ def add_entry():  # adds a new entry
         _add_note = input('Add a note to this entry? (y/N) ')
         _shm_folder, _shm_entry = shm_gen()
         if _add_note.lower() == 'y':
-            system(f"nano /dev/shm/{_shm_folder}/{_shm_entry}-n")
-            _notes = open(f"/dev/shm/{_shm_folder}/{_shm_entry}-n", 'r').read()
+            system(f"nano {tmp_dir}{_shm_folder}/{_shm_entry}-n")
+            _notes = open(f"{tmp_dir}{_shm_folder}/{_shm_entry}-n", 'r').read()
         else:
             _notes = ''
-        open(f"/dev/shm/{_shm_folder}/{_shm_entry}", 'w').writelines(_username + '\n' + _password + '\n' + _url + '\n\n'
+        open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'w').writelines(_username + '\n' + _password + '\n' + _url + '\n\n'
                                                                      + _notes + '\n\n')
     encrypt(_shm_folder, _shm_entry, _entry_name)
     system(f"gpg -d '{directory}{_entry_name}.gpg'")
@@ -270,21 +274,21 @@ def edit():  # edits the contents of an entry
     if argument == 'edit username' or argument == 'edit -u':
         _detail = str(input('New Username: '))
         _shm_folder, _shm_entry = shm_gen()
-        system(f"gpg -d --output /dev/shm/{_shm_folder}/{_shm_entry} '{directory}{_entry_name}.gpg'")
-        replace_line(f"/dev/shm/{_shm_folder}/{_shm_entry}", 0, _detail + '\n')
+        system(f"gpg -d --output {tmp_dir}{_shm_folder}/{_shm_entry} '{directory}{_entry_name}.gpg'")
+        replace_line(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 0, _detail + '\n')
     elif argument == 'edit password' or argument == 'edit -p':
         _detail = str(input('New Password: '))
         _shm_folder, _shm_entry = shm_gen()
-        system(f"gpg -d --output /dev/shm/{_shm_folder}/{_shm_entry} '{directory}{_entry_name}.gpg'")
-        replace_line(f"/dev/shm/{_shm_folder}/{_shm_entry}", 1, _detail + '\n')
+        system(f"gpg -d --output {tmp_dir}{_shm_folder}/{_shm_entry} '{directory}{_entry_name}.gpg'")
+        replace_line(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 1, _detail + '\n')
     elif argument == 'edit url' or argument == 'edit -l':
         _detail = str(input('New URL: '))
         _shm_folder, _shm_entry = shm_gen()
-        system(f"gpg -d --output /dev/shm/{_shm_folder}/{_shm_entry} '{directory}{_entry_name}.gpg'")
-        replace_line(f"/dev/shm/{_shm_folder}/{_shm_entry}", 2, _detail + '\n')
+        system(f"gpg -d --output {tmp_dir}{_shm_folder}/{_shm_entry} '{directory}{_entry_name}.gpg'")
+        replace_line(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 2, _detail + '\n')
     elif argument == 'edit note' or argument == 'edit -n':
         _shm_folder, _shm_entry = shm_gen()
-        system(f"gpg -d --output /dev/shm/{_shm_folder}/{_shm_entry} '{directory}{_entry_name}.gpg'")
+        system(f"gpg -d --output {tmp_dir}{_shm_folder}/{_shm_entry} '{directory}{_entry_name}.gpg'")
         edit_note(_shm_folder, _shm_entry)
     remove(f"{directory}{_entry_name}.gpg")
     encrypt(_shm_folder, _shm_entry, _entry_name)
@@ -317,18 +321,18 @@ def gen():  # generates a password for a new or an existing entry
         _add_note = input('Add a note to this entry? (y/N) ')
         _shm_folder, _shm_entry = shm_gen()
         if _add_note.lower() == 'y':
-            system(f"nano /dev/shm/{_shm_folder}/{_shm_entry}-n")
-            _notes = open(f"/dev/shm/{_shm_folder}/{_shm_entry}-n", 'r').read()
+            system(f"nano {tmp_dir}{_shm_folder}/{_shm_entry}-n")
+            _notes = open(f"{tmp_dir}{_shm_folder}/{_shm_entry}-n", 'r').read()
         else:
             _notes = ''
-        open(f"/dev/shm/{_shm_folder}/{_shm_entry}", 'w').writelines(_username + '\n' + _pass_gen + '\n' + _url + '\n\n'
+        open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'w').writelines(_username + '\n' + _pass_gen + '\n' + _url + '\n\n'
                                                                      + _notes + '\n\n')
         encrypt(_shm_folder, _shm_entry, _entry_name)
         system(f"gpg -d '{directory}{_entry_name}.gpg'")
     else:
         _shm_folder, _shm_entry = shm_gen()
-        system(f"gpg -d --output /dev/shm/{_shm_folder}/{_shm_entry} '{directory}{_entry_name}.gpg'")
-        replace_line(f"/dev/shm/{_shm_folder}/{_shm_entry}", 1, _pass_gen + '\n')
+        system(f"gpg -d --output {tmp_dir}{_shm_folder}/{_shm_entry} '{directory}{_entry_name}.gpg'")
+        replace_line(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 1, _pass_gen + '\n')
         remove(f"{directory}{_entry_name}.gpg")
         encrypt(_shm_folder, _shm_entry, _entry_name)
         system(f"gpg -d '{directory}{_entry_name}.gpg'")
@@ -342,8 +346,8 @@ def copy_data():  # copies a specified field of an entry to the clipboard
         print("\nThe file does not exist!\n")
         s_exit()
     _shm_folder, _shm_entry = shm_gen()
-    system(f"gpg -d --output /dev/shm/{_shm_folder}/{_shm_entry} '{directory}{_read_entry}.gpg'")
-    _copy_line = open(f"/dev/shm/{_shm_folder}/{_shm_entry}", 'r').readlines()
+    system(f"gpg -d --output {tmp_dir}{_shm_folder}/{_shm_entry} '{directory}{_read_entry}.gpg'")
+    _copy_line = open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'r').readlines()
     if Path("/data/data/com.termux").is_file():  # checks for Termux, Wayland, or X
         if argument == 'copy username' or argument == 'copy -u':
             system('termux-clipboard-set ' + "'" + _copy_line[0].replace('\n', '').replace("'", "'\\''") + "'")
@@ -371,7 +375,7 @@ def copy_data():  # copies a specified field of an entry to the clipboard
             system('echo -n ' + "'" + _copy_line[2].replace('\n', '').replace("'", "'\\''") + "'" + ' | xclip -sel c')
         elif argument == 'copy note' or argument == 'copy -n':
             system('echo -n ' + "'" + _copy_line[4].replace('\n', '').replace("'", "'\\''") + "'" + ' | xclip -sel c')
-    rmtree(f"/dev/shm/{_shm_folder}")
+    rmtree(f"{tmp_dir}{_shm_folder}")
 
 
 def remove_data():  # deletes an entry or folder from both the client and the server
@@ -381,9 +385,9 @@ def remove_data():  # deletes an entry or folder from both the client and the se
     if _entry_name.startswith('/'):
         _entry_name = _entry_name.replace('/', '', 1)
     try:
-        system(f"gpg -d --output /dev/shm/sshyp.lock {path.expanduser('~/.config/sshyp/lock.gpg')}")
-        _unlock = open('/dev/shm/sshyp.lock', 'r').readlines()
-        remove('/dev/shm/sshyp.lock')
+        system(f"gpg -d --output {tmp_dir}sshyp.lock {path.expanduser('~/.config/sshyp/lock.gpg')}")
+        _unlock = open('{tmp_dir}sshyp.lock', 'r').readlines()
+        remove(f"{tmp_dir}sshyp.lock")
     except FileNotFoundError:
         print('\nAccess denied.\n')
         s_exit()
@@ -406,6 +410,7 @@ argument = argument[:-1]
 # import saved userdata
 if argument != 'tweak':
     device_type = ''
+    tmp_dir = path.expanduser('~/.config/sshyp/tmp/')
     try:
         device_type = open(path.expanduser('~/.config/sshyp/sshyp-device')).read().strip()
         if device_type == 'c':
