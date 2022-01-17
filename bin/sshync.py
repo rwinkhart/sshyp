@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-# sshync 2022.01.16.unreleased12
+# sshync 2022.01.17.unreleased13
 
 # external modules
 
@@ -31,9 +31,8 @@ def get_titles_mods(_directory, _destination, _user_data):
     if _destination == 'r':
         system(f"ssh -i '{_user_data[5]}' -p {_user_data[2]} {_user_data[0]}@{_user_data[1]} \"python -c 'import sshync"
                f"; sshync.get_titles_mods(\"'\"{_user_data[4]}\"'\", \"'\"l\"'\", \"'\"{_user_data}\"'\")'\"")
-        system(f"sftp -P {_user_data[2]} {_user_data[0]}@{_user_data[1]}:"
-               f"'{expanduser(f'/home/{_user_data[0]}/.config/sshync/database')}' "
-               f"'{expanduser('~/.config/sshync/')}'")
+        system(f"sftp -i '{_user_data[5]}' -P {_user_data[2]} {_user_data[0]}@{_user_data[1]}:"
+               f"'{expanduser(f'/home/{_user_data[0]}/.config/sshync/database')}' '{expanduser('~/.config/sshync/')}'")
         _titles, _sep, _mods = ' '.join(open(expanduser('~/.config/sshync/database')).readlines()).replace('\n', '')\
             .partition('^&*')
         _title_list, _mod_list = _titles.split(' ')[:-1], _mods.split(' ')[1:]
