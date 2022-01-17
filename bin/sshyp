@@ -377,7 +377,7 @@ def remove_data():  # deletes an entry or folder from both the client and the se
         _entry_name = _entry_name.replace('/', '', 1)
     try:
         system(f"gpg -d --output {tmp_dir}sshyp.lock {path.expanduser('~/.config/sshyp/lock.gpg')}")
-        _unlock = open('{tmp_dir}sshyp.lock', 'r').readlines()
+        _unlock = open(f"{tmp_dir}sshyp.lock", 'r').readlines()
         remove(f"{tmp_dir}sshyp.lock")
     except FileNotFoundError:
         print('\nAccess denied.\n')
