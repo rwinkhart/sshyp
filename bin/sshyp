@@ -58,7 +58,7 @@ def tweak():  # runs configuration wizard
         pass
     if not Path(f"{path.expanduser('~/.config/sshyp/tmp')}").is_file():
         if Path("/data/data/com.termux").is_file():
-            system(f"ln -s {path.expanduser('~/../usr/tmp')} {path.expanduser('~/.config/sshyp/tmp')}")
+            system(f"ln -s '/data/data/com.termux/files/usr/tmp' {path.expanduser('~/.config/sshyp/tmp')}")
         else:
             system(f"ln -s /dev/shm {path.expanduser('~/.config/sshyp/tmp')}")
     # device type configuration
@@ -156,7 +156,7 @@ def print_info():  # prints help text based on argument
         print('/                                                      /')
         print('/     sshyp  Copyright (C) 2021  Randall Winkhart      /')
         print('/                                                      /')
-        print('/              Version 2022.01.16.fr3.2                /')
+        print('/              Version 2022.01.17.fr3.3                /')
         print('/                 The Boxing Update                    /')
         print('/                                                      /')
         print('////////////////////////////////////////////////////////\n')
