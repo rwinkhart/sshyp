@@ -145,9 +145,9 @@ def print_info():  # prints help text based on argument
     elif argument == 'version' or argument == '-v':
         print('\n////////////////////////////////////////////////////////')
         print('/                                                      /')
-        print('/     sshyp  Copyright (C) 2021  Randall Winkhart      /')
+        print('/   sshyp  Copyright (C) 2021-2022  Randall Winkhart   /')
         print('/                                                      /')
-        print('/              Version 2022.01.17.fr3.3                /')
+        print('/              Version 2022.01.26.fr3.4                /')
         print('/                 The Boxing Update                    /')
         print('/                                                      /')
         print('////////////////////////////////////////////////////////\n')
