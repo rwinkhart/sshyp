@@ -1,3 +1,45 @@
+sshyp 2022.01.26.fr3.4
+
+The Boxing Update - Patch 4
+
+This release is a hotfix for 2022.01.17.fr3.3. It fixes a major bug with sshync.
+
+Changes:
+
+- sshync now correctly uses the auto-generated SSH key in all operations
+- an exception has been added for attempting to delete/shear a file that does not exist
+- the manpage has been updated and now includes setup instructions
+
+&&
+
+Planned for next major update (fr4, The sshyp Doing a Split Update):
+
+sshyp:
+** sshyp has recieved a major visual overhaul
+    ^ this includes the new file list and thematic text art
+
+sshync:
+** sshync has been split into a separate package and now has standalone functionality as a backup/syncing utility
+    ^ more details will be available in the sshync repo, once it is created
+
+&&
+
+Planned for next, next major update (fr5, The Farmer Shearing the sshyp Update):
+
+** allow for multi-client deletion... somehow (in sshync)
+** when syncing, a check is made to see if any folders are not on all devices - if the check comes back true, it is corrected (in sshyp)
+** imporove password generator to guarantee more secure results
+** enforce permissions on the server-side
+** allow for copying entire notes (not just first line)
+** ability to pass entries as arguments for more functions
+
+&&
+
+Backlog:
+
+** create separate gui frontend targetting mobile and desktop Linux
+** auto-completion on tab (currently unsure of best way to make this work)
+
 <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 
 sshyp 2022.01.17.fr3.3

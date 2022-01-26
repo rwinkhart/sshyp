@@ -1,23 +1,14 @@
-sshyp 2022.01.17.fr3.3
+sshyp 2022.01.26.fr3.4
 
-The Boxing Update - Patch 3
+The Boxing Update - Patch 4
 
-This release is a hotfix for 2022.01.16.fr3.2. It fixes major bugs, especially with Termux.
+This release is a hotfix for 2022.01.17.fr3.3. It fixes a major bug with sshync.
 
 Changes:
 
-- the temporary directory for Termux is now sym-linked with its full path (no longer dangling)
-- the copy function can now properly detect if Termux is being used
-- ~/.config is created, if it does not already exist
-- "sshyp shear" now functions again, as a bug with the lock file has been fixed
-- sshync -should- now properly detect the database file on all platforms (was broken on Termux)
-- total lines of code have been slightly reduced with various small optimizations
-
-Additions planned for minor releases:
-
-** updated the manpage with more information regarding how sshyp works and how to set it up
-** ensured that it is now impossible for ghosts of entires to remain in /dev/shm
-** reduced total lines of code with small optimizations
+- sshync now correctly uses the auto-generated SSH key in all operations
+- an exception has been added for attempting to delete/shear a file that does not exist
+- the manpage has been updated and now includes setup instructions
 
 &&
 
