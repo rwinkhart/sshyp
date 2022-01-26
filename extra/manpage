@@ -1,4 +1,4 @@
-.TH sshyp 1 "10 January 2022" "2021.12.01.fr2.3" "sshyp man page"
+.TH sshyp 1 "26 January 2022" "2022.01.26.fr3.4" "sshyp man page"
 .SH NAME
 sshyp \- A very simple self-hosted, synchronized password manager. Alternative to GNU pass. 
 .SH SYNOPSIS
@@ -66,9 +66,34 @@ copy:
  note/-n                 copy the note of an entry to your clipboard
 gen:
  update/-u               generate a password for an existing entry
-.SH BUGS
-This is more of a current limitation than a bug, but:
+.SH LIMITATIONS
+The following limitations will be corrected in future updates:
 
 Currently, if multiple clients are connected to a single server and a client deletes an entry, the entry is correctly deleted from the client and the server, but since the entry still exists on the other client, the next time it syncs the file will be re-uploaded. This will be fixed in an upcoming release of the syncing backend, sshync.
+
+Currently, folders (for sorting) are not replicated onto new clients (they need to be manually created before syncing).
+
+Currently, the entry list displays each entry with the file extension ".gpg" visible (which you do not type when reading, modifying, or creating an entry). This will be corrected when the new entry list is added.
+.SH SETUP
+sshyp operates on a client-server model, and thus requires you to have access to your own server (whether it be a physical home server or a cloud rental) with remote access via SSH.
+
+The sshyp package includes modes for operating on both client and server devices, so only one package is necessary.
+
+Server setup:
+    Configure an openssh server (if sshyp was installed from the Debian package, the ssh server was not installed as a dependency and needs to be installed manually)
+    Allow remote access to the SSH server w/public key authentication (disabling password-only authentication recommended)
+    Install sshyp
+    Run "sshyp tweak" and set the device type as server
+    Done!
+
+Client setup:
+    Install sshyp
+    Run "sshyp tweak" and follow the prompts
+    Copy the generated public SSH key to the server using preferred method (manually adding to authorized_keys, ssh-copy-id, etc.)
+    **this step will be automated in the future: if an entry library already exists on the server, make sure to manually recreate any folders that exist on the server in the ~/.password-pasture directory
+    If you already have entries on the server, sync them using "sshyp sync"
+    Done!
+
+Please note that the server setup intentionally does not allow the reading of entries (it does not allow adding a gpg decryption key). For security purposes, only clients can read entries.
 .SH AUTHOR
 Randall Winkhart (https://github.com/rwinkhart)
