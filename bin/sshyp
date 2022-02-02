@@ -261,7 +261,8 @@ def add_entry():  # adds a new entry
 def add_folder():  # creates a new folder
     _folder_name = str(input('Name of new folder: '))
     Path(directory + _folder_name).mkdir(0o700)
-    system(f"ssh -p {port} {username_ssh}@{ip} \"mkdir -p '{directory_ssh}{_folder_name}'\"")
+    system(f"ssh -i '{path.expanduser('~/.ssh/sshyp')}' -p {port} {username_ssh}@{ip} \"mkdir -p '{directory_ssh}"
+           f"{_folder_name}'\"")
 
 
 def rename():  # renames an entry or folder TODO delete original from server to prevent re-downloading
