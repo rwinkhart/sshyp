@@ -1,18 +1,24 @@
-sshyp 2022.01.26.fr3.4
+sshyp 2022.02.02.fr4
 
-The Boxing Update - Patch 4
+The High-Tech Shears Update
 
-This release is a hotfix for 2022.01.17.fr3.3. It fixes a major bug with sshync.
+This release adds in a major feature: multi-client deletion (details below)
+
+Note: This release requires the configuration ("sshyp tweak") to be re-done, as a device name now must be set (for multi-client deletion).
+
+Features:
+
+- added multi-client deletion
+    ^ this means that when an entry is deleted from one client (and thus the server), if another client that has a copy of the deleted entry tries to sync, instead of re-uploading the deleted entry, it will now also have its entry deleted.
+    ^ the current implementation requires a new Python script in addition to sshyp and sshync
 
 Changes:
 
-- sshync now correctly uses the auto-generated SSH key in all operations
-- an exception has been added for attempting to delete/shear a file that does not exist
-- the manpage has been updated and now includes setup instructions
-
+- fixed an issue where sshyp would use the wrong SSH key when trying to delete entries from the server
+    ^ this is a fix that was recently applied to sshync - turns out I made the same mistake in sshyp
 &&
 
-Planned for next major update (fr4, The sshyp Doing a Split Update):
+Planned for next major update (fr5, The sshyp Doing a Split Update):
 
 sshyp:
 ** sshyp has recieved a major visual overhaul
@@ -24,9 +30,8 @@ sshync:
 
 &&
 
-Planned for next, next major update (fr5, The Farmer Shearing the sshyp Update):
+Planned for next, next major update (fr6, The Farmer Shearing the sshyp Update):
 
-** allow for multi-client deletion... somehow (in sshync)
 ** when syncing, a check is made to see if any folders are not on all devices - if the check comes back true, it is corrected (in sshyp)
 ** imporove password generator to guarantee more secure results
 ** enforce permissions on the server-side
