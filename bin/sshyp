@@ -158,7 +158,7 @@ def print_info():  # prints help text based on argument
         print('/                                                      /')
         print('/   sshyp  Copyright (C) 2021-2022  Randall Winkhart   /')
         print('/                                                      /')
-        print('/                Version 2022.02.16.fr4                /')
+        print('/               Version 2022.02.16.fr4.1               /')
         print('/             The High-Tech Shears Update              /')
         print('/                                                      /')
         print('////////////////////////////////////////////////////////\n')
@@ -225,12 +225,12 @@ def sync():  # calls sshync to sync changes to the user's server
             try:
                 rmtree(f"{path.expanduser('~/.password-pasture/')}{_file[:-1]}")
             except FileNotFoundError:
-                print('\nFolder does not exist locally.\n')
+                print('Folder does not exist locally.\n')
         else:
             try:
                 remove(f"{path.expanduser('~/.password-pasture/')}{_file[:-1]}")
             except FileNotFoundError:
-                print('\nFile does not exist locally.\n')
+                print('File does not exist locally.\n')
     # set permissions before uploading
     system('find ' + directory + ' -type d -exec chmod -R 700 {} +')
     system('find ' + directory + ' -type f -exec chmod -R 600 {} +')

@@ -34,4 +34,7 @@ def check(_client_device_name):
                 remove(f"{expanduser('~/.config/sshyp/deleted/')}{_file}")
             except FileNotFoundError:
                 pass
-            open(expanduser('~/.config/sshyp/deletion_database'), 'a').write(_file_path + '.gpg\n')
+            if _file.__contains__('.gpg'):
+                open(expanduser('~/.config/sshyp/deletion_database'), 'a').write(_file_path + '.gpg\n')
+            else:
+                open(expanduser('~/.config/sshyp/deletion_database'), 'a').write(_file_path + '\n')
