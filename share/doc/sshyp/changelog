@@ -1,14 +1,16 @@
-sshyp 2022.02.16.fr4.6
+sshyp 2022.02.16.fr4.7
 
-The High-Tech Shears Update - Patch 6
+The High-Tech Shears Update - Patch 7
 
-This release addresses a critical typo.
+This release enables recursive folder syncing.
 
-Note: Upgrading from releases older than fr4.6 requires the configuration ("sshyp tweak") to be re-done, as the configuration process has changed.
+Note: Upgrading from releases older than fr4.7 requires the configuration ("sshyp tweak") to be re-done, as the configuration process has changed.
 
 Changes:
 
-- corrected a typo error causing folder syncing issues
+- re-wrote folder checking function to fetch subdirectories recursively
+- added in user-facing messages for when folders are being synced or entries are being removed
+- fixed a typo preventing folder syncing from working (actually tested this time)
 
 &&
 
@@ -26,7 +28,6 @@ sshync:
 
 Planned for next, next major update (fr6, The Farmer Shearing the sshyp Update):
 
-** when syncing, a check is made to see if any folders are not on all devices - if the check comes back true, it is corrected (in sshyp)
 ** imporove password generator to guarantee more secure results
 ** enforce permissions on the server-side
 ** allow for copying entire notes (not just first line)

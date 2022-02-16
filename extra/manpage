@@ -1,4 +1,4 @@
-.TH sshyp 1 "16 February 2022" "2022.02.16.fr4.5" "sshyp man page"
+.TH sshyp 1 "16 February 2022" "2022.02.16.fr4.7" "sshyp man page"
 .SH NAME
 sshyp \- A very simple self-hosted, synchronized password manager. Alternative to GNU pass. 
 .SH SYNOPSIS
