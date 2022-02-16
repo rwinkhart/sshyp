@@ -38,7 +38,7 @@ def deletion_check(_client_device_name):
 
 
 def folder_check():
-    open(expanduser('~/.config/sshyp/deletion_database'), 'w').write('')
+    open(expanduser('~/.config/sshyp/folder_database'), 'w').write('')
     for _file in listdir(expanduser('~/.password-pasture')):
-        if isdir(join('~/.config/sshyp/deletion_database/', _file)):
+        if isdir(join('~/.config/sshyp/folder_database/', _file)):
             open(expanduser('~/.config/sshyp/folder_database'), 'a').write(_file + '\n')
