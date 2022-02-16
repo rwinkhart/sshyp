@@ -104,4 +104,4 @@ Long-term Goals:
 
 # Known Issues
 
-Currently, if a client is missing folders that exist on the server, the contents of the missing folders will fail to download. A temporary workaround is to manually create the folders on the client. This will be addressed.
+Currently, the entry list displays each entry with the file extension ".gpg" visible (which you do not type when reading, modifying, or creating an entry). This will be corrected when the new entry list is added.
