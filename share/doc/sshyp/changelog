@@ -1,4 +1,4 @@
-sshyp 2022.02.02.fr4
+sshyp 2022.02.16.fr4
 
 The High-Tech Shears Update
 
@@ -14,8 +14,10 @@ Features:
 
 Changes:
 
-- fixed an issue where sshyp would use the wrong SSH key when trying to delete entries from the server
+- fixed an issue where sshyp would use the wrong SSH key when trying to delete entries from or create folders on the server
     ^ this is a fix that was recently applied to sshync - turns out I made the same mistake in sshyp
+- deleting folders should now work properly with "sshyp shear" if the directory is entered with a following "/"
+
 &&
 
 Planned for next major update (fr5, The sshyp Doing a Split Update):
