@@ -21,20 +21,17 @@ def delete(_file_path):
         except FileNotFoundError:
             print('\nFile does not exist remotely.\n')
     for _device_name in listdir(expanduser('~/.config/sshyp/devices')):
-        open(f"{expanduser('~/.config/sshyp/deleted/')}{_file_path.replace('/', '@')}.{_device_name}.del", 'w')
+        open(f"{expanduser('~/.config/sshyp/deleted/')}{_file_path.replace('/', '@')}^&*{_device_name}^&*del", 'w')
 
 
 def check(_client_device_name):
     open(expanduser('~/.config/sshyp/deletion_database'), 'w').write('')
     for _file in listdir(expanduser('~/.config/sshyp/deleted')):
-        _file_path = _file.replace('.gpg', '').replace('@', '/').split('.')[0]
-        _device = _file.replace('.gpg', '').split('.')[1]
+        _file_path = _file.replace('@', '/').split('^&*')[0]
+        _device = _file.split('^&*')[1]
         if _device == _client_device_name:
             try:
                 remove(f"{expanduser('~/.config/sshyp/deleted/')}{_file}")
             except FileNotFoundError:
                 pass
-            if _file.__contains__('.gpg'):
-                open(expanduser('~/.config/sshyp/deletion_database'), 'a').write(_file_path + '.gpg\n')
-            else:
-                open(expanduser('~/.config/sshyp/deletion_database'), 'a').write(_file_path + '\n')
+            open(expanduser('~/.config/sshyp/deletion_database'), 'a').write(_file_path + '\n')
