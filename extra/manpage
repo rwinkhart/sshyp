@@ -1,4 +1,4 @@
-.TH sshyp 1 "16 February 2022" "2022.02.16.fr4" "sshyp man page"
+.TH sshyp 1 "16 February 2022" "2022.02.16.fr4.1" "sshyp man page"
 .SH NAME
 sshyp \- A very simple self-hosted, synchronized password manager. Alternative to GNU pass. 
 .SH SYNOPSIS
@@ -73,9 +73,12 @@ gen:
 .SH LIMITATIONS
 The following limitations will be corrected in future updates:
 
-Currently, folders (for sorting) are not replicated onto new clients (they need to be manually created before syncing).
+    Currently, folders (for sorting) are not replicated onto new clients (they need to be manually created before syncing).
 
-Currently, the entry list displays each entry with the file extension ".gpg" visible (which you do not type when reading, modifying, or creating an entry). This will be corrected when the new entry list is added.
+    Currently, the entry list displays each entry with the file extension ".gpg" visible (which you do not type when reading, modifying, or creating an entry). This will be corrected when the new entry list is added.
+
+The following characters/character sequences are not supported in entry/folder titles:
+    .   @   ^&*
 .SH SETUP
 sshyp operates on a client-server model, and thus requires you to have access to your own server (whether it be a physical home server or a cloud rental) with remote access via SSH.
 
