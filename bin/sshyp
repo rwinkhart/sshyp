@@ -160,7 +160,7 @@ def print_info():  # prints help text based on argument
         print('/                                                      /')
         print('/   sshyp  Copyright (C) 2021-2022  Randall Winkhart   /')
         print('/                                                      /')
-        print('/               Version 2022.02.16.fr4.6               /')
+        print('/               Version 2022.02.16.fr4.7               /')
         print('/             The High-Tech Shears Update              /')
         print('/                                                      /')
         print('////////////////////////////////////////////////////////\n')

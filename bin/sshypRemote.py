@@ -2,8 +2,8 @@
 
 # external modules
 
-from os import remove, listdir
-from os.path import expanduser, isdir, join
+from os import listdir, remove, walk
+from os.path import expanduser
 from shutil import rmtree
 
 
@@ -39,6 +39,7 @@ def deletion_check(_client_device_name):
 
 def folder_check():
     open(expanduser('~/.config/sshyp/folder_database'), 'w').write('')
-    for _file in listdir(expanduser('~/.password-pasture')):
-        if isdir(join('~/.config/sshyp/folder_database/', _file)):
-            open(expanduser('~/.config/sshyp/folder_database'), 'a').write(_file + '\n')
+    for _root, _directories, _files in walk(expanduser('~/.password-pasture')):
+        for _dir in _directories:
+            open(expanduser('~/.config/sshyp/folder_database'), 'a')\
+                .write(f"{_root.replace(expanduser('~/.password-pasture/'), '')}/{_dir}\n")
