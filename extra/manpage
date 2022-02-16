@@ -34,6 +34,10 @@ Creating a note-only entry:
 Syncing entries with the server:
     sshyp sync
 
+Removing an existing folder saved as ~/.password-pasture/social:
+    sshyp shear
+    *when prompted for what to delete, since you are deleting a folder, be sure to enter your choice with a following "/", e.g. "social/" or "/social/"
+
 .SH OPTIONS
 In order to quickly read an existing entry, just run "sshyp </entry name>".
 
