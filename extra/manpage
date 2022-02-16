@@ -73,8 +73,6 @@ gen:
 .SH LIMITATIONS
 The following limitations will be corrected in future updates:
 
-    Currently, folders (for sorting) are not replicated onto new clients (they need to be manually created before syncing).
-
     Currently, the entry list displays each entry with the file extension ".gpg" visible (which you do not type when reading, modifying, or creating an entry). This will be corrected when the new entry list is added.
 
 The following characters/character sequences are not supported in entry/folder titles:
