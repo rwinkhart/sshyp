@@ -19,7 +19,7 @@ def delete(_file_path):
         try:
             remove(f"{expanduser('~/.password-pasture/')}{_file_path}.gpg")
         except FileNotFoundError:
-            print('\nFile does not exist remotely.\n')
+            print('\nFile does not exist remotely.')
     for _device_name in listdir(expanduser('~/.config/sshyp/devices')):
         open(f"{expanduser('~/.config/sshyp/deleted/')}{_file_path.replace('/', '@')}^&*{_device_name}", 'w')
 
