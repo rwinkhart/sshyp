@@ -21,7 +21,7 @@ def delete(_file_path):
         except FileNotFoundError:
             print('\nFile does not exist remotely.\n')
     for _device_name in listdir(expanduser('~/.config/sshyp/devices')):
-        open(f"{expanduser('~/.config/sshyp/deleted/')}{_file_path.replace('/', '@')}^&*{_device_name}^&*del", 'w')
+        open(f"{expanduser('~/.config/sshyp/deleted/')}{_file_path.replace('/', '@')}^&*{_device_name}", 'w')
 
 
 def check(_client_device_name):
