@@ -1,22 +1,15 @@
-sshyp 2022.02.16.fr4
+sshyp 2022.02.16.fr4.1
 
-The High-Tech Shears Update
+The High-Tech Shears Update - Patch 1
 
-This release adds in a major feature: multi-client deletion (details below)
+This release addresses a bug with local folder deletion.
 
-Note: This release requires the configuration ("sshyp tweak") to be re-done, as a device name now must be set (for multi-client deletion).
-
-Features:
-
-- added multi-client deletion
-    ^ this means that when an entry is deleted from one client (and thus the server), if another client that has a copy of the deleted entry tries to sync, instead of re-uploading the deleted entry, it will now also have its entry deleted.
-    ^ the current implementation requires a new Python script in addition to sshyp and sshync
+Note: Upgrading to releases in the fr4 series requires the configuration ("sshyp tweak") to be re-done, as a device name now must be set (for multi-client deletion).
 
 Changes:
 
-- fixed an issue where sshyp would use the wrong SSH key when trying to delete entries from or create folders on the server
-    ^ this is a fix that was recently applied to sshync - turns out I made the same mistake in sshyp
-- deleting folders should now work properly with "sshyp shear" if the directory is entered with a following "/"
+- fixed an issue where folders could not be deleted locally
+- optimized deletion flags
 
 &&
 
