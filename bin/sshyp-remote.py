@@ -3,7 +3,7 @@
 # external modules
 
 from os import remove, listdir
-from os.path import expanduser
+from os.path import expanduser, isdir, join
 from shutil import rmtree
 
 
@@ -35,3 +35,10 @@ def deletion_check(_client_device_name):
             except FileNotFoundError:
                 pass
             open(expanduser('~/.config/sshyp/deletion_database'), 'a').write(_file_path + '\n')
+
+
+def folder_check():
+    open(expanduser('~/.config/sshyp/deletion_database'), 'w').write('')
+    for _file in listdir(expanduser('~/.password-pasture')):
+        if isdir(join('~/.config/sshyp/deletion_database/', _file)):
+            open(expanduser('~/.config/sshyp/folder_database'), 'a').write(_file + '\n')

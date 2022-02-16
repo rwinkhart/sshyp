@@ -158,7 +158,7 @@ def print_info():  # prints help text based on argument
         print('/                                                      /')
         print('/   sshyp  Copyright (C) 2021-2022  Randall Winkhart   /')
         print('/                                                      /')
-        print('/               Version 2022.02.16.fr4.3               /')
+        print('/               Version 2022.02.16.fr4.4               /')
         print('/             The High-Tech Shears Update              /')
         print('/                                                      /')
         print('////////////////////////////////////////////////////////\n')
@@ -231,6 +231,22 @@ def sync():  # calls sshync to sync changes to the user's server
                 remove(f"{path.expanduser('~/.password-pasture/')}{_file[:-1]}.gpg")
             except (FileNotFoundError, IsADirectoryError):
                 print('File does not exist locally.\n')
+    # check for new folders
+    system(f"ssh -i '{path.expanduser('~/.ssh/sshyp')}' -p {port} {username_ssh}@{ip} \"python -c 'import sshyp-remote"
+           f"; sshyp-remote.folder_check()'\"")
+    system(f"sftp -p -q -i '{path.expanduser('~/.ssh/sshyp')}' -P {port} {username_ssh}@{ip}:"
+           f"'/home/{username_ssh}/.config/sshyp/folder_database' {path.expanduser('~/.config/sshyp/')}")
+    try:
+        _folder_database = open(path.expanduser('~/.config/sshyp/folder_database')).readlines()
+    except (FileNotFoundError, IndexError):
+        print('\nThe folder database does not exist or is corrupted.\n')
+        _folder_database = None
+        s_exit()
+    for _folder in _folder_database:
+        if Path(f"{path.expanduser('~/.password-pasture/')}{_folder[:-1]}").exists():
+            pass
+        else:
+            Path(f"{path.expanduser('~/.password-pasture/')}{_folder[:-1]}").mkdir(0o700, parents=True, exist_ok=True)
     # set permissions before uploading
     system('find ' + directory + ' -type d -exec chmod -R 700 {} +')
     system('find ' + directory + ' -type f -exec chmod -R 600 {} +')
