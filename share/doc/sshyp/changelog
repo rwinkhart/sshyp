@@ -1,18 +1,14 @@
-sshyp 2022.02.16.fr4.4
+sshyp 2022.02.16.fr4.5
 
-The High-Tech Shears Update - Patch 4
+The High-Tech Shears Update - Patch 5
 
-This release automatically generates user-created folders on new client devices.
+This release addresses a critical syntax error.
 
-Note: Upgrading to releases in the fr4 series requires the configuration ("sshyp tweak") to be re-done, as a device name now must be set (for multi-client deletion). Even upgrading from fr4.3 to fr4.4 will require re-running "sshyp tweak" due to file name changes.
-
-Features:
-
-- implemented proper folder syncing for new clients and clients missing folders that exist server-side
+Note: Upgrading from releases older than fr4.5 requires the configuration ("sshyp tweak") to be re-done, as the configuration process has changed.
 
 Changes:
 
-- old device names are now automatically deleted (locally) when running "sshyp tweak", to prevent conflicts
+- corrected a syntax error causing critical functionality issues
 
 &&
 
