@@ -1,15 +1,14 @@
-sshyp 2022.02.16.fr4.2
+sshyp 2022.02.16.fr4.3
 
-The High-Tech Shears Update - Patch 2
+The High-Tech Shears Update - Patch 3
 
-This release re-addresses a bug with local folder deletion.
+This release addresses a bug with local entry deletion.
 
 Note: Upgrading to releases in the fr4 series requires the configuration ("sshyp tweak") to be re-done, as a device name now must be set (for multi-client deletion).
 
 Changes:
 
-- fixed an issue where folders could not be deleted locally (actually, this time)
-- properly handled an exception for when the user forgets a following '/' when attempting to delete a folder
+- fixed an issue where entries could not be deleted locally
 
 &&
 
