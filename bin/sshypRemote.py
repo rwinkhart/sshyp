@@ -42,4 +42,4 @@ def folder_check():
     for _root, _directories, _files in walk(expanduser('~/.password-pasture')):
         for _dir in _directories:
             open(expanduser('~/.config/sshyp/folder_database'), 'a')\
-                .write(f"{_root.replace(expanduser('~/.password-pasture/'), '')}/{_dir}\n")
+                .write(f"{_root.replace(expanduser('~'), '')}/{_dir}\n")
