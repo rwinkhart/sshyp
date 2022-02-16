@@ -104,6 +104,4 @@ Long-term Goals:
 
 # Known Issues
 
-Currently, files deleted from a client or server may re-appear if another client that had the same file reconnects and later re-uploads it to the server. This will be addressed.
-
 Currently, if a client is missing folders that exist on the server, the contents of the missing folders will fail to download. A temporary workaround is to manually create the folders on the client. This will be addressed.
