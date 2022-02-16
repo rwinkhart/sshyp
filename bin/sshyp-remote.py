@@ -24,7 +24,7 @@ def delete(_file_path):
         open(f"{expanduser('~/.config/sshyp/deleted/')}{_file_path.replace('/', '@')}^&*{_device_name}", 'w')
 
 
-def check(_client_device_name):
+def deletion_check(_client_device_name):
     open(expanduser('~/.config/sshyp/deletion_database'), 'w').write('')
     for _file in listdir(expanduser('~/.config/sshyp/deleted')):
         _file_path = _file.replace('@', '/').split('^&*')[0]
