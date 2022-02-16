@@ -1,14 +1,14 @@
-sshyp 2022.02.16.fr4.5
+sshyp 2022.02.16.fr4.6
 
-The High-Tech Shears Update - Patch 5
+The High-Tech Shears Update - Patch 6
 
-This release addresses a critical syntax error.
+This release addresses a critical typo.
 
-Note: Upgrading from releases older than fr4.5 requires the configuration ("sshyp tweak") to be re-done, as the configuration process has changed.
+Note: Upgrading from releases older than fr4.6 requires the configuration ("sshyp tweak") to be re-done, as the configuration process has changed.
 
 Changes:
 
-- corrected a syntax error causing critical functionality issues
+- corrected a typo error causing folder syncing issues
 
 &&
 
