@@ -30,11 +30,14 @@ def entry_list_gen():  # generates and prints a list of all folders and entries
         _width = len(' '.join(_entry_list))
     else:
         _width = (len(' '.join(_entry_list)) / (_real / get_terminal_size()[0]) - 50)
-    print(fill(' '.join(_entry_list), width=_width))
+    try:
+        print(fill(' '.join(_entry_list), width=_width) + '\n')
+    except ValueError:
+        pass
     for _root, _directories, _files in walk(path.expanduser('~/.password-pasture')):
         for _dir in sorted(_directories):
             _inner_dir = f"{_root.replace(path.expanduser('~/.password-pasture'), '')}/{_dir}"
-            print(f"\n\u001b[38;5;228m{_inner_dir}/\u001b[0m")
+            print(f"\u001b[38;5;228m{_inner_dir}/\u001b[0m")
             _entry_list, _color_alternator = [], 1
             for _s_root, _s_directories, _s_files in walk(path.expanduser(f"~/.password-pasture{_inner_dir}")):
                 for _entry in sorted(_s_files):
@@ -50,9 +53,9 @@ def entry_list_gen():  # generates and prints a list of all folders and entries
             else:
                 _width = (len(' '.join(_entry_list))/(_real/get_terminal_size()[0]) - 50)
             try:
-                print(fill(' '.join(_entry_list), width=_width))
+                print(fill(' '.join(_entry_list), width=_width) + '\n')
             except ValueError:
-                print('\u001b[38;5;208m-empty directory!-\u001b[0m')
+                print('\u001b[38;5;208m-empty directory!-\u001b[0m\n')
 
 
 def replace_line(file_name, line_num, text):  # replaces text in a given line with different text
