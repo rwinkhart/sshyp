@@ -17,7 +17,7 @@ from textwrap import fill
 def entry_list_gen():  # generates and prints a list of all folders and entries
     print('\n\u001b[38;5;0;48;5;15msshyp entries:\u001b[0m\n')
     _entry_list, _color_alternator = [], 1
-    for _entry in listdir(path.expanduser('~/.password-pasture')):
+    for _entry in sorted(listdir(path.expanduser('~/.password-pasture'))):
         if Path(path.expanduser(f"~/.password-pasture/{_entry}")).is_file():
             if _color_alternator == 1:
                 _entry_list.append(f"\u001b[38;5;195m{_entry.replace('.gpg', '')}\u001b[0m")
@@ -37,7 +37,7 @@ def entry_list_gen():  # generates and prints a list of all folders and entries
             print(f"\n\u001b[38;5;228m{_inner_dir}/")
             _entry_list, _color_alternator = [], 1
             for _s_root, _s_directories, _s_files in walk(path.expanduser(f"~/.password-pasture{_inner_dir}")):
-                for _entry in _s_files:
+                for _entry in sorted(_s_files):
                     if _color_alternator == 1:
                         _entry_list.append(f"\u001b[38;5;195m{_entry.replace('.gpg', '')}\u001b[0m")
                         _color_alternator = 2
