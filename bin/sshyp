@@ -3,28 +3,53 @@
 # external modules
 
 from os import environ, listdir, path, remove, system, walk
-from shutil import copy, move, rmtree
+from shutil import copy, get_terminal_size, move, rmtree
 from sys import argv, exit as s_exit
 from pathlib import Path
 import random
 import sshync
 import string
+from textwrap import fill
 
 
 # utility functions
 
 def entry_list_gen():  # generates and prints a list of all folders and entries
     print('\n\u001b[38;5;0;48;5;15msshyp entries:\u001b[0m\n')
+    _entry_list, _color_alternator = [], 1
     for _entry in listdir(path.expanduser('~/.password-pasture')):
         if Path(path.expanduser(f"~/.password-pasture/{_entry}")).is_file():
-            print(f"\u001b[38;5;195m{_entry.replace('.gpg', '')}")
+            if _color_alternator == 1:
+                _entry_list.append(f"\u001b[38;5;195m{_entry.replace('.gpg', '')}\u001b[0m")
+                _color_alternator = 2
+            else:
+                _entry_list.append(f"\u001b[38;5;123m{_entry.replace('.gpg', '')}\u001b[0m")
+                _color_alternator = 1
+    _real = len(' '.join(_entry_list)) - (15 * len(_entry_list))
+    if _real <= get_terminal_size()[0]:
+        _width = len(' '.join(_entry_list))
+    else:
+        _width = (len(' '.join(_entry_list)) / (_real / get_terminal_size()[0]) - 25)
+    print(fill(' '.join(_entry_list), width=_width))
     for _root, _directories, _files in walk(path.expanduser('~/.password-pasture')):
         for _dir in _directories:
             _inner_dir = f"{_root.replace(path.expanduser('~/.password-pasture'), '')}/{_dir}"
             print(f"\n\u001b[38;5;228m{_inner_dir}/")
+            _entry_list, _color_alternator = [], 1
             for _s_root, _s_directories, _s_files in walk(path.expanduser(f"~/.password-pasture{_inner_dir}")):
                 for _entry in _s_files:
-                    print(f"\u001b[38;5;195m{_entry.replace('.gpg', '')}\u001b[0m")
+                    if _color_alternator == 1:
+                        _entry_list.append(f"\u001b[38;5;195m{_entry.replace('.gpg', '')}\u001b[0m")
+                        _color_alternator = 2
+                    else:
+                        _entry_list.append(f"\u001b[38;5;123m{_entry.replace('.gpg', '')}\u001b[0m")
+                        _color_alternator = 1
+            _real = len(' '.join(_entry_list)) - (15 * len(_entry_list))
+            if _real <= get_terminal_size()[0]:
+                _width = len(' '.join(_entry_list))
+            else:
+                _width = (len(' '.join(_entry_list))/(_real/get_terminal_size()[0]) - 25)
+            print(fill(' '.join(_entry_list), width=_width))
 
 
 def replace_line(file_name, line_num, text):  # replaces text in a given line with different text
