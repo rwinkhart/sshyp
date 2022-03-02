@@ -1,6 +1,6 @@
-#!/usr/bin/python3
+#!/bin/python3
 
-# sshync 2022.01.17.unreleased13
+# sshync 2022.03.02.unreleased14
 
 # external modules
 
