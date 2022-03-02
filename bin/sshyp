@@ -2,7 +2,7 @@
 
 # external modules
 
-from os import environ, listdir, path, remove, system
+from os import environ, listdir, path, remove, system, walk
 from shutil import copy, move, rmtree
 from sys import argv, exit as s_exit
 from pathlib import Path
@@ -12,6 +12,20 @@ import string
 
 
 # utility functions
+
+def entry_list_gen():  # generates and prints a list of all folders and entries
+    print('\n\u001b[38;5;0;48;5;15msshyp entries:\u001b[0m\n')
+    for _entry in listdir(path.expanduser('~/.password-pasture')):
+        if Path(path.expanduser(f"~/.password-pasture/{_entry}")).is_file():
+            print(f"\u001b[38;5;195m{_entry.replace('.gpg', '')}")
+    for _root, _directories, _files in walk(path.expanduser('~/.password-pasture')):
+        for _dir in _directories:
+            _inner_dir = f"{_root.replace(path.expanduser('~/.password-pasture'), '')}/{_dir}"
+            print(f"\n\u001b[38;5;228m{_inner_dir}/")
+            for _s_root, _s_directories, _s_files in walk(path.expanduser(f"~/.password-pasture{_inner_dir}")):
+                for _entry in _s_files:
+                    print(f"\u001b[38;5;195m{_entry.replace('.gpg', '')}\u001b[0m")
+
 
 def replace_line(file_name, line_num, text):  # replaces text in a given line with different text
     _lines = open(file_name, 'r').readlines()
@@ -160,8 +174,8 @@ def print_info():  # prints help text based on argument
         print('/                                                      /')
         print('/   sshyp  Copyright (C) 2021-2022  Randall Winkhart   /')
         print('/                                                      /')
-        print('/               Version 2022.02.16.fr4.7               /')
-        print('/             The High-Tech Shears Update              /')
+        print('/               Version 2022.03.02.fr5                 /')
+        print('/            The Polished Trotters Update              /')
         print('/                                                      /')
         print('////////////////////////////////////////////////////////\n')
     elif argument == 'license':
@@ -198,8 +212,8 @@ def print_info():  # prints help text based on argument
 
 
 def no_arg():  # displays a list of entries and gives an option to select one for viewing
-    print("\nFor a list of usable commands, run 'sshyp help'.\n")
-    system(f"cd {directory}; ls -1 *")
+    print("\nFor a list of usable commands, run 'sshyp help'.")
+    entry_list_gen()
     _read_entry = str(input('\nEntry to read: '))
     system(f"gpg -d '{directory}{_read_entry.replace('/', '', 1)}.gpg'")
     print()
@@ -293,8 +307,7 @@ def add_folder():  # creates a new folder
 
 
 def rename():  # renames an entry or folder TODO delete original from server to prevent re-downloading
-    print()
-    system(f"cd {directory}; ls -1 *")  # TODO replace with new list
+    entry_list_gen()
     _entry_name = str(input('\nWhat would you like to rename/relocate? '))
     _new_name = str(input('New Name: '))
     if _entry_name.startswith('/'):
@@ -309,8 +322,7 @@ def rename():  # renames an entry or folder TODO delete original from server to 
 
 def edit():  # edits the contents of an entry
     _shm_folder, _shm_entry = None, None  # sets base-line values to avoid errors
-    print()
-    system(f"cd {directory}; ls -1 *")  # TODO replace with new list
+    entry_list_gen()
     _entry_name = str(input('\nWhat file would you like to edit? '))
     if not Path(f"{directory}{_entry_name}.gpg").is_file():
         print("\nYou are trying to edit a file that does not exist!\n")
@@ -344,8 +356,7 @@ def edit():  # edits the contents of an entry
 def gen():  # generates a password for a new or an existing entry
     _username, _url, _notes = None, None, None  # sets base-line values to avoid errors
     if argument == 'gen update' or argument == 'gen -u':
-        print()
-        system(f"cd {directory}; ls -1 *")  # TODO replace with new list
+        entry_list_gen()
     _entry_name = str(input('\nName of service: '))
     if _entry_name.startswith('/'):
         _entry_name = _entry_name.replace('/', '', 1)
@@ -385,8 +396,7 @@ def gen():  # generates a password for a new or an existing entry
 
 
 def copy_data():  # copies a specified field of an entry to the clipboard
-    print()
-    system(f"cd {directory}; ls -1 *")  # TODO replace with new list
+    entry_list_gen()
     _read_entry = str(input('\nEntry to copy: '))
     if not Path(f"{directory}{_read_entry}.gpg").is_file():
         print("\nThe file does not exist!\n")
@@ -425,8 +435,7 @@ def copy_data():  # copies a specified field of an entry to the clipboard
 
 
 def remove_data():  # deletes an entry from the server and flags it for local deletion on sync
-    print()
-    system(f"cd {directory}; ls -1 *")  # TODO replace with new list
+    entry_list_gen()
     _entry_name = str(input('\nWhat would you like to delete? '))
     if _entry_name.startswith('/'):
         _entry_name = _entry_name.replace('/', '', 1)
