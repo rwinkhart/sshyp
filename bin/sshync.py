@@ -1,13 +1,13 @@
 #!/bin/python3
 
-# sshync 2022.03.02.unreleased14
+# sshync 2022.03.02.unreleased15
 
 # external modules
 
 from os import path, system, walk
-from os.path import getmtime, join, expanduser
-from sys import exit as s_exit
+from os.path import expanduser, getmtime, join
 from pathlib import Path
+from sys import exit as s_exit
 
 
 # utility functions

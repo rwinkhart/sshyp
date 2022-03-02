@@ -3,12 +3,12 @@
 # external modules
 
 from os import environ, listdir, path, remove, system, walk
-from shutil import copy, get_terminal_size, move, rmtree
-from sys import argv, exit as s_exit
 from pathlib import Path
 import random
+from shutil import copy, get_terminal_size, move, rmtree
 import sshync
 import string
+from sys import argv, exit as s_exit
 from textwrap import fill
 
 
