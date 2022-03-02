@@ -245,7 +245,7 @@ def print_info():  # prints help text based on argument
 def no_arg():  # displays a list of entries and gives an option to select one for viewing
     print("\nFor a list of usable commands, run 'sshyp help'.")
     entry_list_gen()
-    _read_entry = str(input('\nEntry to read: '))
+    _read_entry = str(input('Entry to read: '))
     system(f"gpg -d '{directory}{_read_entry.replace('/', '', 1)}.gpg'")
     print()
 
@@ -339,7 +339,7 @@ def add_folder():  # creates a new folder
 
 def rename():  # renames an entry or folder TODO delete original from server to prevent re-downloading
     entry_list_gen()
-    _entry_name = str(input('\nWhat would you like to rename/relocate? '))
+    _entry_name = str(input('What would you like to rename/relocate? '))
     _new_name = str(input('New Name: '))
     if _entry_name.startswith('/'):
         if _entry_name.replace('/', '', 1).__contains__('/'):
@@ -354,7 +354,7 @@ def rename():  # renames an entry or folder TODO delete original from server to 
 def edit():  # edits the contents of an entry
     _shm_folder, _shm_entry = None, None  # sets base-line values to avoid errors
     entry_list_gen()
-    _entry_name = str(input('\nWhat file would you like to edit? '))
+    _entry_name = str(input('What file would you like to edit? '))
     if not Path(f"{directory}{_entry_name}.gpg").is_file():
         print("\nYou are trying to edit a file that does not exist!\n")
         s_exit()
@@ -388,7 +388,9 @@ def gen():  # generates a password for a new or an existing entry
     _username, _url, _notes = None, None, None  # sets base-line values to avoid errors
     if argument == 'gen update' or argument == 'gen -u':
         entry_list_gen()
-    _entry_name = str(input('\nName of service: '))
+    else:
+        print()
+    _entry_name = str(input('Name of service: '))
     if _entry_name.startswith('/'):
         _entry_name = _entry_name.replace('/', '', 1)
     if argument == 'gen update' or argument == 'gen -u':
@@ -428,7 +430,7 @@ def gen():  # generates a password for a new or an existing entry
 
 def copy_data():  # copies a specified field of an entry to the clipboard
     entry_list_gen()
-    _read_entry = str(input('\nEntry to copy: '))
+    _read_entry = str(input('Entry to copy: '))
     if not Path(f"{directory}{_read_entry}.gpg").is_file():
         print("\nThe file does not exist!\n")
         s_exit()
@@ -467,7 +469,7 @@ def copy_data():  # copies a specified field of an entry to the clipboard
 
 def remove_data():  # deletes an entry from the server and flags it for local deletion on sync
     entry_list_gen()
-    _entry_name = str(input('\nWhat would you like to delete? '))
+    _entry_name = str(input('What would you like to delete? '))
     if _entry_name.startswith('/'):
         _entry_name = _entry_name.replace('/', '', 1)
     try:
