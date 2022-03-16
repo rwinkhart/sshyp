@@ -4,7 +4,6 @@
 
 # NOTE It is recommended to instead use the latest officially packaged and tagged release.
 # NOTE If using Arch, it is recommended to install from the AUR or from the PKGBUILD attatched to the latest official release.
-# NOTE As of release fr4, sshync will become a separate package and thus a dependency for sshyp. sshync is automatically installed with the PKGBUILD version.
 
 echo -e '\nOptions (please enter the number only):'
 echo -e '\nDistribution Packages:\n\n1. Debian\n2. Termux\n3. Generic (used for PKGBUILD/APKBUILD)'
