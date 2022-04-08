@@ -1,6 +1,6 @@
 #!/bin/python3
 
-# sshync 2022.03.02.unreleased15
+# sshync 2022.04.08.unreleased15
 
 # external modules
 
@@ -31,8 +31,8 @@ def get_titles_mods(_directory, _destination, _user_data):
     if _destination == 'r':
         system(f"ssh -i '{_user_data[5]}' -p {_user_data[2]} {_user_data[0]}@{_user_data[1]} \"python -c 'import sshync"
                f"; sshync.get_titles_mods(\"'\"{_user_data[4]}\"'\", \"'\"l\"'\", \"'\"{_user_data}\"'\")'\"")
-        system(f"sftp -i '{_user_data[5]}' -P {_user_data[2]} {_user_data[0]}@{_user_data[1]}:"
-               f"'{expanduser(f'/home/{_user_data[0]}/.config/sshync/database')}' '{expanduser('~/.config/sshync/')}'")
+        system(f"scp -pq -P {_user_data[2]} -i '{_user_data[5]}' {_user_data[0]}@{_user_data[1]}:"
+               f"'/home/{_user_data[0]}/.config/sshync/database' '{expanduser('~/.config/sshync/')}'")
         _titles, _sep, _mods = ' '.join(open(expanduser('~/.config/sshync/database')).readlines()).replace('\n', '')\
             .partition('^&*')
         _title_list, _mod_list = _titles.split(' ')[:-1], _mods.split(' ')[1:]
@@ -88,18 +88,18 @@ def run_profile(_profile_dir):
             # compare mod times and sync
             if int(_index_l[1][_i]) > int(_index_r[1][_i]):
                 print(f"[{_title}] Local is newer, uploading...")
-                system(f"sftp -p -q -i '{_user_data[5]}' -P {_user_data[2]} {_user_data[0]}@{_user_data[1]}:"
-                       f"{_user_data[4]}{'/'.join(_title.split('/')[:-1]) + '/'} <<< $'put {_user_data[3]}{_title}'")
+                system(f"scp -pq -P {_user_data[2]} -i '{_user_data[5]}' '{_user_data[3]}{_title}' "
+                       f"'{_user_data[0]}@{_user_data[1]}:{_user_data[4]}{'/'.join(_title.split('/')[:-1]) + '/'}'")
             elif int(_index_l[1][_i]) < int(_index_r[1][_i]):
                 print(f"[{_title}] Remote is newer, downloading...")
-                system(f"sftp -p -q -i '{_user_data[5]}' -P {_user_data[2]} {_user_data[0]}@{_user_data[1]}:"
-                       f"'{_user_data[4]}'{_title} {_user_data[3]}{'/'.join(_title.split('/')[:-1]) + '/'}")
+                system(f"scp -pq -P {_user_data[2]} -i '{_user_data[5]}' '{_user_data[0]}@{_user_data[1]}:"
+                       f"{_user_data[4]}{_title}' '{_user_data[3]}{'/'.join(_title.split('/')[:-1]) + '/'}'")
         else:
             print(f"[{_title}] Not on remote server, uploading...")
-            system(f"sftp -p -q -i '{_user_data[5]}' -P {_user_data[2]} {_user_data[0]}@{_user_data[1]}:{_user_data[4]}"
-                   f"{'/'.join(_title.split('/')[:-1]) + '/'} <<< $'put {_user_data[3]}{_title}'")
+            system(f"scp -pq -P {_user_data[2]} -i '{_user_data[5]}' '{_user_data[3]}{_title}' "
+                   f"'{_user_data[0]}@{_user_data[1]}:{_user_data[4]}{'/'.join(_title.split('/')[:-1]) + '/'}'")
     for _title in _index_r[0]:
         if _title not in _index_l[0]:
             print(f"[{_title}] Not in local directory, downloading...")
-            system(f"sftp -p -q -i '{_user_data[5]}' -P {_user_data[2]} {_user_data[0]}@{_user_data[1]}:"
-                   f"'{_user_data[4]}{_title}' {_user_data[3]}{'/'.join(_title.split('/')[:-1]) + '/'}")
+            system(f"scp -pq -P {_user_data[2]} -i '{_user_data[5]}' '{_user_data[0]}@{_user_data[1]}:"
+                   f"{_user_data[4]}{_title}' '{_user_data[3]}{'/'.join(_title.split('/')[:-1]) + '/'}'")
