@@ -166,7 +166,7 @@ def tweak():  # runs configuration wizard
 
 def print_info():  # prints help text based on argument
     if argument == 'help' or argument == '--help' or argument == '-h':
-        print('\nsshyp  Copyright (C) 2021  Randall Winkhart')
+        print('\nsshyp  Copyright (C) 2021-2022  Randall Winkhart')
         print("This is free software, and you are welcome to redistribute it under certain conditions;\nthis program "
               "comes with ABSOLUTELY NO WARRANTY;\ntype `sshyp license' for details.")
         print('\nUSAGE: sshyp [/<entry name>] [OPTION] [FLAG]\n')
