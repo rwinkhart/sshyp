@@ -486,12 +486,10 @@ def remove_data():  # deletes an entry from the server and flags it for local de
 # program start sequence
 
 # retrieve typed argument
-argument_list = argv
-i, argument = 0, ''
-for _ in argument_list:
-    while i < len(argument_list) - 1:
-        i += 1
-        argument += argument_list[i] + ' '
+argument_list, argument = argv, ''
+argument_list.pop(0)
+for _argument in argument_list:
+    argument += _argument + ' '
 argument = argument[:-1]
 
 # import saved userdata
