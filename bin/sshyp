@@ -216,14 +216,14 @@ def print_info():  # prints help text based on argument
               'useful, but WITHOUT ANY WARRANTY;\nwithout even the implied warranty of MERCHANTABILITY or FITNESS FOR A'
               ' PARTICULAR PURPOSE.\nSee the GNU General Public License for more details.'
               '\n\nhttps://opensource.org/licenses/GPL-3.0\n')
-    elif argument.startswith('add'):
+    elif argument == 'add':
         print('\nUSAGE: sshyp add [FLAG] <entry>')
         print('Flags:')
         print('add:')
         print(' password/-p             add a password entry')
         print(' note/-n                 add a note entry')
         print(' folder/-f               add a new folder for entries\n')
-    elif argument.startswith('edit'):
+    elif argument == 'edit':
         print('\nUSAGE: sshyp edit [FLAG] <entry>')
         print('Flags:')
         print('edit:')
@@ -232,7 +232,7 @@ def print_info():  # prints help text based on argument
         print(' password/-p             change the password of an entry')
         print(' url/-l                  change the url attached to an entry')
         print(' note/-n                 change the note attached to an entry\n')
-    elif argument.startswith('copy'):
+    elif argument == 'copy':
         print('\nUSAGE: sshyp copy [FLAG] <entry>')
         print('Flags:')
         print('copy:')
