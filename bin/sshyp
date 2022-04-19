@@ -379,8 +379,10 @@ def rename():  # renames an entry or folder TODO delete original from server to 
         _entry_name = _entry_name.replace('/', '', 1)
     if _entry_name.endswith('/'):
         move(f"{directory}{_entry_name}", f"{directory}{_new_name}")
+        system(f"ssh -i '{path.expanduser('~/.ssh/sshyp')}' -p {port} {username_ssh}@{ip} \"mkdir -p '{directory_ssh}"
+               f"{_new_name}'\"")
     else:
-        move(f"{directory}{_entry_name}.gpg", f"{directory}/{_new_name}.gpg")
+        move(f"{directory}{_entry_name}.gpg", f"{directory}{_new_name}.gpg")
 
 
 def edit():  # edits the contents of an entry
