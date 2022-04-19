@@ -91,7 +91,7 @@ def pass_gen():
 
 
 def encrypt(_shm_folder, _shm_entry, _location):
-    system(f"gpg -r {str(gpg_id)} -e '{tmp_dir}{_shm_folder}/{_shm_entry}'")
+    system(f"gpg -qr {str(gpg_id)} -e '{tmp_dir}{_shm_folder}/{_shm_entry}'")
     move(f"{tmp_dir}{_shm_folder}/{_shm_entry}.gpg", f"{directory}{_location}.gpg")
     rmtree(f"{tmp_dir}{_shm_folder}")
 
@@ -142,7 +142,7 @@ def tweak():  # runs configuration wizard
 
         # lock file generation
         open(path.expanduser('~/.config/sshyp/lock'), 'w')
-        system(f"gpg -r {str(_gpg_id)} -e {path.expanduser('~/.config/sshyp/lock')}")
+        system(f"gpg -qr {str(_gpg_id)} -e {path.expanduser('~/.config/sshyp/lock')}")
         remove(f"{path.expanduser('~/.config/sshyp')}/lock")
 
         # ssh key configuration
@@ -268,12 +268,12 @@ def no_arg():  # displays a list of entries and gives an option to select one fo
     print("\nFor a list of usable commands, run 'sshyp help'.")
     entry_list_gen()
     _read_entry = str(input('Entry to read: '))
-    system(f"gpg -d '{directory}{_read_entry.replace('/', '', 1)}.gpg'")
+    system(f"gpg -qd '{directory}{_read_entry.replace('/', '', 1)}.gpg'")
     print()
 
 
 def read_shortcut():  # shortcut to quickly read an entry
-    system(f"gpg -d '{directory}{argument.replace('/', '', 1)}.gpg'")
+    system(f"gpg -qd '{directory}{argument.replace('/', '', 1)}.gpg'")
 
 
 def sync():  # calls sshync to sync changes to the user's server
@@ -416,21 +416,21 @@ def edit():  # edits the contents of an entry
     if argument.startswith('edit username') or argument.startswith('edit -u'):
         _detail = str(input('New Username: '))
         _shm_folder, _shm_entry = shm_gen()
-        system(f"gpg -d --output {tmp_dir}{_shm_folder}/{_shm_entry} '{directory}{_entry_name}.gpg'")
+        system(f"gpg -qd --output {tmp_dir}{_shm_folder}/{_shm_entry} '{directory}{_entry_name}.gpg'")
         replace_line(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 0, _detail + '\n')
     elif argument.startswith('edit password') or argument.startswith('edit -p'):
         _detail = str(input('New Password: '))
         _shm_folder, _shm_entry = shm_gen()
-        system(f"gpg -d --output {tmp_dir}{_shm_folder}/{_shm_entry} '{directory}{_entry_name}.gpg'")
+        system(f"gpg -qd --output {tmp_dir}{_shm_folder}/{_shm_entry} '{directory}{_entry_name}.gpg'")
         replace_line(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 1, _detail + '\n')
     elif argument.startswith('edit url') or argument.startswith('edit -l'):
         _detail = str(input('New URL: '))
         _shm_folder, _shm_entry = shm_gen()
-        system(f"gpg -d --output {tmp_dir}{_shm_folder}/{_shm_entry} '{directory}{_entry_name}.gpg'")
+        system(f"gpg -qd --output {tmp_dir}{_shm_folder}/{_shm_entry} '{directory}{_entry_name}.gpg'")
         replace_line(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 2, _detail + '\n')
     elif argument.startswith('edit note') or argument.startswith('edit -n'):
         _shm_folder, _shm_entry = shm_gen()
-        system(f"gpg -d --output {tmp_dir}{_shm_folder}/{_shm_entry} '{directory}{_entry_name}.gpg'")
+        system(f"gpg -qd --output {tmp_dir}{_shm_folder}/{_shm_entry} '{directory}{_entry_name}.gpg'")
         edit_note(_shm_folder, _shm_entry)
     remove(f"{directory}{_entry_name}.gpg")
     print('\n\u001b[38;5;0;48;5;15mEntry preview:\u001b[0m\n\n' + open(f"{tmp_dir}{_shm_folder}/{_shm_entry}",
@@ -479,7 +479,7 @@ def gen():  # generates a password for a new or an existing entry
         encrypt(_shm_folder, _shm_entry, _entry_name)
     else:
         _shm_folder, _shm_entry = shm_gen()
-        system(f"gpg -d --output {tmp_dir}{_shm_folder}/{_shm_entry} '{directory}{_entry_name}.gpg'")
+        system(f"gpg -qd --output {tmp_dir}{_shm_folder}/{_shm_entry} '{directory}{_entry_name}.gpg'")
         replace_line(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 1, _password + '\n')
         remove(f"{directory}{_entry_name}.gpg")
         print('\n\u001b[38;5;0;48;5;15mEntry preview:\u001b[0m\n\n' + open(f"{tmp_dir}{_shm_folder}/{_shm_entry}",
@@ -500,7 +500,7 @@ def copy_data():  # copies a specified field of an entry to the clipboard
         print("\nThe file does not exist!\n")
         s_exit()
     _shm_folder, _shm_entry = shm_gen()
-    system(f"gpg -d --output {tmp_dir}{_shm_folder}/{_shm_entry} '{directory}{_read_entry}.gpg'")
+    system(f"gpg -qd --output {tmp_dir}{_shm_folder}/{_shm_entry} '{directory}{_read_entry}.gpg'")
     _copy_line = open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'r').readlines()
     if Path("/data/data/com.termux").exists():  # checks for Termux, Wayland, or X
         if argument.startswith('copy username') or argument.startswith('copy -u'):
@@ -543,7 +543,7 @@ def remove_data():  # deletes an entry from the server and flags it for local de
     if _entry_name.startswith('/'):
         _entry_name = _entry_name.replace('/', '', 1)
     try:
-        system(f"gpg -d --output {tmp_dir}sshyp.lock {path.expanduser('~/.config/sshyp/lock.gpg')}")
+        system(f"gpg -qd --output {tmp_dir}sshyp.lock {path.expanduser('~/.config/sshyp/lock.gpg')}")
         _unlock = open(f"{tmp_dir}sshyp.lock", 'r').readlines()
         remove(f"{tmp_dir}sshyp.lock")
     except FileNotFoundError:
