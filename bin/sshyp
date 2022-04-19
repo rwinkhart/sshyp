@@ -73,6 +73,17 @@ def shm_gen():  # generates a random temporary folder for security and returns r
     return _shm_folder_gen, _shm_entry_gen
 
 
+def pass_gen():
+    _length = int(input('How many characters should be in the password? '))
+    _complexity = str(input('Should the password be simple (for compatibility) or complex (for security)? (s/C) '))
+    if _complexity.lower() == 's':
+        _complexity = string.ascii_letters + string.digits
+    else:
+        _complexity = string.ascii_letters + string.digits + string.punctuation
+    _gen = ''.join(random.SystemRandom().choice(_complexity) for _ in range(_length))
+    return _gen
+
+
 def encrypt(_shm_folder, _shm_entry, _location):
     system(f"gpg -r {str(gpg_id)} -e '{tmp_dir}{_shm_folder}/{_shm_entry}'")
     move(f"{tmp_dir}{_shm_folder}/{_shm_entry}.gpg", f"{directory}{_location}.gpg")
@@ -436,13 +447,7 @@ def gen():  # generates a password for a new or an existing entry
             s_exit()
     else:
         _username = str(input('Username: '))
-    _pass_length = int(input('How many characters should be in the password? '))
-    _pass_type = str(input('Should the password be simple (for compatibility) or complex (for security)? (s/C) '))
-    if _pass_type.lower() == 's':
-        _pass_type = string.ascii_letters + string.digits
-    else:
-        _pass_type = string.ascii_letters + string.digits + string.punctuation
-    _pass_gen = ''.join(random.SystemRandom().choice(_pass_type) for _ in range(_pass_length))
+    _password = pass_gen()
     if not argument.startswith('gen update') and not argument.startswith('gen -u'):
         _url = str(input('URL: '))
         _add_note = input('Add a note to this entry? (y/N) ')
@@ -452,14 +457,14 @@ def gen():  # generates a password for a new or an existing entry
             _notes = open(f"{tmp_dir}{_shm_folder}/{_shm_entry}-n", 'r').read()
         else:
             _notes = ''
-        open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'w').writelines(_username + '\n' + _pass_gen + '\n' + _url + '\n\n'
+        open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'w').writelines(_username + '\n' + _password + '\n' + _url + '\n\n'
                                                                      + _notes + '\n\n')
         encrypt(_shm_folder, _shm_entry, _entry_name)
         system(f"gpg -d '{directory}{_entry_name}.gpg'")
     else:
         _shm_folder, _shm_entry = shm_gen()
         system(f"gpg -d --output {tmp_dir}{_shm_folder}/{_shm_entry} '{directory}{_entry_name}.gpg'")
-        replace_line(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 1, _pass_gen + '\n')
+        replace_line(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 1, _password + '\n')
         remove(f"{directory}{_entry_name}.gpg")
         encrypt(_shm_folder, _shm_entry, _entry_name)
         system(f"gpg -d '{directory}{_entry_name}.gpg'")
