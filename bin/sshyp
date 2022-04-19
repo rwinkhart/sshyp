@@ -81,6 +81,12 @@ def pass_gen():
     else:
         _complexity = string.ascii_letters + string.digits + string.punctuation
     _gen = ''.join(random.SystemRandom().choice(_complexity) for _ in range(_length))
+    _min_special, _special = round(.2 * _length), 0
+    for _character in _gen:
+        if not _character.isalpha():
+            _special += 1
+    if _special < _min_special:
+        _gen = pass_gen()
     return _gen
 
 
