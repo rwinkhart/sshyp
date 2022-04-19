@@ -1,7 +1,5 @@
 #!/bin/python3
 
-# sshync 2022.04.08.unreleased15
-
 # external modules
 
 from os import path, system, walk
@@ -33,9 +31,9 @@ def get_titles_mods(_directory, _destination, _user_data):
                f"; sshync.get_titles_mods(\"'\"{_user_data[4]}\"'\", \"'\"l\"'\", \"'\"{_user_data}\"'\")'\"")
         system(f"scp -pq -P {_user_data[2]} -i '{_user_data[5]}' {_user_data[0]}@{_user_data[1]}:"
                f"'/home/{_user_data[0]}/.config/sshync/database' '{expanduser('~/.config/sshync/')}'")
-        _titles, _sep, _mods = ' '.join(open(expanduser('~/.config/sshync/database')).readlines()).replace('\n', '')\
+        _titles, _sep, _mods = '*&^'.join(open(expanduser('~/.config/sshync/database')).readlines()).replace('\n', '')\
             .partition('^&*')
-        _title_list, _mod_list = _titles.split(' ')[:-1], _mods.split(' ')[1:]
+        _title_list, _mod_list = _titles.split('*&^')[:-1], _mods.split('*&^')[1:]
     return _title_list, _mod_list
 
 
