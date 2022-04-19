@@ -376,13 +376,11 @@ def rename():  # renames an entry or folder TODO delete original from server to 
         _entry_name = ' '.join(_entry_name)
     _new_name = str(input('New Name: '))
     if _entry_name.startswith('/'):
-        if _entry_name.replace('/', '', 1).__contains__('/'):
-            _folder, _sep, _folder_entry = _entry_name.replace('/', '', 1).partition('/')
-            move(f"{directory}{_folder}/{_folder_entry}.gpg", f"{directory}/{_new_name}.gpg")
-        else:
-            move(f"{directory}{_entry_name.replace('/', '', 1)}.gpg", f"{directory}{_new_name.replace('/', '', 1)}.gpg")
+        _entry_name = _entry_name.replace('/', '', 1)
+    if _entry_name.endswith('/'):
+        move(f"{directory}{_entry_name}", f"{directory}{_new_name}")
     else:
-        move(f"{directory}{_entry_name}.gpg", f"{directory}{_new_name}.gpg")
+        move(f"{directory}{_entry_name}.gpg", f"{directory}/{_new_name}.gpg")
 
 
 def edit():  # edits the contents of an entry
