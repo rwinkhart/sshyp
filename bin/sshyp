@@ -37,7 +37,7 @@ def entry_list_gen():  # generates and prints a list of all folders and entries
     for _root, _directories, _files in walk(path.expanduser('~/.password-pasture')):
         for _dir in sorted(_directories):
             _inner_dir = f"{_root.replace(path.expanduser('~/.password-pasture'), '')}/{_dir}"
-            print(f"\n\u001b[38;5;15;48;5;232m{_inner_dir}/\u001b[0m")
+            print(f"\n\u001b[38;5;15;48;5;238m{_inner_dir}/\u001b[0m")
             _entry_list, _color_alternator = [], 1
             for _s_root, _s_directories, _s_files in walk(path.expanduser(f"~/.password-pasture{_inner_dir}")):
                 for _entry in sorted(_s_files):
@@ -166,11 +166,11 @@ def tweak():  # runs configuration wizard
 
 def print_info():  # prints help text based on argument
     if argument == 'help' or argument == '--help' or argument == '-h':
-        print('\nsshyp  Copyright (C) 2021-2022  Randall Winkhart')
+        print('\n\u001b[38;5;0;48;5;15msshyp  Copyright (C) 2021-2022  Randall Winkhart\u001b[0m\n')
         print("This is free software, and you are welcome to redistribute it under certain conditions;\nthis program "
               "comes with ABSOLUTELY NO WARRANTY;\ntype `sshyp license' for details.")
-        print('\nUSAGE: sshyp [/<entry name>] [OPTION] [FLAG]\n')
-        print('Options: ')
+        print('\n\u001b[38;5;15;48;5;238mUSAGE: sshyp [OPTION [FLAG] [<entry name>]] | [/<entry name>]\u001b[0m\n')
+        print('\u001b[38;5;0;48;5;15mOptions:\u001b[0m')
         print('help/--help/-h           bring up this menu')
         print('version/-v               display sshyp version info')
         print('tweak                    configure sshyp')
@@ -180,35 +180,40 @@ def print_info():  # prints help text based on argument
         print('copy                     copy details of an entry to your clipboard')
         print('shear/-rm                delete an existing entry')
         print('sync/-s                  manually sync the entry directory via sshync\n')
-        print('Flags:')
-        print('add:')
+        print('\u001b[38;5;0;48;5;15mFlags:\u001b[0m')
+        print('\u001b[38;5;15;48;5;238madd:\u001b[0m')
         print(' password/-p             add a password entry')
         print(' note/-n                 add a note entry')
         print(' folder/-f               add a new folder for entries')
-        print('edit:')
+        print('\u001b[38;5;15;48;5;238medit:\u001b[0m')
         print(' rename/relocate/-r      rename or relocate an entry')
         print(' username/-u             change the username of an entry')
         print(' password/-p             change the password of an entry')
         print(' note/-n                 change the note attached to an entry')
         print(' url/-l                  change the url attached to an entry')
-        print('copy:')
+        print('\u001b[38;5;15;48;5;238mcopy:\u001b[0m')
         print(' username/-u             copy the username of an entry to your clipboard')
         print(' password/-p             copy the password of an entry to your clipboard')
         print(' url/-l                  copy the URL of an entry to your clipboard')
         print(' note/-n                 copy the note of an entry to your clipboard')
-        print('gen:')
+        print('\u001b[38;5;15;48;5;238mgen:\u001b[0m')
         print(' update/-u               generate a password for an existing entry\n')
-        print("Tip: You can quickly read an entry with 'sshyp /<entry name>'!")
-        print("When specifying entry names, do not include the file extension! '.gpg' is assumed!\n")
+        print("\u001b[38;5;0;48;5;15mTip:\u001b[0m You can quickly read an entry with 'sshyp /<entry name>'!")
     elif argument == 'version' or argument == '-v':
-        print('\n////////////////////////////////////////////////////////')
-        print('/                                                      /')
-        print('/   sshyp  Copyright (C) 2021-2022  Randall Winkhart   /')
-        print('/                                                      /')
-        print('/               Version 2022.XX.XX.fr5                 /')
-        print('/            The Polished Trotters Update              /')
-        print('/                                                      /')
-        print('////////////////////////////////////////////////////////\n')
+        print('\n\u001b[38;5;0;48;5;15m////////////////////////////////////////////////////////\u001b[0m')
+        print('\u001b[38;5;0;48;5;15m/\u001b[38;5;15;48;5;238m                                                      '
+              '\u001b[38;5;0;48;5;15m/\u001b[0m')
+        print('\u001b[38;5;0;48;5;15m/\u001b[38;5;15;48;5;238m   \u001b[38;5;0;48;5;15msshyp  Copyright (C) 2021-2022  '
+              'Randall Winkhart\u001b[38;5;15;48;5;238m   \u001b[38;5;0;48;5;15m/\u001b[0m')
+        print('\u001b[38;5;0;48;5;15m/\u001b[38;5;15;48;5;238m                                                      '
+              '\u001b[38;5;0;48;5;15m/\u001b[0m')
+        print('\u001b[38;5;0;48;5;15m/\u001b[38;5;15;48;5;238m                    \u001b[38;5;0;48;5;15mVersion 1.0'
+              '\u001b[38;5;15;48;5;238m                       \u001b[38;5;0;48;5;15m/\u001b[0m')
+        print('\u001b[38;5;0;48;5;15m/\u001b[38;5;15;48;5;238m            \u001b[38;5;0;48;5;15mThe Polished Trotters '
+              'Update\u001b[38;5;15;48;5;238m              \u001b[38;5;0;48;5;15m/\u001b[0m')
+        print('\u001b[38;5;0;48;5;15m/\u001b[38;5;15;48;5;238m                                                      '
+              '\u001b[38;5;0;48;5;15m/\u001b[0m')
+        print('\u001b[38;5;0;48;5;15m////////////////////////////////////////////////////////\u001b[0m\n')
     elif argument == 'license':
         print('\nThis program is free software: you can redistribute it and/or modify it under the terms of the GNU '
               'General\nPublic License as published by the Free Software Foundation, either version 3 of the License,'
@@ -217,25 +222,25 @@ def print_info():  # prints help text based on argument
               ' PARTICULAR PURPOSE.\nSee the GNU General Public License for more details.'
               '\n\nhttps://opensource.org/licenses/GPL-3.0\n')
     elif argument == 'add':
-        print('\nUSAGE: sshyp add [FLAG] <entry>')
-        print('Flags:')
-        print('add:')
+        print('\n\u001b[38;5;15;48;5;238mUSAGE: sshyp add {FLAG {<entry name>}}\u001b[0m\n')
+        print('\u001b[38;5;0;48;5;15mFlags:\u001b[0m')
+        print('\u001b[38;5;15;48;5;238madd:\u001b[0m')
         print(' password/-p             add a password entry')
         print(' note/-n                 add a note entry')
         print(' folder/-f               add a new folder for entries\n')
     elif argument == 'edit':
-        print('\nUSAGE: sshyp edit [FLAG] <entry>')
-        print('Flags:')
-        print('edit:')
+        print('\n\u001b[38;5;15;48;5;238mUSAGE: sshyp edit {FLAG {<entry name>}}\u001b[0m\n')
+        print('\u001b[38;5;0;48;5;15mFlags:\u001b[0m')
+        print('\u001b[38;5;15;48;5;238medit:\u001b[0m')
         print(' rename/relocate/-r      rename or relocate an entry')
         print(' username/-u             change the username of an entry')
         print(' password/-p             change the password of an entry')
         print(' url/-l                  change the url attached to an entry')
         print(' note/-n                 change the note attached to an entry\n')
     elif argument == 'copy':
-        print('\nUSAGE: sshyp copy [FLAG] <entry>')
-        print('Flags:')
-        print('copy:')
+        print('\n\u001b[38;5;15;48;5;238mUSAGE: sshyp copy {FLAG {<entry name>}}\u001b[0m\n')
+        print('\u001b[38;5;0;48;5;15mFlags:\u001b[0m')
+        print('\u001b[38;5;15;48;5;238mcopy:\u001b[0m')
         print(' username/-u             copy the username of an entry to your clipboard')
         print(' password/-p             copy the password of an entry to your clipboard')
         print(' url/-l                  copy the URL of an entry to your clipboard')
