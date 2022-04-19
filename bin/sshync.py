@@ -85,19 +85,19 @@ def run_profile(_profile_dir):
         if _title in _index_r[0]:
             # compare mod times and sync
             if int(_index_l[1][_i]) > int(_index_r[1][_i]):
-                print(f"[{_title[:-4]}] Local is newer, uploading...")
+                print(f"\u001b[38;5;4m{_title[:-4]}\u001b[0m is newer locally, uploading...")
                 system(f"scp -pq -P {_user_data[2]} -i '{_user_data[5]}' '{_user_data[3]}{_title}' "
                        f"'{_user_data[0]}@{_user_data[1]}:{_user_data[4]}{'/'.join(_title.split('/')[:-1]) + '/'}'")
             elif int(_index_l[1][_i]) < int(_index_r[1][_i]):
-                print(f"[{_title[:-4]}] Remote is newer, downloading...")
+                print(f"\u001b[38;5;2m{_title[:-4]}\u001b[0m is newer remotely, downloading...")
                 system(f"scp -pq -P {_user_data[2]} -i '{_user_data[5]}' '{_user_data[0]}@{_user_data[1]}:"
                        f"{_user_data[4]}{_title}' '{_user_data[3]}{'/'.join(_title.split('/')[:-1]) + '/'}'")
         else:
-            print(f"[{_title[:-4]}] Not on remote server, uploading...")
+            print(f"\u001b[38;5;4m{_title[:-4]}\u001b[0m is not on remote server, uploading...")
             system(f"scp -pq -P {_user_data[2]} -i '{_user_data[5]}' '{_user_data[3]}{_title}' "
                    f"'{_user_data[0]}@{_user_data[1]}:{_user_data[4]}{'/'.join(_title.split('/')[:-1]) + '/'}'")
     for _title in _index_r[0]:
         if _title not in _index_l[0]:
-            print(f"[{_title[:-4]}] Not in local directory, downloading...")
+            print(f"\u001b[38;5;2m{_title[:-4]}\u001b[0m is not in local directory, downloading...")
             system(f"scp -pq -P {_user_data[2]} -i '{_user_data[5]}' '{_user_data[0]}@{_user_data[1]}:"
                    f"{_user_data[4]}{_title}' '{_user_data[3]}{'/'.join(_title.split('/')[:-1]) + '/'}'")

@@ -286,16 +286,16 @@ def sync():  # calls sshync to sync changes to the user's server
     for _file in _deletion_database:
         if _file[:-1].endswith('/'):
             try:
-                print(f"Removing folder {path.expanduser('~/.password-pasture/')}{_file[:-1]}...\n")
+                print(f"\u001b[38;5;208m{_file[:-1]}\u001b[0m has been sheared, removing...")
                 rmtree(f"{path.expanduser('~/.password-pasture/')}{_file[:-1]}")
             except FileNotFoundError:
-                print('Folder does not exist locally.\n')
+                print('Folder does not exist locally.')
         else:
             try:
-                print(f"Removing entry {path.expanduser('~/.password-pasture/')}{_file[:-1]}...\n")
+                print(f"\u001b[38;5;208m{_file[:-1]}\u001b[0m has been sheared, removing...")
                 remove(f"{path.expanduser('~/.password-pasture/')}{_file[:-1]}.gpg")
             except (FileNotFoundError, IsADirectoryError):
-                print('File does not exist locally.\n')
+                print('File does not exist locally.')
     # check for new folders
     system(f"ssh -i '{path.expanduser('~/.ssh/sshyp')}' -p {port} {username_ssh}@{ip} \"python -c 'import sshypRemote"
            f"; sshypRemote.folder_check()'\"")
@@ -311,7 +311,8 @@ def sync():  # calls sshync to sync changes to the user's server
         if Path(f"{path.expanduser('~')}{_folder[:-1]}").is_dir():
             pass
         else:
-            print(f"Adding folder {path.expanduser('~')}{_folder[:-1]}...\n")
+            print(f"\u001b[38;5;2m{_folder.replace('/.password-pasture/',  '')[:-1]}/\u001b[0m does not exist locally, "
+                  f"creating...")
             Path(f"{path.expanduser('~')}{_folder[:-1]}").mkdir(0o700, parents=True, exist_ok=True)
     # set permissions before uploading
     system('find ' + directory + ' -type d -exec chmod -R 700 {} +')
