@@ -34,7 +34,7 @@ Removing an existing folder saved as ~/.password-pasture/social:
     sshyp shear social/
 
 .SH OPTIONS
-USAGE: sshyp [OPTION [FLAG] [<entry name>]] | [</entry name>]
+USAGE: sshyp [OPTION [FLAG] [<entry name>]] | [/<entry name>]
 
  help/--help/-h           bring up the help menu
  version/-v               display sshyp version info
