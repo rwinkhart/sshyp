@@ -286,16 +286,20 @@ def sync():  # calls sshync to sync changes to the user's server
     for _file in _deletion_database:
         if _file[:-1].endswith('/'):
             try:
-                print(f"\u001b[38;5;208m{_file[:-1]}\u001b[0m has been sheared, removing...")
+                if silent_sync != 1:
+                    print(f"\u001b[38;5;208m{_file[:-1]}\u001b[0m has been sheared, removing...")
                 rmtree(f"{path.expanduser('~/.password-pasture/')}{_file[:-1]}")
             except FileNotFoundError:
-                print('Folder does not exist locally.')
+                if silent_sync != 1:
+                    print('Folder does not exist locally.')
         else:
             try:
-                print(f"\u001b[38;5;208m{_file[:-1]}\u001b[0m has been sheared, removing...")
+                if silent_sync != 1:
+                    print(f"\u001b[38;5;208m{_file[:-1]}\u001b[0m has been sheared, removing...")
                 remove(f"{path.expanduser('~/.password-pasture/')}{_file[:-1]}.gpg")
             except (FileNotFoundError, IsADirectoryError):
-                print('File does not exist locally.')
+                if silent_sync != 1:
+                    print('File does not exist locally.')
     # check for new folders
     system(f"ssh -i '{path.expanduser('~/.ssh/sshyp')}' -p {port} {username_ssh}@{ip} \"python -c 'import sshypRemote"
            f"; sshypRemote.folder_check()'\"")
@@ -366,7 +370,7 @@ def add_folder():  # creates a new folder
            f"{_folder_name}'\"")
 
 
-def rename():  # renames an entry or folder TODO delete original from server to prevent re-downloading
+def rename():  # renames an entry or folder
     if argument == 'edit rename' or argument == 'edit relocate' or argument == 'edit -r':
         entry_list_gen()
         _entry_name = str(input('What would you like to rename/relocate? '))
@@ -383,6 +387,8 @@ def rename():  # renames an entry or folder TODO delete original from server to 
                f"{_new_name}'\"")
     else:
         move(f"{directory}{_entry_name}.gpg", f"{directory}{_new_name}.gpg")
+    system(f"ssh -i '{path.expanduser('~/.ssh/sshyp')}' -p {port} {username_ssh}@{ip} \"python -c 'import sshypRemote; "
+           f"sshypRemote.delete(\"'\"{_entry_name}\"'\")'\"")
 
 
 def edit():  # edits the contents of an entry
@@ -538,6 +544,7 @@ def remove_data():  # deletes an entry from the server and flags it for local de
 
 
 if __name__ == "__main__":
+    silent_sync = 0
     # retrieve typed argument
     argument_list, argument = argv, ''
     del argument_list[0]
@@ -601,6 +608,7 @@ if __name__ == "__main__":
             print('\n')
             s_exit()
     elif argument.startswith('edit rename') or argument.startswith('edit relocate') or argument.startswith('edit -r'):
+        silent_sync = 1
         try:
             rename()
         except KeyboardInterrupt:
