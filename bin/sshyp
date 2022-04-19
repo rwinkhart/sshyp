@@ -356,10 +356,11 @@ def add_entry():  # adds a new entry
             _notes = open(f"{tmp_dir}{_shm_folder}/{_shm_entry}-n", 'r').read()
         else:
             _notes = ''
-        open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'w').writelines(_username + '\n' + _password + '\n' + _url + '\n\n'
-                                                                     + _notes + '\n\n')
+        open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'w').writelines(_username + '\n' + _password + '\n' + _url +
+                                                                     '\n\n' + _notes + '\n\n')
+        print('\n\u001b[38;5;0;48;5;15mEntry preview:\u001b[0m\n\n' + open(f"{tmp_dir}{_shm_folder}/{_shm_entry}",
+                                                                           'r').read())
     encrypt(_shm_folder, _shm_entry, _entry_name)
-    system(f"gpg -d '{directory}{_entry_name}.gpg'")
 
 
 def add_folder():  # creates a new folder
@@ -432,8 +433,9 @@ def edit():  # edits the contents of an entry
         system(f"gpg -d --output {tmp_dir}{_shm_folder}/{_shm_entry} '{directory}{_entry_name}.gpg'")
         edit_note(_shm_folder, _shm_entry)
     remove(f"{directory}{_entry_name}.gpg")
+    print('\n\u001b[38;5;0;48;5;15mEntry preview:\u001b[0m\n\n' + open(f"{tmp_dir}{_shm_folder}/{_shm_entry}",
+                                                                       'r').read())
     encrypt(_shm_folder, _shm_entry, _entry_name)
-    system(f"gpg -d '{directory}{_entry_name}.gpg'")
 
 
 def gen():  # generates a password for a new or an existing entry
@@ -472,15 +474,17 @@ def gen():  # generates a password for a new or an existing entry
             _notes = ''
         open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'w').writelines(_username + '\n' + _password + '\n' + _url + '\n\n'
                                                                      + _notes + '\n\n')
+        print('\n\u001b[38;5;0;48;5;15mEntry preview:\u001b[0m\n\n' + open(f"{tmp_dir}{_shm_folder}/{_shm_entry}",
+                                                                           'r').read())
         encrypt(_shm_folder, _shm_entry, _entry_name)
-        system(f"gpg -d '{directory}{_entry_name}.gpg'")
     else:
         _shm_folder, _shm_entry = shm_gen()
         system(f"gpg -d --output {tmp_dir}{_shm_folder}/{_shm_entry} '{directory}{_entry_name}.gpg'")
         replace_line(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 1, _password + '\n')
         remove(f"{directory}{_entry_name}.gpg")
+        print('\n\u001b[38;5;0;48;5;15mEntry preview:\u001b[0m\n\n' + open(f"{tmp_dir}{_shm_folder}/{_shm_entry}",
+                                                                           'r').read())
         encrypt(_shm_folder, _shm_entry, _entry_name)
-        system(f"gpg -d '{directory}{_entry_name}.gpg'")
 
 
 def copy_data():  # copies a specified field of an entry to the clipboard
