@@ -63,7 +63,7 @@ def get_profile(_profile_dir):
     except (FileNotFoundError, IndexError):
         print('\nEither the profile does not exist, or it is corrupted.\n')
         _profile_data = None
-        s_exit()
+        s_exit(1)
     # extract data from profile
     _user = _profile_data[0].replace('\n', '')
     _ip = _profile_data[1].replace('\n', '')
