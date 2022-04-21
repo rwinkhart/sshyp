@@ -668,3 +668,5 @@ if __name__ == "__main__":
             startswith('copy note') and not argument.startswith('copy -n') and argument != 'copy' and argument \
             != 'version' and argument != '-v' and error == 0 and argument.startswith('/') is False:
         sync()
+
+    s_exit(0)
