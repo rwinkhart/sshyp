@@ -156,6 +156,8 @@ def tweak():  # runs configuration wizard
                           '\n\nSync support requires a unique ssh key. Would you like to have this automatically '
                           'generated? (Y/n) '))
         if _ssh_gen.lower() != 'n':
+            if uname()[0] == 'Haiku':
+                Path(f"{path.expanduser('~')}/.ssh").mkdir(0o700, exist_ok=True)
             system('ssh-keygen -t ed25519 -f ~/.ssh/sshyp')
         else:
             print(f"\nEnsure that the key file you are using is located at {path.expanduser('~/.ssh/sshyp')}")
