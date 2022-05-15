@@ -2,7 +2,7 @@
 
 # external modules
 
-from os import environ, listdir, path, remove, system, walk
+from os import environ, listdir, path, remove, system, uname, walk
 from pathlib import Path
 import random
 from shutil import copy, get_terminal_size, move, rmtree
@@ -508,7 +508,16 @@ def copy_data():  # copies a specified field of an entry to the clipboard
     _shm_folder, _shm_entry = shm_gen()
     system(f"gpg -qd --output {tmp_dir}{_shm_folder}/{_shm_entry} '{directory}{_read_entry}.gpg'")
     _copy_line = open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'r').readlines()
-    if Path("/data/data/com.termux").exists():  # checks for Termux, Wayland, or X
+    if uname()[0] == 'Haiku':  # clipboard method detection
+        if argument.startswith('copy username') or argument.startswith('copy -u'):
+            system('clipboard -c ' + "'" + _copy_line[0].replace('\n', '').replace("'", "'\\''") + "'")
+        elif argument.startswith('copy password') or argument.startswith('copy -p'):
+            system('clipboard -c ' + "'" + _copy_line[1].replace('\n', '').replace("'", "'\\''") + "'")
+        elif argument.startswith('copy url') or argument.startswith('copy -l'):
+            system('clipboard -c ' + "'" + _copy_line[2].replace('\n', '').replace("'", "'\\''") + "'")
+        elif argument.startswith('copy note') or argument.startswith('copy -n'):
+            system('clipboard -c ' + "'" + _copy_line[4].replace('\n', '').replace("'", "'\\''") + "'")
+    elif Path("/data/data/com.termux").exists():
         if argument.startswith('copy username') or argument.startswith('copy -u'):
             system('termux-clipboard-set ' + "'" + _copy_line[0].replace('\n', '').replace("'", "'\\''") + "'")
         elif argument.startswith('copy password') or argument.startswith('copy -p'):
