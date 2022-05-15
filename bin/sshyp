@@ -119,7 +119,9 @@ def tweak():  # runs configuration wizard
     Path(path.expanduser('~/.password-pasture')).mkdir(0o700, parents=True, exist_ok=True)
     Path(path.expanduser('~/.config/sshyp/devices')).mkdir(0o700, parents=True, exist_ok=True)
     if not Path(f"{path.expanduser('~/.config/sshyp/tmp')}").exists():
-        if Path("/data/data/com.termux").exists():
+        if uname()[0] == 'Haiku':
+            system(f"ln -s /tmp {path.expanduser('~/.config/sshyp/tmp')}")
+        elif Path("/data/data/com.termux").exists():
             system(f"ln -s '/data/data/com.termux/files/usr/tmp' {path.expanduser('~/.config/sshyp/tmp')}")
         else:
             system(f"ln -s /dev/shm {path.expanduser('~/.config/sshyp/tmp')}")
