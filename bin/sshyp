@@ -578,6 +578,10 @@ if __name__ == "__main__":
     for _argument in argument_list:
         argument += _argument + ' '
     argument = argument[:-1]
+    if uname()[0] == 'Haiku':  # set proper gpg command for OS
+        gpg = 'gpg --pinentry-mode loopback'
+    else:
+        gpg = 'gpg'
 
     # import saved userdata
     if argument != 'tweak':
@@ -594,10 +598,6 @@ if __name__ == "__main__":
                 directory = str(ssh_info[3].replace('\n', ''))
                 directory_ssh = '/home/' + username_ssh + '/.password-pasture/'
                 client_device_name = listdir(path.expanduser('~/.config/sshyp/devices'))[0]
-                if uname()[0] == 'Haiku':
-                    gpg = 'gpg --pinentry-mode loopback'
-                else:
-                    gpg = 'gpg'
         except FileNotFoundError:
             if device_type.lower() != 's':
                 print('\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
