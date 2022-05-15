@@ -627,7 +627,7 @@ if __name__ == "__main__":
         except KeyboardInterrupt:
             print('\n')
             s_exit(0)
-    elif argument.startswith('edit username') or argument.startswith('edit -u') or argument.startswith('edit password') \
+    elif argument.startswith('edit username') or argument.startswith('edit -u') or argument.startswith('edit password')\
             or argument.startswith('edit -p') or argument.startswith('edit url') or argument.startswith('edit -l') or \
             argument.startswith('edit note') or argument.startswith('edit -n'):
         try:
@@ -641,7 +641,7 @@ if __name__ == "__main__":
         except KeyboardInterrupt:
             print('\n')
             s_exit(0)
-    elif argument.startswith('copy username') or argument.startswith('copy -u') or argument.startswith('copy password') \
+    elif argument.startswith('copy username') or argument.startswith('copy -u') or argument.startswith('copy password')\
             or argument.startswith('copy -p') or argument.startswith('copy url') or argument.startswith('copy -l') \
             or argument.startswith('copy note') or argument.startswith('copy -n'):
         try:
