@@ -8,7 +8,9 @@ import random
 from shutil import copy, get_terminal_size, move, rmtree
 import sshync
 import string
+from subprocess import Popen
 from sys import argv, exit as s_exit
+from time import sleep
 from textwrap import fill
 
 
@@ -512,7 +514,7 @@ def copy_data():  # copies a specified field of an entry to the clipboard
     _shm_folder, _shm_entry = shm_gen()
     system(f"{gpg} -qd --output {tmp_dir}{_shm_folder}/{_shm_entry} '{directory}{_read_entry}.gpg'")
     _copy_line = open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'r').readlines()
-    if uname()[0] == 'Haiku':  # clipboard method detection
+    if uname()[0] == 'Haiku':  # Haiku clipboard detection
         if argument.startswith('copy username') or argument.startswith('copy -u'):
             system('clipboard -c ' + "'" + _copy_line[0].replace('\n', '').replace("'", "'\\''") + "'")
         elif argument.startswith('copy password') or argument.startswith('copy -p'):
@@ -521,7 +523,8 @@ def copy_data():  # copies a specified field of an entry to the clipboard
             system('clipboard -c ' + "'" + _copy_line[2].replace('\n', '').replace("'", "'\\''") + "'")
         elif argument.startswith('copy note') or argument.startswith('copy -n'):
             system('clipboard -c ' + "'" + _copy_line[4].replace('\n', '').replace("'", "'\\''") + "'")
-    elif Path("/data/data/com.termux").exists():
+        _clear_command = 'sleep 45; clipboard -r'
+    elif Path("/data/data/com.termux").exists():  # Termux (Android) clipboard detection
         if argument.startswith('copy username') or argument.startswith('copy -u'):
             system('termux-clipboard-set ' + "'" + _copy_line[0].replace('\n', '').replace("'", "'\\''") + "'")
         elif argument.startswith('copy password') or argument.startswith('copy -p'):
@@ -530,7 +533,8 @@ def copy_data():  # copies a specified field of an entry to the clipboard
             system('termux-clipboard-set ' + "'" + _copy_line[2].replace('\n', '').replace("'", "'\\''") + "'")
         elif argument.startswith('copy note') or argument.startswith('copy -n'):
             system('termux-clipboard-set ' + "'" + _copy_line[4].replace('\n', '').replace("'", "'\\''") + "'")
-    elif environ.get('WAYLAND_DISPLAY') == 'wayland-0':
+        _clear_command = "sleep 45; termux-clipboard-set ''"
+    elif environ.get('WAYLAND_DISPLAY') == 'wayland-0':  # Wayland clipboard detection
         if argument.startswith('copy username') or argument.startswith('copy -u'):
             system('wl-copy ' + "'" + _copy_line[0].replace('\n', '').replace("'", "'\\''") + "'")
         elif argument.startswith('copy password') or argument.startswith('copy -p'):
@@ -539,7 +543,8 @@ def copy_data():  # copies a specified field of an entry to the clipboard
             system('wl-copy ' + "'" + _copy_line[2].replace('\n', '').replace("'", "'\\''") + "'")
         elif argument.startswith('copy note') or argument.startswith('copy -n'):
             system('wl-copy ' + "'" + _copy_line[4].replace('\n', '').replace("'", "'\\''") + "'")
-    else:
+        _clear_command = 'sleep 45; wl-copy -c'
+    else:  # X11 clipboard detection
         if argument.startswith('copy username') or argument.startswith('copy -u'):
             system('echo -n ' + "'" + _copy_line[0].replace('\n', '').replace("'", "'\\''") + "'" + ' | xclip -sel c')
         elif argument.startswith('copy password') or argument.startswith('copy -p'):
@@ -548,6 +553,8 @@ def copy_data():  # copies a specified field of an entry to the clipboard
             system('echo -n ' + "'" + _copy_line[2].replace('\n', '').replace("'", "'\\''") + "'" + ' | xclip -sel c')
         elif argument.startswith('copy note') or argument.startswith('copy -n'):
             system('echo -n ' + "'" + _copy_line[4].replace('\n', '').replace("'", "'\\''") + "'" + ' | xclip -sel c')
+        _clear_command = "sleep 45; echo -n '' | xclip -sel c"
+    Popen(_clear_command, shell=True)
     rmtree(f"{tmp_dir}{_shm_folder}")
 
 
