@@ -63,19 +63,22 @@ def entry_reader(_decrypted_entry):
     _entry_lines, _notes_flag = open(_decrypted_entry, 'r').readlines(), 0
     print()
     for _num in range(len(_entry_lines)):
-        if _entry_lines[_num] != '\n':
-            if _num == 0:
-                _field = '\u001b[38;5;0;48;5;15mUsername:\u001b[0m\n'
-            elif _num == 1:
-                _field = '\u001b[38;5;0;48;5;15mPassword:\u001b[0m\n'
-            elif _num == 2:
-                _field = '\u001b[38;5;0;48;5;15mURL:\u001b[0m\n'
-            else:
+        try:
+            if _num == 0 and _entry_lines[1] != '\n':
+                print(f"\u001b[38;5;0;48;5;15mUsername:\u001b[0m\n{_entry_lines[1]}")
+            elif _num == 1 and _entry_lines[0] != '\n':
+                print(f"\u001b[38;5;0;48;5;15mPassword:\u001b[0m\n{_entry_lines[0]}")
+            elif _num == 2 and _entry_lines[2] != '\n':
+                print(f"\u001b[38;5;0;48;5;15mURL:\u001b[0m\n{_entry_lines[_num]}")
+            elif _num >= 3 and _entry_lines[_num] != '\n':
                 if _notes_flag != 1:
-                    _field, _notes_flag = '\u001b[38;5;0;48;5;15mNotes:\u001b[0m\n', 1
+                    _notes_flag = 1
+                    print(f"\u001b[38;5;0;48;5;15mNotes:\u001b[0m\n{_entry_lines[_num]}")
                 else:
-                    _field = ''
-            print(f"{_field}{_entry_lines[_num]}")
+                    print(_entry_lines[_num])
+        except IndexError:
+            if _num == 0:
+                print(f"\u001b[38;5;0;48;5;15mPassword:\u001b[0m\n{_entry_lines[0]}")
 
 
 def replace_line(file_name, line_num, text):  # replaces text in a given line with different text
@@ -125,10 +128,10 @@ def encrypt(_shm_folder, _shm_entry, _location):
 def edit_note(_shm_folder, _shm_entry):
     lines = open(f"{tmp_dir}{_shm_folder}/{_shm_entry}").readlines()
     open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'w').writelines(lines[0:3])
-    open(f"{tmp_dir}{_shm_folder}/{_shm_entry}-n", 'w').writelines(lines[4:-2])
+    open(f"{tmp_dir}{_shm_folder}/{_shm_entry}-n", 'w').writelines(lines[3:])
     system(f"nano {tmp_dir}{_shm_folder}/{_shm_entry}-n")
     edit_notes = open(f"{tmp_dir}{_shm_folder}/{_shm_entry}-n").read()
-    open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'a').write('\n' + edit_notes + '\n\n')
+    open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'a').write(edit_notes)
 
 
 # argument-specific functions
@@ -377,7 +380,7 @@ def add_entry():  # adds a new entry
         _shm_folder, _shm_entry = shm_gen()
         system(f"nano {tmp_dir}{_shm_folder}/{_shm_entry}-n")
         _notes = open(f"{tmp_dir}{_shm_folder}/{_shm_entry}-n", 'r').read()
-        open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'w').writelines('\n\n\n\n' + _notes + '\n\n')
+        open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'w').writelines('\n\n\n' + _notes)
     elif argument.startswith('add password') or argument.startswith('add -p'):
         _username = str(input('Username: '))
         _password = str(input('Password: '))
@@ -389,8 +392,8 @@ def add_entry():  # adds a new entry
             _notes = open(f"{tmp_dir}{_shm_folder}/{_shm_entry}-n", 'r').read()
         else:
             _notes = ''
-        open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'w').writelines(_username + '\n' + _password + '\n' + _url +
-                                                                     '\n\n' + _notes + '\n\n')
+        open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'w').writelines(_password + '\n' + _username + '\n' + _url +
+                                                                     '\n' + _notes)
         print('\nEntry preview:')
         entry_reader(f"{tmp_dir}{_shm_folder}/{_shm_entry}")
     encrypt(_shm_folder, _shm_entry, _entry_name)
@@ -446,24 +449,26 @@ def edit():  # edits the contents of an entry
     if not Path(f"{directory}{_entry_name}.gpg").is_file():
         print("\nYou are trying to edit a file that does not exist!\n")
         s_exit(1)
+    _shm_folder, _shm_entry = shm_gen()
+    system(f"{gpg} -qd --output {tmp_dir}{_shm_folder}/{_shm_entry} '{directory}{_entry_name}.gpg'")
+
+    # compatibility check for GNU pass entries (ensuring they have at least four lines)
+    _lines = open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'r').readlines()
+    if len(_lines) < 3:
+        while len(_lines) < 3:
+            _lines.append('\n')
+        open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'w').writelines(_lines)
+
     if argument.startswith('edit username') or argument.startswith('edit -u'):
         _detail = str(input('New Username: '))
-        _shm_folder, _shm_entry = shm_gen()
-        system(f"{gpg} -qd --output {tmp_dir}{_shm_folder}/{_shm_entry} '{directory}{_entry_name}.gpg'")
-        replace_line(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 0, _detail + '\n')
+        replace_line(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 1, _detail + '\n')
     elif argument.startswith('edit password') or argument.startswith('edit -p'):
         _detail = str(input('New Password: '))
-        _shm_folder, _shm_entry = shm_gen()
-        system(f"{gpg} -qd --output {tmp_dir}{_shm_folder}/{_shm_entry} '{directory}{_entry_name}.gpg'")
-        replace_line(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 1, _detail + '\n')
+        replace_line(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 0, _detail + '\n')
     elif argument.startswith('edit url') or argument.startswith('edit -l'):
         _detail = str(input('New URL: '))
-        _shm_folder, _shm_entry = shm_gen()
-        system(f"{gpg} -qd --output {tmp_dir}{_shm_folder}/{_shm_entry} '{directory}{_entry_name}.gpg'")
         replace_line(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 2, _detail + '\n')
     elif argument.startswith('edit note') or argument.startswith('edit -n'):
-        _shm_folder, _shm_entry = shm_gen()
-        system(f"{gpg} -qd --output {tmp_dir}{_shm_folder}/{_shm_entry} '{directory}{_entry_name}.gpg'")
         edit_note(_shm_folder, _shm_entry)
     remove(f"{directory}{_entry_name}.gpg")
     print('\nEntry preview:')
@@ -505,15 +510,15 @@ def gen():  # generates a password for a new or an existing entry
             _notes = open(f"{tmp_dir}{_shm_folder}/{_shm_entry}-n", 'r').read()
         else:
             _notes = ''
-        open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'w').writelines(_username + '\n' + _password + '\n' + _url + '\n\n'
-                                                                     + _notes + '\n\n')
+        open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'w').writelines(_password + '\n' + _username + '\n' + _url + '\n'
+                                                                     + _notes)
         print('\nEntry preview:')
         entry_reader(f"{tmp_dir}{_shm_folder}/{_shm_entry}")
         encrypt(_shm_folder, _shm_entry, _entry_name)
     else:
         _shm_folder, _shm_entry = shm_gen()
         system(f"{gpg} -qd --output {tmp_dir}{_shm_folder}/{_shm_entry} '{directory}{_entry_name}.gpg'")
-        replace_line(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 1, _password + '\n')
+        replace_line(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 0, _password + '\n')
         remove(f"{directory}{_entry_name}.gpg")
         print('\nEntry preview:')
         entry_reader(f"{tmp_dir}{_shm_folder}/{_shm_entry}")
@@ -537,43 +542,43 @@ def copy_data():  # copies a specified field of an entry to the clipboard
     _copy_line = open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'r').readlines()
     if uname()[0] == 'Haiku':  # Haiku clipboard detection
         if argument.startswith('copy username') or argument.startswith('copy -u'):
-            system('clipboard -c ' + "'" + _copy_line[0].replace('\n', '').replace("'", "'\\''") + "'")
-        elif argument.startswith('copy password') or argument.startswith('copy -p'):
             system('clipboard -c ' + "'" + _copy_line[1].replace('\n', '').replace("'", "'\\''") + "'")
+        elif argument.startswith('copy password') or argument.startswith('copy -p'):
+            system('clipboard -c ' + "'" + _copy_line[0].replace('\n', '').replace("'", "'\\''") + "'")
         elif argument.startswith('copy url') or argument.startswith('copy -l'):
             system('clipboard -c ' + "'" + _copy_line[2].replace('\n', '').replace("'", "'\\''") + "'")
         elif argument.startswith('copy note') or argument.startswith('copy -n'):
-            system('clipboard -c ' + "'" + _copy_line[4].replace('\n', '').replace("'", "'\\''") + "'")
+            system('clipboard -c ' + "'" + _copy_line[3].replace('\n', '').replace("'", "'\\''") + "'")
         Popen('sleep 30; clipboard -r', shell=True)
     elif Path("/data/data/com.termux").exists():  # Termux (Android) clipboard detection
         if argument.startswith('copy username') or argument.startswith('copy -u'):
-            system('termux-clipboard-set ' + "'" + _copy_line[0].replace('\n', '').replace("'", "'\\''") + "'")
-        elif argument.startswith('copy password') or argument.startswith('copy -p'):
             system('termux-clipboard-set ' + "'" + _copy_line[1].replace('\n', '').replace("'", "'\\''") + "'")
+        elif argument.startswith('copy password') or argument.startswith('copy -p'):
+            system('termux-clipboard-set ' + "'" + _copy_line[0].replace('\n', '').replace("'", "'\\''") + "'")
         elif argument.startswith('copy url') or argument.startswith('copy -l'):
             system('termux-clipboard-set ' + "'" + _copy_line[2].replace('\n', '').replace("'", "'\\''") + "'")
         elif argument.startswith('copy note') or argument.startswith('copy -n'):
-            system('termux-clipboard-set ' + "'" + _copy_line[4].replace('\n', '').replace("'", "'\\''") + "'")
+            system('termux-clipboard-set ' + "'" + _copy_line[3].replace('\n', '').replace("'", "'\\''") + "'")
         Popen("sleep 30; termux-clipboard-set ''", shell=True)
     elif environ.get('WAYLAND_DISPLAY') == 'wayland-0':  # Wayland clipboard detection
         if argument.startswith('copy username') or argument.startswith('copy -u'):
-            system('wl-copy ' + "'" + _copy_line[0].replace('\n', '').replace("'", "'\\''") + "'")
-        elif argument.startswith('copy password') or argument.startswith('copy -p'):
             system('wl-copy ' + "'" + _copy_line[1].replace('\n', '').replace("'", "'\\''") + "'")
+        elif argument.startswith('copy password') or argument.startswith('copy -p'):
+            system('wl-copy ' + "'" + _copy_line[0].replace('\n', '').replace("'", "'\\''") + "'")
         elif argument.startswith('copy url') or argument.startswith('copy -l'):
             system('wl-copy ' + "'" + _copy_line[2].replace('\n', '').replace("'", "'\\''") + "'")
         elif argument.startswith('copy note') or argument.startswith('copy -n'):
-            system('wl-copy ' + "'" + _copy_line[4].replace('\n', '').replace("'", "'\\''") + "'")
+            system('wl-copy ' + "'" + _copy_line[3].replace('\n', '').replace("'", "'\\''") + "'")
         Popen('sleep 30; wl-copy -c', shell=True)
     else:  # X11 clipboard detection
         if argument.startswith('copy username') or argument.startswith('copy -u'):
-            system('echo -n ' + "'" + _copy_line[0].replace('\n', '').replace("'", "'\\''") + "'" + ' | xclip -sel c')
-        elif argument.startswith('copy password') or argument.startswith('copy -p'):
             system('echo -n ' + "'" + _copy_line[1].replace('\n', '').replace("'", "'\\''") + "'" + ' | xclip -sel c')
+        elif argument.startswith('copy password') or argument.startswith('copy -p'):
+            system('echo -n ' + "'" + _copy_line[0].replace('\n', '').replace("'", "'\\''") + "'" + ' | xclip -sel c')
         elif argument.startswith('copy url') or argument.startswith('copy -l'):
             system('echo -n ' + "'" + _copy_line[2].replace('\n', '').replace("'", "'\\''") + "'" + ' | xclip -sel c')
         elif argument.startswith('copy note') or argument.startswith('copy -n'):
-            system('echo -n ' + "'" + _copy_line[4].replace('\n', '').replace("'", "'\\''") + "'" + ' | xclip -sel c')
+            system('echo -n ' + "'" + _copy_line[3].replace('\n', '').replace("'", "'\\''") + "'" + ' | xclip -sel c')
         Popen("sleep 30; echo -n '' | xclip -sel c", shell=True)
     rmtree(f"{tmp_dir}{_shm_folder}")
 
