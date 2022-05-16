@@ -10,7 +10,6 @@ import sshync
 import string
 from subprocess import Popen
 from sys import argv, exit as s_exit
-from time import sleep
 from textwrap import fill
 
 
