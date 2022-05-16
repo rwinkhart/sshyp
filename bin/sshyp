@@ -59,6 +59,25 @@ def entry_list_gen():  # generates and prints a list of all folders and entries
                 print('\u001b[38;5;208m-empty directory!-\u001b[0m\n')
 
 
+def entry_reader(_decrypted_entry):
+    _entry_lines, _notes_flag = open(_decrypted_entry, 'r').readlines(), 0
+    print()
+    for _num in range(len(_entry_lines)):
+        if _entry_lines[_num] != '\n':
+            if _num == 0:
+                _field = '\u001b[38;5;0;48;5;15mUsername:\u001b[0m\n'
+            elif _num == 1:
+                _field = '\u001b[38;5;0;48;5;15mPassword:\u001b[0m\n'
+            elif _num == 2:
+                _field = '\u001b[38;5;0;48;5;15mURL:\u001b[0m\n'
+            else:
+                if _notes_flag != 1:
+                    _field, _notes_flag = '\u001b[38;5;0;48;5;15mNotes:\u001b[0m\n', 1
+                else:
+                    _field = ''
+            print(f"{_field}{_entry_lines[_num]}")
+
+
 def replace_line(file_name, line_num, text):  # replaces text in a given line with different text
     _lines = open(file_name, 'r').readlines()
     _lines[line_num] = text
@@ -284,7 +303,10 @@ def no_arg():  # displays a list of entries and gives an option to select one fo
 
 
 def read_shortcut():  # shortcut to quickly read an entry
-    system(f"{gpg} -qd '{directory}{argument.replace('/', '', 1)}.gpg'")
+    _shm_folder, _shm_entry = shm_gen()
+    system(f"{gpg} -qd --output {tmp_dir}{_shm_folder}/{_shm_entry} '{directory}{argument.replace('/', '', 1)}.gpg'")
+    entry_reader(f"{tmp_dir}{_shm_folder}/{_shm_entry}")
+    rmtree(f"{tmp_dir}{_shm_folder}")
 
 
 def sync():  # calls sshync to sync changes to the user's server
@@ -369,8 +391,8 @@ def add_entry():  # adds a new entry
             _notes = ''
         open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'w').writelines(_username + '\n' + _password + '\n' + _url +
                                                                      '\n\n' + _notes + '\n\n')
-        print('\n\u001b[38;5;0;48;5;15mEntry preview:\u001b[0m\n\n' + open(f"{tmp_dir}{_shm_folder}/{_shm_entry}",
-                                                                           'r').read())
+        print('\nEntry preview:')
+        entry_reader(f"{tmp_dir}{_shm_folder}/{_shm_entry}")
     encrypt(_shm_folder, _shm_entry, _entry_name)
 
 
@@ -444,8 +466,8 @@ def edit():  # edits the contents of an entry
         system(f"{gpg} -qd --output {tmp_dir}{_shm_folder}/{_shm_entry} '{directory}{_entry_name}.gpg'")
         edit_note(_shm_folder, _shm_entry)
     remove(f"{directory}{_entry_name}.gpg")
-    print('\n\u001b[38;5;0;48;5;15mEntry preview:\u001b[0m\n\n' + open(f"{tmp_dir}{_shm_folder}/{_shm_entry}",
-                                                                       'r').read())
+    print('\nEntry preview:')
+    entry_reader(f"{tmp_dir}{_shm_folder}/{_shm_entry}")
     encrypt(_shm_folder, _shm_entry, _entry_name)
 
 
@@ -485,16 +507,16 @@ def gen():  # generates a password for a new or an existing entry
             _notes = ''
         open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'w').writelines(_username + '\n' + _password + '\n' + _url + '\n\n'
                                                                      + _notes + '\n\n')
-        print('\n\u001b[38;5;0;48;5;15mEntry preview:\u001b[0m\n\n' + open(f"{tmp_dir}{_shm_folder}/{_shm_entry}",
-                                                                           'r').read())
+        print('\nEntry preview:')
+        entry_reader(f"{tmp_dir}{_shm_folder}/{_shm_entry}")
         encrypt(_shm_folder, _shm_entry, _entry_name)
     else:
         _shm_folder, _shm_entry = shm_gen()
         system(f"{gpg} -qd --output {tmp_dir}{_shm_folder}/{_shm_entry} '{directory}{_entry_name}.gpg'")
         replace_line(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 1, _password + '\n')
         remove(f"{directory}{_entry_name}.gpg")
-        print('\n\u001b[38;5;0;48;5;15mEntry preview:\u001b[0m\n\n' + open(f"{tmp_dir}{_shm_folder}/{_shm_entry}",
-                                                                           'r').read())
+        print('\nEntry preview:')
+        entry_reader(f"{tmp_dir}{_shm_folder}/{_shm_entry}")
         encrypt(_shm_folder, _shm_entry, _entry_name)
 
 
