@@ -1,5 +1,7 @@
-'*' = feature implemented in git/source, not yet available as an officially packaged release (will be available soon!)
-'**' = feature will be implemented before next tagged/officially packaged release
+LEGEND:
+
+*=feature implemented in git/source, not yet available as an officially packaged release (will be available soon!)
+**=feature will be implemented before next tagged/officially packaged release
 # sshyp
 A very simple self-hosted, synchronized password manager. Alternative to GNU pass.
 
