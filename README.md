@@ -1,9 +1,10 @@
-* = feature implemented in git/source, not yet available as an officially packaged release (will be available soon!)
-** = feature will be implemented before next tagged/officially packaged release
+'*' = feature implemented in git/source, not yet available as an officially packaged release (will be available soon!)
+'**' = feature will be implemented before next tagged/officially packaged release
 # sshyp
 A very simple self-hosted, synchronized password manager. Alternative to GNU pass.
 
 Compatible with entries created by pass/password-store.*
+
 The only password-store compatible CLI password manager available for Haiku.*
 
 "sshyp" stands for "sshync passwords", or "ssh sync passwords".
