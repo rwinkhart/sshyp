@@ -24,7 +24,7 @@ def entry_list_gen():  # generates and prints a list of all folders and entries
                 _entry_list.append(f"{_entry.replace('.gpg', '')}")
                 _color_alternator = 2
             else:
-                _entry_list.append(f"\u001b[38;5;248m{_entry.replace('.gpg', '')}\u001b[0m")
+                _entry_list.append(f"\u001b[38;5;8m{_entry.replace('.gpg', '')}\u001b[0m")
                 _color_alternator = 1
     _real = len(' '.join(_entry_list)) - (6.5 * len(_entry_list))
     if _real <= get_terminal_size()[0]:
@@ -46,7 +46,7 @@ def entry_list_gen():  # generates and prints a list of all folders and entries
                         _entry_list.append(f"{_entry.replace('.gpg', '')}")
                         _color_alternator = 2
                     else:
-                        _entry_list.append(f"\u001b[38;5;248m{_entry.replace('.gpg', '')}\u001b[0m")
+                        _entry_list.append(f"\u001b[38;5;8m{_entry.replace('.gpg', '')}\u001b[0m")
                         _color_alternator = 1
             _real = len(' '.join(_entry_list)) - (6.5 * len(_entry_list))
             if _real <= get_terminal_size()[0]:
