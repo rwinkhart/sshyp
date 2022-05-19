@@ -319,8 +319,8 @@ def sync():  # calls sshync to sync changes to the user's server
     # check for deletions
     system(f"ssh -i '{path.expanduser('~/.ssh/sshyp')}' -p {port} {username_ssh}@{ip} \"cd /usr/bin; python -c "
            f"'import sshypRemote; sshypRemote.deletion_check(\"'\"{client_device_name}\"'\")'\"")
-    system(f"sftp -p -q -i '{path.expanduser('~/.ssh/sshyp')}' -P {port} {username_ssh}@{ip}:"
-           f"'/home/{username_ssh}/.config/sshyp/deletion_database' {path.expanduser('~/.config/sshyp/')}")
+    system(f"scp -pqs -P {port} -i '{path.expanduser('~/.ssh/sshyp')}' {username_ssh}@{ip}:'/home/{username_ssh}"
+           f"/.config/sshyp/deletion_database' {path.expanduser('~/.config/sshyp/')}")
     try:
         _deletion_database = open(path.expanduser('~/.config/sshyp/deletion_database')).readlines()
     except (FileNotFoundError, IndexError):
@@ -347,8 +347,8 @@ def sync():  # calls sshync to sync changes to the user's server
     # check for new folders
     system(f"ssh -i '{path.expanduser('~/.ssh/sshyp')}' -p {port} {username_ssh}@{ip} \"cd /usr/bin; python -c "
            f"'import sshypRemote; sshypRemote.folder_check()'\"")
-    system(f"sftp -p -q -i '{path.expanduser('~/.ssh/sshyp')}' -P {port} {username_ssh}@{ip}:"
-           f"'/home/{username_ssh}/.config/sshyp/folder_database' {path.expanduser('~/.config/sshyp/')}")
+    system(f"scp -pqs -P {port} -i '{path.expanduser('~/.ssh/sshyp')}' {username_ssh}@{ip}:'/home/{username_ssh}"
+           f"/.config/sshyp/folder_database' {path.expanduser('~/.config/sshyp/')}")
     try:
         _folder_database = open(path.expanduser('~/.config/sshyp/folder_database')).readlines()
     except (FileNotFoundError, IndexError):
