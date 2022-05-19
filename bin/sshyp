@@ -21,16 +21,16 @@ def entry_list_gen():  # generates and prints a list of all folders and entries
     for _entry in sorted(listdir(path.expanduser('~/.password-pasture'))):
         if Path(path.expanduser(f"~/.password-pasture/{_entry}")).is_file():
             if _color_alternator == 1:
-                _entry_list.append(f"\u001b[38;5;255m{_entry.replace('.gpg', '')}\u001b[0m")
+                _entry_list.append(f"{_entry.replace('.gpg', '')}")
                 _color_alternator = 2
             else:
                 _entry_list.append(f"\u001b[38;5;248m{_entry.replace('.gpg', '')}\u001b[0m")
                 _color_alternator = 1
-    _real = len(' '.join(_entry_list)) - (15 * len(_entry_list))
+    _real = len(' '.join(_entry_list)) - (6.5 * len(_entry_list))
     if _real <= get_terminal_size()[0]:
         _width = len(' '.join(_entry_list))
     else:
-        _width = (len(' '.join(_entry_list)) / (_real / get_terminal_size()[0]) - 50)
+        _width = (len(' '.join(_entry_list)) / (_real / get_terminal_size()[0]) - 25)
     try:
         print(fill(' '.join(_entry_list), width=_width) + '\n')
     except ValueError:
@@ -43,16 +43,16 @@ def entry_list_gen():  # generates and prints a list of all folders and entries
             for _s_root, _s_directories, _s_files in walk(path.expanduser(f"~/.password-pasture{_inner_dir}")):
                 for _entry in sorted(_s_files):
                     if _color_alternator == 1:
-                        _entry_list.append(f"\u001b[38;5;255m{_entry.replace('.gpg', '')}\u001b[0m")
+                        _entry_list.append(f"{_entry.replace('.gpg', '')}")
                         _color_alternator = 2
                     else:
                         _entry_list.append(f"\u001b[38;5;248m{_entry.replace('.gpg', '')}\u001b[0m")
                         _color_alternator = 1
-            _real = len(' '.join(_entry_list)) - (15 * len(_entry_list))
+            _real = len(' '.join(_entry_list)) - (6.5 * len(_entry_list))
             if _real <= get_terminal_size()[0]:
                 _width = len(' '.join(_entry_list))
             else:
-                _width = (len(' '.join(_entry_list)) / (_real / get_terminal_size()[0]) - 50)
+                _width = (len(' '.join(_entry_list)) / (_real / get_terminal_size()[0]) - 25)
             try:
                 print(fill(' '.join(_entry_list), width=_width) + '\n')
             except ValueError:
