@@ -63,8 +63,8 @@ urls {
 }
 " > packages/haikutemp/.PackageInfo
     cp -r bin packages/haikutemp/
-    cp -r share/doc/sshyp/ packages/haikutemp/documentation/packages/sshyp/
-    cp -r share/licenses/sshyp/ packages/haikutemp/documentation/packages/sshyp/
+    cp -r share/doc/sshyp/ packages/haikutemp/documentation/packages/
+    cp -r share/licenses/sshyp/ packages/haikutemp/documentation/packages/
     cp extra/manpage packages/haikutemp/documentation/man/man1/sshyp.1
     gzip packages/haikutemp/documentation/man/man1/sshyp.1
     cd packages/haikutemp
