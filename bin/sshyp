@@ -303,8 +303,10 @@ def no_arg():  # displays a list of entries and gives an option to select one fo
     print("\nFor a list of usable commands, run 'sshyp help'.")
     entry_list_gen()
     _read_entry = str(input('Entry to read: '))
-    system(f"{gpg} -qd '{directory}{_read_entry.replace('/', '', 1)}.gpg'")
-    print()
+    _shm_folder, _shm_entry = shm_gen()
+    system(f"{gpg} -qd --output {tmp_dir}{_shm_folder}/{_shm_entry} '{directory}{_read_entry.replace('/', '', 1)}.gpg'")
+    entry_reader(f"{tmp_dir}{_shm_folder}/{_shm_entry}")
+    rmtree(f"{tmp_dir}{_shm_folder}")
 
 
 def read_shortcut():  # shortcut to quickly read an entry
