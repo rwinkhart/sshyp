@@ -36,14 +36,14 @@ if [ "$distro" == "1" ]; then
     mkdir -p packages/haikutemp/documentation/man/man1
     mkdir -p packages/haikutemp/documentation/packages/sshyp
     echo "name			sshyp
-version			"$version"
+version			"$version"-"$revision"
 architecture		any
 summary			\"A light-weight, self-hosted, synchronized password manager\"
 description		\"sshyp is the only password-store compatible CLI password manager available for Haiku - it is also available on Linux/Android (via Termux) so that you can sync your entries across all of your devices.\"
 packager		\"Randall Winkhart <idgr at tutanota dot com>\"
 vendor			\"Randall Winkhart\"
 licenses {
-	\"GPL-3.0\"
+	\"GNU GPL v3\"
 }
 copyrights {
 	\"2021-2022 Randall Winkhart\"
@@ -63,8 +63,8 @@ urls {
 }
 " > packages/haikutemp/.PackageInfo
     cp -r bin packages/haikutemp/
-    cp share/doc/sshyp/ packages/haikutemp/documentation/packages/sshyp/
-    cp share/licenses/sshyp/ packages/haikutemp/documentation/packages/sshyp/
+    cp -r share/doc/sshyp/ packages/haikutemp/documentation/packages/sshyp/
+    cp -r share/licenses/sshyp/ packages/haikutemp/documentation/packages/sshyp/
     cp extra/manpage packages/haikutemp/documentation/man/man1/sshyp.1
     gzip packages/haikutemp/documentation/man/man1/sshyp.1
     cd packages/haikutemp
