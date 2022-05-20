@@ -74,6 +74,7 @@ urls {
     mv packages/haikutemp/sshyp-"$version"-"$revision"_all.hpkg packages/
     rm -rf packages/haikutemp
     echo -e "\nHaiku packaging complete.\n"
+fi
 
 if [ "$distro" == "2" ] || [ "$distro" == "7" ]; then
     echo -e '\nPackaging for Debian...\n'
