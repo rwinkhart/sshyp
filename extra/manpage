@@ -1,6 +1,6 @@
-.TH sshyp 1 "19 April 2022" "v1.0" "sshyp man page"
+.TH sshyp 1 "19 May 2022" "v1.0" "sshyp man page"
 .SH NAME
-sshyp \- A very simple self-hosted, synchronized password manager. Alternative to GNU pass. 
+sshyp \- A very simple self-hosted, synchronized password manager for UNIX systems. Alternative to (and compatible with) pass/password-store.
 .SH SYNOPSIS
 sshyp [OPTION] [[FLAG]] [/<entry name>]
 .SH DESCRIPTION

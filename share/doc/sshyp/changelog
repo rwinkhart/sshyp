@@ -2,14 +2,16 @@ sshyp v1.0
 
 The Polished Trotters Update
 
-This release focuses on overhauling the visual experience and speeding up user interactions with "sshyp".
-This release is being crowned "v1.0", as it is considered to be feature-complete.
-Future releases will focus on optimizations, bug fixes, and compatibility.
+This release brings 'sshyp' in line with the original goals of the project.
+As such, it is being crowned "v1.0", and is considered a stable base for future expansions.
 
 Features:
 
+- sshyp has been modified to run on Haiku, an open-source re-implementation of BeOS
+- the entry format has been changed to support entries created in pass/password-store
+    ^ this change requires existing entry libraries to be converted - see the sshyp v1.0 release page on GitHub for a conversion script
 - majorly overhauled visual experience for sshyp
-    ^ this includes a new entry list and **thematic text art
+    ^ this includes a new entry list, a new entry readout, coloured output, and more!
 - entries can now optionally be passed as arguments, directly
     ^ as opposed to the user being prompted for an entry name after running a command
 
@@ -18,11 +20,15 @@ Changes:
 - corrected outdated liscensing and copyright information
 - 'if __name__=="__main__":' convention is now used
 - help screens have been overhauled
-** improved password generator to guarantee more secure results
+- improved password generator to guarantee more secure results
 - fixed errors when trying to sync with a multi-word entry on the server
-- (openssh >= 9.0) sshync now uses 'scp' (via the sftp protocal), rather than 'sftp'
-    ^ may cause compatibility issues on non-rolling distros that do not yet have openssh >= 9.0 in the official repos
-        ^ in these cases, use sshyp fr4.7 until openssh >= 9.0 is available to you
+- sshync now uses 'scp' (via the sftp protocal), rather than 'sftp'
+- rename function now properly allows for renaming folders
+- renaming an entry/folder will now properly delete the old entry/folder from the server
+- entry previews at the time of entry creation/editing no longer require entering the gpg password more times than necessary
+- the clipboard now automatically clears after 30 seconds
+- sshyp server no longer needs to create copies of its libraries in ~/
+- ...and lots of minor (under the hood) changes!
 
 <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 
@@ -34,4 +40,3 @@ Legend:
 ** = feature/change not yet finished/implemented
 -  = feature/change implemented and pushed upstream
 ^  = note regarding the above feature/change
-&& = visual separater for patch notes for different planned major version releases
