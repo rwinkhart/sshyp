@@ -1,14 +1,14 @@
 #!/bin/bash
 
-# This script packages sshyp (from source) for various Linux environments.
+# This script packages sshyp (from source) for various UNIX environments.
 
 # NOTE It is recommended to instead use the latest officially packaged and tagged release.
 # NOTE If using Arch, it is recommended to install from the AUR or from the PKGBUILD attatched to the latest official release.
 
 echo -e '\nOptions (please enter the number only):'
-echo -e '\nDistribution Packages:\n\n1. Debian\n2. Termux\n3. Generic (used for PKGBUILD/APKBUILD)'
-echo -e '\nBuild Scripts:\n\n4. Alpine Linux (APKBUILD)\n5. Arch Linux (PKGBUILD, also builds local generic package)'
-echo -e '\nOther:\n\n6. All (generates all distribution packages and build scripts)\n'
+echo -e '\nDistribution Packages:\n\n1. Haiku\n2. Debian\n3. Termux\n4. Generic (used for PKGBUILD/APKBUILD)'
+echo -e '\nBuild Scripts:\n\n5. Alpine Linux (APKBUILD)\n6. Arch Linux (PKGBUILD, also builds local generic package)'
+echo -e '\nOther:\n\n7. All (generates all distribution packages (excluding Haiku, as this must be done on Haiku) and build scripts)\n'
 read -n 1 -r -p "Distribution: " distro
 
 echo -e '\n\nThe value entered in this field will only affect the version reported to the package manager. The latest source is used regardless.\n'
@@ -17,7 +17,7 @@ read -r -p "Version number: " version
 echo -e '\nThe value entered in this field will only affect the revision number for build scripts.\n'
 read -r -p "Revision number: " revision
 
-if [ "$distro" == "4" ] || [ "$distro" == "5" ] || [ "$distro" == "6" ]; then
+if [ "$distro" == "5" ] || [ "$distro" == "6" ] || [ "$distro" == "7" ]; then
     echo -e '\nOptions (please enter the number only):'
     echo -e '\n1. GitHub Release Tag\n2. Local\n'
     read -r -p "Source (for build scripts): " source
@@ -31,7 +31,51 @@ fi
 
 mkdir -p packages
 
-if [ "$distro" == "1" ] || [ "$distro" == "6" ]; then
+if [ "$distro" == "1" ]; then
+    echo -e '\nPackaging for Haiku...\n'
+    mkdir -p packages/haikutemp/documentation/man/man1
+    mkdir -p packages/haikutemp/documentation/packages/sshyp
+    echo "name			sshyp
+version			"$version"
+architecture		any
+summary			\"A light-weight, self-hosted, synchronized password manager\"
+description		\"sshyp is the only password-store compatible CLI password manager available for Haiku - it is also available on Linux/Android (via Termux) so that you can sync your entries across all of your devices.\"
+packager		\"Randall Winkhart <idgr at tutanota dot com>\"
+vendor			\"Randall Winkhart\"
+licenses {
+	\"GPL-3.0\"
+}
+copyrights {
+	\"2021-2022 Randall Winkhart\"
+}
+provides {
+	sshyp = "$version"
+	cmd:sshyp
+}
+requires {
+	gnupg
+	openssh
+	python3
+	nano
+}
+urls {
+	\"https://github.com/rwinkhart/sshyp\"
+}
+" > packages/haikutemp/.PackageInfo
+    cp -r bin packages/haikutemp/
+    cp share/doc/sshyp/ packages/haikutemp/documentation/packages/sshyp/
+    cp share/licenses/sshyp/ packages/haikutemp/documentation/packages/sshyp/
+    cp extra/manpage packages/haikutemp/documentation/man/man1/sshyp.1
+    gzip packages/haikutemp/documentation/man/man1/sshyp.1
+    cd packages/haikutemp
+    package create -b sshyp-"$version"-"$revision"_all.hpkg
+    package add sshyp-"$version"-"$revision"_all.hpkg bin documentation
+    cd ../..
+    mv packages/haikutemp/sshyp-"$version"-"$revision"_all.hpkg packages/
+    rm -rf packages/haikutemp
+    echo -e "\nHaiku packaging complete.\n"
+
+if [ "$distro" == "2" ] || [ "$distro" == "7" ]; then
     echo -e '\nPackaging for Debian...\n'
     mkdir -p packages/debiantemp/sshyp_"$version"-"$revision"_all/{DEBIAN,usr}
     mkdir -p packages/debiantemp/sshyp_"$version"-"$revision"_all/usr/share/man/man1
@@ -55,7 +99,7 @@ Installed-Size: 35
     echo -e "\nDebian packaging complete.\n"
 fi
 
-if [ "$distro" == "2" ] || [ "$distro" == "6" ]; then
+if [ "$distro" == "3" ] || [ "$distro" == "7" ]; then
     echo -e '\nPackaging for Termux...\n'
     mkdir -p packages/termuxtemp/sshyp_"$version"-"$revision"_all_termux/{data,DEBIAN}
     mkdir -p packages/termuxtemp/sshyp_"$version"-"$revision"_all_termux/data/data/com.termux/files/usr/share/man/man1
@@ -79,7 +123,7 @@ Installed-Size: 35
     echo -e "\nTermux packaging complete.\n"
 fi
 
-if [ "$distro" == "3" ] || [ "$distro" == "5" ] || [ "$distro" == "6" ]; then
+if [ "$distro" == "4" ] || [ "$distro" == "6" ] || [ "$distro" == "7" ]; then
     echo -e '\nPackaging as generic...\n'
     mkdir -p packages/archtemp/usr
     cp -r bin packages/archtemp/usr/
@@ -94,7 +138,7 @@ if [ "$distro" == "3" ] || [ "$distro" == "5" ] || [ "$distro" == "6" ]; then
     echo -e "\nGeneric packaging complete.\n"
 fi
 
-if [ "$distro" == "5" ] || [ "$distro" == "6" ]; then
+if [ "$distro" == "6" ] || [ "$distro" == "7" ]; then
     echo -e '\nGenerating PKGBUILD...'
     echo "# Maintainer: Randall Winkhart <idgr at tutanota dot com>
 
