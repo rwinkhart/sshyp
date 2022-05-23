@@ -8,7 +8,7 @@ import random
 from shutil import get_terminal_size, move, rmtree
 import sshync
 import string
-from subprocess import PIPE, Popen, STDOUT
+from subprocess import Popen
 from sys import argv, exit as s_exit
 from textwrap import fill
 
@@ -303,25 +303,21 @@ def no_arg():  # displays a list of entries and gives an option to select one fo
     print("\nFor a list of usable commands, run 'sshyp help'.")
     entry_list_gen()
     _read_entry = str(input('Entry to read: '))
-    _shm_folder, _shm_entry = shm_gen()
-    _output = Popen(f"{gpg} -qd --output {tmp_dir}{_shm_folder}/{_shm_entry} '{directory}"
-                    f"{_read_entry.replace('/', '', 1)}.gpg'", shell=True, stdout=PIPE, stderr=STDOUT, close_fds=True)
-    _block = _output.communicate()[0].strip()  # blocks the program from proceeding until stdout is given
-    if _output.returncode == 2:
-        print(f"\n\u001b[38;5;1mError: entry ({_read_entry.replace('/', '', 1)}) does not exist\u001b[0m\n")
+    if not Path(f"{directory}{_read_entry}.gpg").exists():
+        print(f"\n\u001b[38;5;1mError: entry ({_read_entry}) does not exist\u001b[0m\n")
         s_exit(1)
+    _shm_folder, _shm_entry = shm_gen()
+    system(f"{gpg} -qd --output {tmp_dir}{_shm_folder}/{_shm_entry} '{directory}{_read_entry}.gpg'")
     entry_reader(f"{tmp_dir}{_shm_folder}/{_shm_entry}")
     rmtree(f"{tmp_dir}{_shm_folder}")
 
 
 def read_shortcut():  # shortcut to quickly read an entry
-    _shm_folder, _shm_entry = shm_gen()
-    _output = Popen(f"{gpg} -qd --output {tmp_dir}{_shm_folder}/{_shm_entry} '{directory}"
-                    f"{argument.replace('/', '', 1)}.gpg'", shell=True, stdout=PIPE, stderr=STDOUT, close_fds=True)
-    _block = _output.communicate()[0].strip()  # blocks the program from proceeding until stdout is given
-    if _output.returncode == 2:
+    if not Path(f"{directory}{argument.replace('/', '', 1)}.gpg").exists():
         print(f"\n\u001b[38;5;1mError: entry ({argument.replace('/', '', 1)}) does not exist\u001b[0m\n")
         s_exit(1)
+    _shm_folder, _shm_entry = shm_gen()
+    system(f"{gpg} -qd --output {tmp_dir}{_shm_folder}/{_shm_entry} '{directory}{argument.replace('/', '', 1)}.gpg'")
     entry_reader(f"{tmp_dir}{_shm_folder}/{_shm_entry}")
     rmtree(f"{tmp_dir}{_shm_folder}")
 
