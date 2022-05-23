@@ -435,6 +435,9 @@ def rename():  # renames an entry or folder
         _entry_name = argument.split(' ')
         del _entry_name[:2]
         _entry_name = ' '.join(_entry_name)
+    if not Path(f"{directory}{_entry_name}.gpg").exists():
+        print(f"\n\u001b[38;5;1mError: entry ({_entry_name}) does not exist\u001b[0m\n")
+        s_exit(1)
     _new_name = str(input('New Name: '))
     if _entry_name.startswith('/'):
         _entry_name = _entry_name.replace('/', '', 1)
