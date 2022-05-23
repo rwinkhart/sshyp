@@ -8,7 +8,7 @@ import random
 from shutil import get_terminal_size, move, rmtree
 import sshync
 import string
-from subprocess import Popen
+from subprocess import PIPE, Popen, STDOUT
 from sys import argv, exit as s_exit
 from textwrap import fill
 
@@ -304,14 +304,22 @@ def no_arg():  # displays a list of entries and gives an option to select one fo
     entry_list_gen()
     _read_entry = str(input('Entry to read: '))
     _shm_folder, _shm_entry = shm_gen()
-    system(f"{gpg} -qd --output {tmp_dir}{_shm_folder}/{_shm_entry} '{directory}{_read_entry.replace('/', '', 1)}.gpg'")
+    _output = Popen(f"{gpg} -qd --output {tmp_dir}{_shm_folder}/{_shm_entry} '{directory}{_read_entry.replace('/', '', 1)}.gpg'", shell=True, stdout=PIPE, stderr=STDOUT, close_fds=True)
+    _block = _output.communicate()[0].strip()  # blocks the program from proceeding until stdout is given
+    if _output.returncode == 2:
+        print(f"\nError: entry ({_read_entry.replace('/', '', 1)}) does not exist\n")
+        s_exit(1)
     entry_reader(f"{tmp_dir}{_shm_folder}/{_shm_entry}")
     rmtree(f"{tmp_dir}{_shm_folder}")
 
 
 def read_shortcut():  # shortcut to quickly read an entry
     _shm_folder, _shm_entry = shm_gen()
-    system(f"{gpg} -qd --output {tmp_dir}{_shm_folder}/{_shm_entry} '{directory}{argument.replace('/', '', 1)}.gpg'")
+    _output = Popen(f"{gpg} -qd --output {tmp_dir}{_shm_folder}/{_shm_entry} '{directory}{argument.replace('/', '', 1)}.gpg'", shell=True, stdout=PIPE, stderr=STDOUT, close_fds=True)
+    _block = _output.communicate()[0].strip()  # blocks the program from proceeding until stdout is given
+    if _output.returncode == 2:
+        print(f"\nError: entry ({argument.replace('/', '', 1)}) does not exist\n")
+        s_exit(1)
     entry_reader(f"{tmp_dir}{_shm_folder}/{_shm_entry}")
     rmtree(f"{tmp_dir}{_shm_folder}")
 
