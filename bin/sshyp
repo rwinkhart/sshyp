@@ -619,123 +619,96 @@ def remove_data():  # deletes an entry from the server and flags it for local de
 
 
 if __name__ == "__main__":
-    silent_sync = 0
-    # retrieve typed argument
-    argument_list, argument = argv, ''
-    del argument_list[0]
-    for _argument in argument_list:
-        argument += _argument + ' '
-    argument = argument[:-1]
-    if uname()[0] == 'Haiku':  # set proper gpg command for OS
-        gpg = 'gpg --pinentry-mode loopback'
-    else:
-        gpg = 'gpg'
+    try:
+        silent_sync = 0
+        # retrieve typed argument
+        argument_list, argument = argv, ''
+        del argument_list[0]
+        for _argument in argument_list:
+            argument += _argument + ' '
+        argument = argument[:-1]
+        if uname()[0] == 'Haiku':  # set proper gpg command for OS
+            gpg = 'gpg --pinentry-mode loopback'
+        else:
+            gpg = 'gpg'
 
-    # import saved userdata
-    if argument != 'tweak':
-        device_type = ''
-        tmp_dir = path.expanduser('~/.config/sshyp/tmp/')
-        try:
-            device_type = open(path.expanduser('~/.config/sshyp/sshyp-device')).read().strip()
-            if device_type == 'c':
-                gpg_id = open(path.expanduser('~/.config/sshyp/sshyp-gpg')).read().strip()
-                ssh_info = sshync.get_profile(path.expanduser('~/.config/sshyp/sshyp.sshync'))
-                username_ssh = ssh_info[0].replace('\n', '')
-                ip = ssh_info[1].replace('\n', '')
-                port = ssh_info[2].replace('\n', '')
-                directory = str(ssh_info[3].replace('\n', ''))
-                directory_ssh = '/home/' + username_ssh + '/.password-pasture/'
-                client_device_name = listdir(path.expanduser('~/.config/sshyp/devices'))[0]
-        except FileNotFoundError:
-            if device_type.lower() != 's':
-                print('\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
-                print("Not all necessary configuration files are present. Please run 'sshyp tweak'!")
-                print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n')
-            s_exit(1)
-    else:
-        try:
+        # import saved userdata
+        if argument != 'tweak':
+            device_type = ''
+            tmp_dir = path.expanduser('~/.config/sshyp/tmp/')
+            try:
+                device_type = open(path.expanduser('~/.config/sshyp/sshyp-device')).read().strip()
+                if device_type == 'c':
+                    gpg_id = open(path.expanduser('~/.config/sshyp/sshyp-gpg')).read().strip()
+                    ssh_info = sshync.get_profile(path.expanduser('~/.config/sshyp/sshyp.sshync'))
+                    username_ssh = ssh_info[0].replace('\n', '')
+                    ip = ssh_info[1].replace('\n', '')
+                    port = ssh_info[2].replace('\n', '')
+                    directory = str(ssh_info[3].replace('\n', ''))
+                    directory_ssh = '/home/' + username_ssh + '/.password-pasture/'
+                    client_device_name = listdir(path.expanduser('~/.config/sshyp/devices'))[0]
+            except FileNotFoundError:
+                if device_type.lower() != 's':
+                    print('\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
+                    print("Not all necessary configuration files are present. Please run 'sshyp tweak'!")
+                    print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n')
+                s_exit(1)
+        else:
             tweak()
             s_exit(0)
-        except KeyboardInterrupt:
-            print('\n')
-            s_exit(0)
 
-    # run function based on argument
-    error = 0  # create an error flag to determine if syncing should occur at end
-    if argument.startswith('/'):
-        read_shortcut()
-    elif argument == '':
-        try:
+        # run function based on argument
+        error = 0  # create an error flag to determine if syncing should occur at end
+        if argument.startswith('/'):
+            read_shortcut()
+        elif argument == '':
             no_arg()
-        except KeyboardInterrupt:
-            print('\n')
-            s_exit(0)
-    elif argument == 'help' or argument == '--help' or argument == '-h' or argument == 'license' or \
-            argument == 'version' or argument == '-v' or argument == 'add' or argument == 'edit' or argument == 'copy':
-        print_info()
-    elif argument.startswith('add note') or argument.startswith('add -n') or argument.startswith('add password') \
-            or argument.startswith('add -p'):
-        try:
+        elif argument == 'help' or argument == '--help' or argument == '-h' or argument == 'license' or argument \
+                == 'version' or argument == '-v' or argument == 'add' or argument == 'edit' or argument == 'copy':
+            print_info()
+        elif argument.startswith('add note') or argument.startswith('add -n') or argument.startswith('add password') \
+                or argument.startswith('add -p'):
             add_entry()
-        except KeyboardInterrupt:
-            print('\n')
-            s_exit(0)
-    elif argument.startswith('add folder') or argument.startswith('add -f'):
-        try:
+        elif argument.startswith('add folder') or argument.startswith('add -f'):
             add_folder()
-        except KeyboardInterrupt:
-            print('\n')
-            s_exit(0)
-    elif argument.startswith('edit rename') or argument.startswith('edit relocate') or argument.startswith('edit -r'):
-        silent_sync = 1
-        try:
+        elif argument.startswith('edit rename') or argument.startswith('edit relocate') or argument.startswith(
+                'edit -r'):
+            silent_sync = 1
             rename()
-        except KeyboardInterrupt:
-            print('\n')
-            s_exit(0)
-    elif argument.startswith('edit username') or argument.startswith('edit -u') or argument.startswith('edit password')\
-            or argument.startswith('edit -p') or argument.startswith('edit url') or argument.startswith('edit -l') or \
-            argument.startswith('edit note') or argument.startswith('edit -n'):
-        try:
+        elif argument.startswith('edit username') or argument.startswith('edit -u') or argument.startswith(
+                'edit password') \
+                or argument.startswith('edit -p') or argument.startswith('edit url') or argument.startswith(
+            'edit -l') or \
+                argument.startswith('edit note') or argument.startswith('edit -n'):
             edit()
-        except KeyboardInterrupt:
-            print('\n')
-            s_exit(0)
-    elif argument.startswith('gen'):
-        try:
+        elif argument.startswith('gen'):
             gen()
-        except KeyboardInterrupt:
-            print('\n')
-            s_exit(0)
-    elif argument.startswith('copy username') or argument.startswith('copy -u') or argument.startswith('copy password')\
-            or argument.startswith('copy -p') or argument.startswith('copy url') or argument.startswith('copy -l') \
-            or argument.startswith('copy note') or argument.startswith('copy -n'):
-        try:
+        elif argument.startswith('copy username') or argument.startswith('copy -u') or argument.startswith(
+                'copy password') \
+                or argument.startswith('copy -p') or argument.startswith('copy url') or argument.startswith('copy -l') \
+                or argument.startswith('copy note') or argument.startswith('copy -n'):
             copy_data()
-        except KeyboardInterrupt:
-            print('\n')
-            s_exit(0)
-    elif argument.startswith('shear') or argument.startswith('-rm'):
-        try:
+        elif argument.startswith('shear') or argument.startswith('-rm'):
             remove_data()
-        except KeyboardInterrupt:
-            print('\n')
-            s_exit(0)
-    elif argument == 'sync' or argument == '-s':
-        sync()
-    else:
-        error = 1  # set error flag to 1 to stop syncing
-        print("\nArgument error! Please run 'sshyp help' for a list of usable commands.\n")
-        s_exit(1)
+        elif argument == 'sync' or argument == '-s':
+            sync()
+        else:
+            error = 1  # set error flag to 1 to stop syncing
+            print("\nArgument error! Please run 'sshyp help' for a list of usable commands.\n")
+            s_exit(1)
 
-    # sync at end of program if any changes were made
-    if argument != '' and argument != 'help' and argument != '--help' and argument != '-h' and argument != 'license' \
-            and argument != 'add' and argument != 'sync' and argument != 'edit' and not argument. \
-            startswith('copy username') and not argument.startswith('copy -u') and not argument. \
-            startswith('copy password') and not argument.startswith('copy -p') and not argument. \
-            startswith('copy url') and not argument.startswith('copy -l') and not argument. \
-            startswith('copy note') and not argument.startswith('copy -n') and argument != 'copy' and argument \
-            != 'version' and argument != '-v' and error == 0 and argument.startswith('/') is False:
-        sync()
+        # sync at end of program if any changes were made
+        if argument != '' and argument != 'help' and argument != '--help' and argument != '-h' and argument != \
+                'license' and argument != 'add' and argument != 'sync' and argument != 'edit' and not argument\
+                .startswith('copy username') and not argument.startswith('copy -u') and not argument\
+                .startswith('copy password') and not argument.startswith('copy -p') and not argument\
+                .startswith('copy url') and not argument.startswith('copy -l') and not argument.startswith('copy note')\
+                and not argument.startswith('copy -n') and argument != 'copy' and argument != 'version' and argument \
+                != '-v' and error == 0 and argument.startswith('/') is False:
+            sync()
 
-    s_exit(0)
+        s_exit(0)
+
+    except KeyboardInterrupt:
+        print('\n')
+        s_exit(0)
