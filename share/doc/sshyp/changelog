@@ -11,23 +11,24 @@ Features:
 - the entry format has been changed to support entries created in pass/password-store
     ^ this change requires existing entry libraries to be converted - see the sshyp v1.0.0 release page on GitHub for a conversion script
 - majorly overhauled visual experience for sshyp
-    ^ this includes a new entry list, a new entry readout, coloured output, and more!
+    ^ this includes a new entry list, a new entry readout, colored output, and more!
 - entries can now optionally be passed as arguments, directly
     ^ as opposed to the user being prompted for an entry name after running a command
 
 Changes:
 
-- corrected outdated liscensing and copyright information
+- corrected outdated licensing and copyright information
 - 'if __name__=="__main__":' convention is now used
 - help screens have been overhauled
 - improved password generator to guarantee more secure results
 - fixed errors when trying to sync with a multi-word entry on the server
-- sshync now uses 'scp' (via the sftp protocal), rather than 'sftp'
+- sshync now uses 'scp' (via the sftp protocol), rather than 'sftp'
 - rename function now properly allows for renaming folders
 - renaming an entry/folder will now properly delete the old entry/folder from the server
 - entry previews at the time of entry creation/editing no longer require entering the gpg password more times than necessary
 - the clipboard now automatically clears after 30 seconds
 - sshyp server no longer needs to create copies of its libraries in ~/
+- added more and improved existing exceptions
 - ...and lots of minor (under the hood) changes!
 
 <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
