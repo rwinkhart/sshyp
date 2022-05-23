@@ -1,15 +1,15 @@
-sshyp v1.0
+sshyp v1.0.0
 
 The Polished Trotters Update
 
 This release brings 'sshyp' in line with the original goals of the project.
-As such, it is being crowned "v1.0", and is considered a stable base for future expansions.
+As such, it is being crowned "v1.0.0", and is considered a stable base for future expansions.
 
 Features:
 
 - sshyp has been modified to run on Haiku, an open-source re-implementation of BeOS
 - the entry format has been changed to support entries created in pass/password-store
-    ^ this change requires existing entry libraries to be converted - see the sshyp v1.0 release page on GitHub for a conversion script
+    ^ this change requires existing entry libraries to be converted - see the sshyp v1.0.0 release page on GitHub for a conversion script
 - majorly overhauled visual experience for sshyp
     ^ this includes a new entry list, a new entry readout, coloured output, and more!
 - entries can now optionally be passed as arguments, directly

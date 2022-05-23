@@ -26,8 +26,8 @@ What sshyp can do:
 
 What sshyp will likely do:
 
-- (planned v1.1) 2FA/MFA management (was previously not on the roadmap, but could be beneficial in reducing phone usage)
-- (planned v1.2) everything it already does, but also in a GUI for Linux/Haiku
+- (planned v1.1.0) 2FA/MFA management (was previously not on the roadmap, but could be beneficial in reducing phone usage)
+- (planned v1.2.0) everything it already does, but also in a GUI for Linux/Haiku
 
 What sshyp definitely won't do:
 
@@ -63,7 +63,7 @@ The packaging script has been tested on Arch Linux with dpkg as a dependency for
 
 The AUR version and the packages attatched to the release tags were already packaged using this script.
 
-Currently, the script can create packages for Haiku*, Arch Linux (PKGBUILD), Debian Linux, Termux, and generic. Packaging for other systems coming soon.
+Currently, the script can create packages for Haiku, Arch Linux (PKGBUILD), Debian Linux, Termux, and generic. Packaging for other systems coming soon.
 
 # Usage
 Upon initial installation (on both the server and client devices), be sure to run:
