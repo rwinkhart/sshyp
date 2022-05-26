@@ -252,20 +252,27 @@ def print_info():  # prints help text based on argument
         print(' update/-u               generate a password for an existing entry\n')
         print("\u001b[38;5;0;48;5;15mTip:\u001b[0m You can quickly read an entry with 'sshyp /<entry name>'!")
     elif argument == 'version' or argument == '-v':
-        print('\n\u001b[38;5;0;48;5;15m////////////////////////////////////////////////////////\u001b[0m')
-        print('\u001b[38;5;0;48;5;15m/\u001b[38;5;15;48;5;238m                                                      '
-              '\u001b[38;5;0;48;5;15m/\u001b[0m')
-        print('\u001b[38;5;0;48;5;15m/\u001b[38;5;15;48;5;238m   \u001b[38;5;0;48;5;15msshyp  Copyright (C) 2021-2022  '
-              'Randall Winkhart\u001b[38;5;15;48;5;238m   \u001b[38;5;0;48;5;15m/\u001b[0m')
-        print('\u001b[38;5;0;48;5;15m/\u001b[38;5;15;48;5;238m                                                      '
-              '\u001b[38;5;0;48;5;15m/\u001b[0m')
-        print('\u001b[38;5;0;48;5;15m/\u001b[38;5;15;48;5;238m                    \u001b[38;5;0;48;5;15mVersion 1.0.0'
-              '\u001b[38;5;15;48;5;238m                     \u001b[38;5;0;48;5;15m/\u001b[0m')
-        print('\u001b[38;5;0;48;5;15m/\u001b[38;5;15;48;5;238m             \u001b[38;5;0;48;5;15mThe Polished Trotters '
-              'Update\u001b[38;5;15;48;5;238m             \u001b[38;5;0;48;5;15m/\u001b[0m')
-        print('\u001b[38;5;0;48;5;15m/\u001b[38;5;15;48;5;238m                                                      '
-              '\u001b[38;5;0;48;5;15m/\u001b[0m')
-        print('\u001b[38;5;0;48;5;15m////////////////////////////////////////////////////////\u001b[0m\n')
+        print('\nsshyp is a simple, self-hosted, sftp-synchronized password manager\nfor unix(-like) systems (currently'
+              ' haiku/linux/termux)\n\nsshyp is a viable alternative to (and compatible with) pass/password-store\n')
+        print("                ..       \u001b[38;5;9m♥♥ ♥♥\u001b[0m       ..\n         .''.''/()\\     \u001b[38;5;13m"
+              "♥♥♥♥♥♥♥\u001b[0m     /()\\''.''.\n        *       :        \u001b[38;5;9m♥♥♥♥♥\u001b[0m        :       *"
+              "\n         `..'..'          \u001b[38;5;13m♥♥♥\u001b[0m          `..'..'\n         //   \\\\           "
+              "\u001b[38;5;9m♥\u001b[0m           //   \\\\")
+        print('\u001b[38;5;7;48;5;8m<><><><><><><><><><><><><><><><><><><><><><><><><><><><>\u001b[0m')
+        print('\u001b[38;5;7;48;5;8m/\u001b[38;5;15;48;5;15m                                                      '
+              '\u001b[38;5;7;48;5;8m/\u001b[0m')
+        print('\u001b[38;5;7;48;5;8m/\u001b[38;5;15;48;5;15m   \u001b[38;5;15;48;5;8msshyp  copyright (c) 2021-2022  '
+              'randall winkhart\u001b[38;5;15;48;5;15m   \u001b[38;5;7;48;5;8m/\u001b[0m')
+        print('\u001b[38;5;7;48;5;8m/\u001b[38;5;15;48;5;15m                                                      '
+              '\u001b[38;5;7;48;5;8m/\u001b[0m')
+        print('\u001b[38;5;7;48;5;8m/\u001b[38;5;15;48;5;15m                    \u001b[38;5;15;48;5;8mversion 1.0.0'
+              '\u001b[38;5;15;48;5;15m                     \u001b[38;5;7;48;5;8m/\u001b[0m')
+        print('\u001b[38;5;7;48;5;8m/\u001b[38;5;15;48;5;15m             \u001b[38;5;15;48;5;8mthe polished trotters '
+              'update\u001b[38;5;15;48;5;15m             \u001b[38;5;7;48;5;8m/\u001b[0m')
+        print('\u001b[38;5;7;48;5;8m/\u001b[38;5;15;48;5;15m                                                      '
+              '\u001b[38;5;7;48;5;8m/\u001b[0m')
+        print('\u001b[38;5;7;48;5;8m<><><><><><><><><><><><><><><><><><><><><><><><><><><><>\u001b[0m\n')
+        print('see https://github.com/rwinkhart/sshyp for more information\n')
     elif argument == 'license':
         print('\nThis program is free software: you can redistribute it and/or modify it under the terms of the GNU '
               'General\nPublic License as published by the Free Software Foundation, either version 3 of the License,'
