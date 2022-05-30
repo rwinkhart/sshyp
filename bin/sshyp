@@ -656,7 +656,7 @@ if __name__ == "__main__":
             except FileNotFoundError:
                 if device_type.lower() != 's':
                     print('\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
-                    print("Not all necessary configuration files are present. Please run 'sshyp tweak'!")
+                    print("not all necessary configuration files are present - please run 'sshyp tweak'")
                     print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n')
                 s_exit(1)
         else:
