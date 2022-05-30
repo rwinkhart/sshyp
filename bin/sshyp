@@ -652,7 +652,7 @@ if __name__ == "__main__":
                     directory = str(ssh_info[3].replace('\n', ''))
                     directory_ssh = '/home/' + username_ssh + '/.password-pasture/'
                     client_device_name = listdir(path.expanduser('~/.config/sshyp/devices'))[0]
-            except FileNotFoundError:
+            except (FileNotFoundError, IndexError):
                 if device_type.lower() != 's':
                     print('\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
                     print("not all necessary configuration files are present - please run 'sshyp tweak'")
