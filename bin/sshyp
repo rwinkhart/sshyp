@@ -117,7 +117,7 @@ def pass_gen():
     _length = int(input('How many characters should be in the password? '))
     if _length > 840:
         _length = 840
-        print('\n\u001b[38;5;208mPassword length has been limited to the maximum of 840 characters.\u001b[0m\n')
+        print('\n\u001b[38;5;9mpassword length has been limited to the maximum of 840 characters\u001b[0m\n')
     _complexity = str(input('Should the password be simple (for compatibility) or complex (for security)? (s/C) '))
     _gen = _pass_gen_function(_complexity, _length)
     return _gen
