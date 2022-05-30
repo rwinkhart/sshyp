@@ -708,14 +708,15 @@ if __name__ == "__main__":
                 print_info()
         elif argument_list[0] == 'shear' or argument_list[0] == '-rm':
             remove_data()
-        else:
+        elif argument_list[0] != 'sync' and argument_list[0] != '-s':
             print("\nArgument error! Please run 'sshyp help' for a list of usable commands.\n")
             s_exit(1)
 
         # sync if any changes were made
-        if argument_list[0] == 'sync' or argument_list[0] == '-s' or argument_list[0] == 'gen' or argument_list[0] == \
-                'shear' or argument_list[0] == '-rm' or ((argument_list[0] == 'add' or argument_list[0] == 'edit')
-                                                         and len(argument_list) != 1):
+        if len(argument_list) > 0 and ((argument_list[0] == 'sync' or argument_list[0] == '-s' or argument_list[0] ==
+                                        'gen' or argument_list[0] == 'shear' or argument_list[0] == '-rm') or
+                                       ((argument_list[0] == 'add' or argument_list[0] == 'edit') and
+                                        len(argument_list) > 1)):
             sync()
 
         s_exit(0)
