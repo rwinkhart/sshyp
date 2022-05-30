@@ -217,7 +217,7 @@ def tweak():  # runs configuration wizard
 
 
 def print_info():  # prints help text based on argument
-    if argument == 'help' or argument == '--help' or argument == '-h':
+    if argument.startswith('help') or argument.startswith('--help') or argument.startswith('-h'):
         print('\n\u001b[1msshyp  copyright (c) 2021-2022  randall winkhart\u001b[0m\n')
         print("this is free software, and you are welcome to redistribute it under certain conditions;\nthis program "
               "comes with absolutely no warranty;\ntype `sshyp license' for details")
@@ -251,7 +251,7 @@ def print_info():  # prints help text based on argument
         print('gen:')
         print(' update/-u               generate a password for an existing entry\n')
         print("\u001b[1mtip:\u001b[0m you can quickly read an entry with 'sshyp /<entry name>'")
-    elif argument == 'version' or argument == '-v':
+    elif argument.startswith('version') or argument.startswith('-v'):
         print('\nsshyp is a simple, self-hosted, sftp-synchronized password manager\nfor unix(-like) systems (currently'
               ' haiku/linux/termux)\n\nsshyp is a viable alternative to (and compatible with) pass/password-store\n')
         print("                ..       \u001b[38;5;9m♥♥ ♥♥\u001b[0m       ..\n         .''.''/()\\     \u001b[38;5;13m"
@@ -273,21 +273,21 @@ def print_info():  # prints help text based on argument
               '\u001b[38;5;7;48;5;8m/\u001b[0m')
         print('\u001b[38;5;7;48;5;8m<><><><><><><><><><><><><><><><><><><><><><><><><><><><>\u001b[0m\n')
         print('see https://github.com/rwinkhart/sshyp for more information\n')
-    elif argument == 'license':
+    elif argument.startswith('license'):
         print('\nThis program is free software: you can redistribute it and/or modify it under the terms of the GNU '
               'General\nPublic License as published by the Free Software Foundation, either version 3 of the License,'
               '\nor (at your option) any later version.\n\nThis program is distributed in the hope that it will be '
               'useful, but WITHOUT ANY WARRANTY;\nwithout even the implied warranty of MERCHANTABILITY or FITNESS FOR A'
               ' PARTICULAR PURPOSE.\nSee the GNU General Public License for more details.'
               '\n\nhttps://opensource.org/licenses/GPL-3.0\n')
-    elif argument == 'add':
+    elif argument.startswith('add'):
         print('\n\u001b[1musage:\u001b[0m sshyp add [flag [<entry name>]]\u001b[0m\n')
         print('\u001b[1mflags:\u001b[0m')
         print('add:')
         print(' password/-p             add a password entry')
         print(' note/-n                 add a note entry')
         print(' folder/-f               add a new folder for entries\n')
-    elif argument == 'edit':
+    elif argument.startswith('edit'):
         print('\n\u001b[1musage:\u001b[0m sshyp edit [flag [<entry name>]]\u001b[0m\n')
         print('\u001b[1mflags:\u001b[0m')
         print('edit:')
@@ -296,7 +296,7 @@ def print_info():  # prints help text based on argument
         print(' password/-p             change the password of an entry')
         print(' url/-l                  change the url attached to an entry')
         print(' note/-n                 change the note attached to an entry\n')
-    elif argument == 'copy':
+    elif argument.startswith('copy'):
         print('\n\u001b[1musage:\u001b[0m sshyp copy [flag [<entry name>]]\u001b[0m\n')
         print('\u001b[1mflags:\u001b[0m')
         print('copy:')
@@ -663,54 +663,59 @@ if __name__ == "__main__":
             tweak()
             s_exit(0)
 
-        # run function based on argument
-        error = 0  # create an error flag to determine if syncing should occur at end
+        # run function based on arguments
         if argument.startswith('/'):
             read_shortcut()
         elif argument == '':
             no_arg()
         elif argument == 'help' or argument == '--help' or argument == '-h' or argument == 'license' or argument \
-                == 'version' or argument == '-v' or argument == 'add' or argument == 'edit' or argument == 'copy':
+                == 'version' or argument == '-v':
             print_info()
-        elif argument.startswith('add note') or argument.startswith('add -n') or argument.startswith('add password') \
-                or argument.startswith('add -p'):
-            add_entry()
-        elif argument.startswith('add folder') or argument.startswith('add -f'):
-            add_folder()
-        elif argument.startswith('edit rename') or argument.startswith('edit relocate') or argument.startswith(
-                'edit -r'):
-            silent_sync = 1
-            rename()
-        elif argument.startswith('edit username') or argument.startswith('edit -u') or argument.startswith(
-                'edit password') \
-                or argument.startswith('edit -p') or argument.startswith('edit url') or argument.startswith(
-            'edit -l') or \
-                argument.startswith('edit note') or argument.startswith('edit -n'):
-            edit()
-        elif argument.startswith('gen'):
+        elif argument_list[0] == 'add':
+            if len(argument_list) == 1:
+                print_info()
+            elif argument_list[1] == 'note' or argument_list[1] == '-n' or argument_list[1] == 'password' or \
+                    argument_list[1] == '-p':
+                add_entry()
+            elif argument_list[1] == 'folder' or argument_list[1] == '-f':
+                add_folder()
+            else:
+                print_info()
+                s_exit(0)
+        elif argument_list[0] == 'edit':
+            if len(argument_list) == 1:
+                print_info()
+            elif argument_list[1] == 'rename' or argument_list[1] == 'relocate' or argument_list[1] == '-r':
+                silent_sync = 1
+                rename()
+            elif argument_list[1] == 'username' or argument_list[1] == '-u' or argument_list[1] == 'password' or \
+                    argument_list[1] == '-p' or argument_list[1] == 'url' or argument_list[1] == '-l' or \
+                    argument_list[1] == 'note' or argument_list[1] == '-n':
+                edit()
+            else:
+                print_info()
+                s_exit(0)
+        elif argument_list[0] == 'gen':
             gen()
-        elif argument.startswith('copy username') or argument.startswith('copy -u') or argument.startswith(
-                'copy password') \
-                or argument.startswith('copy -p') or argument.startswith('copy url') or argument.startswith('copy -l') \
-                or argument.startswith('copy note') or argument.startswith('copy -n'):
-            copy_data()
-        elif argument.startswith('shear') or argument.startswith('-rm'):
+        elif argument_list[0] == 'copy':
+            if len(argument_list) == 1:
+                print_info()
+            elif argument_list[1] == 'username' or argument_list[1] == '-u' or argument_list[1] == 'password' or \
+                    argument_list[1] == '-p' or argument_list[1] == 'url' or argument_list[1] == '-l' or \
+                    argument_list[1] == 'note' or argument_list[1] == '-n':
+                copy_data()
+            else:
+                print_info()
+        elif argument_list[0] == 'shear' or argument_list[0] == '-rm':
             remove_data()
-        elif argument == 'sync' or argument == '-s':
-            sync()
         else:
-            error = 1  # set error flag to 1 to stop syncing
             print("\nArgument error! Please run 'sshyp help' for a list of usable commands.\n")
             s_exit(1)
 
-        # sync at end of program if any changes were made
-        if argument != '' and argument != 'help' and argument != '--help' and argument != '-h' and argument != \
-                'license' and argument != 'add' and argument != 'sync' and argument != 'edit' and not argument\
-                .startswith('copy username') and not argument.startswith('copy -u') and not argument\
-                .startswith('copy password') and not argument.startswith('copy -p') and not argument\
-                .startswith('copy url') and not argument.startswith('copy -l') and not argument.startswith('copy note')\
-                and not argument.startswith('copy -n') and argument != 'copy' and argument != 'version' and argument \
-                != '-v' and error == 0 and argument.startswith('/') is False:
+        # sync if any changes were made
+        if argument_list[0] == 'sync' or argument_list[0] == '-s' or argument_list[0] == 'gen' or argument_list[0] == \
+                'shear' or argument_list[0] == '-rm' or ((argument_list[0] == 'add' or argument_list[0] == 'edit')
+                                                         and len(argument_list) != 1):
             sync()
 
         s_exit(0)
