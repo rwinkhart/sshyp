@@ -61,7 +61,7 @@ def get_profile(_profile_dir):
     try:
         _profile_data = open(_profile_dir).readlines()
     except (FileNotFoundError, IndexError):
-        print('\nEither the profile does not exist, or it is corrupted.\n')
+        print('\n\u001b[38;5;9merror: the profile does not exist or is corrupted.\u001b[0m\n')
         _profile_data = None
         s_exit(1)
     # extract data from profile

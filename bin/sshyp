@@ -114,11 +114,11 @@ def pass_gen():
         if __special < __min_special:
             __gen = _pass_gen_function(__complexity, __length)
         return __gen
-    _length = int(input('How many characters should be in the password? '))
+    _length = int(input('password length: '))
     if _length > 840:
         _length = 840
         print('\n\u001b[38;5;9mpassword length has been limited to the maximum of 840 characters\u001b[0m\n')
-    _complexity = str(input('Should the password be simple (for compatibility) or complex (for security)? (s/C) '))
+    _complexity = str(input('password complexity - simple (for compatibility) or complex (for security)? (s/C) '))
     _gen = _pass_gen_function(_complexity, _length)
     return _gen
 
@@ -153,11 +153,11 @@ def tweak():  # runs configuration wizard
         else:
             system(f"ln -s /dev/shm {path.expanduser('~/.config/sshyp/tmp')}")
     # device type configuration
-    _device_type = input('\nIs this installation for a client or for a server? (C/s) ')
+    _device_type = input('\nclient or server installation? (C/s) ')
     if _device_type.lower() == 's':
         open(path.expanduser('~/.config/sshyp/sshyp-device'), 'w').write(_device_type)
         Path(path.expanduser('~/.config/sshyp/deleted')).mkdir(0o700, parents=True, exist_ok=True)
-        print('\nMake sure the ssh service is running and properly configured.\n\nConfiguration complete!\n')
+        print('\nmake sure the ssh service is running and properly configured\n\nconfiguration complete\n')
         s_exit(0)
     else:
         # device type configuration
@@ -165,12 +165,12 @@ def tweak():  # runs configuration wizard
         open(path.expanduser('~/.config/sshyp/sshyp-device'), 'w').write(_device_type)
 
         # gpg configuration
-        _gpg_id = input('\nsshyp requires the use of a unique gpg key. Do you already have one that you are '
+        _gpg_id = input('\nsshyp requires the use of a unique gpg key - do you already have one that you are '
                         'willing to use? (y/N)')
         if _gpg_id.lower() != 'y':
-            print('\nA unique gpg key has been generated for you.')
+            print('\na unique gpg key has been generated for you.')
             system(f"{gpg} --full-generate-key")
-        _gpg_id = str(input('\nPlease input the ID of your gpg key: '))
+        _gpg_id = str(input('\nplease input the id of your gpg key: '))
         open(path.expanduser('~/.config/sshyp/sshyp-gpg'), 'w').write(_gpg_id + '\n')
 
         # lock file generation
@@ -179,24 +179,23 @@ def tweak():  # runs configuration wizard
         remove(f"{path.expanduser('~/.config/sshyp')}/lock")
 
         # ssh key configuration
-        _ssh_gen = (input('\nMake sure the ssh service on the remote server is running and properly configured.'
-                          '\n\nSync support requires a unique ssh key. Would you like to have this automatically '
+        _ssh_gen = (input('\nmake sure the ssh service on the remote server is running and properly configured'
+                          '\n\nsync support requires a unique ssh key - would you like to have this automatically '
                           'generated? (Y/n) '))
         if _ssh_gen.lower() != 'n':
             if uname()[0] == 'Haiku':
                 Path(f"{path.expanduser('~')}/.ssh").mkdir(0o700, exist_ok=True)
             system('ssh-keygen -t ed25519 -f ~/.ssh/sshyp')
         else:
-            print(f"\nEnsure that the key file you are using is located at {path.expanduser('~/.ssh/sshyp')}")
+            print(f"\nensure that the key file you are using is located at {path.expanduser('~/.ssh/sshyp')}")
 
         # ssh ip+port configuration
-        print('\nExample input: 10.10.10.10:9999\n')
-        _ip_port = str(input('What is the IP and ssh port of the remote server? '))
+        _ip_port = str(input('\nexample input: 10.10.10.10:9999\n\nip and ssh port of the remote server: '))
         _ip, _sep, _port = _ip_port.partition(':')
 
         # ssh user configuration
-        _username_ssh = str(input('\nWhat is the username of the remote server? '))
-        print(f"\nEntry directory: /home/{_username_ssh}/.password-pasture/")
+        _username_ssh = str(input('\nusername of the remote server: '))
+        print(f"\nentry directory: /home/{_username_ssh}/.password-pasture/")
 
         # sshync profile generation
         sshync.make_profile(path.expanduser('~/.config/sshyp/sshyp.sshync'),
@@ -206,14 +205,14 @@ def tweak():  # runs configuration wizard
         # device name configuration
         for _name in listdir(path.expanduser('~/.config/sshyp/devices')):  # remove existing device name
             remove(f"{path.expanduser('~/.config/sshyp/devices/')}{_name}")
-        print('\nIMPORTANT: This name MUST be unique amongst your client devices. '
-              '\nThis is used to keep track of which devices have up-to-date databases.\n')
-        _client_device_name = str(input('What would you like to name this device? '))
+        print('\n\u001b[4;1mimportant:\u001b[0m This name \u001b[4;1mmust\u001b[0m be unique amongst your client '
+              'devices\n\nthis is used to keep track of which devices have up-to-date databases.\n')
+        _client_device_name = str(input('device name: '))
         open(f"{path.expanduser('~/.config/sshyp/devices/')}{_client_device_name}", 'w')
         system(f"ssh -i '{path.expanduser('~/.ssh/sshyp')}' -p {_port} {_username_ssh}@{_ip} "
                f"\"touch '/home/{_username_ssh}/.config/sshyp/devices/{_client_device_name}'\"")
 
-        print('\nConfiguration complete!\n')
+        print('\nconfiguration complete\n')
 
 
 def print_info():  # prints help text based on argument
@@ -309,7 +308,7 @@ def print_info():  # prints help text based on argument
 def no_arg():  # displays a list of entries and gives an option to select one for viewing
     print("\nFor a list of usable commands, run 'sshyp help'.")
     entry_list_gen()
-    _read_entry = str(input('Entry to read: '))
+    _read_entry = str(input('entry to read: '))
     if not Path(f"{directory}{_read_entry}.gpg").exists():
         print(f"\n\u001b[38;5;9merror: entry ({_read_entry}) does not exist\u001b[0m\n")
         s_exit(1)
@@ -330,7 +329,7 @@ def read_shortcut():  # shortcut to quickly read an entry
 
 
 def sync():  # calls sshync to sync changes to the user's server
-    print('\nSyncing entries with the server device...\n')
+    print('\nsyncing entries with the server device...\n')
     # check for deletions
     system(f"ssh -i '{path.expanduser('~/.ssh/sshyp')}' -p {port} {username_ssh}@{ip} \"cd /bin; python -c "
            f"'import sshypRemote; sshypRemote.deletion_check(\"'\"{client_device_name}\"'\")'\"")
@@ -350,7 +349,7 @@ def sync():  # calls sshync to sync changes to the user's server
                 rmtree(f"{path.expanduser('~/.password-pasture/')}{_file[:-1]}")
             except FileNotFoundError:
                 if silent_sync != 1:
-                    print('Folder does not exist locally.')
+                    print('folder does not exist locally.')
         else:
             try:
                 if silent_sync != 1:
@@ -358,7 +357,7 @@ def sync():  # calls sshync to sync changes to the user's server
                 remove(f"{path.expanduser('~/.password-pasture/')}{_file[:-1]}.gpg")
             except (FileNotFoundError, IsADirectoryError):
                 if silent_sync != 1:
-                    print('File does not exist locally.')
+                    print('file does not exist locally.')
     # check for new folders
     system(f"ssh -i '{path.expanduser('~/.ssh/sshyp')}' -p {port} {username_ssh}@{ip} \"cd /bin; python -c "
            f"'import sshypRemote; sshypRemote.folder_check()'\"")
@@ -386,7 +385,7 @@ def sync():  # calls sshync to sync changes to the user's server
 def add_entry():  # adds a new entry
     _shm_folder, _shm_entry = None, None  # sets base-line values to avoid errors
     if argument == 'add note' or argument == 'add -n' or argument == 'add password' or argument == 'add -p':
-        _entry_name = str(input('\nName of entry: '))
+        _entry_name = str(input('\nname of entry: '))
     else:
         _entry_name = argument.split(' ')
         del _entry_name[:2]
@@ -399,10 +398,10 @@ def add_entry():  # adds a new entry
         _notes = open(f"{tmp_dir}{_shm_folder}/{_shm_entry}-n", 'r').read()
         open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'w').writelines('\n\n\n' + _notes)
     elif argument.startswith('add password') or argument.startswith('add -p'):
-        _username = str(input('Username: '))
-        _password = str(input('Password: '))
-        _url = str(input('URL: '))
-        _add_note = input('Add a note to this entry? (y/N) ')
+        _username = str(input('username: '))
+        _password = str(input('password: '))
+        _url = str(input('url: '))
+        _add_note = input('add a note to this entry? (y/N) ')
         _shm_folder, _shm_entry = shm_gen()
         if _add_note.lower() == 'y':
             system(f"nano {tmp_dir}{_shm_folder}/{_shm_entry}-n")
@@ -411,14 +410,14 @@ def add_entry():  # adds a new entry
             _notes = ''
         open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'w').writelines(_password + '\n' + _username + '\n' + _url +
                                                                      '\n' + _notes)
-        print('\nEntry preview:')
+        print('\n\u001b[1mentry preview:\u001b[0m')
         entry_reader(f"{tmp_dir}{_shm_folder}/{_shm_entry}")
     encrypt(_shm_folder, _shm_entry, _entry_name)
 
 
 def add_folder():  # creates a new folder
     if argument == 'add folder' or argument == 'add -f':
-        _folder_name = str(input('Name of new folder: '))
+        _folder_name = str(input('name of new folder: '))
     else:
         _folder_name = argument.split(' ')
         del _folder_name[:2]
@@ -433,7 +432,7 @@ def add_folder():  # creates a new folder
 def rename():  # renames an entry or folder
     if argument == 'edit rename' or argument == 'edit relocate' or argument == 'edit -r':
         entry_list_gen()
-        _entry_name = str(input('What would you like to rename/relocate? '))
+        _entry_name = str(input('entry/folder to rename/relocate: '))
     else:
         _entry_name = argument.split(' ')
         del _entry_name[:2]
@@ -441,7 +440,7 @@ def rename():  # renames an entry or folder
     if not Path(f"{directory}{_entry_name}.gpg").exists():
         print(f"\n\u001b[38;5;9merror: entry ({_entry_name}) does not exist\u001b[0m\n")
         s_exit(1)
-    _new_name = str(input('New Name: '))
+    _new_name = str(input('new name: '))
     if _entry_name.startswith('/'):
         _entry_name = _entry_name.replace('/', '', 1)
     if _entry_name.endswith('/'):
@@ -459,7 +458,7 @@ def edit():  # edits the contents of an entry
     if argument == 'edit username' or argument == 'edit -u' or argument == 'edit password' or argument == 'edit -p' or \
             argument == 'edit url' or argument == 'edit -l' or argument == 'edit note' or argument == 'edit -n':
         entry_list_gen()
-        _entry_name = str(input('What file would you like to edit? '))
+        _entry_name = str(input('entry to edit: '))
     else:
         _entry_name = argument.split(' ')
         del _entry_name[:2]
@@ -480,18 +479,18 @@ def edit():  # edits the contents of an entry
         open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'w').writelines(_lines)
 
     if argument.startswith('edit username') or argument.startswith('edit -u'):
-        _detail = str(input('New Username: '))
+        _detail = str(input('new username: '))
         replace_line(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 1, _detail + '\n')
     elif argument.startswith('edit password') or argument.startswith('edit -p'):
-        _detail = str(input('New Password: '))
+        _detail = str(input('new password: '))
         replace_line(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 0, _detail + '\n')
     elif argument.startswith('edit url') or argument.startswith('edit -l'):
-        _detail = str(input('New URL: '))
+        _detail = str(input('new url: '))
         replace_line(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 2, _detail + '\n')
     elif argument.startswith('edit note') or argument.startswith('edit -n'):
         edit_note(_shm_folder, _shm_entry)
     remove(f"{directory}{_entry_name}.gpg")
-    print('\nEntry preview:')
+    print('\n\u001b[1mentry preview:\u001b[0m')
     entry_reader(f"{tmp_dir}{_shm_folder}/{_shm_entry}")
     encrypt(_shm_folder, _shm_entry, _entry_name)
 
@@ -503,7 +502,7 @@ def gen():  # generates a password for a new or an existing entry
             entry_list_gen()
         else:
             print()
-        _entry_name = str(input('Name of service: '))
+        _entry_name = str(input('name of service: '))
     elif argument.startswith('gen update') or argument.startswith('gen -u'):
         _entry_name = argument.split(' ')
         del _entry_name[:2]
@@ -519,11 +518,11 @@ def gen():  # generates a password for a new or an existing entry
             print(f"\n\u001b[38;5;9merror: entry ({_entry_name}) does not exist\u001b[0m\n")
             s_exit(1)
     else:
-        _username = str(input('Username: '))
+        _username = str(input('username: '))
     _password = pass_gen()
     if not argument.startswith('gen update') and not argument.startswith('gen -u'):
-        _url = str(input('URL: '))
-        _add_note = input('Add a note to this entry? (y/N) ')
+        _url = str(input('url: '))
+        _add_note = input('add a note to this entry? (y/N) ')
         _shm_folder, _shm_entry = shm_gen()
         if _add_note.lower() == 'y':
             system(f"nano {tmp_dir}{_shm_folder}/{_shm_entry}-n")
@@ -532,7 +531,7 @@ def gen():  # generates a password for a new or an existing entry
             _notes = ''
         open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'w').writelines(_password + '\n' + _username + '\n' + _url + '\n'
                                                                      + _notes)
-        print('\nEntry preview:')
+        print('\n\u001b[1mentry preview:\u001b[0m')
         entry_reader(f"{tmp_dir}{_shm_folder}/{_shm_entry}")
         encrypt(_shm_folder, _shm_entry, _entry_name)
     else:
@@ -540,7 +539,7 @@ def gen():  # generates a password for a new or an existing entry
         system(f"{gpg} -qd --output {tmp_dir}{_shm_folder}/{_shm_entry} '{directory}{_entry_name}.gpg'")
         replace_line(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 0, _password + '\n')
         remove(f"{directory}{_entry_name}.gpg")
-        print('\nEntry preview:')
+        print('\n\u001b[1mentry preview:\u001b[0m')
         entry_reader(f"{tmp_dir}{_shm_folder}/{_shm_entry}")
         encrypt(_shm_folder, _shm_entry, _entry_name)
 
@@ -549,7 +548,7 @@ def copy_data():  # copies a specified field of an entry to the clipboard
     if argument == 'copy username' or argument == 'copy -u' or argument == 'copy password' or argument == 'copy -p' \
             or argument == 'copy url' or argument == 'copy -l' or argument == 'copy note' or argument == 'copy -n':
         entry_list_gen()
-        _read_entry = str(input('Entry to copy: '))
+        _read_entry = str(input('entry to copy: '))
     else:
         _read_entry = argument.split(' ')
         del _read_entry[:2]
@@ -606,7 +605,7 @@ def copy_data():  # copies a specified field of an entry to the clipboard
 def remove_data():  # deletes an entry from the server and flags it for local deletion on sync
     if argument == 'shear' or argument == '-rm':
         entry_list_gen()
-        _entry_name = str(input('What would you like to delete? '))
+        _entry_name = str(input('entry/folder to shear: '))
     else:
         _entry_name = argument.split(' ')
         del _entry_name[:1]
@@ -618,7 +617,7 @@ def remove_data():  # deletes an entry from the server and flags it for local de
         _unlock = open(f"{tmp_dir}sshyp.lock", 'r').readlines()
         remove(f"{tmp_dir}sshyp.lock")
     except FileNotFoundError:
-        print('\nAccess denied.\n')
+        print('\n\u001b[38;5;9m-access denied-\u001b[0m\n')
         s_exit(1)
     system(f"ssh -i '{path.expanduser('~/.ssh/sshyp')}' -p {port} {username_ssh}@{ip} \"cd /bin; python -c "
            f"'import sshypRemote; sshypRemote.delete(\"'\"{_entry_name}\"'\")'\"")

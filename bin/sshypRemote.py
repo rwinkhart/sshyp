@@ -14,12 +14,12 @@ def delete(_file_path):
         try:
             rmtree(f"{expanduser('~/.password-pasture/')}{_file_path}")
         except FileNotFoundError:
-            print('Folder does not exist remotely.')
+            print('folder does not exist remotely')
     else:
         try:
             remove(f"{expanduser('~/.password-pasture/')}{_file_path}.gpg")
         except FileNotFoundError:
-            print('File does not exist remotely.')
+            print('file does not exist remotely')
     for _device_name in listdir(expanduser('~/.config/sshyp/devices')):
         open(f"{expanduser('~/.config/sshyp/deleted/')}{_file_path.replace('/', '@')}^&*{_device_name}", 'w')
 
