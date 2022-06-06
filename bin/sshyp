@@ -8,7 +8,7 @@ import random
 from shutil import get_terminal_size, move, rmtree
 import sshync
 import string
-from subprocess import Popen
+from subprocess import Popen, PIPE, STDOUT
 from sys import argv, exit as s_exit
 from textwrap import fill
 
@@ -138,6 +138,21 @@ def edit_note(_shm_folder, _shm_entry):
     open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'a').write(edit_notes)
 
 
+def copy_name_check(_port, _username_ssh, _ip, _client_device_name):
+    _command = f"ssh -o ConnectTimeout=3 -i '{path.expanduser('~/.ssh/sshyp')}' -p {_port} {_username_ssh}@{_ip} " \
+               f"\"touch '/home/{_username_ssh}/.config/sshyp/devices/{_client_device_name}'\""
+    _output = Popen(_command, shell=True, stdout=PIPE, stderr=STDOUT, close_fds=True)
+    _block = _output.communicate()[0].strip()
+    if _output.returncode != 0:
+        print('\n\u001b[38;5;9mwarning: ssh connection could not be made - ensure the public key (~/.ssh/sshyp.pub) is '
+              'registered on the remote server and that the entered ip, port, and username are correct\n\nsyncing '
+              'functionality will be disabled until this is addressed\u001b[0m\n')
+        open(path.expanduser('~/.config/sshyp/ssh-error'), 'w').write('1')
+        return 1
+    else:
+        open(path.expanduser('~/.config/sshyp/ssh-error'), 'w').write('0')
+        return 0
+
 # argument-specific functions
 
 
@@ -166,7 +181,7 @@ def tweak():  # runs configuration wizard
 
         # gpg configuration
         _gpg_id = input('\nsshyp requires the use of a unique gpg key - do you already have one that you are '
-                        'willing to use? (y/N)')
+                        'willing to use? (y/N) ')
         if _gpg_id.lower() != 'y':
             print('\na unique gpg key has been generated for you.')
             system(f"{gpg} --full-generate-key")
@@ -209,8 +224,7 @@ def tweak():  # runs configuration wizard
               'devices\n\nthis is used to keep track of which devices have up-to-date databases.\n')
         _client_device_name = str(input('device name: '))
         open(f"{path.expanduser('~/.config/sshyp/devices/')}{_client_device_name}", 'w')
-        system(f"ssh -i '{path.expanduser('~/.ssh/sshyp')}' -p {_port} {_username_ssh}@{_ip} "
-               f"\"touch '/home/{_username_ssh}/.config/sshyp/devices/{_client_device_name}'\"")
+        copy_name_check(_port, _username_ssh, _ip, _client_device_name)
 
         print('\nconfiguration complete\n')
 
@@ -625,7 +639,7 @@ def remove_data():  # deletes an entry from the server and flags it for local de
 
 if __name__ == "__main__":
     try:
-        silent_sync = 0
+        silent_sync, ssh_error = 0, 0
         # retrieve typed argument
         argument_list, argument = argv, ''
         del argument_list[0]
@@ -644,7 +658,6 @@ if __name__ == "__main__":
             try:
                 device_type = open(path.expanduser('~/.config/sshyp/sshyp-device')).read().strip()
                 if device_type == 'c':
-                    gpg_id = open(path.expanduser('~/.config/sshyp/sshyp-gpg')).read().strip()
                     ssh_info = sshync.get_profile(path.expanduser('~/.config/sshyp/sshyp.sshync'))
                     username_ssh = ssh_info[0].replace('\n', '')
                     ip = ssh_info[1].replace('\n', '')
@@ -652,6 +665,10 @@ if __name__ == "__main__":
                     directory = str(ssh_info[3].replace('\n', ''))
                     directory_ssh = '/home/' + username_ssh + '/.password-pasture/'
                     client_device_name = listdir(path.expanduser('~/.config/sshyp/devices'))[0]
+                    gpg_id = open(path.expanduser('~/.config/sshyp/sshyp-gpg')).read().strip()
+                    ssh_error = int(open(path.expanduser('~/.config/sshyp/ssh-error')).read().strip())
+                    if ssh_error != 0:
+                        ssh_error = copy_name_check(port, username_ssh, ip, client_device_name)
             except (FileNotFoundError, IndexError):
                 if device_type.lower() != 's':
                     print('\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
@@ -712,10 +729,11 @@ if __name__ == "__main__":
             s_exit(1)
 
         # sync if any changes were made
-        if len(argument_list) > 0 and ((argument_list[0] == 'sync' or argument_list[0] == '-s' or argument_list[0] ==
-                                        'gen' or argument_list[0] == 'shear' or argument_list[0] == '-rm') or
-                                       ((argument_list[0] == 'add' or argument_list[0] == 'edit') and
-                                        len(argument_list) > 1)):
+        if len(argument_list) > 0 and ssh_error == 0 and \
+                ((argument_list[0] == 'sync' or argument_list[0] == '-s' or argument_list[0] == 'gen' or
+                  argument_list[0] == 'shear' or argument_list[0] == '-rm') or ((argument_list[0] == 'add'
+                                                                                 or argument_list[0] == 'edit')
+                                                                                and len(argument_list) > 1)):
             sync()
 
         s_exit(0)
