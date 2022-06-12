@@ -144,6 +144,7 @@ if [ "$distro" == "3" ] || [ "$distro" == "7" ]; then
 Version:        "$version"
 Release:        "$revision"
 Summary:        A light-weight, self-hosted, synchronized password manager
+BuildArch:      noarch
 
 License:        GPL3
 URL:            https://github.com/rwinkhart/sshyp
@@ -154,11 +155,9 @@ Requires:       python gnupg openssh nano wl-clipboard
 %description
 sshyp is a password-store compatible CLI password manager available for UNIX(-like) systems - its primary goal is to make syncing passwords and notes across devices as easy as possible via CLI.
 
-%prep
-%setup -q
-
 %install
-tar xf sshyp-"$version".tar.xz -C "\"\$RPM_BUILD_ROOT\""
+tar xf %{_sourcedir}/sshyp-"$version".tar.xz -C %{_sourcedir}
+cp -r %{_sourcedir}/usr %{buildroot}
 
 %files
 /usr/bin/sshyp
@@ -169,7 +168,7 @@ tar xf sshyp-"$version".tar.xz -C "\"\$RPM_BUILD_ROOT\""
 %doc /usr/share/man/man1/sshyp.1.gz
 " > ~/rpmbuild/SPECS/sshyp.spec
 rpmbuild -bb ~/rpmbuild/SPECS/sshyp.spec
-mv ~/rpmbuild/RPMS/* packages/
+mv ~/rpmbuild/RPMS/noarch/* packages/
 rm -rf ~/rpmbuild
 echo -e "\nRed Hat packaging complete.\n"
 fi
