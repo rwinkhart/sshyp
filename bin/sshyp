@@ -131,7 +131,7 @@ def encrypt(_shm_folder, _shm_entry, _location):
 
 def decrypt(_entry_dir, _shm_folder, _shm_entry):
     if _shm_folder == 0 and _shm_entry == 0:
-        _command = f"{gpg} -qd --output {tmp_dir}sshyp.lock {path.expanduser('~/.config/sshyp/lock.gpg')}"
+        _command = f"{gpg} -qd --output /dev/null {path.expanduser('~/.config/sshyp/lock.gpg')}"
     else:
         _command = f"{gpg} -qd --output {tmp_dir}{_shm_folder}/{_shm_entry} {_entry_dir}.gpg"
     _output = Popen(_command, shell=True, stdout=PIPE, stderr=STDOUT, close_fds=True)
@@ -639,7 +639,6 @@ def remove_data():  # deletes an entry from the server and flags it for local de
     if _entry_name.startswith('/'):
         _entry_name = _entry_name.replace('/', '', 1)
     decrypt(path.expanduser('~/.config/sshyp/lock.gpg'), 0, 0)
-    remove(f"{tmp_dir}sshyp.lock")
     system(f"ssh -i '{path.expanduser('~/.ssh/sshyp')}' -p {port} {username_ssh}@{ip} \"cd /bin; python -c "
            f"'import sshypRemote; sshypRemote.delete(\"'\"{_entry_name}\"'\")'\"")
 
