@@ -129,6 +129,18 @@ def encrypt(_shm_folder, _shm_entry, _location):
     rmtree(f"{tmp_dir}{_shm_folder}")
 
 
+def decrypt(_entry_dir, _shm_folder, _shm_entry):
+    if _shm_folder == 0 and _shm_entry == 0:
+        _command = f"{gpg} -qd --output {tmp_dir}sshyp.lock {path.expanduser('~/.config/sshyp/lock.gpg')}"
+    else:
+        _command = f"{gpg} -qd --output {tmp_dir}{_shm_folder}/{_shm_entry} {_entry_dir}.gpg"
+    _output = Popen(_command, shell=True, stdout=PIPE, stderr=STDOUT, close_fds=True)
+    _block = _output.communicate()[0].strip()
+    if _output.returncode == 2:
+        print(f"\n\u001b[38;5;9merror: could not decrypt - ensure the correct gpg key is present\u001b[0m\n")
+        s_exit(1)
+
+
 def edit_note(_shm_folder, _shm_entry):
     lines = open(f"{tmp_dir}{_shm_folder}/{_shm_entry}").readlines()
     open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'w').writelines(lines[0:3])
@@ -327,7 +339,7 @@ def no_arg():  # displays a list of entries and gives an option to select one fo
         print(f"\n\u001b[38;5;9merror: entry ({_read_entry}) does not exist\u001b[0m\n")
         s_exit(1)
     _shm_folder, _shm_entry = shm_gen()
-    system(f"{gpg} -qd --output {tmp_dir}{_shm_folder}/{_shm_entry} '{directory}{_read_entry}.gpg'")
+    decrypt(directory + _read_entry, _shm_folder, _shm_entry)
     entry_reader(f"{tmp_dir}{_shm_folder}/{_shm_entry}")
     rmtree(f"{tmp_dir}{_shm_folder}")
 
@@ -337,7 +349,7 @@ def read_shortcut():  # shortcut to quickly read an entry
         print(f"\n\u001b[38;5;9merror: entry ({argument.replace('/', '', 1)}) does not exist\u001b[0m\n")
         s_exit(1)
     _shm_folder, _shm_entry = shm_gen()
-    system(f"{gpg} -qd --output {tmp_dir}{_shm_folder}/{_shm_entry} '{directory}{argument.replace('/', '', 1)}.gpg'")
+    decrypt(directory + argument.replace('/', '', 1), _shm_folder, _shm_entry)
     entry_reader(f"{tmp_dir}{_shm_folder}/{_shm_entry}")
     rmtree(f"{tmp_dir}{_shm_folder}")
 
@@ -483,7 +495,7 @@ def edit():  # edits the contents of an entry
         print(f"\n\u001b[38;5;9merror: entry ({_entry_name}) does not exist\u001b[0m\n")
         s_exit(1)
     _shm_folder, _shm_entry = shm_gen()
-    system(f"{gpg} -qd --output {tmp_dir}{_shm_folder}/{_shm_entry} '{directory}{_entry_name}.gpg'")
+    decrypt(directory + _entry_name, _shm_folder, _shm_entry)
 
     # compatibility check for GNU pass entries (ensuring they have at least four lines)
     _lines = open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'r').readlines()
@@ -550,7 +562,7 @@ def gen():  # generates a password for a new or an existing entry
         encrypt(_shm_folder, _shm_entry, _entry_name)
     else:
         _shm_folder, _shm_entry = shm_gen()
-        system(f"{gpg} -qd --output {tmp_dir}{_shm_folder}/{_shm_entry} '{directory}{_entry_name}.gpg'")
+        decrypt(directory + _entry_name, _shm_folder, _shm_entry)
         replace_line(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 0, _password + '\n')
         remove(f"{directory}{_entry_name}.gpg")
         print('\n\u001b[1mentry preview:\u001b[0m')
@@ -571,7 +583,7 @@ def copy_data():  # copies a specified field of an entry to the clipboard
         print(f"\n\u001b[38;5;9merror: entry ({_read_entry}) does not exist\u001b[0m\n")
         s_exit(1)
     _shm_folder, _shm_entry = shm_gen()
-    system(f"{gpg} -qd --output {tmp_dir}{_shm_folder}/{_shm_entry} '{directory}{_read_entry}.gpg'")
+    decrypt(directory + _read_entry, _shm_folder, _shm_entry)
     _copy_line = open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'r').readlines()
     if uname()[0] == 'Haiku':  # Haiku clipboard detection
         if argument.startswith('copy username') or argument.startswith('copy -u'):
@@ -626,13 +638,8 @@ def remove_data():  # deletes an entry from the server and flags it for local de
         _entry_name = ' '.join(_entry_name)
     if _entry_name.startswith('/'):
         _entry_name = _entry_name.replace('/', '', 1)
-    try:
-        system(f"{gpg} -qd --output {tmp_dir}sshyp.lock {path.expanduser('~/.config/sshyp/lock.gpg')}")
-        _unlock = open(f"{tmp_dir}sshyp.lock", 'r').readlines()
-        remove(f"{tmp_dir}sshyp.lock")
-    except FileNotFoundError:
-        print('\n\u001b[38;5;9m-access denied-\u001b[0m\n')
-        s_exit(1)
+    decrypt(path.expanduser('~/.config/sshyp/lock.gpg'), 0, 0)
+    remove(f"{tmp_dir}sshyp.lock")
     system(f"ssh -i '{path.expanduser('~/.ssh/sshyp')}' -p {port} {username_ssh}@{ip} \"cd /bin; python -c "
            f"'import sshypRemote; sshypRemote.delete(\"'\"{_entry_name}\"'\")'\"")
 
