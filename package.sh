@@ -1,13 +1,12 @@
 #!/bin/bash
 
 # This script packages sshyp (from source) for various UNIX environments.
-
+# Dependencies: dpkg (packaging for Debian/Termux), rpmdevtools (packaging for Red Hat)
 # NOTE It is recommended to instead use the latest officially packaged and tagged release.
-# NOTE If using Arch, it is recommended to install from the AUR or from the PKGBUILD attatched to the latest official release.
 
 echo -e '\nOptions (please enter the number only):'
-echo -e '\nDistribution Packages:\n\n1. Haiku\n2. Debian\n3. Termux\n4. Generic (used for PKGBUILD/APKBUILD)'
-echo -e '\nBuild Scripts:\n\n5. Alpine Linux (APKBUILD)\n6. Arch Linux (PKGBUILD, also builds local generic package)'
+echo -e '\nPackage Formats:\n\n1. Haiku\n2. Debian\n3. Red Hat\n4. Termux\n5. Generic (used for PKGBUILD/APKBUILD)'
+echo -e '\nBuild Scripts:\n\n6. Arch Linux (PKGBUILD)'
 echo -e '\nOther:\n\n7. All (generates all distribution packages (excluding Haiku, as this must be done on Haiku) and build scripts)\n'
 read -n 1 -r -p "Distribution: " distro
 
@@ -17,7 +16,7 @@ read -r -p "Version number: " version
 echo -e '\nThe value entered in this field will only affect the revision number for build scripts.\n'
 read -r -p "Revision number: " revision
 
-if [ "$distro" == "5" ] || [ "$distro" == "6" ] || [ "$distro" == "7" ]; then
+if [ "$distro" == "6" ] || [ "$distro" == "7" ]; then
     echo -e '\nOptions (please enter the number only):'
     echo -e '\n1. GitHub Release Tag\n2. Local\n'
     read -r -p "Source (for build scripts): " source
@@ -33,8 +32,7 @@ mkdir -p packages
 
 if [ "$distro" == "1" ]; then
     echo -e '\nPackaging for Haiku...\n'
-    mkdir -p packages/haikutemp/documentation/man/man1
-    mkdir -p packages/haikutemp/documentation/packages/sshyp
+    mkdir -p packages/haikutemp/documentation/{man/man1,packages/sshyp}
     echo "name			sshyp
 version			"$version"-"$revision"
 architecture		any
@@ -78,8 +76,7 @@ fi
 
 if [ "$distro" == "2" ] || [ "$distro" == "7" ]; then
     echo -e '\nPackaging for Debian...\n'
-    mkdir -p packages/debiantemp/sshyp_"$version"-"$revision"_all/{DEBIAN,usr}
-    mkdir -p packages/debiantemp/sshyp_"$version"-"$revision"_all/usr/share/man/man1
+    mkdir -p packages/debiantemp/sshyp_"$version"-"$revision"_all/{DEBIAN,usr/share/man/man1}
     echo "Package: sshyp
 Version: $version
 Section: utils
@@ -100,7 +97,7 @@ Installed-Size: 35
     echo -e "\nDebian packaging complete.\n"
 fi
 
-if [ "$distro" == "3" ] || [ "$distro" == "7" ]; then
+if [ "$distro" == "4" ] || [ "$distro" == "7" ]; then
     echo -e '\nPackaging for Termux...\n'
     mkdir -p packages/termuxtemp/sshyp_"$version"-"$revision"_all_termux/{data,DEBIAN}
     mkdir -p packages/termuxtemp/sshyp_"$version"-"$revision"_all_termux/data/data/com.termux/files/usr/share/man/man1
@@ -124,12 +121,11 @@ Installed-Size: 35
     echo -e "\nTermux packaging complete.\n"
 fi
 
-if [ "$distro" == "4" ] || [ "$distro" == "6" ] || [ "$distro" == "7" ]; then
+if [ "$distro" == "3" ] || [ "$distro" == "5" ] || [ "$distro" == "6" ] || [ "$distro" == "7" ]; then
     echo -e '\nPackaging as generic...\n'
-    mkdir -p packages/archtemp/usr
+    mkdir -p packages/archtemp/usr/share/man/man1
     cp -r bin packages/archtemp/usr/
     cp -r share packages/archtemp/usr/
-    mkdir -p packages/archtemp/usr/share/man/man1
     cp extra/manpage packages/archtemp/usr/share/man/man1/sshyp.1
     gzip packages/archtemp/usr/share/man/man1/sshyp.1
     tar -C packages/archtemp -cvf packages/sshyp-"$version".tar.xz usr/
@@ -137,6 +133,45 @@ if [ "$distro" == "4" ] || [ "$distro" == "6" ] || [ "$distro" == "7" ]; then
     sha512="$(sha512sum packages/sshyp-"$version".tar.xz | awk '{print $1;}')"
     echo -e "\nsha512 sum:\n$sha512"
     echo -e "\nGeneric packaging complete.\n"
+fi
+
+if [ "$distro" == "3" ] || [ "$distro" == "7" ]; then
+    echo -e '\nPackaging for Red Hat...\n'
+    rm -rf ~/rpmbuild
+    rpmdev-setuptree
+    cp packages/sshyp-"$version".tar.xz ~/rpmbuild/SOURCES
+    echo "Name:           sshyp
+Version:        "$version"
+Release:        "$revision"
+Summary:        A light-weight, self-hosted, synchronized password manager
+
+License:        GPL3
+URL:            https://github.com/rwinkhart/sshyp
+Source0:        sshyp-"$version".tar.xz
+
+Requires:       python gnupg openssh nano wl-clipboard 
+
+%description
+sshyp is a password-store compatible CLI password manager available for UNIX(-like) systems - its primary goal is to make syncing passwords and notes across devices as easy as possible via CLI.
+
+%prep
+%setup -q
+
+%install
+tar xf sshyp-"$version".tar.xz -C "\"\$RPM_BUILD_ROOT\""
+
+%files
+/usr/bin/sshyp
+/usr/bin/sshync.py
+/usr/bin/sshypRemote.py
+%license /usr/share/licenses/sshyp/license
+%doc /usr/share/doc/sshyp/changelog
+%doc /usr/share/man/man1/sshyp.1.gz
+" > ~/rpmbuild/SPECS/sshyp.spec
+rpmbuild -bb ~/rpmbuild/SPECS/sshyp.spec
+mv ~/rpmbuild/RPMS/* packages/
+rm -rf ~/rpmbuild
+echo -e "\nRed Hat packaging complete.\n"
 fi
 
 if [ "$distro" == "6" ] || [ "$distro" == "7" ]; then
@@ -162,8 +197,4 @@ package() {
 }
 " > packages/PKGBUILD
     echo -e "\nPKGBUILD generated.\n"
-fi
-
-if [ "$distro" == "4" ]; then
-    echo -e '\nThis packaging format is not yet supported, but will be in the near future!\n'
 fi
