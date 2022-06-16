@@ -242,7 +242,7 @@ def tweak():  # runs configuration wizard
 
 
 def print_info():  # prints help text based on argument
-    if argument.startswith('help') or argument.startswith('--help') or argument.startswith('-h'):
+    if argument_list[0] == 'help' or argument_list[0] == '--help' or argument_list[0] == '-h':
         print('\n\u001b[1msshyp  copyright (c) 2021-2022  randall winkhart\u001b[0m\n')
         print("this is free software, and you are welcome to redistribute it under certain conditions;\nthis program "
               "comes with absolutely no warranty;\ntype `sshyp license' for details")
@@ -276,7 +276,7 @@ def print_info():  # prints help text based on argument
         print('gen:')
         print(' update/-u               generate a password for an existing entry\n')
         print("\u001b[1mtip:\u001b[0m you can quickly read an entry with 'sshyp /<entry name>'")
-    elif argument.startswith('version') or argument.startswith('-v'):
+    elif argument_list[0] == 'version' or argument_list[0] == '-v':
         print('\nsshyp is a simple, self-hosted, sftp-synchronized password manager\nfor unix(-like) systems (currently'
               ' haiku/linux/termux)\n\nsshyp is a viable alternative to (and compatible with) pass/password-store\n')
         print("                ..       \u001b[38;5;9m♥♥ ♥♥\u001b[0m       ..\n         .''.''/()\\     \u001b[38;5;13m"
@@ -298,21 +298,21 @@ def print_info():  # prints help text based on argument
               '\u001b[38;5;7;48;5;8m/\u001b[0m')
         print('\u001b[38;5;7;48;5;8m<><><><><><><><><><><><><><><><><><><><><><><><><><><><>\u001b[0m\n')
         print('see https://github.com/rwinkhart/sshyp for more information\n')
-    elif argument.startswith('license'):
+    elif argument_list[0] == 'license':
         print('\nThis program is free software: you can redistribute it and/or modify it under the terms of the GNU '
               'General\nPublic License as published by the Free Software Foundation, either version 3 of the License,'
               '\nor (at your option) any later version.\n\nThis program is distributed in the hope that it will be '
               'useful, but WITHOUT ANY WARRANTY;\nwithout even the implied warranty of MERCHANTABILITY or FITNESS FOR A'
               ' PARTICULAR PURPOSE.\nSee the GNU General Public License for more details.'
               '\n\nhttps://opensource.org/licenses/GPL-3.0\n')
-    elif argument.startswith('add'):
+    elif argument_list[0] == 'add':
         print('\n\u001b[1musage:\u001b[0m sshyp add [flag [<entry name>]]\u001b[0m\n')
         print('\u001b[1mflags:\u001b[0m')
         print('add:')
         print(' password/-p             add a password entry')
         print(' note/-n                 add a note entry')
         print(' folder/-f               add a new folder for entries\n')
-    elif argument.startswith('edit'):
+    elif argument_list[0] == 'edit':
         print('\n\u001b[1musage:\u001b[0m sshyp edit [flag [<entry name>]]\u001b[0m\n')
         print('\u001b[1mflags:\u001b[0m')
         print('edit:')
@@ -321,7 +321,7 @@ def print_info():  # prints help text based on argument
         print(' password/-p             change the password of an entry')
         print(' url/-l                  change the url attached to an entry')
         print(' note/-n                 change the note attached to an entry\n')
-    elif argument.startswith('copy'):
+    elif argument_list[0] == 'copy':
         print('\n\u001b[1musage:\u001b[0m sshyp copy [flag [<entry name>]]\u001b[0m\n')
         print('\u001b[1mflags:\u001b[0m')
         print('copy:')
@@ -418,12 +418,12 @@ def add_entry():  # adds a new entry
         _entry_name = ' '.join(_entry_name)
     if _entry_name.startswith('/'):
         _entry_name = _entry_name.replace('/', '', 1)
-    if argument.startswith('add note') or argument.startswith('add -n'):
+    if argument_list[1] == 'note' or argument_list[1] == '-n':
         _shm_folder, _shm_entry = shm_gen()
         system(f"nano {tmp_dir}{_shm_folder}/{_shm_entry}-n")
         _notes = open(f"{tmp_dir}{_shm_folder}/{_shm_entry}-n", 'r').read()
         open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'w').writelines('\n\n\n' + _notes)
-    elif argument.startswith('add password') or argument.startswith('add -p'):
+    elif argument_list[1] == 'password' or argument_list[1] == '-p':
         _username = str(input('username: '))
         _password = str(input('password: '))
         _url = str(input('url: '))
@@ -504,16 +504,16 @@ def edit():  # edits the contents of an entry
             _lines.append('\n')
         open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'w').writelines(_lines)
 
-    if argument.startswith('edit username') or argument.startswith('edit -u'):
+    if argument_list[1] == 'username' or argument_list[1] == '-u':
         _detail = str(input('new username: '))
         replace_line(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 1, _detail + '\n')
-    elif argument.startswith('edit password') or argument.startswith('edit -p'):
+    elif argument_list[1] == 'password' or argument_list[1] == '-p':
         _detail = str(input('new password: '))
         replace_line(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 0, _detail + '\n')
-    elif argument.startswith('edit url') or argument.startswith('edit -l'):
+    elif argument_list[1] == 'url' or argument_list[1] == '-l':
         _detail = str(input('new url: '))
         replace_line(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 2, _detail + '\n')
-    elif argument.startswith('edit note') or argument.startswith('edit -n'):
+    elif argument_list[1] == 'note' or argument_list[1] == '-n':
         edit_note(_shm_folder, _shm_entry)
     remove(f"{directory}{_entry_name}.gpg")
     print('\n\u001b[1mentry preview:\u001b[0m')
@@ -529,7 +529,7 @@ def gen():  # generates a password for a new or an existing entry
         else:
             print()
         _entry_name = str(input('name of service: '))
-    elif argument.startswith('gen update') or argument.startswith('gen -u'):
+    elif argument_list[1] == 'update' or argument_list[1] == '-u':
         _entry_name = argument.split(' ')
         del _entry_name[:2]
         _entry_name = ' '.join(_entry_name)
@@ -539,14 +539,14 @@ def gen():  # generates a password for a new or an existing entry
         _entry_name = ' '.join(_entry_name)
     if _entry_name.startswith('/'):
         _entry_name = _entry_name.replace('/', '', 1)
-    if argument.startswith('gen update') or argument.startswith('gen -u'):
+    if argument_list[1] == 'update' or argument_list[1] == '-u':
         if not Path(f"{directory}{_entry_name}.gpg").is_file():
             print(f"\n\u001b[38;5;9merror: entry ({_entry_name}) does not exist\u001b[0m\n")
             s_exit(1)
     else:
         _username = str(input('username: '))
     _password = pass_gen()
-    if not argument.startswith('gen update') and not argument.startswith('gen -u'):
+    if not argument_list[1] == 'update' and not argument_list[1] == '-u':
         _url = str(input('url: '))
         _add_note = input('add a note to this entry? (y/N) ')
         _shm_folder, _shm_entry = shm_gen()
@@ -571,8 +571,7 @@ def gen():  # generates a password for a new or an existing entry
 
 
 def copy_data():  # copies a specified field of an entry to the clipboard
-    if argument == 'copy username' or argument == 'copy -u' or argument == 'copy password' or argument == 'copy -p' \
-            or argument == 'copy url' or argument == 'copy -l' or argument == 'copy note' or argument == 'copy -n':
+    if len(argument_list) < 3:
         entry_list_gen()
         _read_entry = str(input('entry to copy: '))
     else:
@@ -586,43 +585,43 @@ def copy_data():  # copies a specified field of an entry to the clipboard
     decrypt(directory + _read_entry, _shm_folder, _shm_entry)
     _copy_line = open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'r').readlines()
     if uname()[0] == 'Haiku':  # Haiku clipboard detection
-        if argument.startswith('copy username') or argument.startswith('copy -u'):
+        if argument_list[1] == 'username' or argument_list[1] == '-u':
             system('clipboard -c ' + "'" + _copy_line[1].replace('\n', '').replace("'", "'\\''") + "'")
-        elif argument.startswith('copy password') or argument.startswith('copy -p'):
+        elif argument_list[1] == 'password' or argument_list[1] == '-p':
             system('clipboard -c ' + "'" + _copy_line[0].replace('\n', '').replace("'", "'\\''") + "'")
-        elif argument.startswith('copy url') or argument.startswith('copy -l'):
+        elif argument_list[1] == 'url' or argument_list[1] == '-l':
             system('clipboard -c ' + "'" + _copy_line[2].replace('\n', '').replace("'", "'\\''") + "'")
-        elif argument.startswith('copy note') or argument.startswith('copy -n'):
+        elif argument_list[1] == 'note' or argument_list[1] == '-n':
             system('clipboard -c ' + "'" + _copy_line[3].replace('\n', '').replace("'", "'\\''") + "'")
         Popen('sleep 30; clipboard -r', shell=True)
     elif Path("/data/data/com.termux").exists():  # Termux (Android) clipboard detection
-        if argument.startswith('copy username') or argument.startswith('copy -u'):
+        if argument_list[1] == 'username' or argument_list[1] == '-u':
             system('termux-clipboard-set ' + "'" + _copy_line[1].replace('\n', '').replace("'", "'\\''") + "'")
-        elif argument.startswith('copy password') or argument.startswith('copy -p'):
+        elif argument_list[1] == 'password' or argument_list[1] == '-p':
             system('termux-clipboard-set ' + "'" + _copy_line[0].replace('\n', '').replace("'", "'\\''") + "'")
-        elif argument.startswith('copy url') or argument.startswith('copy -l'):
+        elif argument_list[1] == 'url' or argument_list[1] == '-l':
             system('termux-clipboard-set ' + "'" + _copy_line[2].replace('\n', '').replace("'", "'\\''") + "'")
-        elif argument.startswith('copy note') or argument.startswith('copy -n'):
+        elif argument_list[1] == 'note' or argument_list[1] == '-n':
             system('termux-clipboard-set ' + "'" + _copy_line[3].replace('\n', '').replace("'", "'\\''") + "'")
         Popen("sleep 30; termux-clipboard-set ''", shell=True)
     elif environ.get('WAYLAND_DISPLAY') == 'wayland-0':  # Wayland clipboard detection
-        if argument.startswith('copy username') or argument.startswith('copy -u'):
+        if argument_list[1] == 'username' or argument_list[1] == '-u':
             system('wl-copy ' + "'" + _copy_line[1].replace('\n', '').replace("'", "'\\''") + "'")
-        elif argument.startswith('copy password') or argument.startswith('copy -p'):
+        elif argument_list[1] == 'password' or argument_list[1] == '-p':
             system('wl-copy ' + "'" + _copy_line[0].replace('\n', '').replace("'", "'\\''") + "'")
-        elif argument.startswith('copy url') or argument.startswith('copy -l'):
+        elif argument_list[1] == 'url' or argument_list[1] == '-l':
             system('wl-copy ' + "'" + _copy_line[2].replace('\n', '').replace("'", "'\\''") + "'")
-        elif argument.startswith('copy note') or argument.startswith('copy -n'):
+        elif argument_list[1] == 'note' or argument_list[1] == '-n':
             system('wl-copy ' + "'" + _copy_line[3].replace('\n', '').replace("'", "'\\''") + "'")
         Popen('sleep 30; wl-copy -c', shell=True)
     else:  # X11 clipboard detection
-        if argument.startswith('copy username') or argument.startswith('copy -u'):
+        if argument_list[1] == 'username' or argument_list[1] == '-u':
             system('echo -n ' + "'" + _copy_line[1].replace('\n', '').replace("'", "'\\''") + "'" + ' | xclip -sel c')
-        elif argument.startswith('copy password') or argument.startswith('copy -p'):
+        elif argument_list[1] == 'password' or argument_list[1] == '-p':
             system('echo -n ' + "'" + _copy_line[0].replace('\n', '').replace("'", "'\\''") + "'" + ' | xclip -sel c')
-        elif argument.startswith('copy url') or argument.startswith('copy -l'):
+        elif argument_list[1] == 'url' or argument_list[1] == '-l':
             system('echo -n ' + "'" + _copy_line[2].replace('\n', '').replace("'", "'\\''") + "'" + ' | xclip -sel c')
-        elif argument.startswith('copy note') or argument.startswith('copy -n'):
+        elif argument_list[1] == 'note' or argument_list[1] == '-n':
             system('echo -n ' + "'" + _copy_line[3].replace('\n', '').replace("'", "'\\''") + "'" + ' | xclip -sel c')
         Popen("sleep 30; echo -n '' | xclip -sel c", shell=True)
     rmtree(f"{tmp_dir}{_shm_folder}")
