@@ -1,13 +1,13 @@
 #!/bin/bash
 
 # This script packages sshyp (from source) for various UNIX environments.
-# Dependencies: dpkg (packaging for Debian/Termux), rpmdevtools (packaging for Red Hat)
+# Dependencies (Arch Linux): dpkg (packaging for Debian/Termux), rpmdevtools (packaging for Red Hat), freebsd-pkg (packaging for FreeBSD)
 # NOTE It is recommended to instead use the latest officially packaged and tagged release.
 
 echo -e '\nOptions (please enter the number only):'
-echo -e '\nPackage Formats:\n\n1. Haiku\n2. Debian\n3. Red Hat\n4. Termux\n5. Generic (used for PKGBUILD/APKBUILD)'
-echo -e '\nBuild Scripts:\n\n6. Arch Linux (PKGBUILD)'
-echo -e '\nOther:\n\n7. All (generates all distribution packages (excluding Haiku, as this must be done on Haiku) and build scripts)\n'
+echo -e '\nPackage Formats:\n\n1. Haiku\n2. Debian\n3. Red Hat\n4. FreeBSD\n5. Termux\n6. Generic (used for PKGBUILD/APKBUILD)'
+echo -e '\nBuild Scripts:\n\n7. Arch Linux (PKGBUILD)'
+echo -e '\nOther:\n\n8. All (generates all distribution packages (excluding Haiku, as this must be done on Haiku) and build scripts)\n'
 read -n 1 -r -p "Distribution: " distro
 
 echo -e '\n\nThe value entered in this field will only affect the version reported to the package manager. The latest source is used regardless.\n'
@@ -16,7 +16,7 @@ read -r -p "Version number: " version
 echo -e '\nThe value entered in this field will only affect the revision number for build scripts.\n'
 read -r -p "Revision number: " revision
 
-if [ "$distro" == "6" ] || [ "$distro" == "7" ]; then
+if [ "$distro" == "7" ] || [ "$distro" == "8" ]; then
     echo -e '\nOptions (please enter the number only):'
     echo -e '\n1. GitHub Release Tag\n2. Local\n'
     read -r -p "Source (for build scripts): " source
@@ -74,7 +74,7 @@ urls {
     echo -e "\nHaiku packaging complete.\n"
 fi
 
-if [ "$distro" == "2" ] || [ "$distro" == "7" ]; then
+if [ "$distro" == "2" ] || [ "$distro" == "8" ]; then
     echo -e '\nPackaging for Debian...\n'
     mkdir -p packages/debiantemp/sshyp_"$version"-"$revision"_all/{DEBIAN,usr/share/man/man1}
     echo "Package: sshyp
@@ -97,7 +97,7 @@ Installed-Size: 35
     echo -e "\nDebian packaging complete.\n"
 fi
 
-if [ "$distro" == "4" ] || [ "$distro" == "7" ]; then
+if [ "$distro" == "5" ] || [ "$distro" == "8" ]; then
     echo -e '\nPackaging for Termux...\n'
     mkdir -p packages/termuxtemp/sshyp_"$version"-"$revision"_all_termux/{data,DEBIAN}
     mkdir -p packages/termuxtemp/sshyp_"$version"-"$revision"_all_termux/data/data/com.termux/files/usr/share/man/man1
@@ -121,7 +121,7 @@ Installed-Size: 35
     echo -e "\nTermux packaging complete.\n"
 fi
 
-if [ "$distro" == "3" ] || [ "$distro" == "5" ] || [ "$distro" == "6" ] || [ "$distro" == "7" ]; then
+if [ "$distro" == "3" ] || [ "$distro" == "4" ] || [ "$distro" == "6" ] || [ "$distro" == "7" ] || [ "$distro" == "8" ]; then
     echo -e '\nPackaging as generic...\n'
     mkdir -p packages/archtemp/usr/share/man/man1
     cp -r bin packages/archtemp/usr/
@@ -135,7 +135,7 @@ if [ "$distro" == "3" ] || [ "$distro" == "5" ] || [ "$distro" == "6" ] || [ "$d
     echo -e "\nGeneric packaging complete.\n"
 fi
 
-if [ "$distro" == "3" ] || [ "$distro" == "7" ]; then
+if [ "$distro" == "3" ] || [ "$distro" == "8" ]; then
     echo -e '\nPackaging for Red Hat...\n'
     rm -rf ~/rpmbuild
     rpmdev-setuptree
@@ -173,7 +173,53 @@ rm -rf ~/rpmbuild
 echo -e "\nRed Hat packaging complete.\n"
 fi
 
-if [ "$distro" == "6" ] || [ "$distro" == "7" ]; then
+if [ "$distro" == "4" ] || [ "$distro" == "8" ]; then
+    echo -e '\nPackaging for FreeBSD...\n'
+    mkdir -p packages/FreeBSDtemp/bin
+    tar xf packages/sshyp-"$version".tar.xz -C packages/FreeBSDtemp
+    ln -s /usr/local/bin/python3 packages/FreeBSDtemp/bin/python3
+    echo "name: sshyp
+version: \""$version"\"
+abi = \"FreeBSD:13:*\";
+arch = \"freebsd:13:*\";
+origin: security/sshyp
+comment: \"a password manager\"
+desc: \"a light-weight, self-hosted, synchronized password manager\"
+maintainer: <idgr at tutanota dot com>
+www: https://github.com/rwinkhart/sshyp
+prefix: /
+\"deps\" : {
+                   \"python\" : {
+                      \"origin\" : \"lang/python\"
+                   },
+                   \"gnupg\" : {
+                      \"origin\" : \"security/gnupg\"
+                   },
+                   \"nano\" : {
+                      \"origin\" : \"editors/nano\"
+                   },
+                   \"xclip\" : {
+                      \"origin\" : \"x11/xclip\"
+                   },
+                   \"wl-clipboard\" : {
+                      \"origin\" : \"x11/wl-clipboard\"
+                   },
+                },
+" > packages/FreeBSDtemp/+MANIFEST
+echo "/bin/python3
+/usr/bin/sshync.py
+/usr/bin/sshyp
+/usr/bin/sshypRemote.py
+/usr/share/doc/sshyp/changelog
+/usr/share/licenses/sshyp/license
+/usr/share/man/man1/sshyp.1.gz
+" > packages/FreeBSDtemp/plist
+pkg create -m packages/FreeBSDtemp/ -r packages/FreeBSDtemp/ -p packages/FreeBSDtemp/plist -o packages/
+rm -rf packages/FreeBSDtemp
+echo -e "\nFreeBSD packaging complete.\n"
+fi
+
+if [ "$distro" == "7" ] || [ "$distro" == "8" ]; then
     echo -e '\nGenerating PKGBUILD...'
     echo "# Maintainer: Randall Winkhart <idgr at tutanota dot com>
 
