@@ -426,7 +426,7 @@ def sync():  # calls sshync to sync changes to the user's server
 def add_entry():  # adds a new entry
     _shm_folder, _shm_entry = None, None  # sets base-line values to avoid errors
     if len(argument_list) < 3:
-        _entry_name = entry_name_fetch('\nname of entry: ')
+        _entry_name = entry_name_fetch('name of new entry: ')
     else:
         _entry_name = entry_name_fetch(2)
     if argument_list[1] == 'note' or argument_list[1] == '-n':
