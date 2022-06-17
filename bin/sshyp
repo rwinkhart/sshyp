@@ -91,6 +91,21 @@ def replace_line(file_name, line_num, text):  # replaces text in a given line wi
     open(file_name, 'w').writelines(_lines)
 
 
+def entry_name_fetch(_entry_name_location):
+    if _entry_name_location == -1:
+        _entry_name = str(input('entry name: '))
+    elif _entry_name_location == 0:
+        _entry_name = argument
+    else:
+        _entry_name_split = argument.split(' ')
+        del _entry_name_split[:_entry_name_location]
+        _entry_name = ' '.join(_entry_name_split)
+    if _entry_name.startswith('/'):
+        return _entry_name.replace('/', '', 1)
+    else:
+        return _entry_name
+
+
 def shm_gen():  # generates a random temporary folder for security and returns random names for the folder and temp file
     _shm_folder_gen = ''.join(random.SystemRandom().choice(string.ascii_letters + string.digits)
                               for _ in range(random.randint(10, 30)))
@@ -332,14 +347,14 @@ def print_info():  # prints help text based on argument
 
 
 def no_arg():  # displays a list of entries and gives an option to select one for viewing
-    print("\nFor a list of usable commands, run 'sshyp help'.")
+    print("\nfor a list of usable commands, run 'sshyp help'")
     entry_list_gen()
-    _read_entry = str(input('entry to read: '))
-    if not Path(f"{directory}{_read_entry}.gpg").exists():
-        print(f"\n\u001b[38;5;9merror: entry ({_read_entry}) does not exist\u001b[0m\n")
+    _entry_name = entry_name_fetch(-1)
+    if not Path(f"{directory}{_entry_name}.gpg").exists():
+        print(f"\n\u001b[38;5;9merror: entry ({_entry_name}) does not exist\u001b[0m\n")
         s_exit(1)
     _shm_folder, _shm_entry = shm_gen()
-    decrypt(directory + _read_entry, _shm_folder, _shm_entry)
+    decrypt(directory + _entry_name, _shm_folder, _shm_entry)
     entry_reader(f"{tmp_dir}{_shm_folder}/{_shm_entry}")
     rmtree(f"{tmp_dir}{_shm_folder}")
 
@@ -410,14 +425,10 @@ def sync():  # calls sshync to sync changes to the user's server
 
 def add_entry():  # adds a new entry
     _shm_folder, _shm_entry = None, None  # sets base-line values to avoid errors
-    if argument == 'add note' or argument == 'add -n' or argument == 'add password' or argument == 'add -p':
-        _entry_name = str(input('\nname of entry: '))
+    if len(argument_list) < 3:
+        _entry_name = entry_name_fetch(-1)
     else:
-        _entry_name = argument.split(' ')
-        del _entry_name[:2]
-        _entry_name = ' '.join(_entry_name)
-    if _entry_name.startswith('/'):
-        _entry_name = _entry_name.replace('/', '', 1)
+        _entry_name = entry_name_fetch(2)
     if argument_list[1] == 'note' or argument_list[1] == '-n':
         _shm_folder, _shm_entry = shm_gen()
         system(f"nano {tmp_dir}{_shm_folder}/{_shm_entry}-n")
@@ -481,16 +492,11 @@ def rename():  # renames an entry or folder
 
 def edit():  # edits the contents of an entry
     _shm_folder, _shm_entry = None, None  # sets base-line values to avoid errors
-    if argument == 'edit username' or argument == 'edit -u' or argument == 'edit password' or argument == 'edit -p' or \
-            argument == 'edit url' or argument == 'edit -l' or argument == 'edit note' or argument == 'edit -n':
+    if len(argument_list) < 3:
         entry_list_gen()
-        _entry_name = str(input('entry to edit: '))
+        _entry_name = entry_name_fetch(-1)
     else:
-        _entry_name = argument.split(' ')
-        del _entry_name[:2]
-        _entry_name = ' '.join(_entry_name)
-    if _entry_name.startswith('/'):
-        _entry_name = _entry_name.replace('/', '', 1)
+        _entry_name = entry_name_fetch(2)
     if not Path(f"{directory}{_entry_name}.gpg").is_file():
         print(f"\n\u001b[38;5;9merror: entry ({_entry_name}) does not exist\u001b[0m\n")
         s_exit(1)
@@ -524,26 +530,15 @@ def edit():  # edits the contents of an entry
 def gen():  # generates a password for a new or an existing entry
     _username, _url, _notes = None, None, None  # sets base-line values to avoid errors
     if argument == 'gen update' or argument == 'gen -u' or argument == 'gen':
-        if argument == 'gen update' or argument == 'gen -u':
-            entry_list_gen()
-        else:
-            print()
-        _entry_name = str(input('name of service: '))
+        entry_list_gen()
+        _entry_name = entry_name_fetch(-1)
     elif argument_list[1] == 'update' or argument_list[1] == '-u':
-        _entry_name = argument.split(' ')
-        del _entry_name[:2]
-        _entry_name = ' '.join(_entry_name)
-    else:
-        _entry_name = argument.split(' ')
-        del _entry_name[:1]
-        _entry_name = ' '.join(_entry_name)
-    if _entry_name.startswith('/'):
-        _entry_name = _entry_name.replace('/', '', 1)
-    if argument_list[1] == 'update' or argument_list[1] == '-u':
+        _entry_name = entry_name_fetch(2)
         if not Path(f"{directory}{_entry_name}.gpg").is_file():
             print(f"\n\u001b[38;5;9merror: entry ({_entry_name}) does not exist\u001b[0m\n")
             s_exit(1)
     else:
+        _entry_name = entry_name_fetch(1)
         _username = str(input('username: '))
     _password = pass_gen()
     if not argument_list[1] == 'update' and not argument_list[1] == '-u':
@@ -573,16 +568,14 @@ def gen():  # generates a password for a new or an existing entry
 def copy_data():  # copies a specified field of an entry to the clipboard
     if len(argument_list) < 3:
         entry_list_gen()
-        _read_entry = str(input('entry to copy: '))
+        _entry_name = entry_name_fetch(-1)
     else:
-        _read_entry = argument.split(' ')
-        del _read_entry[:2]
-        _read_entry = ' '.join(_read_entry)
-    if not Path(f"{directory}{_read_entry}.gpg").is_file():
-        print(f"\n\u001b[38;5;9merror: entry ({_read_entry}) does not exist\u001b[0m\n")
+        _entry_name = entry_name_fetch(2)
+    if not Path(f"{directory}{_entry_name}.gpg").is_file():
+        print(f"\n\u001b[38;5;9merror: entry ({_entry_name}) does not exist\u001b[0m\n")
         s_exit(1)
     _shm_folder, _shm_entry = shm_gen()
-    decrypt(directory + _read_entry, _shm_folder, _shm_entry)
+    decrypt(directory + _entry_name, _shm_folder, _shm_entry)
     _copy_line = open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'r').readlines()
     if uname()[0] == 'Haiku':  # Haiku clipboard detection
         if argument_list[1] == 'username' or argument_list[1] == '-u':
@@ -630,13 +623,9 @@ def copy_data():  # copies a specified field of an entry to the clipboard
 def remove_data():  # deletes an entry from the server and flags it for local deletion on sync
     if argument == 'shear' or argument == '-rm':
         entry_list_gen()
-        _entry_name = str(input('entry/folder to shear: '))
+        _entry_name = entry_name_fetch(-1)
     else:
-        _entry_name = argument.split(' ')
-        del _entry_name[:1]
-        _entry_name = ' '.join(_entry_name)
-    if _entry_name.startswith('/'):
-        _entry_name = _entry_name.replace('/', '', 1)
+        _entry_name = entry_name_fetch(1)
     decrypt(path.expanduser('~/.config/sshyp/lock.gpg'), 0, 0)
     system(f"ssh -i '{path.expanduser('~/.ssh/sshyp')}' -p {port} {username_ssh}@{ip} \"cd /bin; python -c "
            f"'import sshypRemote; sshypRemote.delete(\"'\"{_entry_name}\"'\")'\"")
