@@ -8,10 +8,11 @@ As such, it is being crowned "v1.0.0", and is considered a stable base for futur
 Features:
 
 - sshyp has been modified to run on Haiku, an open-source re-implementation of BeOS
+    ^ new package formats have been added for Haiku, FreeBSD, and Red Hat distributions (such as Fedora)
 - the entry format has been changed to support entries created in pass/password-store
     ^ this change requires existing entry libraries to be converted - see the sshyp v1.0.0 release page on GitHub for a conversion script
 - majorly overhauled visual experience for sshyp
-    ^ this includes a new entry list, a new entry readout, colored output, and more!
+    ^ this includes a new entry list, a new entry readout, colored output, ascii art, and more!
 - entries can now optionally be passed as arguments, directly
     ^ as opposed to the user being prompted for an entry name after running a command
 
@@ -29,6 +30,7 @@ Changes:
 - the clipboard now automatically clears after 30 seconds
 - sshyp server no longer needs to create copies of its libraries in ~/
 - added more and improved existing exceptions
+- the lock file is now decrypted to /dev/null
 - ...and lots of minor (under the hood) changes!
 
 <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
@@ -38,6 +40,5 @@ https://raw.githubusercontent.com/rwinkhart/sshyp/main/extra/changelog-total
 
 Legend:
 
-** = feature/change not yet finished/implemented
 -  = feature/change implemented and pushed upstream
 ^  = note regarding the above feature/change

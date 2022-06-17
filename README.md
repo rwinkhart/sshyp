@@ -1,5 +1,5 @@
 # sshyp
-A very simple self-hosted, synchronized password manager for UNIX systems (currently Haiku/Linux). Alternative to (and compatible with) pass/password-store.
+A very simple self-hosted, synchronized password manager for UNIX(-like) systems (currently Haiku/FreeBSD/Linux). Alternative to (and compatible with) pass/password-store.
 
 Compatible with entries created by pass/password-store.
 
@@ -22,7 +22,7 @@ What sshyp can do:
 - generate new, secure passwords to the user's choice in length and complexity
 - securely sync said passwords and notes seamlessly between devices
 - everything above with entries created by pass/password-store!
-- everything above on Haiku, Linux, and Termux (an Android terminal emulator)!
+- everything above on Haiku, FreeBSD, Linux, and Termux (an Android terminal emulator)!
 
 What sshyp will likely do:
 
@@ -31,7 +31,7 @@ What sshyp will likely do:
 
 What sshyp definitely won't do:
 
-- Non-UNIX support, e.g. Windows (I'd be happy to link to third-party ports, if someone were to make them)
+- Non-UNIX(-like) support, e.g. Windows (I'd be happy to link to third-party ports, if someone were to make them)
 
 # Installation
 Arch Linux (all ISAs)
@@ -46,7 +46,7 @@ cd sshyp
 makepkg -si
 ```
 
-Pre-built packages exist for Haiku, Arch Linux, Debian Linux, and Termux. These can be downloaded from the releases page.
+Pre-built packages exist for Haiku, FreeBSD, Arch Linux, Debian Linux, Red Hat Linux, and Termux. These can be downloaded from the releases page.
 
 # Building
 Since sshyp is written entirely in Python, it doesn't need to be compiled. It does, however, need to be packaged for installation.
@@ -59,7 +59,9 @@ cd sshyp
 ./package.sh
 ```
 
-The packaging script has been tested on Arch Linux with dpkg as a dependency for Debian and Termux packaging.
+The packaging script has been tested on Arch Linux with "dpkg" as a dependency for Debian and Termux packaging and "freebsd-pkg" as a dependency for FreeBSD packaging.
+
+Haiku packaging must be done from within Haiku.
 
 The AUR version and the packages attatched to the release tags were already packaged using this script.
 
