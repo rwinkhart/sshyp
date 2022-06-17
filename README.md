@@ -65,7 +65,7 @@ Haiku packaging must be done from within Haiku.
 
 The AUR version and the packages attatched to the release tags were already packaged using this script.
 
-Currently, the script can create packages for Haiku, Arch Linux (PKGBUILD), Debian Linux, Termux, and generic. Packaging for other systems coming soon.
+Currently, the script can create packages for Haiku, FreeBSD, Arch Linux (PKGBUILD), Debian Linux, Red Hat Linux, Termux, and generic. Packaging for other systems coming soon.
 
 # Usage
 Upon initial installation (on both the server and client devices), be sure to run:
