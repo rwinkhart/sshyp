@@ -464,17 +464,13 @@ def add_folder():  # creates a new folder
 
 def rename():  # renames an entry or folder
     if argument == 'edit rename' or argument == 'edit relocate' or argument == 'edit -r':
-        _entry_name = str(input('entry/folder to rename/relocate: '))
+        _entry_name = entry_name_fetch('entry/folder to rename/relocate: ')
     else:
-        _entry_name = argument.split(' ')
-        del _entry_name[:2]
-        _entry_name = ' '.join(_entry_name)
+        _entry_name = entry_name_fetch(2)
     if not Path(f"{directory}{_entry_name}.gpg").exists():
         print(f"\n\u001b[38;5;9merror: entry ({_entry_name}) does not exist\u001b[0m\n")
         s_exit(1)
     _new_name = str(input('new name: '))
-    if _entry_name.startswith('/'):
-        _entry_name = _entry_name.replace('/', '', 1)
     if _entry_name.endswith('/'):
         move(f"{directory}{_entry_name}", f"{directory}{_new_name}")
         system(f"ssh -i '{path.expanduser('~/.ssh/sshyp')}' -p {port} {username_ssh}@{ip} \"mkdir -p '{directory_ssh}"
