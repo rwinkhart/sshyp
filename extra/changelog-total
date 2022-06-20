@@ -27,6 +27,7 @@ Changes:
 - rename function now properly allows for renaming folders
 - renaming an entry/folder will now properly delete the old entry/folder from the server
 - entry previews at the time of entry creation/editing no longer require entering the gpg password more times than necessary
+- entries will no longer be overwritten if attempting to create a new entry that uses an already existing name
 - the clipboard now automatically clears after 30 seconds
 - sshyp server no longer needs to create copies of its libraries in ~/
 - added more and improved existing exceptions

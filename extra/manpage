@@ -1,4 +1,4 @@
-.TH sshyp 1 "17 June 2022" "v1.0.0" "sshyp man page"
+.TH sshyp 1 "20 June 2022" "v1.0.0" "sshyp man page"
 .SH NAME
 sshyp \- A very simple self-hosted, synchronized password manager for UNIX(-like) systems. Alternative to (and compatible with) pass/password-store.
 .SH SYNOPSIS
@@ -73,7 +73,7 @@ sshyp operates on a client-server model, and thus requires you to have access to
 The sshyp package includes modes for operating on both client and server devices, so only one package is necessary.
 
 Server setup:
-    Configure an openssh server (if sshyp was installed from the Debian package, the ssh server was not installed as a dependency and needs to be installed manually)
+    Configure an OpenSSH server (if sshyp was installed from the Debian package, the ssh server was not installed as a dependency and needs to be installed manually)
     Allow remote access to the SSH server w/public key authentication (disabling password-only authentication recommended)
     Install sshyp
     Run "sshyp tweak" and set the device type as server
@@ -82,7 +82,7 @@ Server setup:
 Client setup:
     Install sshyp
     Run "sshyp tweak" and follow the prompts
-    Copy the generated public SSH key to the server using preferred method (manually adding to authorized_keys, ssh-copy-id, etc.)
+    Copy the generated public SSH key (located at ~/.ssh/sshyp.pub) to the server using preferred method (manually adding to authorized_keys, ssh-copy-id, etc.)
     If you already have entries on the server, sync them using "sshyp sync"
     Done!
 
