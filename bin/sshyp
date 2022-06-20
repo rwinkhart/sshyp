@@ -130,7 +130,12 @@ def pass_gen():
         if __special < __min_special:
             __gen = _pass_gen_function(__complexity, __length)
         return __gen
-    _length = int(input('password length: '))
+    try:
+        _length = int(input('password length: '))
+    except ValueError:
+        print(f"\n\u001b[38;5;9merror: a non-integer value was input for password length\u001b[0m\n")
+        _gen = pass_gen()
+        return _gen
     if _length > 840:
         _length = 840
         print('\n\u001b[38;5;9mpassword length has been limited to the maximum of 840 characters\u001b[0m\n')
