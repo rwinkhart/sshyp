@@ -8,7 +8,7 @@ As such, it is being crowned "v1.0.0", and is considered a stable base for futur
 Features:
 
 - sshyp has been modified to run on Haiku, an open-source re-implementation of BeOS
-    ^ new package formats have been added for Haiku, FreeBSD, and Red Hat distributions (such as Fedora)
+    ^ new package formats have been added for Haiku, FreeBSD, and Fedora Linux
 - the entry format has been changed to support entries created in pass/password-store
     ^ this change requires existing entry libraries to be converted - see the sshyp v1.0.0 release page on GitHub for a conversion script
 - majorly overhauled visual experience for sshyp

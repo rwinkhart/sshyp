@@ -47,7 +47,7 @@ cd sshyp
 makepkg -si
 ```
 
-Pre-built packages exist for Haiku, FreeBSD, Arch Linux, Debian Linux, Red Hat Linux, and Termux. These can be downloaded from the releases page.
+Pre-built packages exist for Haiku, FreeBSD, Arch Linux, Debian Linux, Fedora Linux, and Termux. These can be downloaded from the releases page.
 
 # Building
 Since sshyp is written entirely in Python, it doesn't need to be compiled. It does, however, need to be packaged for installation.
@@ -66,7 +66,7 @@ Haiku packaging must be done from within Haiku.
 
 The AUR version and the packages attatched to the release tags were already packaged using this script.
 
-Currently, the script can create packages for Haiku, FreeBSD, Arch Linux (PKGBUILD), Debian Linux, Red Hat Linux, Termux, and generic. Packaging for other systems coming soon.
+Currently, the script can create packages for Haiku, FreeBSD, Arch Linux (PKGBUILD), Debian Linux, Fedora Linux, Termux, and generic. Packaging for other systems coming soon.
 
 # Usage
 Upon initial installation (on both the server and client devices), be sure to run:

@@ -5,7 +5,7 @@
 # NOTE It is recommended to instead use the latest officially packaged and tagged release.
 
 echo -e '\nOptions (please enter the number only):'
-echo -e '\nPackage Formats:\n\n1. Haiku\n2. Debian\n3. Red Hat\n4. FreeBSD\n5. Termux\n6. Generic (used for PKGBUILD/APKBUILD)'
+echo -e '\nPackage Formats:\n\n1. Haiku\n2. Debian&Ubuntu Linux\n3. Fedora Linux\n4. FreeBSD\n5. Termux\n6. Generic (used for PKGBUILD/APKBUILD)'
 echo -e '\nBuild Scripts:\n\n7. Arch Linux (PKGBUILD)'
 echo -e '\nOther:\n\n8. All (generates all distribution packages (excluding Haiku, as this must be done on Haiku) and build scripts)\n'
 read -n 1 -r -p "Distribution: " distro
@@ -136,7 +136,7 @@ if [ "$distro" == "3" ] || [ "$distro" == "4" ] || [ "$distro" == "6" ] || [ "$d
 fi
 
 if [ "$distro" == "3" ] || [ "$distro" == "8" ]; then
-    echo -e '\nPackaging for Red Hat...\n'
+    echo -e '\nPackaging for Fedora...\n'
     rm -rf ~/rpmbuild
     rpmdev-setuptree
     cp packages/sshyp-"$version".tar.xz ~/rpmbuild/SOURCES
@@ -170,7 +170,7 @@ cp -r %{_sourcedir}/usr %{buildroot}
 rpmbuild -bb ~/rpmbuild/SPECS/sshyp.spec
 mv ~/rpmbuild/RPMS/noarch/* packages/
 rm -rf ~/rpmbuild
-echo -e "\nRed Hat packaging complete.\n"
+echo -e "\nFedora packaging complete.\n"
 fi
 
 if [ "$distro" == "4" ] || [ "$distro" == "8" ]; then
