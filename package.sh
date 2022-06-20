@@ -86,7 +86,7 @@ Maintainer: Randall Winkhart <idgr at tutanota dot com>
 Description: A light-weight, self-hosted, synchronized password manager
 Depends: python3, gnupg, openssh-client, nano, xclip, wl-clipboard
 Priority: optional
-Installed-Size: 35
+Installed-Size: 185
 " > packages/debiantemp/sshyp_"$version"-"$revision"_all/DEBIAN/control
     cp -r bin packages/debiantemp/sshyp_"$version"-"$revision"_all/usr/
     cp -r share packages/debiantemp/sshyp_"$version"-"$revision"_all/usr/
@@ -110,7 +110,7 @@ Maintainer: Randall Winkhart <idgr at tutanota dot com>
 Description: A light-weight, self-hosted, synchronized password manager
 Depends: python, gnupg, openssh, nano, termux-api, termux-am
 Priority: optional
-Installed-Size: 35
+Installed-Size: 185
 " > packages/termuxtemp/sshyp_"$version"-"$revision"_all_termux/DEBIAN/control
     cp -r bin packages/termuxtemp/sshyp_"$version"-"$revision"_all_termux/data/data/com.termux/files/usr/
     cp -r share packages/termuxtemp/sshyp_"$version"-"$revision"_all_termux/data/data/com.termux/files/usr/
