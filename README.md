@@ -1,4 +1,5 @@
-# sshyp
+![sshyp](https://github.com/rwinkhart/sshyp/blob/main/extra/sshyp-linux-banner.png)
+
 A very simple self-hosted, synchronized password manager for UNIX(-like) systems (currently Haiku/FreeBSD/Linux). Alternative to (and compatible with) pass/password-store.
 
 Compatible with entries created by pass/password-store.
