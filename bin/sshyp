@@ -528,11 +528,6 @@ def gen():  # generates a password for a new or an existing entry
     _username, _url, _notes = None, None, None  # sets base-line values to avoid errors
     if argument == 'gen update' or argument == 'gen -u' or argument == 'gen':
         _entry_name = entry_name_fetch('name of entry: ')
-        if argument == 'gen':
-            if Path(f"{directory}{_entry_name}.gpg").is_file():
-                print(f"\n\u001b[38;5;9merror: entry ({_entry_name}) already exists\u001b[0m\n")
-                s_exit(1)
-            _username = str(input('username: '))
     elif argument_list[1] == 'update' or argument_list[1] == '-u':
         _entry_name = entry_name_fetch(2)
         if not Path(f"{directory}{_entry_name}.gpg").is_file():
@@ -540,12 +535,12 @@ def gen():  # generates a password for a new or an existing entry
             s_exit(1)
     else:
         _entry_name = entry_name_fetch(1)
+    if len(argument_list) == 1 or (not argument_list[1] == 'update' and not argument_list[1] == '-u'):
         if Path(f"{directory}{_entry_name}.gpg").is_file():
             print(f"\n\u001b[38;5;9merror: entry ({_entry_name}) already exists\u001b[0m\n")
             s_exit(1)
         _username = str(input('username: '))
-    _password = pass_gen()
-    if len(argument_list) == 1 or (not argument_list[1] == 'update' and not argument_list[1] == '-u'):
+        _password = pass_gen()
         _url = str(input('url: '))
         _add_note = input('add a note to this entry? (y/N) ')
         _shm_folder, _shm_entry = shm_gen()
@@ -560,6 +555,7 @@ def gen():  # generates a password for a new or an existing entry
         entry_reader(f"{tmp_dir}{_shm_folder}/{_shm_entry}")
         encrypt(_shm_folder, _shm_entry, _entry_name)
     else:
+        _password = pass_gen()
         _shm_folder, _shm_entry = shm_gen()
         decrypt(directory + _entry_name, _shm_folder, _shm_entry)
         replace_line(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 0, _password + '\n')
