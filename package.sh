@@ -1,13 +1,14 @@
 #!/bin/bash
 
-# This script packages sshyp (from source) for various UNIX environments.
-# Dependencies (Arch Linux): dpkg (packaging for Debian/Termux), rpmdevtools (packaging for Red Hat), freebsd-pkg (packaging for FreeBSD)
+# This script packages sshyp (from source) for various UNIX(-like) environments.
+# Dependencies (Arch Linux): dpkg (packaging for Debian/Termux), freebsd-pkg (packaging for FreeBSD)
+# Dependencies (Fedora) (can only package for self): rpmdevtools
 # NOTE It is recommended to instead use the latest officially packaged and tagged release.
 
 echo -e '\nOptions (please enter the number only):'
 echo -e '\nPackage Formats:\n\n1. Haiku\n2. Debian&Ubuntu Linux\n3. Fedora Linux\n4. FreeBSD\n5. Termux\n6. Generic (used for PKGBUILD/APKBUILD)'
 echo -e '\nBuild Scripts:\n\n7. Arch Linux (PKGBUILD)'
-echo -e '\nOther:\n\n8. All (generates all distribution packages (excluding Haiku, as this must be done on Haiku) and build scripts)\n'
+echo -e '\nOther:\n\n8. All (generates all distribution packages (excluding Haiku and Fedora, as these must be packaged on their respective distributions) and build scripts)\n'
 read -n 1 -r -p "Distribution: " distro
 
 echo -e '\n\nThe value entered in this field will only affect the version reported to the package manager. The latest source is used regardless.\n'
