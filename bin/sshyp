@@ -545,7 +545,7 @@ def gen():  # generates a password for a new or an existing entry
             s_exit(1)
         _username = str(input('username: '))
     _password = pass_gen()
-    if len(argument_list) > 1 and (not argument_list[1] == 'update' and not argument_list[1] == '-u'):
+    if len(argument_list) == 1 or (not argument_list[1] == 'update' and not argument_list[1] == '-u'):
         _url = str(input('url: '))
         _add_note = input('add a note to this entry? (y/N) ')
         _shm_folder, _shm_entry = shm_gen()
