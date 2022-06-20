@@ -136,7 +136,7 @@ if [ "$distro" == "3" ] || [ "$distro" == "4" ] || [ "$distro" == "6" ] || [ "$d
     echo -e "\nGeneric packaging complete.\n"
 fi
 
-if [ "$distro" == "3" ] || [ "$distro" == "8" ]; then
+if [ "$distro" == "3" ]; then
     echo -e '\nPackaging for Fedora...\n'
     rm -rf ~/rpmbuild
     rpmdev-setuptree
