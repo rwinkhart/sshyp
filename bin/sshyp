@@ -174,17 +174,16 @@ def edit_note(_shm_folder, _shm_entry):
 def copy_name_check(_port, _username_ssh, _ip, _client_device_name):
     _command = f"ssh -o ConnectTimeout=3 -i '{path.expanduser('~/.ssh/sshyp')}' -p {_port} {_username_ssh}@{_ip} " \
                f"\"touch '/home/{_username_ssh}/.config/sshyp/devices/{_client_device_name}'\""
-    _output = Popen(_command, shell=True, stdout=PIPE, stderr=STDOUT, close_fds=True)
-    _block = _output.communicate()[0].strip()
-    if _output.returncode != 0:
+    try:
+        run(_command, shell=True, stderr=PIPE, check=True, close_fds=True)
+    except CalledProcessError:
         print('\n\u001b[38;5;9mwarning: ssh connection could not be made - ensure the public key (~/.ssh/sshyp.pub) is '
               'registered on the remote server and that the entered ip, port, and username are correct\n\nsyncing '
               'functionality will be disabled until this is addressed\u001b[0m\n')
         open(path.expanduser('~/.config/sshyp/ssh-error'), 'w').write('1')
         return 1
-    else:
-        open(path.expanduser('~/.config/sshyp/ssh-error'), 'w').write('0')
-        return 0
+    open(path.expanduser('~/.config/sshyp/ssh-error'), 'w').write('0')
+    return 0
 
 # argument-specific functions
 
