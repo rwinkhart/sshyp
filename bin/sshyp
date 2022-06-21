@@ -8,7 +8,7 @@ import random
 from shutil import get_terminal_size, move, rmtree
 import sshync
 import string
-from subprocess import CalledProcessError, Popen, PIPE, run, STDOUT
+from subprocess import CalledProcessError, Popen, PIPE, run
 from sys import argv, exit as s_exit
 from textwrap import fill
 
@@ -589,7 +589,7 @@ def copy_data():  # copies a specified field of an entry to the clipboard
             system('clipboard -c ' + "'" + _copy_line[2].replace('\n', '').replace("'", "'\\''") + "'")
         elif argument_list[1] == 'note' or argument_list[1] == '-n':
             system('clipboard -c ' + "'" + _copy_line[3].replace('\n', '').replace("'", "'\\''") + "'")
-        Popen('sleep 30; clipboard -r', shell=True)
+        Popen('sleep 30; clipboard -r', shell=True, close_fds=True)
     elif Path("/data/data/com.termux").exists():  # Termux (Android) clipboard detection
         if argument_list[1] == 'username' or argument_list[1] == '-u':
             system('termux-clipboard-set ' + "'" + _copy_line[1].replace('\n', '').replace("'", "'\\''") + "'")
@@ -599,7 +599,7 @@ def copy_data():  # copies a specified field of an entry to the clipboard
             system('termux-clipboard-set ' + "'" + _copy_line[2].replace('\n', '').replace("'", "'\\''") + "'")
         elif argument_list[1] == 'note' or argument_list[1] == '-n':
             system('termux-clipboard-set ' + "'" + _copy_line[3].replace('\n', '').replace("'", "'\\''") + "'")
-        Popen("sleep 30; termux-clipboard-set ''", shell=True)
+        Popen("sleep 30; termux-clipboard-set ''", shell=True, close_fds=True)
     elif environ.get('WAYLAND_DISPLAY') == 'wayland-0':  # Wayland clipboard detection
         if argument_list[1] == 'username' or argument_list[1] == '-u':
             system('wl-copy ' + "'" + _copy_line[1].replace('\n', '').replace("'", "'\\''") + "'")
@@ -609,7 +609,7 @@ def copy_data():  # copies a specified field of an entry to the clipboard
             system('wl-copy ' + "'" + _copy_line[2].replace('\n', '').replace("'", "'\\''") + "'")
         elif argument_list[1] == 'note' or argument_list[1] == '-n':
             system('wl-copy ' + "'" + _copy_line[3].replace('\n', '').replace("'", "'\\''") + "'")
-        Popen('sleep 30; wl-copy -c', shell=True)
+        Popen('sleep 30; wl-copy -c', shell=True, close_fds=True)
     else:  # X11 clipboard detection
         if argument_list[1] == 'username' or argument_list[1] == '-u':
             system('echo -n ' + "'" + _copy_line[1].replace('\n', '').replace("'", "'\\''") + "'" + ' | xclip -sel c')
@@ -619,7 +619,7 @@ def copy_data():  # copies a specified field of an entry to the clipboard
             system('echo -n ' + "'" + _copy_line[2].replace('\n', '').replace("'", "'\\''") + "'" + ' | xclip -sel c')
         elif argument_list[1] == 'note' or argument_list[1] == '-n':
             system('echo -n ' + "'" + _copy_line[3].replace('\n', '').replace("'", "'\\''") + "'" + ' | xclip -sel c')
-        Popen("sleep 30; echo -n '' | xclip -sel c", shell=True)
+        Popen("sleep 30; echo -n '' | xclip -sel c", shell=True, close_fds=True)
     rmtree(f"{tmp_dir}{_shm_folder}")
 
 
