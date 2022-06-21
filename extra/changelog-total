@@ -1,3 +1,17 @@
+sshyp v1.0.1
+
+The Polished Trotters Update - Patch 1
+
+This is a hotfix for the Haiku decryption bug.
+
+Changes:
+
+- subprocess.Popen has been replaced with subprocess.run where applicable
+- stdout is no longer captured with any subprocess.Popen or subprocess.run usages
+    ^ this fixes decryption on Haiku
+
+<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+
 sshyp v1.0.0
 
 The Polished Trotters Update
