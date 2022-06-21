@@ -8,7 +8,7 @@ import random
 from shutil import get_terminal_size, move, rmtree
 import sshync
 import string
-from subprocess import Popen, PIPE, STDOUT
+from subprocess import CalledProcessError, Popen, PIPE, run, STDOUT
 from sys import argv, exit as s_exit
 from textwrap import fill
 
@@ -155,9 +155,9 @@ def decrypt(_entry_dir, _shm_folder, _shm_entry):
         _command = f"{gpg} -qd --output /dev/null {path.expanduser('~/.config/sshyp/lock.gpg')}"
     else:
         _command = f"{gpg} -qd --output {tmp_dir}{_shm_folder}/{_shm_entry} {_entry_dir}.gpg"
-    _output = Popen(_command, shell=True, stdout=PIPE, stderr=STDOUT, close_fds=True)
-    _block = _output.communicate()[0].strip()
-    if _output.returncode == 2:
+    try:
+        run(_command, shell=True, stderr=PIPE, check=True, close_fds=True)
+    except CalledProcessError:
         print(f"\n\u001b[38;5;9merror: could not decrypt - ensure the correct gpg key is present\u001b[0m\n")
         s_exit(1)
 
