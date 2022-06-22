@@ -358,7 +358,7 @@ def no_arg():  # displays a list of entries and gives an option to select one fo
         print(f"\n\u001b[38;5;9merror: entry ({_entry_name}) does not exist\u001b[0m\n")
         s_exit(1)
     _shm_folder, _shm_entry = shm_gen()
-    decrypt(directory + _entry_name, _shm_folder, _shm_entry, gpg, tmp_dir)
+    decrypt(directory + _entry_name, _shm_folder, _shm_entry, gpg)
     entry_reader(f"{tmp_dir}{_shm_folder}/{_shm_entry}")
     rmtree(f"{tmp_dir}{_shm_folder}")
 
@@ -368,7 +368,7 @@ def read_shortcut():  # shortcut to quickly read an entry
         print(f"\n\u001b[38;5;9merror: entry ({argument.replace('/', '', 1)}) does not exist\u001b[0m\n")
         s_exit(1)
     _shm_folder, _shm_entry = shm_gen()
-    decrypt(directory + argument.replace('/', '', 1), _shm_folder, _shm_entry, gpg, tmp_dir)
+    decrypt(directory + argument.replace('/', '', 1), _shm_folder, _shm_entry, gpg)
     entry_reader(f"{tmp_dir}{_shm_folder}/{_shm_entry}")
     rmtree(f"{tmp_dir}{_shm_folder}")
 
@@ -502,7 +502,7 @@ def edit():  # edits the contents of an entry
         print(f"\n\u001b[38;5;9merror: entry ({_entry_name}) does not exist\u001b[0m\n")
         s_exit(1)
     _shm_folder, _shm_entry = shm_gen()
-    decrypt(directory + _entry_name, _shm_folder, _shm_entry, gpg, tmp_dir)
+    decrypt(directory + _entry_name, _shm_folder, _shm_entry, gpg)
 
     # compatibility check for GNU pass entries (ensuring they have at least four lines)
     _lines = open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'r').readlines()
@@ -561,7 +561,7 @@ def gen():  # generates a password for a new or an existing entry
     else:
         _password = pass_gen()
         _shm_folder, _shm_entry = shm_gen()
-        decrypt(directory + _entry_name, _shm_folder, _shm_entry, gpg, tmp_dir)
+        decrypt(directory + _entry_name, _shm_folder, _shm_entry, gpg)
         replace_line(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 0, _password + '\n')
         remove(f"{directory}{_entry_name}.gpg")
         print('\n\u001b[1mentry preview:\u001b[0m')
@@ -578,7 +578,7 @@ def copy_data():  # copies a specified field of an entry to the clipboard
         print(f"\n\u001b[38;5;9merror: entry ({_entry_name}) does not exist\u001b[0m\n")
         s_exit(1)
     _shm_folder, _shm_entry = shm_gen()
-    decrypt(directory + _entry_name, _shm_folder, _shm_entry, gpg, tmp_dir)
+    decrypt(directory + _entry_name, _shm_folder, _shm_entry, gpg)
     _copy_line = open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'r').readlines()
     if uname()[0] == 'Haiku':  # Haiku clipboard detection
         if argument_list[1] == 'username' or argument_list[1] == '-u':
@@ -628,7 +628,7 @@ def remove_data():  # deletes an entry from the server and flags it for local de
         _entry_name = entry_name_fetch('entry/folder to shear: ')
     else:
         _entry_name = entry_name_fetch(1)
-    decrypt(path.expanduser('~/.config/sshyp/lock.gpg'), 0, 0, gpg, tmp_dir)
+    decrypt(path.expanduser('~/.config/sshyp/lock.gpg'), 0, 0, gpg)
     system(f"ssh -i '{path.expanduser('~/.ssh/sshyp')}' -p {port} {username_ssh}@{ip} \"cd /bin; python -c "
            f"'import sshypRemote; sshypRemote.delete(\"'\"{_entry_name}\"'\")'\"")
 
