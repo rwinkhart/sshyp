@@ -62,6 +62,7 @@ urls {
 }
 " > packages/haikutemp/.PackageInfo
     cp -r bin packages/haikutemp/
+    ln -s /bin/sshyp.py packages/haikutemp/bin/sshyp
     cp -r share/doc/sshyp/ packages/haikutemp/documentation/packages/
     cp -r share/licenses/sshyp/ packages/haikutemp/documentation/packages/
     cp extra/manpage packages/haikutemp/documentation/man/man1/sshyp.1
@@ -89,6 +90,7 @@ Priority: optional
 Installed-Size: 185
 " > packages/debiantemp/sshyp_"$version"-"$revision"_all/DEBIAN/control
     cp -r bin packages/debiantemp/sshyp_"$version"-"$revision"_all/usr/
+    ln -s /usr/bin/sshyp.py packages/debiantemp/sshyp_"$version"-"$revision"_all/usr/bin/sshyp
     cp -r share packages/debiantemp/sshyp_"$version"-"$revision"_all/usr/
     cp extra/manpage packages/debiantemp/sshyp_"$version"-"$revision"_all/usr/share/man/man1/sshyp.1
     gzip packages/debiantemp/sshyp_"$version"-"$revision"_all/usr/share/man/man1/sshyp.1
@@ -113,6 +115,7 @@ Priority: optional
 Installed-Size: 185
 " > packages/termuxtemp/sshyp_"$version"-"$revision"_all_termux/DEBIAN/control
     cp -r bin packages/termuxtemp/sshyp_"$version"-"$revision"_all_termux/data/data/com.termux/files/usr/
+    ln -s /usr/bin/sshyp.py packages/termuxtemp/sshyp_"$version"-"$revision"_all_termux/data/data/com.termux/files/usr/bin/sshyp
     cp -r share packages/termuxtemp/sshyp_"$version"-"$revision"_all_termux/data/data/com.termux/files/usr/
     cp extra/manpage packages/termuxtemp/sshyp_"$version"-"$revision"_all_termux/data/data/com.termux/files/usr/share/man/man1/sshyp.1
     gzip packages/termuxtemp/sshyp_"$version"-"$revision"_all_termux/data/data/com.termux/files/usr/share/man/man1/sshyp.1
@@ -124,13 +127,14 @@ fi
 
 if [ "$distro" == "3" ] || [ "$distro" == "4" ] || [ "$distro" == "6" ] || [ "$distro" == "7" ] || [ "$distro" == "8" ]; then
     echo -e '\nPackaging as generic...\n'
-    mkdir -p packages/archtemp/usr/share/man/man1
-    cp -r bin packages/archtemp/usr/
-    cp -r share packages/archtemp/usr/
-    cp extra/manpage packages/archtemp/usr/share/man/man1/sshyp.1
-    gzip packages/archtemp/usr/share/man/man1/sshyp.1
-    tar -C packages/archtemp -cvf packages/sshyp-"$version".tar.xz usr/
-    rm -rf packages/archtemp
+    mkdir -p packages/generictemp/usr/share/man/man1
+    cp -r bin packages/generictemp/usr/
+    ln -s /usr/bin/sshyp.py packages/generictemp/usr/bin/sshyp
+    cp -r share packages/generictemp/usr/
+    cp extra/manpage packages/generictemp/usr/share/man/man1/sshyp.1
+    gzip packages/generictemp/usr/share/man/man1/sshyp.1
+    tar -C packages/generictemp -cvf packages/sshyp-"$version".tar.xz usr/
+    rm -rf packages/generictemp
     sha512="$(sha512sum packages/sshyp-"$version".tar.xz | awk '{print $1;}')"
     echo -e "\nsha512 sum:\n$sha512"
     echo -e "\nGeneric packaging complete.\n"
@@ -162,6 +166,7 @@ cp -r %{_sourcedir}/usr %{buildroot}
 
 %files
 /usr/bin/sshyp
+/usr/bin/sshyp.py
 /usr/bin/sshync.py
 /usr/bin/sshypRemote.py
 %license /usr/share/licenses/sshyp/license
@@ -210,6 +215,7 @@ prefix: /
 echo "/bin/python3
 /usr/bin/sshync.py
 /usr/bin/sshyp
+/usr/bin/sshyp.py
 /usr/bin/sshypRemote.py
 /usr/share/doc/sshyp/changelog
 /usr/share/licenses/sshyp/license
