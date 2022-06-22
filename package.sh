@@ -151,7 +151,7 @@ Release:        "$revision"
 Summary:        A light-weight, self-hosted, synchronized password manager
 BuildArch:      noarch
 
-License:        GPL3
+License:        GPLv3
 URL:            https://github.com/rwinkhart/sshyp
 Source0:        sshyp-"$version".tar.xz
 
