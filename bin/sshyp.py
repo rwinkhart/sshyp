@@ -95,8 +95,6 @@ def entry_name_fetch(_entry_name_location):
     if type(_entry_name_location) == str:
         entry_list_gen()
         _entry_name = str(input(_entry_name_location))
-    elif _entry_name_location == 0:
-        _entry_name = argument
     else:
         _entry_name_split = argument.split(' ')
         del _entry_name_split[:_entry_name_location]
@@ -364,11 +362,11 @@ def no_arg():  # displays a list of entries and gives an option to select one fo
 
 
 def read_shortcut():  # shortcut to quickly read an entry
-    if not Path(f"{directory}{argument_list[0].replace('/', '', 1)}.gpg").exists():
-        print(f"\n\u001b[38;5;9merror: entry ({argument_list[0].replace('/', '', 1)}) does not exist\u001b[0m\n")
+    if not Path(f"{directory}{argument.replace('/', '', 1)}.gpg").exists():
+        print(f"\n\u001b[38;5;9merror: entry ({argument.replace('/', '', 1)}) does not exist\u001b[0m\n")
         s_exit(1)
     _shm_folder, _shm_entry = shm_gen()
-    decrypt(directory + argument_list[0].replace('/', '', 1), _shm_folder, _shm_entry, gpg)
+    decrypt(directory + argument.replace('/', '', 1), _shm_folder, _shm_entry, gpg)
     entry_reader(f"{tmp_dir}{_shm_folder}/{_shm_entry}")
     rmtree(f"{tmp_dir}{_shm_folder}")
 
