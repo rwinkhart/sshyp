@@ -4,7 +4,7 @@
 
 from os import environ, listdir, path, remove, system, uname, walk
 from pathlib import Path
-import random
+from random import randint, SystemRandom
 from shutil import get_terminal_size, move, rmtree
 import sshync
 import string
@@ -108,10 +108,10 @@ def entry_name_fetch(_entry_name_location):
 
 
 def shm_gen(_tmp_dir=path.expanduser('~/.config/sshyp/tmp/')):
-    _shm_folder_gen = ''.join(random.SystemRandom().choice(string.ascii_letters + string.digits)
-                              for _ in range(random.randint(10, 30)))
-    _shm_entry_gen = ''.join(random.SystemRandom().choice(string.ascii_letters + string.digits)
-                             for _ in range(random.randint(10, 30)))
+    _shm_folder_gen = ''.join(SystemRandom().choice(string.ascii_letters + string.digits)
+                              for _ in range(randint(10, 30)))
+    _shm_entry_gen = ''.join(SystemRandom().choice(string.ascii_letters + string.digits)
+                             for _ in range(randint(10, 30)))
     Path(_tmp_dir + _shm_folder_gen).mkdir(0o700)
     return _shm_folder_gen, _shm_entry_gen
 
@@ -122,7 +122,7 @@ def pass_gen():
             __character_pool = string.ascii_letters + string.digits
         else:
             __character_pool = string.ascii_letters + string.digits + string.punctuation
-        __gen = ''.join(random.SystemRandom().choice(__character_pool) for _ in range(__length))
+        __gen = ''.join(SystemRandom().choice(__character_pool) for _ in range(__length))
         __min_special, __special = round(.2 * __length), 0
         for __character in __gen:
             if not __character.isalpha():
