@@ -12,12 +12,12 @@ from shutil import rmtree
 def delete(_file_path):
     if _file_path.endswith('/'):
         try:
-            rmtree(f"{expanduser('~/.password-pasture/')}{_file_path}")
+            rmtree(f"{expanduser('~/.local/share/sshyp/')}{_file_path}")
         except FileNotFoundError:
             print('folder does not exist remotely')
     else:
         try:
-            remove(f"{expanduser('~/.password-pasture/')}{_file_path}.gpg")
+            remove(f"{expanduser('~/.local/share/sshyp/')}{_file_path}.gpg")
         except FileNotFoundError:
             print('file does not exist remotely')
     for _device_name in listdir(expanduser('~/.config/sshyp/devices')):
@@ -39,7 +39,7 @@ def deletion_check(_client_device_name):
 
 def folder_check():
     open(expanduser('~/.config/sshyp/folder_database'), 'w').write('')
-    for _root, _directories, _files in walk(expanduser('~/.password-pasture')):
+    for _root, _directories, _files in walk(expanduser('~/.local/share/sshyp')):
         for _dir in _directories:
             open(expanduser('~/.config/sshyp/folder_database'), 'a')\
                 .write(f"{_root.replace(expanduser('~'), '')}/{_dir}\n")

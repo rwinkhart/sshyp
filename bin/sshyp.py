@@ -18,8 +18,8 @@ from textwrap import fill
 def entry_list_gen():  # generates and prints a list of all folders and entries
     print('\n\u001b[38;5;0;48;5;15msshyp entries:\u001b[0m\n')
     _entry_list, _color_alternator = [], 1
-    for _entry in sorted(listdir(path.expanduser('~/.password-pasture'))):
-        if Path(path.expanduser(f"~/.password-pasture/{_entry}")).is_file():
+    for _entry in sorted(listdir(directory)):
+        if Path(f"{directory}{_entry}").is_file():
             if _color_alternator == 1:
                 _entry_list.append(f"{_entry.replace('.gpg', '')}")
                 _color_alternator = 2
@@ -35,12 +35,12 @@ def entry_list_gen():  # generates and prints a list of all folders and entries
         print(fill(' '.join(_entry_list), width=_width) + '\n')
     except ValueError:
         pass
-    for _root, _directories, _files in walk(path.expanduser('~/.password-pasture')):
+    for _root, _directories, _files in walk(directory):
         for _dir in sorted(_directories):
-            _inner_dir = f"{_root.replace(path.expanduser('~/.password-pasture'), '')}/{_dir}"
+            _inner_dir = f"{_root.replace(directory, '')}/{_dir}"
             print(f"\u001b[38;5;15;48;5;238m{_inner_dir}/\u001b[0m")
             _entry_list, _color_alternator = [], 1
-            for _s_root, _s_directories, _s_files in walk(path.expanduser(f"~/.password-pasture{_inner_dir}")):
+            for _s_root, _s_directories, _s_files in walk(f"{directory[:-1]}{_inner_dir}"):
                 for _entry in sorted(_s_files):
                     if _color_alternator == 1:
                         _entry_list.append(f"{_entry.replace('.gpg', '')}")
@@ -188,7 +188,7 @@ def copy_name_check(_port, _username_ssh, _ip, _client_device_name):
 
 def tweak():  # runs configuration wizard
     # storage/config directory creation
-    Path(path.expanduser('~/.password-pasture')).mkdir(0o700, parents=True, exist_ok=True)
+    Path(path.expanduser('~/.local/share/sshyp')).mkdir(0o700, parents=True, exist_ok=True)
     Path(path.expanduser('~/.config/sshyp/devices')).mkdir(0o700, parents=True, exist_ok=True)
     if not Path(f"{path.expanduser('~/.config/sshyp/tmp')}").exists():
         if uname()[0] == 'Haiku' or uname()[0] == 'FreeBSD':
@@ -239,7 +239,6 @@ def tweak():  # runs configuration wizard
 
         # ssh user configuration
         _username_ssh = str(input('\nusername of the remote server: '))
-        print(f"\nentry directory: /home/{_username_ssh}/.password-pasture/")
 
         # sshyp-only data storage
         open(path.expanduser('~/.config/sshyp/sshyp-data'), 'w')\
@@ -247,7 +246,7 @@ def tweak():  # runs configuration wizard
 
         # sshync profile generation
         sshync.make_profile(path.expanduser('~/.config/sshyp/sshyp.sshync'),
-                            path.expanduser('~/.password-pasture/'), f"/home/{_username_ssh}/.password-pasture/",
+                            path.expanduser('~/.local/share/sshyp/'), f"/home/{_username_ssh}/.local/share/sshyp/",
                             path.expanduser('~/.ssh/sshyp'), _ip, _port, _username_ssh)
 
         # device name configuration
@@ -392,7 +391,7 @@ def sync():  # calls sshync to sync changes to the user's server
             try:
                 if silent_sync != 1:
                     print(f"\u001b[38;5;208m{_file[:-1]}\u001b[0m has been sheared, removing...")
-                rmtree(f"{path.expanduser('~/.password-pasture/')}{_file[:-1]}")
+                rmtree(f"{directory}{_file[:-1]}")
             except FileNotFoundError:
                 if silent_sync != 1:
                     print('folder does not exist locally.')
@@ -400,7 +399,7 @@ def sync():  # calls sshync to sync changes to the user's server
             try:
                 if silent_sync != 1:
                     print(f"\u001b[38;5;208m{_file[:-1]}\u001b[0m has been sheared, removing...")
-                remove(f"{path.expanduser('~/.password-pasture/')}{_file[:-1]}.gpg")
+                remove(f"{directory}{_file[:-1]}.gpg")
             except (FileNotFoundError, IsADirectoryError):
                 if silent_sync != 1:
                     print('file does not exist locally.')
@@ -419,7 +418,7 @@ def sync():  # calls sshync to sync changes to the user's server
         if Path(f"{path.expanduser('~')}{_folder[:-1]}").is_dir():
             pass
         else:
-            print(f"\u001b[38;5;2m{_folder.replace('/.password-pasture/', '')[:-1]}/\u001b[0m does not exist locally, "
+            print(f"\u001b[38;5;2m{_folder.replace('/.local/share/sshyp/', '')[:-1]}/\u001b[0m does not exist locally, "
                   f"creating...")
             Path(f"{path.expanduser('~')}{_folder[:-1]}").mkdir(0o700, parents=True, exist_ok=True)
     # set permissions before uploading
@@ -660,7 +659,7 @@ if __name__ == "__main__":
                     ip = ssh_info[1].replace('\n', '')
                     port = ssh_info[2].replace('\n', '')
                     directory = str(ssh_info[3].replace('\n', ''))
-                    directory_ssh = '/home/' + username_ssh + '/.password-pasture/'
+                    directory_ssh = str(ssh_info[4].replace('\n', ''))
                     client_device_name = listdir(path.expanduser('~/.config/sshyp/devices'))[0]
                     sshyp_data = open(path.expanduser('~/.config/sshyp/sshyp-data')).readlines()
                     gpg_id = sshyp_data[0].replace('\n', '')
