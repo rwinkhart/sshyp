@@ -15,11 +15,11 @@ from textwrap import fill
 
 # utility functions
 
-def entry_list_gen():  # generates and prints a list of all folders and entries
+def entry_list_gen(_directory=path.expanduser('~/.local/share/sshyp/')):  # generates and prints full entry list
     print('\n\u001b[38;5;0;48;5;15msshyp entries:\u001b[0m\n')
     _entry_list, _color_alternator = [], 1
-    for _entry in sorted(listdir(directory)):
-        if Path(f"{directory}{_entry}").is_file():
+    for _entry in sorted(listdir(_directory)):
+        if Path(f"{_directory}{_entry}").is_file():
             if _color_alternator == 1:
                 _entry_list.append(f"{_entry.replace('.gpg', '')}")
                 _color_alternator = 2
@@ -35,12 +35,12 @@ def entry_list_gen():  # generates and prints a list of all folders and entries
         print(fill(' '.join(_entry_list), width=_width) + '\n')
     except ValueError:
         pass
-    for _root, _directories, _files in walk(directory):
+    for _root, _directories, _files in walk(_directory):
         for _dir in sorted(_directories):
-            _inner_dir = f"{_root.replace(directory, '')}/{_dir}"
+            _inner_dir = f"{_root.replace(_directory, '')}/{_dir}"
             print(f"\u001b[38;5;15;48;5;238m{_inner_dir}/\u001b[0m")
             _entry_list, _color_alternator = [], 1
-            for _s_root, _s_directories, _s_files in walk(f"{directory[:-1]}{_inner_dir}"):
+            for _s_root, _s_directories, _s_files in walk(f"{_directory[:-1]}{_inner_dir}"):
                 for _entry in sorted(_s_files):
                     if _color_alternator == 1:
                         _entry_list.append(f"{_entry.replace('.gpg', '')}")
