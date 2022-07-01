@@ -667,6 +667,9 @@ if __name__ == "__main__":
                     ssh_error = int(open(path.expanduser('~/.config/sshyp/ssh-error')).read().strip())
                     if ssh_error != 0:
                         ssh_error = copy_name_check(port, username_ssh, ip, client_device_name)
+                else:
+                    print('running as server, option disabled')
+                    s_exit(0)
             except (FileNotFoundError, IndexError):
                 if device_type.lower() != 's':
                     print('\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
