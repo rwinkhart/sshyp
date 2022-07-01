@@ -164,7 +164,7 @@ def edit_note(_shm_folder, _shm_entry):
     lines = open(f"{tmp_dir}{_shm_folder}/{_shm_entry}").readlines()
     open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'w').writelines(lines[0:3])
     open(f"{tmp_dir}{_shm_folder}/{_shm_entry}-n", 'w').writelines(lines[3:])
-    system(f"nano {tmp_dir}{_shm_folder}/{_shm_entry}-n")
+    system(f"{editor} {tmp_dir}{_shm_folder}/{_shm_entry}-n")
     edit_notes = open(f"{tmp_dir}{_shm_folder}/{_shm_entry}-n").read()
     open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'a').write(edit_notes)
 
@@ -216,7 +216,6 @@ def tweak():  # runs configuration wizard
             print('\na unique gpg key has been generated for you.')
             system(f"{gpg} --full-generate-key")
         _gpg_id = str(input('\nplease input the id of your gpg key: '))
-        open(path.expanduser('~/.config/sshyp/sshyp-gpg'), 'w').write(_gpg_id + '\n')
 
         # lock file generation
         open(path.expanduser('~/.config/sshyp/lock'), 'w')
@@ -241,6 +240,10 @@ def tweak():  # runs configuration wizard
         # ssh user configuration
         _username_ssh = str(input('\nusername of the remote server: '))
         print(f"\nentry directory: /home/{_username_ssh}/.password-pasture/")
+
+        # sshyp-only data storage
+        open(path.expanduser('~/.config/sshyp/sshyp-data'), 'w')\
+            .write(_gpg_id + '\n' + input('\nexample input: vim\n\npreferred text editor: '))
 
         # sshync profile generation
         sshync.make_profile(path.expanduser('~/.config/sshyp/sshyp.sshync'),
@@ -308,10 +311,10 @@ def print_info():  # prints help text based on argument
               'randall winkhart\u001b[38;5;15;48;5;15m   \u001b[38;5;7;48;5;8m/\u001b[0m')
         print('\u001b[38;5;7;48;5;8m/\u001b[38;5;15;48;5;15m                                                      '
               '\u001b[38;5;7;48;5;8m/\u001b[0m')
-        print('\u001b[38;5;7;48;5;8m/\u001b[38;5;15;48;5;15m                    \u001b[38;5;15;48;5;8mversion 1.0.1'
+        print('\u001b[38;5;7;48;5;8m/\u001b[38;5;15;48;5;15m                    \u001b[38;5;15;48;5;8mversion 1.1.0'
               '\u001b[38;5;15;48;5;15m                     \u001b[38;5;7;48;5;8m/\u001b[0m')
-        print('\u001b[38;5;7;48;5;8m/\u001b[38;5;15;48;5;15m             \u001b[38;5;15;48;5;8mthe polished trotters '
-              'update\u001b[38;5;15;48;5;15m             \u001b[38;5;7;48;5;8m/\u001b[0m')
+        print('\u001b[38;5;7;48;5;8m/\u001b[38;5;15;48;5;15m                 \u001b[38;5;15;48;5;8mthe sheecrets '
+              'update\u001b[38;5;15;48;5;15m                 \u001b[38;5;7;48;5;8m/\u001b[0m')
         print('\u001b[38;5;7;48;5;8m/\u001b[38;5;15;48;5;15m                                                      '
               '\u001b[38;5;7;48;5;8m/\u001b[0m')
         print('\u001b[38;5;7;48;5;8m<><><><><><><><><><><><><><><><><><><><><><><><><><><><>\u001b[0m\n')
@@ -436,7 +439,7 @@ def add_entry():  # adds a new entry
         s_exit(1)
     if argument_list[1] == 'note' or argument_list[1] == '-n':
         _shm_folder, _shm_entry = shm_gen()
-        system(f"nano {tmp_dir}{_shm_folder}/{_shm_entry}-n")
+        system(f"{editor} {tmp_dir}{_shm_folder}/{_shm_entry}-n")
         _notes = open(f"{tmp_dir}{_shm_folder}/{_shm_entry}-n", 'r').read()
         open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'w').writelines('\n\n\n' + _notes)
     elif argument_list[1] == 'password' or argument_list[1] == '-p':
@@ -446,7 +449,7 @@ def add_entry():  # adds a new entry
         _add_note = input('add a note to this entry? (y/N) ')
         _shm_folder, _shm_entry = shm_gen()
         if _add_note.lower() == 'y':
-            system(f"nano {tmp_dir}{_shm_folder}/{_shm_entry}-n")
+            system(f"{editor} {tmp_dir}{_shm_folder}/{_shm_entry}-n")
             _notes = open(f"{tmp_dir}{_shm_folder}/{_shm_entry}-n", 'r').read()
         else:
             _notes = ''
@@ -547,7 +550,7 @@ def gen():  # generates a password for a new or an existing entry
         _add_note = input('add a note to this entry? (y/N) ')
         _shm_folder, _shm_entry = shm_gen()
         if _add_note.lower() == 'y':
-            system(f"nano {tmp_dir}{_shm_folder}/{_shm_entry}-n")
+            system(f"{editor} {tmp_dir}{_shm_folder}/{_shm_entry}-n")
             _notes = open(f"{tmp_dir}{_shm_folder}/{_shm_entry}-n", 'r').read()
         else:
             _notes = ''
@@ -659,7 +662,9 @@ if __name__ == "__main__":
                     directory = str(ssh_info[3].replace('\n', ''))
                     directory_ssh = '/home/' + username_ssh + '/.password-pasture/'
                     client_device_name = listdir(path.expanduser('~/.config/sshyp/devices'))[0]
-                    gpg_id = open(path.expanduser('~/.config/sshyp/sshyp-gpg')).read().strip()
+                    sshyp_data = open(path.expanduser('~/.config/sshyp/sshyp-data')).readlines()
+                    gpg_id = sshyp_data[0].replace('\n', '')
+                    editor = sshyp_data[1].replace('\n', '')
                     ssh_error = int(open(path.expanduser('~/.config/sshyp/ssh-error')).read().strip())
                     if ssh_error != 0:
                         ssh_error = copy_name_check(port, username_ssh, ip, client_device_name)
