@@ -55,7 +55,6 @@ requires {
 	gnupg
 	openssh
 	python3
-	nano
 }
 urls {
 	\"https://github.com/rwinkhart/sshyp\"
@@ -85,7 +84,7 @@ Section: utils
 Architecture: all
 Maintainer: Randall Winkhart <idgr at tutanota dot com>
 Description: A light-weight, self-hosted, synchronized password manager
-Depends: python3, gnupg, openssh-client, nano, xclip, wl-clipboard
+Depends: python3, gnupg, openssh-client, xclip, wl-clipboard
 Priority: optional
 Installed-Size: 185
 " > packages/debiantemp/sshyp_"$version"-"$revision"_all/DEBIAN/control
@@ -110,7 +109,7 @@ Section: utils
 Architecture: all
 Maintainer: Randall Winkhart <idgr at tutanota dot com>
 Description: A light-weight, self-hosted, synchronized password manager
-Depends: python, gnupg, openssh, nano, termux-api, termux-am
+Depends: python, gnupg, openssh, termux-api, termux-am
 Priority: optional
 Installed-Size: 185
 " > packages/termuxtemp/sshyp_"$version"-"$revision"_all_termux/DEBIAN/control
@@ -155,7 +154,7 @@ License:        GPLv3
 URL:            https://github.com/rwinkhart/sshyp
 Source0:        sshyp-"$version".tar.xz
 
-Requires:       python gnupg openssh nano wl-clipboard 
+Requires:       python gnupg openssh wl-clipboard
 
 %description
 sshyp is a password-store compatible CLI password manager available for UNIX(-like) systems - its primary goal is to make syncing passwords and notes across devices as easy as possible via CLI.
@@ -201,9 +200,6 @@ prefix: /
                    \"gnupg\" : {
                       \"origin\" : \"security/gnupg\"
                    },
-                   \"nano\" : {
-                      \"origin\" : \"editors/nano\"
-                   },
                    \"xclip\" : {
                       \"origin\" : \"x11/xclip\"
                    },
@@ -237,7 +233,7 @@ pkgdesc='A light-weight, self-hosted, synchronized password manager'
 url='https://github.com/rwinkhart/sshyp'
 arch=('any')
 license=('GPL3')
-depends=(python gnupg openssh nano xclip wl-clipboard)
+depends=(python gnupg openssh xclip wl-clipboard)
 
 source=(\""$source"\")
 sha512sums=('"$sha512"')
