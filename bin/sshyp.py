@@ -13,7 +13,7 @@ from sys import argv, exit as s_exit
 from textwrap import fill
 
 
-# utility functions
+# BELOW - utility functions
 
 def entry_list_gen(_directory=path.expanduser('~/.local/share/sshyp/')):  # generates and prints full entry list
     print('\n\u001b[38;5;0;48;5;15msshyp entries:\u001b[0m\n')
@@ -59,7 +59,7 @@ def entry_list_gen(_directory=path.expanduser('~/.local/share/sshyp/')):  # gene
                 print('\u001b[38;5;9m-empty directory-\u001b[0m\n')
 
 
-def entry_reader(_decrypted_entry):
+def entry_reader(_decrypted_entry):  # displays the contents of an entry in a readable format
     _entry_lines, _notes_flag = open(_decrypted_entry, 'r').readlines(), 0
     print()
     for _num in range(len(_entry_lines)):
@@ -91,7 +91,7 @@ def replace_line(file_name, line_num, text):  # replaces text in a given line wi
     open(file_name, 'w').writelines(_lines)
 
 
-def entry_name_fetch(_entry_name_location):
+def entry_name_fetch(_entry_name_location):  # fetches and returns entry name from user input or from provided argument
     if type(_entry_name_location) == str:
         entry_list_gen()
         _entry_name = str(input(_entry_name_location))
@@ -105,7 +105,7 @@ def entry_name_fetch(_entry_name_location):
         return _entry_name
 
 
-def shm_gen(_tmp_dir=path.expanduser('~/.config/sshyp/tmp/')):
+def shm_gen(_tmp_dir=path.expanduser('~/.config/sshyp/tmp/')):  # creates a temporary directory for entry editing
     _shm_folder_gen = ''.join(SystemRandom().choice(string.ascii_letters + string.digits)
                               for _ in range(randint(10, 30)))
     _shm_entry_gen = ''.join(SystemRandom().choice(string.ascii_letters + string.digits)
@@ -114,7 +114,7 @@ def shm_gen(_tmp_dir=path.expanduser('~/.config/sshyp/tmp/')):
     return _shm_folder_gen, _shm_entry_gen
 
 
-def pass_gen():
+def pass_gen():  # generates and returns a random password based on user-specified options
     def _pass_gen_function(__complexity, __length):
         if __complexity.lower() == 's':
             __character_pool = string.ascii_letters + string.digits
@@ -142,13 +142,14 @@ def pass_gen():
     return _gen
 
 
-def encrypt(_shm_folder, _shm_entry, _location):
+def encrypt(_shm_folder, _shm_entry, _location):  # encrypts an entry and cleans up the temporary files
     system(f"{gpg} -qr {str(gpg_id)} -e '{tmp_dir}{_shm_folder}/{_shm_entry}'")
     move(f"{tmp_dir}{_shm_folder}/{_shm_entry}.gpg", f"{directory}{_location}.gpg")
     rmtree(f"{tmp_dir}{_shm_folder}")
 
 
 def decrypt(_entry_dir, _shm_folder, _shm_entry, _gpg_command, _tmp_dir=path.expanduser('~/.config/sshyp/tmp/')):
+    # decrypts an entry to a temporary directory
     if _shm_folder == 0 and _shm_entry == 0:
         _command = f"{_gpg_command} -qd --output /dev/null {path.expanduser('~/.config/sshyp/lock.gpg')}"
     else:
@@ -160,7 +161,7 @@ def decrypt(_entry_dir, _shm_folder, _shm_entry, _gpg_command, _tmp_dir=path.exp
         s_exit(1)
 
 
-def edit_note(_shm_folder, _shm_entry):
+def edit_note(_shm_folder, _shm_entry):  # edits the note attached to an entry
     lines = open(f"{tmp_dir}{_shm_folder}/{_shm_entry}").readlines()
     open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'w').writelines(lines[0:3])
     open(f"{tmp_dir}{_shm_folder}/{_shm_entry}-n", 'w').writelines(lines[3:])
@@ -170,6 +171,7 @@ def edit_note(_shm_folder, _shm_entry):
 
 
 def copy_name_check(_port, _username_ssh, _ip, _client_device_name):
+    # attempts to connect to the user's server via ssh to register the device for syncing
     _command = f"ssh -o ConnectTimeout=3 -i '{path.expanduser('~/.ssh/sshyp')}' -p {_port} {_username_ssh}@{_ip} " \
                f"\"touch '/home/{_username_ssh}/.config/sshyp/devices/{_client_device_name}'\""
     try:
@@ -183,7 +185,7 @@ def copy_name_check(_port, _username_ssh, _ip, _client_device_name):
     open(path.expanduser('~/.config/sshyp/ssh-error'), 'w').write('0')
     return 0
 
-# argument-specific functions
+# BELOW - argument-specific functions
 
 
 def tweak():  # runs configuration wizard
