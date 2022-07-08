@@ -8,7 +8,7 @@ from random import randint, SystemRandom
 from shutil import get_terminal_size, move, rmtree
 import sshync
 import string
-from subprocess import CalledProcessError, DEVNULL, Popen, PIPE, run
+from subprocess import CalledProcessError, Popen, PIPE, run
 from sys import argv, exit as s_exit
 from textwrap import fill
 
