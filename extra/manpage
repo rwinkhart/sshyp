@@ -1,4 +1,4 @@
-.TH sshyp 1 "20 June 2022" "v1.0.0" "sshyp man page"
+.TH sshyp 1 "08 July 2022" "v1.1.0" "sshyp man page"
 .SH NAME
 sshyp \- A very simple self-hosted, synchronized password manager for UNIX(-like) systems. Alternative to (and compatible with) pass/password-store.
 .SH SYNOPSIS
@@ -12,25 +12,25 @@ Setting up sshyp for the first time or altering its configuration (also recommen
 Viewing the entry database:
     sshyp
 
-Reading an existing entry saved as ~/.password-pasture/development/github.gpg:
+Reading an existing entry saved as ~/.local/share/sshyp/development/github.gpg:
     sshyp /development/github
 
-Copying the password of an existing entry saved as ~/.password-pasture/financial/bank.gpg:
+Copying the password of an existing entry saved as ~/.local/share/sshyp/financial/bank.gpg:
     sshyp copy -p /financial/bank
 
-Editing the username of an existing entry saved as ~/.password-pasture/game.gpg:
+Editing the username of an existing entry saved as ~/.local/share/sshyp/game.gpg:
     sshyp edit -u game
 
-Making a new entry saved as ~/.password-pasture/school/university.gpg using the built-in password generator:
+Making a new entry saved as ~/.local/share/sshyp/school/university.gpg using the built-in password generator:
     sshyp gen /school/university
 
-Creating a note-only entry saved as ~/.password-pasture/notes/testNote.gpg:
+Creating a note-only entry saved as ~/.local/share/sshyp/notes/testNote.gpg:
     sshyp add -n /notes/testNote
 
 Manually syncing entries with the server:
     sshyp sync
 
-Removing an existing folder saved as ~/.password-pasture/social:
+Removing an existing folder saved as ~/.local/share/sshyp/social:
     sshyp shear social/
 
 .SH OPTIONS
