@@ -8,7 +8,7 @@ from random import randint, SystemRandom
 from shutil import get_terminal_size, move, rmtree
 import sshync
 import string
-from subprocess import CalledProcessError, Popen, PIPE, run
+from subprocess import CalledProcessError, DEVNULL, Popen, PIPE, run
 from sys import argv, exit as s_exit
 from textwrap import fill
 
@@ -212,17 +212,26 @@ def tweak():  # runs configuration wizard
         open(path.expanduser('~/.config/sshyp/sshyp-device'), 'w').write(_device_type)
 
         # gpg configuration
-        _gpg_id = input('\nsshyp requires the use of a unique gpg key - do you already have one that you are '
-                        'willing to use? (y/N) ')
-        if _gpg_id.lower() != 'y':
-            print('\na unique gpg key has been generated for you.')
-            system(f"{gpg} --full-generate-key")
-        _gpg_id = str(input('\nplease input the id of your gpg key: '))
+        _gpg_id = input('\nsshyp requires the use of a unique gpg key - use an (e)xisting key or (g)enerate a new one? '
+                        '(E/g) ')
+        if _gpg_id.lower() != 'g':
+            system(f"{gpg} -k")
+            _gpg_id = str(input('gpg key id: '))
+        else:
+            print('\na unique gpg key is being generated for you...')
+            if not Path(path.expanduser('~/.config/sshyp/gpg-gen')).is_file():
+                open(path.expanduser('~/.config/sshyp/gpg-gen'), 'w').write('Key-Type: 1\nKey-Length: 4096\nKey-Usage:\
+                 sign encrypt\nName-Real: sshyp\nName-Comment: password manager encryption\nName-Email: \
+                 https://github.com/rwinkhart/sshyp\nExpire-Date: 0')
+            run(f"{gpg} --batch --generate-key '{path.expanduser('~/.config/sshyp/gpg-gen')}'", shell=True)
+            _gpg_id = run(f"{gpg} -k", shell=True, stdout=PIPE, text=True).stdout.split('\n')[-4].strip()
 
         # lock file generation
+        if Path(path.expanduser('~/.config/sshyp/lock.gpg')).is_file():
+            remove(path.expanduser('~/.config/sshyp/lock.gpg'))
         open(path.expanduser('~/.config/sshyp/lock'), 'w')
         system(f"{gpg} -qr {str(_gpg_id)} -e {path.expanduser('~/.config/sshyp/lock')}")
-        remove(f"{path.expanduser('~/.config/sshyp')}/lock")
+        remove(path.expanduser('~/.config/sshyp/lock'))
 
         # ssh key configuration
         _ssh_gen = (input('\nmake sure the ssh service on the remote server is running and properly configured'
@@ -255,7 +264,7 @@ def tweak():  # runs configuration wizard
         for _name in listdir(path.expanduser('~/.config/sshyp/devices')):  # remove existing device name
             remove(f"{path.expanduser('~/.config/sshyp/devices/')}{_name}")
         print('\n\u001b[4;1mimportant:\u001b[0m This name \u001b[4;1mmust\u001b[0m be unique amongst your client '
-              'devices\n\nthis is used to keep track of which devices have up-to-date databases.\n')
+              'devices\n\nthis is used to keep track of which devices have up-to-date databases\n')
         _client_device_name = str(input('device name: '))
         open(f"{path.expanduser('~/.config/sshyp/devices/')}{_client_device_name}", 'w')
         copy_name_check(_port, _username_ssh, _ip, _client_device_name)
