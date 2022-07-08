@@ -9,7 +9,7 @@ from shutil import rmtree
 
 # utility functions
 
-def delete(_file_path):
+def delete(_file_path):  # deletes an entry or folder, should be run remotely via ssh
     if _file_path.endswith('/'):
         try:
             rmtree(f"{expanduser('~/.local/share/sshyp/')}{_file_path}")
@@ -24,7 +24,7 @@ def delete(_file_path):
         open(f"{expanduser('~/.config/sshyp/deleted/')}{_file_path.replace('/', '@')}^&*{_device_name}", 'w')
 
 
-def deletion_check(_client_device_name):
+def deletion_check(_client_device_name):  # creates a list of entries and folders to be deleted from a local machine
     open(expanduser('~/.config/sshyp/deletion_database'), 'w').write('')
     for _file in listdir(expanduser('~/.config/sshyp/deleted')):
         _file_path = _file.replace('@', '/').split('^&*')[0]
@@ -37,7 +37,7 @@ def deletion_check(_client_device_name):
             open(expanduser('~/.config/sshyp/deletion_database'), 'a').write(_file_path + '\n')
 
 
-def folder_check():
+def folder_check():  # creates a list of folders to be compared with those of a local machine
     open(expanduser('~/.config/sshyp/folder_database'), 'w').write('')
     for _root, _directories, _files in walk(expanduser('~/.local/share/sshyp')):
         for _dir in _directories:
