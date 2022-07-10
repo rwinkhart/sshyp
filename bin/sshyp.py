@@ -65,14 +65,14 @@ def entry_reader(_decrypted_entry):  # displays the contents of an entry in a re
     for _num in range(len(_entry_lines)):
         try:
             if _num == 0 and _entry_lines[1] != '\n':
-                print(f"\u001b[38;5;15;48;5;238musername:\u001b[0m\n{_entry_lines[1]}")
+                print(f"\u001b[38;5;15;48;5;238musername:\u001b[0m\n{_entry_lines[1].strip()}\n")
             elif _num == 1 and _entry_lines[0] != '\n':
-                print(f"\u001b[38;5;15;48;5;238mpassword:\u001b[0m\n{_entry_lines[0]}")
+                print(f"\u001b[38;5;15;48;5;238mpassword:\u001b[0m\n{_entry_lines[0].strip()}\n")
             elif _num == 2 and _entry_lines[2] != '\n':
-                print(f"\u001b[38;5;15;48;5;238murl:\u001b[0m\n{_entry_lines[_num]}")
+                print(f"\u001b[38;5;15;48;5;238murl:\u001b[0m\n{_entry_lines[_num].strip()}\n")
             elif _num >= 3 and _entry_lines[_num] != '\n' and _notes_flag != 1:
                 _notes_flag = 1
-                print('\u001b[38;5;15;48;5;238mnotes:\u001b[0m\n' + _entry_lines[_num].replace('\n', ''))
+                print(f"\u001b[38;5;15;48;5;238mnotes:\u001b[0m\n{_entry_lines[_num].strip()}")
             elif _num >= 3 and _notes_flag == 1:
                 print(_entry_lines[_num].replace('\n', ''))
             if _notes_flag == 1:
