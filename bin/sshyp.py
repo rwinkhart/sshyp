@@ -273,7 +273,7 @@ def tweak():  # runs configuration wizard
 
 
 def print_info():  # prints help text based on argument
-    if argument_list[0] == 'help' or argument_list[0] == '--help' or argument_list[0] == '-h':
+    if argument_list[1] == 'help' or argument_list[1] == '--help' or argument_list[1] == '-h':
         print('\n\u001b[1msshyp  copyright (c) 2021-2022  randall winkhart\u001b[0m\n')
         print("this is free software, and you are welcome to redistribute it under certain conditions;\nthis program "
               "comes with absolutely no warranty;\ntype `sshyp license' for details")
@@ -307,7 +307,7 @@ def print_info():  # prints help text based on argument
         print('gen:')
         print(' update/-u               generate a password for an existing entry\n')
         print("\u001b[1mtip:\u001b[0m you can quickly read an entry with 'sshyp /<entry name>'")
-    elif argument_list[0] == 'version' or argument_list[0] == '-v':
+    elif argument_list[1] == 'version' or argument_list[1] == '-v':
         print('\nsshyp is a simple, self-hosted, sftp-synchronized password manager\nfor unix(-like) systems (haiku/'
               'freebsd/linux/termux)\n\nsshyp is a viable alternative to (and compatible with) pass/password-store\n')
         print("                ..       \u001b[38;5;9m♥♥ ♥♥\u001b[0m       ..\n         .''.''/()\\     \u001b[38;5;13m"
@@ -329,21 +329,21 @@ def print_info():  # prints help text based on argument
               '\u001b[38;5;7;48;5;8m/\u001b[0m')
         print('\u001b[38;5;7;48;5;8m<><><><><><><><><><><><><><><><><><><><><><><><><><><><>\u001b[0m\n')
         print('see https://github.com/rwinkhart/sshyp for more information\n')
-    elif argument_list[0] == 'license':
+    elif argument_list[1] == 'license':
         print('\nThis program is free software: you can redistribute it and/or modify it under the terms of the GNU '
               'General\nPublic License as published by the Free Software Foundation, either version 3 of the License,'
               '\nor (at your option) any later version.\n\nThis program is distributed in the hope that it will be '
               'useful, but WITHOUT ANY WARRANTY;\nwithout even the implied warranty of MERCHANTABILITY or FITNESS FOR A'
               ' PARTICULAR PURPOSE.\nSee the GNU General Public License for more details.'
               '\n\nhttps://opensource.org/licenses/GPL-3.0\n')
-    elif argument_list[0] == 'add':
+    elif argument_list[1] == 'add':
         print('\n\u001b[1musage:\u001b[0m sshyp add [flag [<entry name>]]\u001b[0m\n')
         print('\u001b[1mflags:\u001b[0m')
         print('add:')
         print(' password/-p             add a password entry')
         print(' note/-n                 add a note entry')
         print(' folder/-f               add a new folder for entries\n')
-    elif argument_list[0] == 'edit':
+    elif argument_list[1] == 'edit':
         print('\n\u001b[1musage:\u001b[0m sshyp edit [flag [<entry name>]]\u001b[0m\n')
         print('\u001b[1mflags:\u001b[0m')
         print('edit:')
@@ -352,7 +352,7 @@ def print_info():  # prints help text based on argument
         print(' password/-p             change the password of an entry')
         print(' url/-l                  change the url attached to an entry')
         print(' note/-n                 change the note attached to an entry\n')
-    elif argument_list[0] == 'copy':
+    elif argument_list[1] == 'copy':
         print('\n\u001b[1musage:\u001b[0m sshyp copy [flag [<entry name>]]\u001b[0m\n')
         print('\u001b[1mflags:\u001b[0m')
         print('copy:')
@@ -440,19 +440,19 @@ def sync():  # calls sshync to sync changes to the user's server
 
 def add_entry():  # adds a new entry
     _shm_folder, _shm_entry = None, None  # sets base-line values to avoid errors
-    if len(argument_list) < 3:
+    if len(argument_list) < 4:
         _entry_name = entry_name_fetch('name of new entry: ')
     else:
         _entry_name = entry_name_fetch(2)
     if Path(f"{directory}{_entry_name}.gpg").is_file():
         print(f"\n\u001b[38;5;9merror: entry ({_entry_name}) already exists\u001b[0m\n")
         s_exit(1)
-    if argument_list[1] == 'note' or argument_list[1] == '-n':
+    if argument_list[2] == 'note' or argument_list[2] == '-n':
         _shm_folder, _shm_entry = shm_gen()
         system(f"{editor} {tmp_dir}{_shm_folder}/{_shm_entry}-n")
         _notes = open(f"{tmp_dir}{_shm_folder}/{_shm_entry}-n", 'r').read()
         open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'w').writelines('\n\n\n' + _notes)
-    elif argument_list[1] == 'password' or argument_list[1] == '-p':
+    elif argument_list[2] == 'password' or argument_list[2] == '-p':
         _username = str(input('username: '))
         _password = str(input('password: '))
         _url = str(input('url: '))
@@ -471,7 +471,7 @@ def add_entry():  # adds a new entry
 
 
 def add_folder():  # creates a new folder
-    if len(argument_list) < 3:
+    if len(argument_list) < 4:
         _entry_name = entry_name_fetch('name of new folder: ')
     else:
         _entry_name = entry_name_fetch(2)
@@ -505,7 +505,7 @@ def rename():  # renames an entry or folder
 
 def edit():  # edits the contents of an entry
     _shm_folder, _shm_entry = None, None  # sets base-line values to avoid errors
-    if len(argument_list) < 3:
+    if len(argument_list) < 4:
         _entry_name = entry_name_fetch('entry to edit: ')
     else:
         _entry_name = entry_name_fetch(2)
@@ -522,16 +522,16 @@ def edit():  # edits the contents of an entry
             _lines.append('\n')
         open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'w').writelines(_lines)
 
-    if argument_list[1] == 'username' or argument_list[1] == '-u':
+    if argument_list[2] == 'username' or argument_list[2] == '-u':
         _detail = str(input('new username: '))
         replace_line(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 1, _detail + '\n')
-    elif argument_list[1] == 'password' or argument_list[1] == '-p':
+    elif argument_list[2] == 'password' or argument_list[2] == '-p':
         _detail = str(input('new password: '))
         replace_line(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 0, _detail + '\n')
-    elif argument_list[1] == 'url' or argument_list[1] == '-l':
+    elif argument_list[2] == 'url' or argument_list[2] == '-l':
         _detail = str(input('new url: '))
         replace_line(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 2, _detail + '\n')
-    elif argument_list[1] == 'note' or argument_list[1] == '-n':
+    elif argument_list[2] == 'note' or argument_list[2] == '-n':
         edit_note(_shm_folder, _shm_entry)
     remove(f"{directory}{_entry_name}.gpg")
     print('\n\u001b[1mentry preview:\u001b[0m')
@@ -543,14 +543,14 @@ def gen():  # generates a password for a new or an existing entry
     _username, _url, _notes = None, None, None  # sets base-line values to avoid errors
     if argument == 'gen update' or argument == 'gen -u' or argument == 'gen':
         _entry_name = entry_name_fetch('name of entry: ')
-    elif argument_list[1] == 'update' or argument_list[1] == '-u':
+    elif argument_list[2] == 'update' or argument_list[2] == '-u':
         _entry_name = entry_name_fetch(2)
         if not Path(f"{directory}{_entry_name}.gpg").is_file():
             print(f"\n\u001b[38;5;9merror: entry ({_entry_name}) does not exist\u001b[0m\n")
             s_exit(1)
     else:
         _entry_name = entry_name_fetch(1)
-    if len(argument_list) == 1 or (not argument_list[1] == 'update' and not argument_list[1] == '-u'):
+    if len(argument_list) == 2 or (not argument_list[2] == 'update' and not argument_list[2] == '-u'):
         if Path(f"{directory}{_entry_name}.gpg").is_file():
             print(f"\n\u001b[38;5;9merror: entry ({_entry_name}) already exists\u001b[0m\n")
             s_exit(1)
@@ -581,7 +581,7 @@ def gen():  # generates a password for a new or an existing entry
 
 
 def copy_data():  # copies a specified field of an entry to the clipboard
-    if len(argument_list) < 3:
+    if len(argument_list) < 4:
         _entry_name = entry_name_fetch('entry to copy: ')
     else:
         _entry_name = entry_name_fetch(2)
@@ -592,43 +592,43 @@ def copy_data():  # copies a specified field of an entry to the clipboard
     decrypt(directory + _entry_name, _shm_folder, _shm_entry, gpg)
     _copy_line = open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'r').readlines()
     if uname()[0] == 'Haiku':  # Haiku clipboard detection
-        if argument_list[1] == 'username' or argument_list[1] == '-u':
+        if argument_list[2] == 'username' or argument_list[2] == '-u':
             system('clipboard -c ' + "'" + _copy_line[1].replace('\n', '').replace("'", "'\\''") + "'")
-        elif argument_list[1] == 'password' or argument_list[1] == '-p':
+        elif argument_list[2] == 'password' or argument_list[2] == '-p':
             system('clipboard -c ' + "'" + _copy_line[0].replace('\n', '').replace("'", "'\\''") + "'")
-        elif argument_list[1] == 'url' or argument_list[1] == '-l':
+        elif argument_list[2] == 'url' or argument_list[2] == '-l':
             system('clipboard -c ' + "'" + _copy_line[2].replace('\n', '').replace("'", "'\\''") + "'")
-        elif argument_list[1] == 'note' or argument_list[1] == '-n':
+        elif argument_list[2] == 'note' or argument_list[2] == '-n':
             system('clipboard -c ' + "'" + _copy_line[3].replace('\n', '').replace("'", "'\\''") + "'")
         Popen('sleep 30; clipboard -r', shell=True, close_fds=True)
     elif Path("/data/data/com.termux").exists():  # Termux (Android) clipboard detection
-        if argument_list[1] == 'username' or argument_list[1] == '-u':
+        if argument_list[2] == 'username' or argument_list[2] == '-u':
             system('termux-clipboard-set ' + "'" + _copy_line[1].replace('\n', '').replace("'", "'\\''") + "'")
-        elif argument_list[1] == 'password' or argument_list[1] == '-p':
+        elif argument_list[2] == 'password' or argument_list[2] == '-p':
             system('termux-clipboard-set ' + "'" + _copy_line[0].replace('\n', '').replace("'", "'\\''") + "'")
-        elif argument_list[1] == 'url' or argument_list[1] == '-l':
+        elif argument_list[2] == 'url' or argument_list[2] == '-l':
             system('termux-clipboard-set ' + "'" + _copy_line[2].replace('\n', '').replace("'", "'\\''") + "'")
-        elif argument_list[1] == 'note' or argument_list[1] == '-n':
+        elif argument_list[2] == 'note' or argument_list[2] == '-n':
             system('termux-clipboard-set ' + "'" + _copy_line[3].replace('\n', '').replace("'", "'\\''") + "'")
         Popen("sleep 30; termux-clipboard-set ''", shell=True, close_fds=True)
     elif environ.get('WAYLAND_DISPLAY') == 'wayland-0':  # Wayland clipboard detection
-        if argument_list[1] == 'username' or argument_list[1] == '-u':
+        if argument_list[2] == 'username' or argument_list[2] == '-u':
             system('wl-copy ' + "'" + _copy_line[1].replace('\n', '').replace("'", "'\\''") + "'")
-        elif argument_list[1] == 'password' or argument_list[1] == '-p':
+        elif argument_list[2] == 'password' or argument_list[2] == '-p':
             system('wl-copy ' + "'" + _copy_line[0].replace('\n', '').replace("'", "'\\''") + "'")
-        elif argument_list[1] == 'url' or argument_list[1] == '-l':
+        elif argument_list[2] == 'url' or argument_list[2] == '-l':
             system('wl-copy ' + "'" + _copy_line[2].replace('\n', '').replace("'", "'\\''") + "'")
-        elif argument_list[1] == 'note' or argument_list[1] == '-n':
+        elif argument_list[2] == 'note' or argument_list[2] == '-n':
             system('wl-copy ' + "'" + _copy_line[3].replace('\n', '').replace("'", "'\\''") + "'")
         Popen('sleep 30; wl-copy -c', shell=True, close_fds=True)
     else:  # X11 clipboard detection
-        if argument_list[1] == 'username' or argument_list[1] == '-u':
+        if argument_list[2] == 'username' or argument_list[2] == '-u':
             system('echo -n ' + "'" + _copy_line[1].replace('\n', '').replace("'", "'\\''") + "'" + ' | xclip -sel c')
-        elif argument_list[1] == 'password' or argument_list[1] == '-p':
+        elif argument_list[2] == 'password' or argument_list[2] == '-p':
             system('echo -n ' + "'" + _copy_line[0].replace('\n', '').replace("'", "'\\''") + "'" + ' | xclip -sel c')
-        elif argument_list[1] == 'url' or argument_list[1] == '-l':
+        elif argument_list[2] == 'url' or argument_list[2] == '-l':
             system('echo -n ' + "'" + _copy_line[2].replace('\n', '').replace("'", "'\\''") + "'" + ' | xclip -sel c')
-        elif argument_list[1] == 'note' or argument_list[1] == '-n':
+        elif argument_list[2] == 'note' or argument_list[2] == '-n':
             system('echo -n ' + "'" + _copy_line[3].replace('\n', '').replace("'", "'\\''") + "'" + ' | xclip -sel c')
         Popen("sleep 30; echo -n '' | xclip -sel c", shell=True, close_fds=True)
     rmtree(f"{tmp_dir}{_shm_folder}")
@@ -648,11 +648,8 @@ if __name__ == "__main__":
     try:
         silent_sync, ssh_error = 0, 0
         # retrieve typed argument
-        argument_list, argument = argv, ''
-        del argument_list[0]
-        for _argument in argument_list:
-            argument += _argument + ' '
-        argument = argument[:-1]
+        argument_list = argv
+        argument = ' '.join(argument_list[1:])
         if uname()[0] == 'Haiku':  # set proper gpg command for OS
             gpg = 'gpg --pinentry-mode loopback'
         else:
@@ -699,53 +696,53 @@ if __name__ == "__main__":
         elif argument == 'help' or argument == '--help' or argument == '-h' or argument == 'license' or argument \
                 == 'version' or argument == '-v':
             print_info()
-        elif argument_list[0] == 'add':
-            if len(argument_list) == 1:
+        elif argument_list[1] == 'add':
+            if len(argument_list) == 2:
                 print_info()
-            elif argument_list[1] == 'note' or argument_list[1] == '-n' or argument_list[1] == 'password' or \
-                    argument_list[1] == '-p':
+            elif argument_list[2] == 'note' or argument_list[2] == '-n' or argument_list[2] == 'password' or \
+                    argument_list[2] == '-p':
                 add_entry()
-            elif argument_list[1] == 'folder' or argument_list[1] == '-f':
+            elif argument_list[2] == 'folder' or argument_list[2] == '-f':
                 add_folder()
             else:
                 print_info()
                 s_exit(0)
-        elif argument_list[0] == 'edit':
-            if len(argument_list) == 1:
+        elif argument_list[1] == 'edit':
+            if len(argument_list) == 2:
                 print_info()
-            elif argument_list[1] == 'rename' or argument_list[1] == 'relocate' or argument_list[1] == '-r':
+            elif argument_list[2] == 'rename' or argument_list[2] == 'relocate' or argument_list[2] == '-r':
                 silent_sync = 1
                 rename()
-            elif argument_list[1] == 'username' or argument_list[1] == '-u' or argument_list[1] == 'password' or \
-                    argument_list[1] == '-p' or argument_list[1] == 'url' or argument_list[1] == '-l' or \
-                    argument_list[1] == 'note' or argument_list[1] == '-n':
+            elif argument_list[2] == 'username' or argument_list[2] == '-u' or argument_list[2] == 'password' or \
+                    argument_list[2] == '-p' or argument_list[2] == 'url' or argument_list[2] == '-l' or \
+                    argument_list[2] == 'note' or argument_list[2] == '-n':
                 edit()
             else:
                 print_info()
                 s_exit(0)
-        elif argument_list[0] == 'gen':
+        elif argument_list[1] == 'gen':
             gen()
-        elif argument_list[0] == 'copy':
-            if len(argument_list) == 1:
+        elif argument_list[1] == 'copy':
+            if len(argument_list) == 2:
                 print_info()
-            elif argument_list[1] == 'username' or argument_list[1] == '-u' or argument_list[1] == 'password' or \
-                    argument_list[1] == '-p' or argument_list[1] == 'url' or argument_list[1] == '-l' or \
-                    argument_list[1] == 'note' or argument_list[1] == '-n':
+            elif argument_list[2] == 'username' or argument_list[2] == '-u' or argument_list[2] == 'password' or \
+                    argument_list[2] == '-p' or argument_list[2] == 'url' or argument_list[2] == '-l' or \
+                    argument_list[2] == 'note' or argument_list[2] == '-n':
                 copy_data()
             else:
                 print_info()
-        elif argument_list[0] == 'shear' or argument_list[0] == '-rm':
+        elif argument_list[1] == 'shear' or argument_list[1] == '-rm':
             remove_data()
-        elif argument_list[0] != 'sync' and argument_list[0] != '-s':
+        elif argument_list[1] != 'sync' and argument_list[1] != '-s':
             print(f"\n\u001b[38;5;9merror: invalid argument - run 'sshyp help' to list usable commands\u001b[0m\n")
             s_exit(1)
 
         # sync if any changes were made
-        if len(argument_list) > 0 and ssh_error == 0 and \
-                ((argument_list[0] == 'sync' or argument_list[0] == '-s' or argument_list[0] == 'gen' or
-                  argument_list[0] == 'shear' or argument_list[0] == '-rm') or ((argument_list[0] == 'add'
-                                                                                 or argument_list[0] == 'edit')
-                                                                                and len(argument_list) > 1)):
+        if len(argument_list) > 1 and ssh_error == 0 and \
+                ((argument_list[1] == 'sync' or argument_list[1] == '-s' or argument_list[1] == 'gen' or
+                  argument_list[1] == 'shear' or argument_list[1] == '-rm') or ((argument_list[1] == 'add'
+                                                                                 or argument_list[1] == 'edit')
+                                                                                and len(argument_list) > 2)):
             sync()
 
         s_exit(0)
