@@ -1,4 +1,4 @@
-![sshyp](https://github.com/rwinkhart/sshyp-labs/blob/main/extra/sshyp-banner.png)
+![sshyp](https://github.com/rwinkhart/sshyp-labs/blob/main/extra/artwork/sshyp-banner.png)
 
 [![CodeQL](https://github.com/rwinkhart/sshyp/actions/workflows/codeql-analysis.yml/badge.svg?branch=main)](https://github.com/rwinkhart/sshyp/actions/workflows/codeql-analysis.yml)
 
