@@ -189,6 +189,7 @@ def copy_name_check(_port, _username_ssh, _ip, _client_device_name):
 
 
 def tweak():  # runs configuration wizard
+    _divider = f"\n{'=' * (get_terminal_size()[0] - int((.5 * get_terminal_size()[0])))}\n\n"
     # storage/config directory creation
     Path(path.expanduser('~/.local/share/sshyp')).mkdir(0o700, parents=True, exist_ok=True)
     Path(path.expanduser('~/.config/sshyp/devices')).mkdir(0o700, parents=True, exist_ok=True)
@@ -204,7 +205,8 @@ def tweak():  # runs configuration wizard
     if _device_type.lower() == 's':
         open(path.expanduser('~/.config/sshyp/sshyp-device'), 'w').write(_device_type)
         Path(path.expanduser('~/.config/sshyp/deleted')).mkdir(0o700, parents=True, exist_ok=True)
-        print('\nmake sure the ssh service is running and properly configured\n\nconfiguration complete\n')
+        print(f"\n\u001b[4;1mmake sure the ssh service is running and properly configured\u001b[0m\n"
+              f"{_divider}configuration complete\n")
         s_exit(0)
     else:
         # device type configuration
@@ -212,8 +214,8 @@ def tweak():  # runs configuration wizard
         open(path.expanduser('~/.config/sshyp/sshyp-device'), 'w').write(_device_type)
 
         # gpg configuration
-        _gpg_id = input('\nsshyp requires the use of a unique gpg key - use an (e)xisting key or (g)enerate a new one? '
-                        '(E/g) ')
+        _gpg_id = input(f"{_divider}sshyp requires the use of a unique gpg key - use an (e)xisting key or (g)enerate "
+                        f"a new one? (E/g) ")
         if _gpg_id.lower() != 'g':
             system(f"{gpg} -k")
             _gpg_id = str(input('gpg key id: '))
@@ -234,18 +236,19 @@ def tweak():  # runs configuration wizard
         remove(path.expanduser('~/.config/sshyp/lock'))
 
         # ssh key configuration
-        _ssh_gen = (input('\nmake sure the ssh service on the remote server is running and properly configured'
-                          '\n\nsync support requires a unique ssh key - would you like to have this automatically '
-                          'generated? (Y/n) '))
+        _ssh_gen = (input(f"{_divider}make sure the ssh service on the remote server is running and properly "
+                          f"configured\n\nsync support requires a unique ssh key - would you like to have this "
+                          f"automatically generated? (Y/n) "))
         if _ssh_gen.lower() != 'n':
             if uname()[0] == 'Haiku':
                 Path(f"{path.expanduser('~')}/.ssh").mkdir(0o700, exist_ok=True)
             system('ssh-keygen -t ed25519 -f ~/.ssh/sshyp')
         else:
-            print(f"\nensure that the key file you are using is located at {path.expanduser('~/.ssh/sshyp')}")
+            print(f"\n\u001b[4;1mensure that the key file you are using is located at "
+                  f"{path.expanduser('~/.ssh/sshyp')}\u001b[0m")
 
         # ssh ip+port configuration
-        _ip_port = str(input('\nexample input: 10.10.10.10:9999\n\nip and ssh port of the remote server: '))
+        _ip_port = str(input(f"{_divider}example input: 10.10.10.10:9999\n\nip and ssh port of the remote server: "))
         _ip, _sep, _port = _ip_port.partition(':')
 
         # ssh user configuration
@@ -253,7 +256,7 @@ def tweak():  # runs configuration wizard
 
         # sshyp-only data storage
         open(path.expanduser('~/.config/sshyp/sshyp-data'), 'w')\
-            .write(_gpg_id + '\n' + input('\nexample input: vim\n\npreferred text editor: '))
+            .write(_gpg_id + '\n' + input(f"{_divider}example input: vim\n\npreferred text editor: "))
 
         # sshync profile generation
         sshync.make_profile(path.expanduser('~/.config/sshyp/sshyp.sshync'),
@@ -263,13 +266,13 @@ def tweak():  # runs configuration wizard
         # device name configuration
         for _name in listdir(path.expanduser('~/.config/sshyp/devices')):  # remove existing device name
             remove(f"{path.expanduser('~/.config/sshyp/devices/')}{_name}")
-        print('\n\u001b[4;1mimportant:\u001b[0m This name \u001b[4;1mmust\u001b[0m be unique amongst your client '
-              'devices\n\nthis is used to keep track of which devices have up-to-date databases\n')
+        print(f"{_divider}\u001b[4;1mimportant:\u001b[0m this name \u001b[4;1mmust\u001b[0m be unique amongst your "
+              f"client devices\n\nthis is used to keep track of which devices have up-to-date databases\n")
         _client_device_name = str(input('device name: '))
         open(f"{path.expanduser('~/.config/sshyp/devices/')}{_client_device_name}", 'w')
         copy_name_check(_port, _username_ssh, _ip, _client_device_name)
 
-        print('\nconfiguration complete\n')
+        print(f"{_divider}configuration complete\n")
 
 
 def print_info():  # prints help text based on argument
