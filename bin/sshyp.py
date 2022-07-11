@@ -225,7 +225,12 @@ def tweak():  # runs configuration wizard
                 open(path.expanduser('~/.config/sshyp/gpg-gen'), 'w').write('Key-Type: 1\nKey-Length: 4096\nKey-Usage:\
                  sign encrypt\nName-Real: sshyp\nName-Comment: password manager encryption\nName-Email: \
                  https://github.com/rwinkhart/sshyp\nExpire-Date: 0')
-            run(f"{gpg} --batch --generate-key '{path.expanduser('~/.config/sshyp/gpg-gen')}'", shell=True)
+            if uname()[0] == 'Haiku':
+                run(gpg + ' --batch --generate-key --passphrase ' + "'" +
+                    input('Please enter the passphrase to\nprotect your new key\nPassphrase: ') + "'" + " '" +
+                    path.expanduser('~/.config/sshyp/gpg-gen') + "'", shell=True)
+            else:
+                run(f"{gpg} --batch --generate-key '{path.expanduser('~/.config/sshyp/gpg-gen')}'", shell=True)
             _gpg_id = run(f"{gpg} -k", shell=True, stdout=PIPE, text=True).stdout.split('\n')[-4].strip()
 
         # lock file generation
