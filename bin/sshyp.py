@@ -231,6 +231,7 @@ def tweak():  # runs configuration wizard
                     path.expanduser('~/.config/sshyp/gpg-gen') + "'", shell=True)
             else:
                 run(f"{gpg} --batch --generate-key '{path.expanduser('~/.config/sshyp/gpg-gen')}'", shell=True)
+            remove(path.expanduser('~/.config/sshyp/gpg-gen'))
             _gpg_id = run(f"{gpg} -k", shell=True, stdout=PIPE, text=True).stdout.split('\n')[-4].strip()
 
         # lock file generation
