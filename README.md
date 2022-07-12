@@ -25,12 +25,12 @@ What sshyp can do:
 - securely manage a collection of encrypted passwords and notes via CLI
 - generate new, secure passwords to the user's choice in length and complexity
 - securely sync said passwords and notes seamlessly between devices
+- utilize [extensions](https://github.com/rwinkhart/sshyp-labs) to interact with your entries is additional ways (such as generating TOTP keys)
 - everything above with entries created by pass/password-store!
 - everything above on Haiku, FreeBSD, Linux, and Termux (an Android terminal emulator)!
 
 What sshyp will likely do:
 
-- (planned v1.1.0) 2FA/MFA management (beneficial for reducing phone usage)
 - (planned v1.2.0) everything it already does, but also in a GUI for Linux/Haiku
 
 What sshyp definitely won't do:
@@ -43,6 +43,8 @@ Please see the [installation guide](https://github.com/rwinkhart/sshyp/wiki/Inst
 Pre-built packages exist for Haiku, FreeBSD, Arch Linux, Debian/Ubuntu Linux, Fedora Linux, and Termux. These can be downloaded from the releases page.
 
 Requests for additional distribution/OS support can be filed as issues.
+
+Extensions are available in the [sshyp-labs](https://github.com/rwinkhart/sshyp-labs) repository.
 
 # Building
 Since sshyp is written entirely in Python, it doesn't need to be compiled. It does, however, need to be packaged for installation.
@@ -89,10 +91,10 @@ man sshyp
 # Roadmap
 Short-term Goals:
 
-- 2FA/MFA management
-- create minimal GUI apps (Linux x86_64, Linux aarch64, Haiku x86_64)
+- create minimal GUI app (Linux x86_64, Linux aarch64)
 - various optimizations/bug fixes
 
 Long-term Goals:
 
+- a fun surprise
 - seize the thrones, shear the humans
