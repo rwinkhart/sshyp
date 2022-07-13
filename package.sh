@@ -101,8 +101,7 @@ fi
 
 if [ "$distro" == "5" ] || [ "$distro" == "8" ]; then
     echo -e '\nPackaging for Termux...\n'
-    mkdir -p packages/termuxtemp/sshyp_"$version"-"$revision"_all_termux/{data,DEBIAN}
-    mkdir -p packages/termuxtemp/sshyp_"$version"-"$revision"_all_termux/data/data/com.termux/files/usr/share/man/man1
+    mkdir -p packages/termuxtemp/sshyp_"$version"-"$revision"_all_termux/{data/data/com.termux/files/usr/share/man/man1,DEBIAN}
     echo "Package: sshyp
 Version: $version
 Section: utils
@@ -114,7 +113,7 @@ Priority: optional
 Installed-Size: 185
 " > packages/termuxtemp/sshyp_"$version"-"$revision"_all_termux/DEBIAN/control
     cp -r bin packages/termuxtemp/sshyp_"$version"-"$revision"_all_termux/data/data/com.termux/files/usr/
-    ln -s /usr/bin/sshyp.py packages/termuxtemp/sshyp_"$version"-"$revision"_all_termux/data/data/com.termux/files/usr/bin/sshyp
+    ln -s /data/data/com.termux/files/usr/bin/sshyp.py packages/termuxtemp/sshyp_"$version"-"$revision"_all_termux/data/data/com.termux/files/usr/bin/sshyp
     cp -r share packages/termuxtemp/sshyp_"$version"-"$revision"_all_termux/data/data/com.termux/files/usr/
     cp extra/manpage packages/termuxtemp/sshyp_"$version"-"$revision"_all_termux/data/data/com.termux/files/usr/share/man/man1/sshyp.1
     gzip packages/termuxtemp/sshyp_"$version"-"$revision"_all_termux/data/data/com.termux/files/usr/share/man/man1/sshyp.1
