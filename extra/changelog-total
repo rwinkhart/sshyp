@@ -1,3 +1,39 @@
+sshyp v1.1.0
+
+the sheecrets update
+
+the main focus of this release was adding extension support (particularly for sshyp-mfa)
+and cleaning up the configuration experience
+
+compatibility-breaking changes:
+
+- the entry directory has been moved from ~/.password-pasture to ~/.local/share/sshyp
+as a means of complying with the XDG base directory spec
+    ^ this requires the user to move their entry directory to the new location manually
+        ^ if this is not done, sshyp will not be able to find entries made prior to v1.1.0
+- due to a new configuration option (preferred text editor), 'sshyp tweak' must be run after updating
+
+user-facing features:
+
+- extension support
+    ^ some of sshyp's critical functions can now be imported into other programs to extend
+    upon sshyp's functionality
+        ^ the first usecase of this is sshyp-mfa, which can be found at https://github.com/rwinkhart/sshyp-labs
+- a new configuration experience
+    ^ the 'sshyp tweak' menu has been made much more readable, and now the automatically generated
+    gpg key has its id automatically input, making the process easier for the user
+- customizable text editor
+    ^ the text editor used for editing notes can now be set to any editor preferred by the user
+        ^ this means that nano was dropped as a dependency
+
+fixes:
+
+- to avoid exceptions on server devices, all arguments (apart from 'tweak') have been disabled on servers
+- fixed entry readout not printing blank lines between fields under certain conditions
+- various optimizations
+
+<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+
 sshyp v1.0.1
 
 The Polished Trotters Update - Patch 1
