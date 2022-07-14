@@ -227,7 +227,7 @@ def tweak():  # runs configuration wizard
                  https://github.com/rwinkhart/sshyp\nExpire-Date: 0')
             if uname()[0] == 'Haiku':
                 run(gpg + ' --batch --generate-key --passphrase ' + "'" +
-                    input('Please enter the passphrase to\nprotect your new key\nPassphrase: ') + "'" + " '" +
+                    input('\ngpg passphrase: ') + "'" + " '" +
                     path.expanduser('~/.config/sshyp/gpg-gen') + "'", shell=True)
             else:
                 run(f"{gpg} --batch --generate-key '{path.expanduser('~/.config/sshyp/gpg-gen')}'", shell=True)
