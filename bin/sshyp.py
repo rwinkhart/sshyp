@@ -162,12 +162,12 @@ def decrypt(_entry_dir, _shm_folder, _shm_entry, _gpg_command, _tmp_dir=path.exp
 
 
 def edit_note(_shm_folder, _shm_entry):  # edits the note attached to an entry
-    lines = open(f"{tmp_dir}{_shm_folder}/{_shm_entry}").readlines()
-    open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'w').writelines(lines[0:3])
-    open(f"{tmp_dir}{_shm_folder}/{_shm_entry}-n", 'w').writelines(lines[3:])
+    _lines = open(f"{tmp_dir}{_shm_folder}/{_shm_entry}").readlines()
+    open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'w').writelines(_lines[0:3])
+    open(f"{tmp_dir}{_shm_folder}/{_shm_entry}-n", 'w').writelines(_lines[3:])
     system(f"{editor} {tmp_dir}{_shm_folder}/{_shm_entry}-n")
-    edit_notes = open(f"{tmp_dir}{_shm_folder}/{_shm_entry}-n").read()
-    open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'a').write(edit_notes)
+    _edit_notes = open(f"{tmp_dir}{_shm_folder}/{_shm_entry}-n").read()
+    open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'a').write(_edit_notes)
 
 
 def copy_name_check(_port, _username_ssh, _ip, _client_device_name):
@@ -524,12 +524,13 @@ def edit():  # edits the contents of an entry
     _shm_folder, _shm_entry = shm_gen()
     decrypt(directory + _entry_name, _shm_folder, _shm_entry, gpg)
 
-    # compatibility check for GNU pass entries (ensuring they have at least four lines)
+    # compatibility fix for pass/incomplete sshyp entries
     _lines = open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'r').readlines()
     if len(_lines) < 3:
-        while len(_lines) < 3:
-            _lines.append('\n')
-        open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'w').writelines(_lines)
+        _new_lines = 0
+        while len(_lines) + _new_lines < 3:
+            _new_lines += 1
+        open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'a').write((_new_lines * '\n') + '\n')
 
     if argument_list[2] == 'username' or argument_list[2] == '-u':
         _detail = str(input('new username: '))
