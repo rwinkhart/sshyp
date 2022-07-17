@@ -161,13 +161,34 @@ def decrypt(_entry_dir, _shm_folder, _shm_entry, _gpg_command, _tmp_dir=path.exp
         s_exit(1)
 
 
-def edit_note(_shm_folder, _shm_entry):  # edits the note attached to an entry
-    _lines = open(f"{tmp_dir}{_shm_folder}/{_shm_entry}").readlines()
-    open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'w').writelines(_lines[0:3])
+def optimized_edit(_lines, _edit_data, _edit_line):  # ensures an edited entry is optimized for best compatibility
+    while len(_lines) < _edit_line + 1:
+        _lines += ['\n']
+    if _edit_data is not None:
+        _lines[_edit_line] = _edit_data.strip('\n').rstrip() + '\n'
+    for _num in range(len(_lines)):
+        if not _lines[_num].endswith('\n'):
+            _lines[_num] += '\n'
+    for _num in reversed(range(len(_lines))):
+        if _lines[_num] == '\n':
+            _lines = _lines[:-1]
+        elif _lines[_num].endswith('\n'):
+            _lines[_num] = _lines[_num].rstrip()
+            break
+        else:
+            break
+    return _lines
+
+
+def edit_note(_shm_folder, _shm_entry, _lines):  # edits the note attached to an entry
+    _reg_lines = _lines[0:3]
     open(f"{tmp_dir}{_shm_folder}/{_shm_entry}-n", 'w').writelines(_lines[3:])
     system(f"{editor} {tmp_dir}{_shm_folder}/{_shm_entry}-n")
-    _edit_notes = open(f"{tmp_dir}{_shm_folder}/{_shm_entry}-n").read()
-    open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'a').write(_edit_notes)
+    _new_notes = open(f"{tmp_dir}{_shm_folder}/{_shm_entry}-n").readlines()
+    while len(_reg_lines) < 3:
+        _reg_lines += ['\n']
+    _noted_lines = _reg_lines + _new_notes
+    return _noted_lines
 
 
 def copy_name_check(_port, _username_ssh, _ip, _client_device_name):
@@ -513,7 +534,7 @@ def rename():  # renames an entry or folder
 
 
 def edit():  # edits the contents of an entry
-    _shm_folder, _shm_entry = None, None  # sets base-line values to avoid errors
+    _shm_folder, _shm_entry, _detail, _edit_line = None, None, None, None  # sets values to avoid PEP8 warnings
     if len(argument_list) < 4:
         _entry_name = entry_name_fetch('entry to edit: ')
     else:
@@ -523,26 +544,19 @@ def edit():  # edits the contents of an entry
         s_exit(1)
     _shm_folder, _shm_entry = shm_gen()
     decrypt(directory + _entry_name, _shm_folder, _shm_entry, gpg)
-
-    # compatibility fix for pass/incomplete sshyp entries
-    _lines = open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'r').readlines()
-    if len(_lines) < 3:
-        _new_lines = 0
-        while len(_lines) + _new_lines < 3:
-            _new_lines += 1
-        open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'a').write((_new_lines * '\n') + '\n')
-
     if argument_list[2] == 'username' or argument_list[2] == '-u':
-        _detail = str(input('new username: '))
-        replace_line(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 1, _detail + '\n')
+        _detail, _edit_line = str(input('username: ')), 1
     elif argument_list[2] == 'password' or argument_list[2] == '-p':
-        _detail = str(input('new password: '))
-        replace_line(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 0, _detail + '\n')
+        _detail, _edit_line = str(input('password: ')), 0
     elif argument_list[2] == 'url' or argument_list[2] == '-l':
-        _detail = str(input('new url: '))
-        replace_line(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 2, _detail + '\n')
-    elif argument_list[2] == 'note' or argument_list[2] == '-n':
-        edit_note(_shm_folder, _shm_entry)
+        _detail, _edit_line = str(input('url: ')), 2
+    if argument_list[2] == 'note' or argument_list[2] == '-n':
+        _edit_line = 2
+        _new_lines = optimized_edit(edit_note(_shm_folder, _shm_entry,
+                                              open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'r').readlines()), None, -1)
+    else:
+        _new_lines = optimized_edit(open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'r').readlines(), _detail, _edit_line)
+    open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'w').writelines(_new_lines)
     remove(f"{directory}{_entry_name}.gpg")
     print('\n\u001b[1mentry preview:\u001b[0m')
     entry_reader(f"{tmp_dir}{_shm_folder}/{_shm_entry}")
