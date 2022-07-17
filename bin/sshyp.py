@@ -82,13 +82,7 @@ def entry_reader(_decrypted_entry):  # displays the contents of an entry in a re
                     print()
         except IndexError:
             if _num == 0:
-                print(f"\u001b[38;5;15;48;5;238mpassword:\u001b[0m\n{_entry_lines[0]}")
-
-
-def replace_line(file_name, line_num, text):  # replaces text in a given line with different text
-    _lines = open(file_name, 'r').readlines()
-    _lines[line_num] = text
-    open(file_name, 'w').writelines(_lines)
+                print(f"\u001b[38;5;15;48;5;238mpassword:\u001b[0m\n{_entry_lines[0]}\n")
 
 
 def entry_name_fetch(_entry_name_location):  # fetches and returns entry name from user input or from provided argument
@@ -481,7 +475,7 @@ def add_entry():  # adds a new entry
         _shm_folder, _shm_entry = shm_gen()
         system(f"{editor} {tmp_dir}{_shm_folder}/{_shm_entry}-n")
         _notes = open(f"{tmp_dir}{_shm_folder}/{_shm_entry}-n", 'r').read()
-        open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'w').writelines('\n\n\n' + _notes)
+        open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'w').writelines(optimized_edit(['', '', '', _notes], None, -1))
     elif argument_list[2] == 'password' or argument_list[2] == '-p':
         _username = str(input('username: '))
         _password = str(input('password: '))
@@ -493,10 +487,10 @@ def add_entry():  # adds a new entry
             _notes = open(f"{tmp_dir}{_shm_folder}/{_shm_entry}-n", 'r').read()
         else:
             _notes = ''
-        open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'w').writelines(_password + '\n' + _username + '\n' + _url +
-                                                                     '\n' + _notes)
-        print('\n\u001b[1mentry preview:\u001b[0m')
-        entry_reader(f"{tmp_dir}{_shm_folder}/{_shm_entry}")
+        open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'w')\
+            .writelines(optimized_edit([_password, _username, _url, _notes], None, -1))
+    print('\n\u001b[1mentry preview:\u001b[0m')
+    entry_reader(f"{tmp_dir}{_shm_folder}/{_shm_entry}")
     encrypt(_shm_folder, _shm_entry, _entry_name)
 
 
@@ -588,20 +582,17 @@ def gen():  # generates a password for a new or an existing entry
             _notes = open(f"{tmp_dir}{_shm_folder}/{_shm_entry}-n", 'r').read()
         else:
             _notes = ''
-        open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'w').writelines(_password + '\n' + _username + '\n' + _url + '\n'
-                                                                     + _notes)
-        print('\n\u001b[1mentry preview:\u001b[0m')
-        entry_reader(f"{tmp_dir}{_shm_folder}/{_shm_entry}")
-        encrypt(_shm_folder, _shm_entry, _entry_name)
+        open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'w')\
+            .writelines(optimized_edit([_password, _username, _url, _notes], None, -1))
     else:
-        _password = pass_gen()
         _shm_folder, _shm_entry = shm_gen()
         decrypt(directory + _entry_name, _shm_folder, _shm_entry, gpg)
-        replace_line(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 0, _password + '\n')
+        _new_lines = optimized_edit(open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'r').readlines(), pass_gen(), 0)
+        open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'w').writelines(_new_lines)
         remove(f"{directory}{_entry_name}.gpg")
-        print('\n\u001b[1mentry preview:\u001b[0m')
-        entry_reader(f"{tmp_dir}{_shm_folder}/{_shm_entry}")
-        encrypt(_shm_folder, _shm_entry, _entry_name)
+    print('\n\u001b[1mentry preview:\u001b[0m')
+    entry_reader(f"{tmp_dir}{_shm_folder}/{_shm_entry}")
+    encrypt(_shm_folder, _shm_entry, _entry_name)
 
 
 def copy_data():  # copies a specified field of an entry to the clipboard
