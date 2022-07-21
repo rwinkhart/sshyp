@@ -136,9 +136,9 @@ def pass_gen():  # generates and returns a random password based on user-specifi
     return _gen
 
 
-def encrypt(_entry_dir, _shm_folder, _shm_entry, _gpg_command, _tmp_dir=path.expanduser('~/.config/sshyp/tmp/')):
+def encrypt(_entry_dir, _shm_folder, _shm_entry, _gpg_com, _gpg_id, _tmp_dir=path.expanduser('~/.config/sshyp/tmp/')):
     # encrypts an entry and cleans up the temporary files
-    system(f"{_gpg_command} -qr {str(gpg_id)} -e '{tmp_dir}{_shm_folder}/{_shm_entry}'")
+    system(f"{_gpg_com} -qr {str(_gpg_id)} -e '{tmp_dir}{_shm_folder}/{_shm_entry}'")
     move(f"{tmp_dir}{_shm_folder}/{_shm_entry}.gpg", f"{_entry_dir}.gpg")
     rmtree(f"{tmp_dir}{_shm_folder}")
 
@@ -492,7 +492,7 @@ def add_entry():  # adds a new entry
             .writelines(optimized_edit([_password, _username, _url, _notes], None, -1))
     print('\n\u001b[1mentry preview:\u001b[0m')
     entry_reader(f"{tmp_dir}{_shm_folder}/{_shm_entry}")
-    encrypt(directory + _entry_name, _shm_folder, _shm_entry, 'gpg --pinentry-mode loopback')
+    encrypt(directory + _entry_name, _shm_folder, _shm_entry, gpg, gpg_id)
 
 
 def add_folder():  # creates a new folder
@@ -555,7 +555,7 @@ def edit():  # edits the contents of an entry
     remove(f"{directory}{_entry_name}.gpg")
     print('\n\u001b[1mentry preview:\u001b[0m')
     entry_reader(f"{tmp_dir}{_shm_folder}/{_shm_entry}")
-    encrypt(directory + _entry_name, _shm_folder, _shm_entry, 'gpg --pinentry-mode loopback')
+    encrypt(directory + _entry_name, _shm_folder, _shm_entry, gpg, gpg_id)
 
 
 def gen():  # generates a password for a new or an existing entry
@@ -593,7 +593,7 @@ def gen():  # generates a password for a new or an existing entry
         remove(f"{directory}{_entry_name}.gpg")
     print('\n\u001b[1mentry preview:\u001b[0m')
     entry_reader(f"{tmp_dir}{_shm_folder}/{_shm_entry}")
-    encrypt(directory + _entry_name, _shm_folder, _shm_entry, 'gpg --pinentry-mode loopback')
+    encrypt(directory + _entry_name, _shm_folder, _shm_entry, gpg, gpg_id)
 
 
 def copy_data():  # copies a specified field of an entry to the clipboard
