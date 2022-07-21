@@ -238,9 +238,9 @@ def tweak():  # runs configuration wizard
         else:
             print('\na unique gpg key is being generated for you...')
             if not Path(path.expanduser('~/.config/sshyp/gpg-gen')).is_file():
-                open(path.expanduser('~/.config/sshyp/gpg-gen'), 'w').write('Key-Type: 1\nKey-Length: 4096\nKey-Usage:\
-                 sign encrypt\nName-Real: sshyp\nName-Comment: password manager encryption\nName-Email: \
-                 https://github.com/rwinkhart/sshyp\nExpire-Date: 0')
+                open(path.expanduser('~/.config/sshyp/gpg-gen'), 'w').writelines([
+                    'Key-Type: 1\n', 'Key-Length: 4096\n', 'Key-Usage: sign encrypt\n', 'Name-Real: sshyp\n',
+                    'Name-Comment: gpg-sshyp\n', 'Name-Email: https://github.com/rwinkhart/sshyp\n', 'Expire-Date: 0'])
             if uname()[0] == 'Haiku':
                 run(gpg + ' --batch --generate-key --passphrase ' + "'" +
                     input('\ngpg passphrase: ') + "'" + " '" +
