@@ -138,9 +138,9 @@ def pass_gen():  # generates and returns a random password based on user-specifi
 
 def encrypt(_entry_dir, _shm_folder, _shm_entry, _gpg_com, _gpg_id, _tmp_dir=path.expanduser('~/.config/sshyp/tmp/')):
     # encrypts an entry and cleans up the temporary files
-    system(f"{_gpg_com} -qr {str(_gpg_id)} -e '{tmp_dir}{_shm_folder}/{_shm_entry}'")
-    move(f"{tmp_dir}{_shm_folder}/{_shm_entry}.gpg", f"{_entry_dir}.gpg")
-    rmtree(f"{tmp_dir}{_shm_folder}")
+    system(f"{_gpg_com} -qr {str(_gpg_id)} -e '{_tmp_dir}{_shm_folder}/{_shm_entry}'")
+    move(f"{_tmp_dir}{_shm_folder}/{_shm_entry}.gpg", f"{_entry_dir}.gpg")
+    rmtree(f"{_tmp_dir}{_shm_folder}")
 
 
 def decrypt(_entry_dir, _shm_folder, _shm_entry, _gpg_command, _tmp_dir=path.expanduser('~/.config/sshyp/tmp/')):
