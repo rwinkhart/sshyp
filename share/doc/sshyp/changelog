@@ -1,36 +1,27 @@
-sshyp v1.1.0
+sshyp v1.1.1
 
-the sheecrets update
+the sheecrets update - patch one
 
-the main focus of this release was adding extension support (particularly for sshyp-mfa)
-and cleaning up the configuration experience
+this is a polish/bug fix release that makes tweaks to the entry format (without breaking compatibility)
 
 compatibility-breaking changes:
 
-- the entry directory has been moved from ~/.password-pasture to ~/.local/share/sshyp
-as a means of complying with the XDG base directory spec
-    ^ this requires the user to move their entry directory to the new location manually
-        ^ if this is not done, sshyp will not be able to find entries made prior to v1.1.0
-- due to a new configuration option (preferred text editor), 'sshyp tweak' must be run after updating
+- none; the entry format tweaks are backward compatible with sshyp v1.0.0+
+    ^ the new format is slightly more efficient in terms of storage space
+        ^ if you would like to upgrade to it, run this script (after updating to v1.1.1):
+          https://raw.githubusercontent.com/rwinkhart/sshyp-labs/main/extra/conversion-scripts/sshyp-refresh-1.1.1%2B.py
 
 user-facing features:
 
-- extension support
-    ^ some of sshyp's critical functions can now be imported into other programs to extend
-    upon sshyp's functionality
-        ^ the first usecase of this is sshyp-mfa, which can be found at https://github.com/rwinkhart/sshyp-labs
-- a new configuration experience
-    ^ the 'sshyp tweak' menu has been made much more readable, and now the automatically generated
-    gpg key has its id automatically input, making the process easier for the user
-- customizable text editor
-    ^ the text editor used for editing notes can now be set to any editor preferred by the user
-        ^ this means that nano was dropped as a dependency
+- entries (when editing or adding) are now run through the new optimized_edit() function to strip trailing new lines
+and ensure the format of the entries is fully compatible with all of sshyp's functions
 
 fixes:
 
-- to avoid exceptions on server devices, all arguments (apart from 'tweak') have been disabled on servers
-- fixed entry readout not printing blank lines between fields under certain conditions
-- various optimizations
+- when adding a note to an entry, there is no longer a chance the first note line will be added as a url
+if the entry is using an older format/pass format
+- the gpg auto-generation file temporarily created by sshyp no longer includes extra spaces
+    ^ seems to serve no functional purpose - fixed for the sake of polish
 
 <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 
