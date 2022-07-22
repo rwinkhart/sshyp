@@ -1,3 +1,30 @@
+sshyp v1.1.1
+
+the sheecrets update - patch one
+
+this is a polish/bug fix release that makes tweaks to the entry format (without breaking compatibility)
+
+compatibility-breaking changes:
+
+- none; the entry format tweaks are backward compatible with sshyp v1.0.0+
+    ^ the new format is slightly more efficient in terms of storage space
+        ^ if you would like to upgrade to it, run this script (after updating to v1.1.1):
+          https://raw.githubusercontent.com/rwinkhart/sshyp-labs/main/extra/conversion-scripts/sshyp-refresh-1.1.1%2B.py
+
+user-facing features:
+
+- entries (when editing or adding) are now run through the new optimized_edit() function to strip trailing new lines
+and ensure the format of the entries is fully compatible with all of sshyp's functions
+
+fixes:
+
+- when adding a note to an entry, there is no longer a chance the first note line will be added as a url
+if the entry is using an older format/pass format
+- the gpg auto-generation file temporarily created by sshyp no longer includes extra spaces
+    ^ seems to serve no functional purpose - fixed for the sake of polish
+
+<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+
 sshyp v1.1.0
 
 the sheecrets update
