@@ -744,7 +744,11 @@ if __name__ == "__main__":
             elif argument_list[2] == 'username' or argument_list[2] == '-u' or argument_list[2] == 'password' or \
                     argument_list[2] == '-p' or argument_list[2] == 'url' or argument_list[2] == '-l' or \
                     argument_list[2] == 'note' or argument_list[2] == '-n':
-                copy_data()
+                try:
+                    copy_data()
+                except IndexError:
+                    print(f"\n\u001b[38;5;9merror: field does not exist in entry\u001b[0m\n")
+                    s_exit(1)
             else:
                 print_info()
         elif argument_list[1] == 'shear' or argument_list[1] == '-rm':
