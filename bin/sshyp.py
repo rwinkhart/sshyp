@@ -423,22 +423,16 @@ def sync():  # calls sshync to sync changes to the user's server
         _deletion_database = None
         s_exit(1)
     for _file in _deletion_database:
-        if _file[:-1].endswith('/'):
-            try:
-                if silent_sync != 1:
-                    print(f"\u001b[38;5;208m{_file[:-1]}\u001b[0m has been sheared, removing...")
+        try:
+            if silent_sync != 1:
+                print(f"\u001b[38;5;208m{_file[:-1]}\u001b[0m has been sheared, removing...")
+            if _file[:-1].endswith('/'):
                 rmtree(f"{directory}{_file[:-1]}")
-            except FileNotFoundError:
-                if silent_sync != 1:
-                    print('folder does not exist locally.')
-        else:
-            try:
-                if silent_sync != 1:
-                    print(f"\u001b[38;5;208m{_file[:-1]}\u001b[0m has been sheared, removing...")
+            else:
                 remove(f"{directory}{_file[:-1]}.gpg")
-            except (FileNotFoundError, IsADirectoryError):
-                if silent_sync != 1:
-                    print('file does not exist locally.')
+        except FileNotFoundError:
+            if silent_sync != 1:
+                print('location does not exist locally')
     # check for new folders
     system(f"ssh -i '{path.expanduser('~/.ssh/sshyp')}' -p {port} {username_ssh}@{ip} \"cd /bin; python -c "
            f"'import sshypRemote; sshypRemote.folder_check()'\"")
