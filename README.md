@@ -40,7 +40,7 @@ What sshyp definitely won't do:
 # Installation
 Please see the [installation guide](https://github.com/rwinkhart/sshyp/wiki/Installation) in the sshyp wiki for directions specific to your distribution/OS.
 
-Pre-built packages exist for Haiku, FreeBSD, Arch Linux, Debian/Ubuntu Linux, Fedora Linux, and Termux. These can be downloaded from the releases page.
+Pre-built packages exist for Haiku, FreeBSD, Alpine Linux, Arch Linux, Debian/Ubuntu Linux, Fedora Linux, and Termux. These can be downloaded from the releases page.
 
 Requests for additional distribution/OS support can be filed as issues.
 
@@ -63,7 +63,7 @@ Haiku and Fedora packaging must be done on their own respective distributions.
 
 The AUR version and the packages attatched to the release tags were already packaged using this script.
 
-Currently, the script can create packages for Haiku, FreeBSD, Arch Linux (PKGBUILD), Debian/Ubuntu Linux, Fedora Linux, Termux, and generic.
+Currently, the script can create packages for Haiku, FreeBSD, Alpine Linux (APKBUILD), Arch Linux (PKGBUILD), Debian/Ubuntu Linux, Fedora Linux, Termux, and generic.
 
 # Usage
 Upon initial installation (on both the server and client devices), be sure to run:
