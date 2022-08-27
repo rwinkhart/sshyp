@@ -19,15 +19,7 @@ echo -e '\nThe value entered in this field will only affect the revision number 
 read -r -p "Revision number: " revision
 
 if [ "$distro" == "7" ] || [ "$distro" == "8" ] || [ "$distro" == "9" ]; then
-    echo -e '\nOptions (please enter the number only):'
-    echo -e '\n1. GitHub Release Tag\n2. Local\n'
-    read -r -p "Source (for build scripts): " source
-
-    if [ "$source" == "1" ]; then
-        source='https://github.com/rwinkhart/sshyp/releases/download/v$pkgver/sshyp-$pkgver.tar.xz'
-    else
-        source=local://sshyp-"$version".tar.xz
-    fi
+	source='https://github.com/rwinkhart/sshyp/releases/download/v$pkgver/sshyp-$pkgver.tar.xz'
 fi
 
 mkdir -p packages
