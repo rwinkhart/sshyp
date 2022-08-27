@@ -513,8 +513,7 @@ def rename():  # renames an entry or folder
     if not Path(f"{directory}{_entry_name}.gpg").is_file() and not Path(f"{directory}{_entry_name}").is_dir():
         print(f"\n\u001b[38;5;9merror: entry ({_entry_name}) does not exist\u001b[0m\n")
         s_exit(1)
-    _new_name = str(input('new name: '))
-    print(f"{directory}{_new_name}")
+    _new_name = entry_name_fetch('new name: ')
     if Path(f"{directory}{_new_name}.gpg").is_file() or Path(f"{directory}{_new_name}").is_dir():
         print(f"\n\u001b[38;5;9merror: ({_new_name}) already exists\u001b[0m\n")
         s_exit(1)
