@@ -249,7 +249,7 @@ if [ "$distro" == "8" ] || [ "$distro" == "9" ]; then
     echo "# Maintainer: Randall Winkhart <idgr@tutanota.com>
 pkgname=sshyp
 pkgver="$version"
-pkgrel="$revision"
+pkgrel="$((revision-1))"
 pkgdesc='A light-weight, self-hosted, synchronized password manager'
 options=!check
 url='https://github.com/rwinkhart/sshyp'
