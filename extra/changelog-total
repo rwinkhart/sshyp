@@ -1,3 +1,24 @@
+sshyp v1.1.2
+
+the sheecrets update - patch two
+
+this is a general polish/bugfix release
+
+user-facing features:
+
+- packaging support for Alpine Linux/postmarketOS
+- the rename() function is no longer unnecessarily verbose
+- handled exception for when the user attempts to copy an entry field that does not exist
+
+fixes/optimizations:
+
+- replaced shebang with "#!/usr/bin/env python3" for improved compatibility with various systems
+    ^ does not affect Haiku packaging
+- fixed the generic package not actually being compressed
+- reduced lines of code used for cross-device entry deletion
+
+<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+
 sshyp v1.1.1
 
 the sheecrets update - patch one
