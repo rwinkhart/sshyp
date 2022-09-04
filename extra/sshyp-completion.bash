@@ -47,4 +47,4 @@ _sshyp_completions() {
 
   esac
 } &&
-complete -F _sshyp_completions sshyp && _path_gen
+complete -F _sshyp_completions sshyp
