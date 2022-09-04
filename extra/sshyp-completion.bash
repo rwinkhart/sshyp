@@ -22,7 +22,7 @@ _sshyp_completions() {
   local compline="${COMP_WORDS[@]:1:$COMP_CWORD-1}"
 
   case "$compline" in
-    'add password'* | 'add note'* | 'add folder'* | 'edit relocate'* | 'edit username'* | 'edit password'* | 'edit url' | 'edit note'* | 'copy username'* | 'copy password'* | 'copy note'* | 'copy url'* | 'gen update'*)
+    'add password'* | 'add -p'* | 'add note'* | 'add -n'* | 'add folder'*| 'add -f'* | 'edit relocate'* | 'edit -r'* | 'edit username'* | 'edit -u'* | 'edit password'* | 'edit -p'* | 'edit url'* | 'edit -l'* | 'edit note'* | 'edit -n'* | 'copy username'* | 'copy -u'* | 'copy password'* | 'copy -p'* | 'copy note'* | 'copy -n'* | 'copy url'* | 'copy -l'* | 'gen update'* | 'gen -u'*)
       while read; do COMPREPLY+=( "$REPLY" ); done < <( compgen -W  "$(printf "'%s' " "${trimmed_paths[@]}")" -- "$cur" )
       ;;
 
