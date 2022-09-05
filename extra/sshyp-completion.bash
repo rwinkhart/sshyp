@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 
 _path_gen() {
-    local sshyp_path="$HOME/.local/share/sshyp/"
-    local sshyp_path_length="${#sshyp_path}"
-    readarray -t full_paths < <(find "$HOME"/.local/share/sshyp -type f -exec ls {} \;)
+    local sshyp_path="$HOME/.local/share/sshyp"
+    local sshyp_path_length="$(("${#sshyp_path}" + 1))"
+    readarray -t full_paths < <(find "$sshyp_path" -type f -exec ls {} \;)
     for path in "${full_paths[@]}"; do
         trimmed_path=$(echo $path | sed 's/.\{4\}$//' | cut -c"$sshyp_path_length"-)
         trimmed_path=$(echo ${trimmed_path// /\\ })
@@ -47,4 +47,4 @@ _sshyp_completions() {
 
   esac
 } &&
-complete -F _sshyp_completions sshyp
+_path_gen && complete -F _sshyp_completions sshyp
