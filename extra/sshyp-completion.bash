@@ -5,7 +5,8 @@ _path_gen() {
     local sshyp_path_length="$(("${#sshyp_path}" + 1))"
     readarray -t full_paths < <(find "$sshyp_path" -type f -exec ls {} \;)
     for path in "${full_paths[@]}"; do
-        trimmed_path=$(echo $path | sed 's/.\{4\}$//' | cut -c"$sshyp_path_length"-)
+        trimmed_path=${path%????}
+        trimmed_path=$(echo $trimmed_path | cut -c"$sshyp_path_length"-)
         trimmed_path=$(echo ${trimmed_path// /\\ })
         trimmed_paths+=("$trimmed_path")
     done
