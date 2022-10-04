@@ -219,15 +219,14 @@ def tweak():  # runs configuration wizard
     # device type configuration
     _device_type = input('\nclient or server installation? (C/s) ')
     if _device_type.lower() == 's':
-        open(path.expanduser('~/.config/sshyp/sshyp-device'), 'w').write(_device_type.lower())
+        open(path.expanduser('~/.config/sshyp/sshyp-device'), 'w').write('s')
         Path(path.expanduser('~/.config/sshyp/deleted')).mkdir(0o700, parents=True, exist_ok=True)
         print(f"\n\u001b[4;1mmake sure the ssh service is running and properly configured\u001b[0m\n"
               f"{_divider}configuration complete\n")
         s_exit(0)
     else:
         # device type configuration
-        _device_type = 'c'  # ensure device type flag is properly set
-        open(path.expanduser('~/.config/sshyp/sshyp-device'), 'w').write(_device_type.lower())
+        open(path.expanduser('~/.config/sshyp/sshyp-device'), 'w').write('c')
 
         # gpg configuration
         _gpg_id = input(f"{_divider}sshyp requires the use of a unique gpg key - use an (e)xisting key or (g)enerate "
@@ -313,8 +312,8 @@ def print_info():  # prints help text based on argument
             print('edit                     edit an existing entry')
             print('copy                     copy details of an entry to your clipboard')
             print('shear/-rm                delete an existing entry')
-            print('sync/-s                  manually sync the entry directory via sshync\n')
-            print('\u001b[1mflags:\u001b[0m')
+            print('sync/-s                  manually sync the entry directory via sshync')
+            print('\n\u001b[1mflags:\u001b[0m')
             print('add:')
             print(' password/-p             add a password entry')
             print(' note/-n                 add a note entry')
@@ -340,7 +339,7 @@ def print_info():  # prints help text based on argument
             print('version/-v               display sshyp version info')
             print('tweak                    configure sshyp')
             print('whitelist                manage the quick-unlock whitelist')
-            print('\u001b[1mflags:\u001b[0m')
+            print('\n\u001b[1mflags:\u001b[0m')
             print('whitelist:')
             print(' list/-l             view all registered device ids and their quick-unlock whitelist status')
             print(' add                 whitelist a device id for quick-unlock')
