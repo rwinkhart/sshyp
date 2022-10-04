@@ -355,12 +355,11 @@ def print_info():  # prints help text based on argument
         print('\u001b[38;5;7;48;5;8m<><><><><><><><><><><><><><><><><><><><><><><><><><><><>\u001b[0m\n')
         print('see https://github.com/rwinkhart/sshyp for more information\n')
     elif argument_list[1] == 'license':
-        print('\nThis program is free software: you can redistribute it and/or modify it under the terms of the GNU '
-              'General\nPublic License as published by the Free Software Foundation, either version 3 of the License,'
-              '\nor (at your option) any later version.\n\nThis program is distributed in the hope that it will be '
-              'useful, but WITHOUT ANY WARRANTY;\nwithout even the implied warranty of MERCHANTABILITY or FITNESS FOR A'
-              ' PARTICULAR PURPOSE.\nSee the GNU General Public License for more details.'
-              '\n\nhttps://opensource.org/licenses/GPL-3.0\n')
+        print('\nThis program is free software: you can redistribute it and/or modify it under the terms\nof version 3 '
+              '(only) of the GNU General Public License as published by the Free Software Foundation.\n\nThis program '
+              'is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;\nwithout even the implied '
+              'warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\nSee the GNU General Public License for'
+              ' more details.\n\nhttps://opensource.org/licenses/GPL-3.0\n')
     elif argument_list[1] == 'add':
         print('\n\u001b[1musage:\u001b[0m sshyp add [flag [<entry name>]]\u001b[0m\n')
         print('\u001b[1mflags:\u001b[0m')
