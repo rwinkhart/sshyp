@@ -219,7 +219,7 @@ def tweak():  # runs configuration wizard
     # device type configuration
     _device_type = input('\nclient or server installation? (C/s) ')
     if _device_type.lower() == 's':
-        open(path.expanduser('~/.config/sshyp/sshyp-device'), 'w').write(_device_type)
+        open(path.expanduser('~/.config/sshyp/sshyp-device'), 'w').write(_device_type.lower())
         Path(path.expanduser('~/.config/sshyp/deleted')).mkdir(0o700, parents=True, exist_ok=True)
         print(f"\n\u001b[4;1mmake sure the ssh service is running and properly configured\u001b[0m\n"
               f"{_divider}configuration complete\n")
@@ -227,7 +227,7 @@ def tweak():  # runs configuration wizard
     else:
         # device type configuration
         _device_type = 'c'  # ensure device type flag is properly set
-        open(path.expanduser('~/.config/sshyp/sshyp-device'), 'w').write(_device_type)
+        open(path.expanduser('~/.config/sshyp/sshyp-device'), 'w').write(_device_type.lower())
 
         # gpg configuration
         _gpg_id = input(f"{_divider}sshyp requires the use of a unique gpg key - use an (e)xisting key or (g)enerate "
@@ -332,7 +332,7 @@ def print_info():  # prints help text based on argument
             print(' note/-n                 copy the note of an entry to your clipboard')
             print('gen:')
             print(' update/-u               generate a password for an existing entry')
-            print("\n\u001b[1mtip:\u001b[0m you can quickly read an entry with 'sshyp /<entry name>'")
+            print("\n\u001b[1mtip:\u001b[0m you can quickly read an entry with 'sshyp /<entry name>'\n")
         else:
             print('\n\u001b[1musage:\u001b[0m sshyp [option [flag] [<device id>]]\n')
             print('\u001b[1moptions:\u001b[0m')
@@ -342,9 +342,9 @@ def print_info():  # prints help text based on argument
             print('whitelist                manage the quick-unlock whitelist')
             print('\u001b[1mflags:\u001b[0m')
             print('whitelist:')
-            print(' list/-l             view all registered device ids and their quick unlock whitelist status')
-            print(' add                 whitelist a device id for quick unlock')
-            print(' delete/del          remove a device id from the quick unlock whitelist')
+            print(' list/-l             view all registered device ids and their quick-unlock whitelist status')
+            print(' add                 whitelist a device id for quick-unlock')
+            print(' delete/del          remove a device id from the quick-unlock whitelist\n')
     elif argument_list[1] == 'version' or argument_list[1] == '-v':
         print('\nsshyp is a simple, self-hosted, sftp-synchronized password manager\nfor unix(-like) systems (haiku/'
               'freebsd/linux/termux)\n\nsshyp is a viable alternative to (and compatible with) pass/password-store\n')
@@ -401,9 +401,9 @@ def print_info():  # prints help text based on argument
         print('\n\u001b[1musage:\u001b[0m sshyp whitelist [flag [<device id>]]\u001b[0m\n')
         print('\u001b[1mflags:\u001b[0m')
         print('whitelist:')
-        print(' list/-l             view all registered device ids and their quick unlock whitelist status')
-        print(' add                 whitelist a device id for quick unlock')
-        print(' delete/del          remove a device id from the quick unlock whitelist\n')
+        print(' list/-l             view all registered device ids and their quick-unlock whitelist status')
+        print(' add                 whitelist a device id for quick-unlock')
+        print(' delete/del          remove a device id from the quick-unlock whitelist\n')
 
 
 def no_arg():  # displays a list of entries and gives an option to select one for viewing
@@ -684,8 +684,8 @@ if __name__ == "__main__":
             gpg = 'gpg'
 
         # import saved userdata
+        device_type = ''
         if argument != 'tweak':
-            device_type = ''
             tmp_dir = path.expanduser('~/.config/sshyp/tmp/')
             try:
                 device_type = open(path.expanduser('~/.config/sshyp/sshyp-device')).read().strip()
@@ -710,7 +710,7 @@ if __name__ == "__main__":
                           f"list usable commands\u001b[0m\n")
                     s_exit(0)
             except (FileNotFoundError, IndexError):
-                if device_type.lower() != 's':
+                if device_type != 's':
                     print('\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
                     print("not all necessary configuration files are present - please run 'sshyp tweak'")
                     print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n')
@@ -727,6 +727,9 @@ if __name__ == "__main__":
         elif argument == 'help' or argument == '--help' or argument == '-h' or argument == 'license' or argument \
                 == 'version' or argument == '-v':
             print_info()
+        elif argument_list[1] == 'whitelist' and device_type == 's':
+            if len(argument_list) == 2:
+                print_info()
         elif argument_list[1] == 'add':
             if len(argument_list) == 2:
                 print_info()
