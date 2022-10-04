@@ -33,7 +33,7 @@ pkgrel="$revision"
 pkgdesc='A light-weight, self-hosted, synchronized password manager'
 url='https://github.com/rwinkhart/sshyp'
 arch=('any')
-license=('GPL3')
+license=('GPL-3.0-only')
 depends=(python gnupg openssh xclip wl-clipboard)
 source=(\""$source"\")
 sha512sums=('"$sha512"')
@@ -55,7 +55,7 @@ pkgdesc='A light-weight, self-hosted, synchronized password manager'
 options=!check
 url='https://github.com/rwinkhart/sshyp'
 arch='noarch'
-license='GPL-3.0-or-later'
+license='GPL-3.0-only'
 depends='python3 gnupg openssh xclip wl-clipboard'
 source=\""$source"\"
 
@@ -82,7 +82,7 @@ description		\"sshyp is the only password-store compatible CLI password manager 
 packager		\"Randall Winkhart <idgr at tutanota dot com>\"
 vendor			\"Randall Winkhart\"
 licenses {
-	\"GNU GPL v3\"
+	\"GPL-3.0-only\"
 }
 copyrights {
 	\"2021-2022 Randall Winkhart\"
@@ -179,7 +179,7 @@ Version:        "$version"
 Release:        "$revision"
 Summary:        A light-weight, self-hosted, synchronized password manager
 BuildArch:      noarch
-License:        GPLv3
+License:        GPL-3.0-only
 URL:            https://github.com/rwinkhart/sshyp
 Source0:        sshyp-"$version".tar.xz
 Requires:       python gnupg openssh wl-clipboard
