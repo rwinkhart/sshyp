@@ -221,6 +221,7 @@ def tweak():  # runs configuration wizard
     if _device_type.lower() == 's':
         open(path.expanduser('~/.config/sshyp/sshyp-device'), 'w').write('s')
         Path(path.expanduser('~/.config/sshyp/deleted')).mkdir(0o700, parents=True, exist_ok=True)
+        Path(path.expanduser('~/.config/sshyp/whitelist')).mkdir(0o700, parents=True, exist_ok=True)
         print(f"\n\u001b[4;1mmake sure the ssh service is running and properly configured\u001b[0m\n"
               f"{_divider}configuration complete\n")
         s_exit(0)
@@ -473,6 +474,39 @@ def sync():  # calls sshync to sync changes to the user's server
     system('find ' + directory + ' -type d -exec chmod -R 700 {} +')
     system('find ' + directory + ' -type f -exec chmod -R 600 {} +')
     sshync.run_profile(path.expanduser('~/.config/sshyp/sshyp.sshync'))
+
+
+def whitelist_list():  # shows the quick-unlock whitelist status of device ids
+    _whitelisted_ids = listdir(path.expanduser('~/.config/sshyp/whitelist'))
+    _device_ids = listdir(path.expanduser('~/.config/sshyp/devices'))
+    print('\u001b[1mquick-unlock whitelisted device ids:\u001b[0m')
+    for _id in _whitelisted_ids:
+        print(_id)
+    print('\n\u001b[1mother registered device ids:\u001b[0m')
+    for _id in _device_ids:
+        if _id not in _whitelisted_ids:
+            print(_id)
+    print()
+
+
+def whitelist_manage():  # adds or removes quick-unlock whitelisted device ids
+    if len(argument_list) == 3:
+        whitelist_list()
+        _device_id = input()
+    else:
+        _argument_split = argument.split(' ')
+        del _argument_split[:1]
+        _device_id = ' '.join(_argument_split)
+
+    if argument_list[2] == 'add':
+        if _device_id in listdir(path.expanduser('~/.config/sshyp/devices')):
+            open(path.expanduser(f"~/.config/sshyp/whitelist/{_device_id}"), 'w').write('')
+        else:
+            print(f"\n\u001b[38;5;9merror: device id ({_device_id}) is not registered\u001b[0m\n")
+            s_exit(1)
+
+    elif Path(path.expanduser(f"~/.config/sshyp/whitelist/{_device_id}")).is_file():
+        remove(path.expanduser(f"~/.config/sshyp/whitelist/{_device_id}"))
 
 
 def add_entry():  # adds a new entry
@@ -729,6 +763,10 @@ if __name__ == "__main__":
         elif argument_list[1] == 'whitelist' and device_type == 's':
             if len(argument_list) == 2:
                 print_info()
+            elif argument_list[2] == 'list' or argument_list[2] == '-l':
+                whitelist_list()
+            elif argument_list[2] == 'add' or argument_list[2] == 'delete' or argument_list == 'del':
+                whitelist_manage()
         elif argument_list[1] == 'add':
             if len(argument_list) == 2:
                 print_info()
