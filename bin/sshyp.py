@@ -186,10 +186,10 @@ def edit_note(_shm_folder, _shm_entry, _lines):  # edits the note attached to an
     return _noted_lines
 
 
-def copy_name_check(_port, _username_ssh, _ip, _client_device_name):
+def copy_id_check(_port, _username_ssh, _ip, _client_device_id):
     # attempts to connect to the user's server via ssh to register the device for syncing
     _command = f"ssh -o ConnectTimeout=3 -i '{path.expanduser('~/.ssh/sshyp')}' -p {_port} {_username_ssh}@{_ip} " \
-               f"\"touch '/home/{_username_ssh}/.config/sshyp/devices/{_client_device_name}'\""
+               f"\"touch '/home/{_username_ssh}/.config/sshyp/devices/{_client_device_id}'\""
     try:
         run(_command, shell=True, stderr=PIPE, check=True, close_fds=True)
     except CalledProcessError:
@@ -285,14 +285,14 @@ def tweak():  # runs configuration wizard
                             path.expanduser('~/.local/share/sshyp/'), f"/home/{_username_ssh}/.local/share/sshyp/",
                             path.expanduser('~/.ssh/sshyp'), _ip, _port, _username_ssh)
 
-        # device name configuration
-        for _name in listdir(path.expanduser('~/.config/sshyp/devices')):  # remove existing device name
-            remove(f"{path.expanduser('~/.config/sshyp/devices/')}{_name}")
-        print(f"{_divider}\u001b[4;1mimportant:\u001b[0m this name \u001b[4;1mmust\u001b[0m be unique amongst your "
-              f"client devices\n\nthis is used to keep track of which devices have up-to-date databases\n")
-        _client_device_name = str(input('device name: '))
-        open(f"{path.expanduser('~/.config/sshyp/devices/')}{_client_device_name}", 'w')
-        copy_name_check(_port, _username_ssh, _ip, _client_device_name)
+        # device id configuration
+        for _id in listdir(path.expanduser('~/.config/sshyp/devices')):  # remove existing device id
+            remove(f"{path.expanduser('~/.config/sshyp/devices/')}{_id}")
+        print(f"{_divider}\u001b[4;1mimportant:\u001b[0m this id \u001b[4;1mmust\u001b[0m be unique amongst your "
+              f"client devices\n\nthis is used to keep track of database syncing and quick-unlock permissions\n")
+        _client_device_id = str(input('device id: '))
+        open(f"{path.expanduser('~/.config/sshyp/devices/')}{_client_device_id}", 'w')
+        copy_id_check(_port, _username_ssh, _ip, _client_device_id)
 
         print(f"{_divider}configuration complete\n")
 
@@ -432,7 +432,7 @@ def sync():  # calls sshync to sync changes to the user's server
     print('\nsyncing entries with the server device...\n')
     # check for deletions
     system(f"ssh -i '{path.expanduser('~/.ssh/sshyp')}' -p {port} {username_ssh}@{ip} \"cd /bin; python -c "
-           f"'import sshypRemote; sshypRemote.deletion_check(\"'\"{client_device_name}\"'\")'\"")
+           f"'import sshypRemote; sshypRemote.deletion_check(\"'\"{client_device_id}\"'\")'\"")
     system(f"scp -pqs -P {port} -i '{path.expanduser('~/.ssh/sshyp')}' {username_ssh}@{ip}:'/home/{username_ssh}"
            f"/.config/sshyp/deletion_database' {path.expanduser('~/.config/sshyp/')}")
     try:
@@ -731,13 +731,13 @@ if __name__ == "__main__":
                     port = ssh_info[2].replace('\n', '')
                     directory = str(ssh_info[3].replace('\n', ''))
                     directory_ssh = str(ssh_info[4].replace('\n', ''))
-                    client_device_name = listdir(path.expanduser('~/.config/sshyp/devices'))[0]
+                    client_device_id = listdir(path.expanduser('~/.config/sshyp/devices'))[0]
                     sshyp_data = open(path.expanduser('~/.config/sshyp/sshyp-data')).readlines()
                     gpg_id = sshyp_data[0].replace('\n', '')
                     editor = sshyp_data[1].replace('\n', '')
                     ssh_error = int(open(path.expanduser('~/.config/sshyp/ssh-error')).read().strip())
                     if ssh_error != 0:
-                        ssh_error = copy_name_check(port, username_ssh, ip, client_device_name)
+                        ssh_error = copy_id_check(port, username_ssh, ip, client_device_id)
                 elif argument_list[1] != "help" and argument_list[1] != "--help" and argument_list[1] != "-h" and \
                         argument_list[1] != "license" and argument_list[1] != "version" and argument_list[1] != "-v" \
                         and argument_list[1] != "whitelist":
