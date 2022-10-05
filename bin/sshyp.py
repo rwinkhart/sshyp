@@ -479,7 +479,7 @@ def sync():  # calls sshync to sync changes to the user's server
 def whitelist_list():  # shows the quick-unlock whitelist status of device ids
     _whitelisted_ids = listdir(path.expanduser('~/.config/sshyp/whitelist'))
     _device_ids = listdir(path.expanduser('~/.config/sshyp/devices'))
-    print('\u001b[1mquick-unlock whitelisted device ids:\u001b[0m')
+    print('\n\u001b[1mquick-unlock whitelisted device ids:\u001b[0m')
     for _id in _whitelisted_ids:
         print(_id)
     print('\n\u001b[1mother registered device ids:\u001b[0m')
@@ -492,21 +492,23 @@ def whitelist_list():  # shows the quick-unlock whitelist status of device ids
 def whitelist_manage():  # adds or removes quick-unlock whitelisted device ids
     if len(argument_list) == 3:
         whitelist_list()
-        _device_id = input()
+        _device_id = input('device id: ')
     else:
         _argument_split = argument.split(' ')
-        del _argument_split[:1]
+        del _argument_split[:2]
         _device_id = ' '.join(_argument_split)
 
     if argument_list[2] == 'add':
         if _device_id in listdir(path.expanduser('~/.config/sshyp/devices')):
             open(path.expanduser(f"~/.config/sshyp/whitelist/{_device_id}"), 'w').write('')
+            whitelist_list()
         else:
             print(f"\n\u001b[38;5;9merror: device id ({_device_id}) is not registered\u001b[0m\n")
             s_exit(1)
 
     elif Path(path.expanduser(f"~/.config/sshyp/whitelist/{_device_id}")).is_file():
         remove(path.expanduser(f"~/.config/sshyp/whitelist/{_device_id}"))
+        whitelist_list()
 
 
 def add_entry():  # adds a new entry
@@ -765,7 +767,7 @@ if __name__ == "__main__":
                 print_info()
             elif argument_list[2] == 'list' or argument_list[2] == '-l':
                 whitelist_list()
-            elif argument_list[2] == 'add' or argument_list[2] == 'delete' or argument_list == 'del':
+            elif argument_list[2] == 'add' or argument_list[2] == 'delete' or argument_list[2] == 'del':
                 whitelist_manage()
         elif argument_list[1] == 'add':
             if len(argument_list) == 2:
