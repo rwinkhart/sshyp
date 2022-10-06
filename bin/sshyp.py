@@ -670,43 +670,43 @@ def copy_data():  # copies a specified field of an entry to the clipboard
     _copy_line = open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'r').readlines()
     if uname()[0] == 'Haiku':  # Haiku clipboard detection
         if argument_list[2] == 'username' or argument_list[2] == '-u':
-            system('clipboard -c ' + "'" + _copy_line[1].replace('\n', '').replace("'", "'\\''") + "'")
+            system('clipboard -c ' + "'" + _copy_line[1].rstrip().replace("'", "'\\''") + "'")
         elif argument_list[2] == 'password' or argument_list[2] == '-p':
-            system('clipboard -c ' + "'" + _copy_line[0].replace('\n', '').replace("'", "'\\''") + "'")
+            system('clipboard -c ' + "'" + _copy_line[0].rstrip().replace("'", "'\\''") + "'")
         elif argument_list[2] == 'url' or argument_list[2] == '-l':
-            system('clipboard -c ' + "'" + _copy_line[2].replace('\n', '').replace("'", "'\\''") + "'")
+            system('clipboard -c ' + "'" + _copy_line[2].rstrip().replace("'", "'\\''") + "'")
         elif argument_list[2] == 'note' or argument_list[2] == '-n':
-            system('clipboard -c ' + "'" + _copy_line[3].replace('\n', '').replace("'", "'\\''") + "'")
+            system('clipboard -c ' + "'" + _copy_line[3].rstrip().replace("'", "'\\''") + "'")
         Popen('sleep 30; clipboard -r', shell=True, close_fds=True)
     elif Path("/data/data/com.termux").exists():  # Termux (Android) clipboard detection
         if argument_list[2] == 'username' or argument_list[2] == '-u':
-            system('termux-clipboard-set ' + "'" + _copy_line[1].replace('\n', '').replace("'", "'\\''") + "'")
+            system('termux-clipboard-set ' + "'" + _copy_line[1].rstrip().replace("'", "'\\''") + "'")
         elif argument_list[2] == 'password' or argument_list[2] == '-p':
-            system('termux-clipboard-set ' + "'" + _copy_line[0].replace('\n', '').replace("'", "'\\''") + "'")
+            system('termux-clipboard-set ' + "'" + _copy_line[0].rstrip().replace("'", "'\\''") + "'")
         elif argument_list[2] == 'url' or argument_list[2] == '-l':
-            system('termux-clipboard-set ' + "'" + _copy_line[2].replace('\n', '').replace("'", "'\\''") + "'")
+            system('termux-clipboard-set ' + "'" + _copy_line[2].rstrip().replace("'", "'\\''") + "'")
         elif argument_list[2] == 'note' or argument_list[2] == '-n':
-            system('termux-clipboard-set ' + "'" + _copy_line[3].replace('\n', '').replace("'", "'\\''") + "'")
+            system('termux-clipboard-set ' + "'" + _copy_line[3].rstrip().replace("'", "'\\''") + "'")
         Popen("sleep 30; termux-clipboard-set ''", shell=True, close_fds=True)
     elif environ.get('WAYLAND_DISPLAY') == 'wayland-0':  # Wayland clipboard detection
         if argument_list[2] == 'username' or argument_list[2] == '-u':
-            system('wl-copy ' + "'" + _copy_line[1].replace('\n', '').replace("'", "'\\''") + "'")
+            system('wl-copy ' + "'" + _copy_line[1].rstrip().replace("'", "'\\''") + "'")
         elif argument_list[2] == 'password' or argument_list[2] == '-p':
-            system('wl-copy ' + "'" + _copy_line[0].replace('\n', '').replace("'", "'\\''") + "'")
+            system('wl-copy ' + "'" + _copy_line[0].rstrip().replace("'", "'\\''") + "'")
         elif argument_list[2] == 'url' or argument_list[2] == '-l':
-            system('wl-copy ' + "'" + _copy_line[2].replace('\n', '').replace("'", "'\\''") + "'")
+            system('wl-copy ' + "'" + _copy_line[2].rstrip().replace("'", "'\\''") + "'")
         elif argument_list[2] == 'note' or argument_list[2] == '-n':
-            system('wl-copy ' + "'" + _copy_line[3].replace('\n', '').replace("'", "'\\''") + "'")
+            system('wl-copy ' + "'" + _copy_line[3].rstrip().replace("'", "'\\''") + "'")
         Popen('sleep 30; wl-copy -c', shell=True, close_fds=True)
     else:  # X11 clipboard detection
         if argument_list[2] == 'username' or argument_list[2] == '-u':
-            system('echo -n ' + "'" + _copy_line[1].replace('\n', '').replace("'", "'\\''") + "'" + ' | xclip -sel c')
+            system('echo -n ' + "'" + _copy_line[1].rstrip().replace("'", "'\\''") + "'" + ' | xclip -sel c')
         elif argument_list[2] == 'password' or argument_list[2] == '-p':
-            system('echo -n ' + "'" + _copy_line[0].replace('\n', '').replace("'", "'\\''") + "'" + ' | xclip -sel c')
+            system('echo -n ' + "'" + _copy_line[0].rstrip().replace("'", "'\\''") + "'" + ' | xclip -sel c')
         elif argument_list[2] == 'url' or argument_list[2] == '-l':
-            system('echo -n ' + "'" + _copy_line[2].replace('\n', '').replace("'", "'\\''") + "'" + ' | xclip -sel c')
+            system('echo -n ' + "'" + _copy_line[2].rstrip().replace("'", "'\\''") + "'" + ' | xclip -sel c')
         elif argument_list[2] == 'note' or argument_list[2] == '-n':
-            system('echo -n ' + "'" + _copy_line[3].replace('\n', '').replace("'", "'\\''") + "'" + ' | xclip -sel c')
+            system('echo -n ' + "'" + _copy_line[3].rstrip().replace("'", "'\\''") + "'" + ' | xclip -sel c')
         Popen("sleep 30; echo -n '' | xclip -sel c", shell=True, close_fds=True)
     rmtree(f"{tmp_dir}{_shm_folder}")
 
