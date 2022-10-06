@@ -54,8 +54,7 @@ def sort_titles_mods(_list_1, _list_2):  # creates and returns two lists (of tit
 
 
 def make_profile(_profile_dir, _local_dir, _remote_dir, _identity, _ip, _port, _user):  # creates a sshync job profile
-    open(_profile_dir, 'w').write(_user + '\n' + _ip + '\n' + _port + '\n' + _local_dir + '\n' + _remote_dir + '\n' +
-                                  _identity + '\n')
+    open(_profile_dir, 'w').write(f"{_user}\n{_ip}\n{_port}\n{_local_dir}\n{_remote_dir}\n{_identity}\n")
 
 
 def get_profile(_profile_dir):  # returns a list of data read from a sshync job profile
@@ -66,12 +65,12 @@ def get_profile(_profile_dir):  # returns a list of data read from a sshync job 
         _profile_data = None
         s_exit(1)
     # extract data from profile
-    _user = _profile_data[0].replace('\n', '')
-    _ip = _profile_data[1].replace('\n', '')
-    _port = _profile_data[2].replace('\n', '')
-    _local_dir = _profile_data[3].replace('\n', '')
-    _remote_dir = _profile_data[4].replace('\n', '')
-    _identity = _profile_data[5].replace('\n', '')
+    _user = _profile_data[0].rstrip()
+    _ip = _profile_data[1].rstrip()
+    _port = _profile_data[2].rstrip()
+    _local_dir = _profile_data[3].rstrip()
+    _remote_dir = _profile_data[4].rstrip()
+    _identity = _profile_data[5].rstrip()
     return _user, _ip, _port, _local_dir, _remote_dir, _identity
 
 
