@@ -783,13 +783,15 @@ if __name__ == "__main__":
                 == 'version' or argument == '-v':
             print_info()
         elif argument_list[1] == 'whitelist':
-            if len(argument_list) == 2:
+            if device_type == 'server':
+                if len(argument_list) == 2:
+                    print_info()
+                elif argument_list[2] == 'list' or argument_list[2] == '-l':
+                    whitelist_list()
+                elif argument_list[2] == 'add' or argument_list[2] == 'delete' or argument_list[2] == 'del':
+                    whitelist_manage()
+            else:
                 print_info()
-            elif (argument_list[2] == 'list' or argument_list[2] == '-l') and device_type == 'server':
-                whitelist_list()
-            elif (argument_list[2] == 'add' or argument_list[2] == 'delete' or argument_list[2] == 'del') and \
-                    device_type == 'server':
-                whitelist_manage()
         elif argument_list[1] == 'add':
             if len(argument_list) == 2:
                 print_info()
