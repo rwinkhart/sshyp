@@ -411,13 +411,16 @@ def print_info():  # prints help text based on argument
         print(' password/-p             copy the password of an entry to your clipboard')
         print(' url/-l                  copy the url of an entry to your clipboard')
         print(' note/-n                 copy the note of an entry to your clipboard\n')
-    elif argument_list[1] == 'whitelist' and device_type != 'client':
-        print('\n\u001b[1musage:\u001b[0m sshyp whitelist [flag [<device id>]]\u001b[0m\n')
-        print('\u001b[1mflags:\u001b[0m')
-        print('whitelist:')
-        print(' list/-l             view all registered device ids and their quick-unlock whitelist status')
-        print(' add                 whitelist a device id for quick-unlock')
-        print(' delete/del          remove a device id from the quick-unlock whitelist\n')
+    elif argument_list[1] == 'whitelist':
+        if device_type == 'server':
+            print('\n\u001b[1musage:\u001b[0m sshyp whitelist [flag [<device id>]]\u001b[0m\n')
+            print('\u001b[1mflags:\u001b[0m')
+            print('whitelist:')
+            print(' list/-l             view all registered device ids and their quick-unlock whitelist status')
+            print(' add                 whitelist a device id for quick-unlock')
+            print(' delete/del          remove a device id from the quick-unlock whitelist\n')
+        else:
+            print('\n\u001b[38;5;9merror: argument (whitelist) only available on server\u001b[0m\n')
 
 
 def no_arg():  # displays a list of entries and gives an option to select one for viewing
@@ -762,7 +765,7 @@ if __name__ == "__main__":
                           f"list usable commands\u001b[0m\n")
                     s_exit(0)
             except (FileNotFoundError, IndexError):
-                if device_type != 'server':
+                if device_type == 'client':
                     print('\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
                     print("not all necessary configuration files are present - please run 'sshyp tweak'")
                     print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n')
@@ -779,12 +782,13 @@ if __name__ == "__main__":
         elif argument == 'help' or argument == '--help' or argument == '-h' or argument == 'license' or argument \
                 == 'version' or argument == '-v':
             print_info()
-        elif argument_list[1] == 'whitelist' and device_type == 'server':
+        elif argument_list[1] == 'whitelist':
             if len(argument_list) == 2:
                 print_info()
-            elif argument_list[2] == 'list' or argument_list[2] == '-l':
+            elif (argument_list[2] == 'list' or argument_list[2] == '-l') and device_type == 'server':
                 whitelist_list()
-            elif argument_list[2] == 'add' or argument_list[2] == 'delete' or argument_list[2] == 'del':
+            elif (argument_list[2] == 'add' or argument_list[2] == 'delete' or argument_list[2] == 'del') and \
+                    device_type == 'server':
                 whitelist_manage()
         elif argument_list[1] == 'add':
             if len(argument_list) == 2:
