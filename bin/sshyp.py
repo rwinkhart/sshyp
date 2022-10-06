@@ -99,41 +99,41 @@ def entry_name_fetch(_entry_name_location):  # fetches and returns entry name fr
         return _entry_name
 
 
-def shm_gen(_tmp_dir=path.expanduser('~/.config/sshyp/tmp/')):  # creates a temporary directory for entry editing
-    _shm_folder_gen = ''.join(SystemRandom().choice(string.ascii_letters + string.digits)
-                              for _ in range(randint(10, 30)))
-    _shm_entry_gen = ''.join(SystemRandom().choice(string.ascii_letters + string.digits)
-                             for _ in range(randint(10, 30)))
-    Path(_tmp_dir + _shm_folder_gen).mkdir(0o700)
-    return _shm_folder_gen, _shm_entry_gen
+def string_gen(_complexity, _length):  # generates and returns a random string based on input
+    if _complexity == 's':
+        _character_pool = string.ascii_letters + string.digits
+    else:
+        _character_pool = string.printable.replace('/', '').replace('\\', '')
+    _gen = ''.join(SystemRandom().choice(_character_pool) for _ in range(_length))
+    _min_special, _special = round(.2 * _length), 0
+    for _character in _gen:
+        if not _character.isalpha():
+            _special += 1
+    if _special < _min_special:
+        _gen = string_gen(_complexity, _length)
+    return _gen
 
 
-def pass_gen():  # generates and returns a random password based on user-specified options
-    def _pass_gen_function(__complexity, __length):
-        if __complexity.lower() == 's':
-            __character_pool = string.ascii_letters + string.digits
-        else:
-            __character_pool = string.ascii_letters + string.digits + string.punctuation
-        __gen = ''.join(SystemRandom().choice(__character_pool) for _ in range(__length))
-        __min_special, __special = round(.2 * __length), 0
-        for __character in __gen:
-            if not __character.isalpha():
-                __special += 1
-        if __special < __min_special:
-            __gen = _pass_gen_function(__complexity, __length)
-        return __gen
+def pass_gen():  # prompts the user for necessary information to generate a password and passes it to string_gen
     try:
         _length = int(input('password length: '))
     except ValueError:
         print(f"\n\u001b[38;5;9merror: a non-integer value was input for password length\u001b[0m\n")
         _gen = pass_gen()
         return _gen
-    if _length > 840:
-        _length = 840
+    if _length > 800:
+        _length = 800
         print('\n\u001b[38;5;9mpassword length has been limited to the maximum of 840 characters\u001b[0m\n')
     _complexity = str(input('password complexity - simple (for compatibility) or complex (for security)? (s/C) '))
-    _gen = _pass_gen_function(_complexity, _length)
+    _gen = string_gen(_complexity.lower(), _length)
     return _gen
+
+
+def shm_gen(_tmp_dir=path.expanduser('~/.config/sshyp/tmp/')):  # creates a temporary directory for entry editing
+    _shm_folder_gen = string_gen('c', randint(12, 48))
+    _shm_entry_gen = string_gen('c', randint(12, 48))
+    Path(_tmp_dir + _shm_folder_gen).mkdir(0o700)
+    return _shm_folder_gen, _shm_entry_gen
 
 
 def encrypt(_entry_dir, _shm_folder, _shm_entry, _gpg_com, _gpg_id, _tmp_dir=path.expanduser('~/.config/sshyp/tmp/')):
@@ -219,22 +219,21 @@ def tweak():  # runs configuration wizard
     # device type configuration
     _device_type = input('\nclient or server installation? (C/s) ')
     if _device_type.lower() == 's':
-        open(path.expanduser('~/.config/sshyp/sshyp-device'), 'w').write('s')
+        _sshyp_data = ['server']
         Path(path.expanduser('~/.config/sshyp/deleted')).mkdir(0o700, parents=True, exist_ok=True)
         Path(path.expanduser('~/.config/sshyp/whitelist')).mkdir(0o700, parents=True, exist_ok=True)
         print(f"\n\u001b[4;1mmake sure the ssh service is running and properly configured\u001b[0m\n"
               f"{_divider}configuration complete\n")
         s_exit(0)
     else:
-        # device type configuration
-        open(path.expanduser('~/.config/sshyp/sshyp-device'), 'w').write('c')
+        _sshyp_data = ['client']
 
         # gpg configuration
-        _gpg_id = input(f"{_divider}sshyp requires the use of a unique gpg key - use an (e)xisting key or (g)enerate "
-                        f"a new one? (E/g) ")
-        if _gpg_id.lower() != 'g':
+        _gpg_gen = input(f"{_divider}sshyp requires the use of a unique gpg key - use an (e)xisting key or (g)enerate a"
+                         f" new one? (E/g) ")
+        if _gpg_gen.lower() != 'g':
             system(f"{gpg} -k")
-            _gpg_id = str(input('gpg key id: '))
+            _sshyp_data += str(input('gpg key id: '))
         else:
             print('\na unique gpg key is being generated for you...')
             if not Path(path.expanduser('~/.config/sshyp/gpg-gen')).is_file():
@@ -248,13 +247,13 @@ def tweak():  # runs configuration wizard
             else:
                 run(f"{gpg} --batch --generate-key '{path.expanduser('~/.config/sshyp/gpg-gen')}'", shell=True)
             remove(path.expanduser('~/.config/sshyp/gpg-gen'))
-            _gpg_id = run(f"{gpg} -k", shell=True, stdout=PIPE, text=True).stdout.split('\n')[-4].strip()
+            _sshyp_data += run(f"{gpg} -k", shell=True, stdout=PIPE, text=True).stdout.split('\n')[-4].strip()
 
         # lock file generation
         if Path(path.expanduser('~/.config/sshyp/lock.gpg')).is_file():
             remove(path.expanduser('~/.config/sshyp/lock.gpg'))
         open(path.expanduser('~/.config/sshyp/lock'), 'w')
-        system(f"{gpg} -qr {str(_gpg_id)} -e {path.expanduser('~/.config/sshyp/lock')}")
+        system(f"{gpg} -qr {str(_sshyp_data[1])} -e {path.expanduser('~/.config/sshyp/lock')}")
         remove(path.expanduser('~/.config/sshyp/lock'))
 
         # ssh key configuration
@@ -276,9 +275,8 @@ def tweak():  # runs configuration wizard
         # ssh user configuration
         _username_ssh = str(input('\nusername of the remote server: '))
 
-        # sshyp-only data storage
-        open(path.expanduser('~/.config/sshyp/sshyp-data'), 'w')\
-            .write(_gpg_id + '\n' + input(f"{_divider}example input: vim\n\npreferred text editor: "))
+        # text editor configuration
+        _sshyp_data += input(f"{_divider}example input: vim\n\npreferred text editor: ")
 
         # sshync profile generation
         sshync.make_profile(path.expanduser('~/.config/sshyp/sshyp.sshync'),
@@ -290,10 +288,26 @@ def tweak():  # runs configuration wizard
             remove(f"{path.expanduser('~/.config/sshyp/devices/')}{_id}")
         print(f"{_divider}\u001b[4;1mimportant:\u001b[0m this id \u001b[4;1mmust\u001b[0m be unique amongst your "
               f"client devices\n\nthis is used to keep track of database syncing and quick-unlock permissions\n")
-        _client_device_id = str(input('device id: '))
-        open(f"{path.expanduser('~/.config/sshyp/devices/')}{_client_device_id}", 'w')
-        copy_id_check(_port, _username_ssh, _ip, _client_device_id)
+        _device_id_prefix = str(input('device id: '))
+        _device_id_suffix = string_gen('c', randint(12, 48))
+        _device_id = _device_id_prefix + _device_id_suffix
+        open(f"{path.expanduser('~/.config/sshyp/devices/')}{_device_id}", 'w')
+        copy_id_check(_port, _username_ssh, _ip, _device_id)
 
+        # quick-unlock configuration
+        print(f"{_divider}\nthis allows you to use a shorter version of your gpg key password and\n"
+              f"requires a constant connection to your sshyp server to authenticate\n")
+        _quick_unlock_enabled = input('enable quick-unlock? (y/N)')
+        if _quick_unlock_enabled.lower() == 'y':
+            _sshyp_data += 'quick'
+            _sshyp_data += int(input('this must be half the number of characters in your gpg key password or shorter'
+                                     '\n\nquick-unlock key length: '))
+            print(f"\nquick-unlock has been enabled client-side - in order for this device to be able to read entries,"
+                  f"\nyou must first login to the sshyp server and run:\n\nsshyp whitelist add {_device_id}")
+        else:
+            _sshyp_data += 'slow', 0
+
+        open(path.expanduser('~/.config/sshyp/sshyp-data'), 'w').writelines(sshyp_data)
         print(f"{_divider}configuration complete\n")
 
 
@@ -302,7 +316,7 @@ def print_info():  # prints help text based on argument
         print('\n\u001b[1msshyp  copyright (c) 2021-2022  randall winkhart\u001b[0m\n')
         print("this is free software, and you are welcome to redistribute it under certain conditions;\nthis program "
               "comes with absolutely no warranty;\ntype 'sshyp license' for details")
-        if device_type == 'c':
+        if device_type == 'client':
             print('\n\u001b[1musage:\u001b[0m sshyp [option [flag] [<entry name>]] | [/<entry name>]\n')
             print('\u001b[1moptions:\u001b[0m')
             print('help/--help/-h           bring up this menu')
@@ -397,7 +411,7 @@ def print_info():  # prints help text based on argument
         print(' password/-p             copy the password of an entry to your clipboard')
         print(' url/-l                  copy the url of an entry to your clipboard')
         print(' note/-n                 copy the note of an entry to your clipboard\n')
-    elif argument_list[1] == 'whitelist' and device_type != 'c':
+    elif argument_list[1] == 'whitelist' and device_type != 'client':
         print('\n\u001b[1musage:\u001b[0m sshyp whitelist [flag [<device id>]]\u001b[0m\n')
         print('\u001b[1mflags:\u001b[0m')
         print('whitelist:')
@@ -723,19 +737,22 @@ if __name__ == "__main__":
         if argument != 'tweak':
             tmp_dir = path.expanduser('~/.config/sshyp/tmp/')
             try:
-                device_type = open(path.expanduser('~/.config/sshyp/sshyp-device')).read().strip()
-                if device_type == 'c':
+                sshyp_data = open(path.expanduser('~/.config/sshyp/sshyp-data')).readlines()
+                device_type = sshyp_data[0].rstrip()
+                if device_type == 'client':
+                    gpg_id = sshyp_data[1].rstrip()
+                    editor = sshyp_data[2].rstrip()
+                    quick_unlock_status = sshyp_data[3].rstrip()
+                    if quick_unlock_status == 'quick':
+                        quick_unlock_length = sshyp_data[4].rstrip()
                     ssh_info = sshync.get_profile(path.expanduser('~/.config/sshyp/sshyp.sshync'))
-                    username_ssh = ssh_info[0].replace('\n', '')
-                    ip = ssh_info[1].replace('\n', '')
-                    port = ssh_info[2].replace('\n', '')
-                    directory = str(ssh_info[3].replace('\n', ''))
-                    directory_ssh = str(ssh_info[4].replace('\n', ''))
+                    username_ssh = ssh_info[0].rstrip()
+                    ip = ssh_info[1].rstrip()
+                    port = ssh_info[2].rstrip()
+                    directory = str(ssh_info[3].rstrip())
+                    directory_ssh = str(ssh_info[4].rstrip())
                     client_device_id = listdir(path.expanduser('~/.config/sshyp/devices'))[0]
-                    sshyp_data = open(path.expanduser('~/.config/sshyp/sshyp-data')).readlines()
-                    gpg_id = sshyp_data[0].replace('\n', '')
-                    editor = sshyp_data[1].replace('\n', '')
-                    ssh_error = int(open(path.expanduser('~/.config/sshyp/ssh-error')).read().strip())
+                    ssh_error = int(open(path.expanduser('~/.config/sshyp/ssh-error')).read().rstrip())
                     if ssh_error != 0:
                         ssh_error = copy_id_check(port, username_ssh, ip, client_device_id)
                 elif argument_list[1] != "help" and argument_list[1] != "--help" and argument_list[1] != "-h" and \
@@ -745,7 +762,7 @@ if __name__ == "__main__":
                           f"list usable commands\u001b[0m\n")
                     s_exit(0)
             except (FileNotFoundError, IndexError):
-                if device_type != 's':
+                if device_type != 'server':
                     print('\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
                     print("not all necessary configuration files are present - please run 'sshyp tweak'")
                     print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n')
@@ -762,7 +779,7 @@ if __name__ == "__main__":
         elif argument == 'help' or argument == '--help' or argument == '-h' or argument == 'license' or argument \
                 == 'version' or argument == '-v':
             print_info()
-        elif argument_list[1] == 'whitelist' and device_type == 's':
+        elif argument_list[1] == 'whitelist' and device_type == 'server':
             if len(argument_list) == 2:
                 print_info()
             elif argument_list[2] == 'list' or argument_list[2] == '-l':
