@@ -249,6 +249,9 @@ def tweak():  # runs configuration wizard
             remove(path.expanduser('~/.config/sshyp/gpg-gen'))
             _sshyp_data += run(f"{gpg} -k", shell=True, stdout=PIPE, text=True).stdout.split('\n')[-4].strip()
 
+        # text editor configuration
+        _sshyp_data += input(f"{_divider}example input: vim\n\npreferred text editor: ")
+
         # lock file generation
         if Path(path.expanduser('~/.config/sshyp/lock.gpg')).is_file():
             remove(path.expanduser('~/.config/sshyp/lock.gpg'))
@@ -257,55 +260,64 @@ def tweak():  # runs configuration wizard
         remove(path.expanduser('~/.config/sshyp/lock'))
 
         # ssh key configuration
+        _offline_mode = False
         _ssh_gen = (input(f"{_divider}make sure the ssh service on the remote server is running and properly "
                           f"configured\n\nsync support requires a unique ssh key - would you like to have this "
-                          f"automatically generated? (Y/n) "))
-        if _ssh_gen.lower() != 'n':
+                          f"automatically generated? (Y/n/o(ffline)) "))
+        if _ssh_gen.lower() != 'n' and _ssh_gen.lower() != 'o' and _ssh_gen.lower() != 'offline':
             if uname()[0] == 'Haiku':
                 Path(f"{path.expanduser('~')}/.ssh").mkdir(0o700, exist_ok=True)
             system('ssh-keygen -t ed25519 -f ~/.ssh/sshyp')
-        else:
+        elif _ssh_gen.lower() == 'n':
             print(f"\n\u001b[4;1mensure that the key file you are using is located at "
                   f"{path.expanduser('~/.ssh/sshyp')}\u001b[0m")
+        elif _ssh_gen.lower() == 'o' or _ssh_gen.lower() == 'offline':
+            _offline_mode = True
+            print('\nsshyp has been set to offline mode - to enable syncing, run "sshyp tweak" again')
 
-        # ssh ip+port configuration
-        _ip_port = str(input(f"{_divider}example input: 10.10.10.10:9999\n\nip and ssh port of the remote server: "))
-        _ip, _sep, _port = _ip_port.partition(':')
+        if not _offline_mode:
+            # ssh ip+port configuration
+            _ip_port = str(input(f"{_divider}example input: 10.10.10.10:9999\n\nip and ssh port of sshyp server: "))
+            _ip, _sep, _port = _ip_port.partition(':')
 
-        # ssh user configuration
-        _username_ssh = str(input('\nusername of the remote server: '))
+            # ssh user configuration
+            _username_ssh = str(input('\nusername of the remote server: '))
 
-        # text editor configuration
-        _sshyp_data += input(f"{_divider}example input: vim\n\npreferred text editor: ")
+            # sshync profile generation
+            sshync.make_profile(path.expanduser('~/.config/sshyp/sshyp.sshync'),
+                                path.expanduser('~/.local/share/sshyp/'), f"/home/{_username_ssh}/.local/share/sshyp/",
+                                path.expanduser('~/.ssh/sshyp'), _ip, _port, _username_ssh)
 
-        # sshync profile generation
-        sshync.make_profile(path.expanduser('~/.config/sshyp/sshyp.sshync'),
-                            path.expanduser('~/.local/share/sshyp/'), f"/home/{_username_ssh}/.local/share/sshyp/",
-                            path.expanduser('~/.ssh/sshyp'), _ip, _port, _username_ssh)
+            # device id configuration
+            for _id in listdir(path.expanduser('~/.config/sshyp/devices')):  # remove existing device id
+                remove(f"{path.expanduser('~/.config/sshyp/devices/')}{_id}")
+            print(f"{_divider}\u001b[4;1mimportant:\u001b[0m this id \u001b[4;1mmust\u001b[0m be unique amongst your "
+                  f"client devices\n\nthis is used to keep track of database syncing and quick-unlock permissions\n")
+            _device_id_prefix = str(input('device id: '))
+            _device_id_suffix = string_gen('c', randint(12, 48))
+            _device_id = _device_id_prefix + _device_id_suffix
+            open(f"{path.expanduser('~/.config/sshyp/devices/')}{_device_id}", 'w')
 
-        # device id configuration
-        for _id in listdir(path.expanduser('~/.config/sshyp/devices')):  # remove existing device id
-            remove(f"{path.expanduser('~/.config/sshyp/devices/')}{_id}")
-        print(f"{_divider}\u001b[4;1mimportant:\u001b[0m this id \u001b[4;1mmust\u001b[0m be unique amongst your "
-              f"client devices\n\nthis is used to keep track of database syncing and quick-unlock permissions\n")
-        _device_id_prefix = str(input('device id: '))
-        _device_id_suffix = string_gen('c', randint(12, 48))
-        _device_id = _device_id_prefix + _device_id_suffix
-        open(f"{path.expanduser('~/.config/sshyp/devices/')}{_device_id}", 'w')
-        copy_id_check(_port, _username_ssh, _ip, _device_id)
+            # quick-unlock configuration
+            print(f"{_divider}\nthis allows you to use a shorter version of your gpg key password and\n"
+                  f"requires a constant connection to your sshyp server to authenticate\n")
+            _quick_unlock_enabled = input('enable quick-unlock? (y/N)')
+            if _quick_unlock_enabled.lower() == 'y':
+                _sshyp_data += 'quick'
+                _sshyp_data += int(
+                    input('this must be half the number of characters in your gpg key password or shorter'
+                          '\n\nquick-unlock key length: '))
+                print(f"\nquick-unlock has been enabled client-side - in order for this device to be able to read "
+                      f"entries,\nyou must first login to the sshyp server and run:\n\nsshyp whitelist add "
+                      f"{_device_id}")
+            else:
+                _sshyp_data += 'slow', 0
 
-        # quick-unlock configuration
-        print(f"{_divider}\nthis allows you to use a shorter version of your gpg key password and\n"
-              f"requires a constant connection to your sshyp server to authenticate\n")
-        _quick_unlock_enabled = input('enable quick-unlock? (y/N)')
-        if _quick_unlock_enabled.lower() == 'y':
-            _sshyp_data += 'quick'
-            _sshyp_data += int(input('this must be half the number of characters in your gpg key password or shorter'
-                                     '\n\nquick-unlock key length: '))
-            print(f"\nquick-unlock has been enabled client-side - in order for this device to be able to read entries,"
-                  f"\nyou must first login to the sshyp server and run:\n\nsshyp whitelist add {_device_id}")
-        else:
-            _sshyp_data += 'slow', 0
+            # test server connection and attempt to register device id
+            copy_id_check(_port, _username_ssh, _ip, _device_id)
+
+        elif Path(path.expanduser('~/.config/sshyp/sshyp.sshync')).is_file():
+            remove(path.expanduser('~/.config/sshyp/sshyp.sshync'))
 
         open(path.expanduser('~/.config/sshyp/sshyp-data'), 'w').writelines(sshyp_data)
         print(f"{_divider}configuration complete\n")
@@ -743,21 +755,24 @@ if __name__ == "__main__":
                 sshyp_data = open(path.expanduser('~/.config/sshyp/sshyp-data')).readlines()
                 device_type = sshyp_data[0].rstrip()
                 if device_type == 'client':
+                    directory = path.expanduser('~/.local/share/sshyp')
                     gpg_id = sshyp_data[1].rstrip()
                     editor = sshyp_data[2].rstrip()
                     quick_unlock_status = sshyp_data[3].rstrip()
                     if quick_unlock_status == 'quick':
                         quick_unlock_length = sshyp_data[4].rstrip()
-                    ssh_info = sshync.get_profile(path.expanduser('~/.config/sshyp/sshyp.sshync'))
-                    username_ssh = ssh_info[0].rstrip()
-                    ip = ssh_info[1].rstrip()
-                    port = ssh_info[2].rstrip()
-                    directory = str(ssh_info[3].rstrip())
-                    directory_ssh = str(ssh_info[4].rstrip())
-                    client_device_id = listdir(path.expanduser('~/.config/sshyp/devices'))[0]
-                    ssh_error = int(open(path.expanduser('~/.config/sshyp/ssh-error')).read().rstrip())
-                    if ssh_error != 0:
-                        ssh_error = copy_id_check(port, username_ssh, ip, client_device_id)
+                    if Path(path.expanduser('~/.config/sshyp/sshyp.sshync')).is_file():
+                        ssh_info = sshync.get_profile(path.expanduser('~/.config/sshyp/sshyp.sshync'))
+                        username_ssh = ssh_info[0].rstrip()
+                        ip = ssh_info[1].rstrip()
+                        port = ssh_info[2].rstrip()
+                        directory_ssh = str(ssh_info[4].rstrip())
+                        client_device_id = listdir(path.expanduser('~/.config/sshyp/devices'))[0]
+                        ssh_error = int(open(path.expanduser('~/.config/sshyp/ssh-error')).read().rstrip())
+                        if ssh_error != 0:
+                            ssh_error = copy_id_check(port, username_ssh, ip, client_device_id)
+                    else:
+                        ssh_error = 1
                 elif argument_list[1] != "help" and argument_list[1] != "--help" and argument_list[1] != "-h" and \
                         argument_list[1] != "license" and argument_list[1] != "version" and argument_list[1] != "-v" \
                         and argument_list[1] != "whitelist":
