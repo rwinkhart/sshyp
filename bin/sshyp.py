@@ -233,7 +233,7 @@ def tweak():  # runs configuration wizard
                          f" new one? (E/g) ")
         if _gpg_gen.lower() != 'g':
             system(f"{gpg} -k")
-            _sshyp_data += str(input('gpg key id: '))
+            _sshyp_data += [str(input('gpg key id: '))]
         else:
             print('\na unique gpg key is being generated for you...')
             if not Path(path.expanduser('~/.config/sshyp/gpg-gen')).is_file():
@@ -247,10 +247,10 @@ def tweak():  # runs configuration wizard
             else:
                 run(f"{gpg} --batch --generate-key '{path.expanduser('~/.config/sshyp/gpg-gen')}'", shell=True)
             remove(path.expanduser('~/.config/sshyp/gpg-gen'))
-            _sshyp_data += run(f"{gpg} -k", shell=True, stdout=PIPE, text=True).stdout.split('\n')[-4].strip()
+            _sshyp_data += [run(f"{gpg} -k", shell=True, stdout=PIPE, text=True).stdout.split('\n')[-4].strip()]
 
         # text editor configuration
-        _sshyp_data += input(f"{_divider}example input: vim\n\npreferred text editor: ")
+        _sshyp_data += [input(f"{_divider}example input: vim\n\npreferred text editor: ")]
 
         # lock file generation
         if Path(path.expanduser('~/.config/sshyp/lock.gpg')).is_file():
@@ -303,14 +303,14 @@ def tweak():  # runs configuration wizard
                   f"requires a constant connection to your sshyp server to authenticate\n")
             _quick_unlock_enabled = input('enable quick-unlock? (y/N)')
             if _quick_unlock_enabled.lower() == 'y':
-                _sshyp_data += 'quick'
-                _sshyp_data += int(input('this must be half the number of characters in your gpg key password or '
-                                         'shorter\n\nquick-unlock key length: '))
+                _sshyp_data += ['quick']
+                _sshyp_data += [int(input('this must be half the number of characters in your gpg key password or '
+                                          'shorter\n\nquick-unlock key length: '))]
                 print(f"\nquick-unlock has been enabled client-side - in order for this device to be able to read "
                       f"entries,\nyou must first login to the sshyp server and run:\n\nsshyp whitelist add "
                       f"{_device_id}")
             else:
-                _sshyp_data += 'slow', 0
+                _sshyp_data += ['slow'], 0
 
             # test server connection and attempt to register device id
             copy_id_check(_port, _username_ssh, _ip, _device_id)
