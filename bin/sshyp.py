@@ -206,8 +206,8 @@ def copy_id_check(_port, _username_ssh, _ip, _client_device_id):
 
 def tweak():  # runs configuration wizard
     _divider = f"\n{'=' * (get_terminal_size()[0] - int((.5 * get_terminal_size()[0])))}\n\n"
-    # storage/config directory creation
-    Path(path.expanduser('~/.local/share/sshyp')).mkdir(0o700, parents=True, exist_ok=True)
+
+    # config directory creation
     Path(path.expanduser('~/.config/sshyp/devices')).mkdir(0o700, parents=True, exist_ok=True)
     if not Path(f"{path.expanduser('~/.config/sshyp/tmp')}").exists():
         if uname()[0] == 'Haiku' or uname()[0] == 'FreeBSD':
@@ -216,17 +216,17 @@ def tweak():  # runs configuration wizard
             system(f"ln -s '/data/data/com.termux/files/usr/tmp' {path.expanduser('~/.config/sshyp/tmp')}")
         else:
             system(f"ln -s /dev/shm {path.expanduser('~/.config/sshyp/tmp')}")
+
     # device type configuration
     _device_type = input('\nclient or server installation? (C/s) ')
     if _device_type.lower() == 's':
         _sshyp_data = ['server']
-        Path(path.expanduser('~/.config/sshyp/deleted')).mkdir(0o700, parents=True, exist_ok=True)
-        Path(path.expanduser('~/.config/sshyp/whitelist')).mkdir(0o700, parents=True, exist_ok=True)
-        print(f"\n\u001b[4;1mmake sure the ssh service is running and properly configured\u001b[0m\n"
-              f"{_divider}configuration complete\n")
-        s_exit(0)
+        Path(path.expanduser('~/.config/sshyp/deleted')).mkdir(0o700, exist_ok=True)
+        Path(path.expanduser('~/.config/sshyp/whitelist')).mkdir(0o700, exist_ok=True)
+        print(f"\n\u001b[4;1mmake sure the ssh service is running and properly configured\u001b[0m")
     else:
         _sshyp_data = ['client']
+        Path(path.expanduser('~/.local/share/sshyp')).mkdir(0o700, parents=True, exist_ok=True)
 
         # gpg configuration
         _gpg_gen = input(f"{_divider}sshyp requires the use of a unique gpg key - use an (e)xisting key or (g)enerate a"
@@ -304,9 +304,8 @@ def tweak():  # runs configuration wizard
             _quick_unlock_enabled = input('enable quick-unlock? (y/N)')
             if _quick_unlock_enabled.lower() == 'y':
                 _sshyp_data += 'quick'
-                _sshyp_data += int(
-                    input('this must be half the number of characters in your gpg key password or shorter'
-                          '\n\nquick-unlock key length: '))
+                _sshyp_data += int(input('this must be half the number of characters in your gpg key password or '
+                                         'shorter\n\nquick-unlock key length: '))
                 print(f"\nquick-unlock has been enabled client-side - in order for this device to be able to read "
                       f"entries,\nyou must first login to the sshyp server and run:\n\nsshyp whitelist add "
                       f"{_device_id}")
@@ -319,8 +318,16 @@ def tweak():  # runs configuration wizard
         elif Path(path.expanduser('~/.config/sshyp/sshyp.sshync')).is_file():
             remove(path.expanduser('~/.config/sshyp/sshyp.sshync'))
 
-        open(path.expanduser('~/.config/sshyp/sshyp-data'), 'w').writelines(sshyp_data)
-        print(f"{_divider}configuration complete\n")
+    # write main config file (sshyp-data)
+    with open(path.expanduser('~/.config/sshyp/sshyp-data'), 'a') as _config_file:
+        _lines = 0
+        for _item in _sshyp_data:
+            _lines += 1
+            _config_file.write(_item + '\n')
+        while _lines < 5:
+            _lines += 1
+            _config_file.write('offline\n')
+    print(f"{_divider}configuration complete\n")
 
 
 def print_info():  # prints help text based on argument
@@ -773,17 +780,17 @@ if __name__ == "__main__":
                             ssh_error = copy_id_check(port, username_ssh, ip, client_device_id)
                     else:
                         ssh_error = 1
-                elif argument_list[1] != "help" and argument_list[1] != "--help" and argument_list[1] != "-h" and \
-                        argument_list[1] != "license" and argument_list[1] != "version" and argument_list[1] != "-v" \
-                        and argument_list[1] != "whitelist":
+                elif len(argument_list) <= 1 or (argument_list[1] != "help" and argument_list[1] != "--help" and
+                                                 argument_list[1] != "-h" and argument_list[1] != "license" and
+                                                 argument_list[1] != "version" and argument_list[1] != "-v" and
+                                                 argument_list[1] != "whitelist"):
                     print(f"\n\u001b[38;5;9merror: invalid server argument - run 'sshyp help' to "
                           f"list usable commands\u001b[0m\n")
                     s_exit(0)
             except (FileNotFoundError, IndexError):
-                if device_type == 'client':
-                    print('\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
-                    print("not all necessary configuration files are present - please run 'sshyp tweak'")
-                    print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n')
+                print('\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
+                print("not all necessary configuration files are present - please run 'sshyp tweak'")
+                print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n')
                 s_exit(1)
         else:
             tweak()
