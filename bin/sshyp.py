@@ -319,7 +319,7 @@ def tweak():  # runs configuration wizard
             remove(path.expanduser('~/.config/sshyp/sshyp.sshync'))
 
     # write main config file (sshyp-data)
-    with open(path.expanduser('~/.config/sshyp/sshyp-data'), 'a') as _config_file:
+    with open(path.expanduser('~/.config/sshyp/sshyp-data'), 'w') as _config_file:
         _lines = 0
         for _item in _sshyp_data:
             _lines += 1
