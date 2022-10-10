@@ -585,8 +585,9 @@ def add_folder():  # creates a new folder
     else:
         _entry_name = entry_name_fetch(2)
     Path(directory + _entry_name).mkdir(0o700)
-    system(f"ssh -i '{path.expanduser('~/.ssh/sshyp')}' -p {port} {username_ssh}@{ip} \"mkdir -p '{directory_ssh}"
-           f"{_entry_name}'\"")
+    if ssh_error != 1:
+        system(f"ssh -i '{path.expanduser('~/.ssh/sshyp')}' -p {port} {username_ssh}@{ip} \"mkdir -p "
+               f"'{directory_ssh}{_entry_name}'\"")
 
 
 def rename():  # renames an entry or folder
