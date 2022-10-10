@@ -9,14 +9,14 @@ from shutil import rmtree
 
 # utility functions
 
-def delete(_file_path):  # deletes an entry or folder, should be run remotely via ssh
+def delete(_file_path, _target_database):  # deletes an entry or folder, should be run remotely via ssh
     try:
         if _file_path.endswith('/'):
             rmtree(f"{expanduser('~/.local/share/sshyp/')}{_file_path}")
         else:
             remove(f"{expanduser('~/.local/share/sshyp/')}{_file_path}.gpg")
     except FileNotFoundError:
-        print('location does not exist remotely')
+        print(f"location does not exist {_target_database}")
     for _device_name in listdir(expanduser('~/.config/sshyp/devices')):
         open(f"{expanduser('~/.config/sshyp/deleted/')}{_file_path.replace('/', '@')}^&*{_device_name}", 'w')
 

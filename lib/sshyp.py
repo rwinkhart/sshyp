@@ -608,8 +608,12 @@ def rename():  # renames an entry or folder
                f"{_new_name}'\"")
     else:
         move(f"{directory}{_entry_name}.gpg", f"{directory}{_new_name}.gpg")
-    system(f"ssh -i '{path.expanduser('~/.ssh/sshyp')}' -p {port} {username_ssh}@{ip} \"cd /bin; python -c "
-           f"'import sshypRemote; sshypRemote.delete(\"'\"{_entry_name}\"'\")'\"")
+    if ssh_error != 1:
+        system(f"ssh -i '{path.expanduser('~/.ssh/sshyp')}' -p {port} {username_ssh}@{ip} \"cd /bin; python -c "
+               f"'import sshypRemote; sshypRemote.delete(\"'\"{_entry_name}\"'\", 'remotely')'\"")
+    else:
+        from sshypRemote import delete as offline_delete
+        offline_delete(_entry_name, '')
 
 
 def edit():  # edits the contents of an entry
@@ -740,8 +744,12 @@ def remove_data():  # deletes an entry from the server and flags it for local de
     else:
         _entry_name = entry_name_fetch(1)
     decrypt(path.expanduser('~/.config/sshyp/lock.gpg'), 0, 0, gpg)
-    system(f"ssh -i '{path.expanduser('~/.ssh/sshyp')}' -p {port} {username_ssh}@{ip} \"cd /bin; python -c "
-           f"'import sshypRemote; sshypRemote.delete(\"'\"{_entry_name}\"'\")'\"")
+    if ssh_error != 1:
+        system(f"ssh -i '{path.expanduser('~/.ssh/sshyp')}' -p {port} {username_ssh}@{ip} \"cd /bin; python -c "
+               f"'import sshypRemote; sshypRemote.delete(\"'\"{_entry_name}\"'\", 'remotely')'\"")
+    else:
+        from sshypRemote import delete as offline_delete
+        offline_delete(_entry_name, '')
 
 
 if __name__ == "__main__":
