@@ -123,15 +123,15 @@ def pass_gen():  # prompts the user for necessary information to generate a pass
         return _gen
     if _length > 800:
         _length = 800
-        print('\n\u001b[38;5;9mpassword length has been limited to the maximum of 840 characters\u001b[0m\n')
+        print('\n\u001b[38;5;9mpassword length has been limited to the maximum of 800 characters\u001b[0m\n')
     _complexity = str(input('password complexity - simple (for compatibility) or complex (for security)? (s/C) '))
     _gen = string_gen(_complexity.lower(), _length)
     return _gen
 
 
 def shm_gen(_tmp_dir=path.expanduser('~/.config/sshyp/tmp/')):  # creates a temporary directory for entry editing
-    _shm_folder_gen = string_gen('c', randint(12, 48))
-    _shm_entry_gen = string_gen('c', randint(12, 48))
+    _shm_folder_gen = string_gen('s', randint(12, 48))
+    _shm_entry_gen = string_gen('s', randint(12, 48))
     Path(_tmp_dir + _shm_folder_gen).mkdir(0o700)
     return _shm_folder_gen, _shm_entry_gen
 
@@ -762,7 +762,7 @@ if __name__ == "__main__":
                 sshyp_data = open(path.expanduser('~/.config/sshyp/sshyp-data')).readlines()
                 device_type = sshyp_data[0].rstrip()
                 if device_type == 'client':
-                    directory = path.expanduser('~/.local/share/sshyp')
+                    directory = path.expanduser('~/.local/share/sshyp/')
                     gpg_id = sshyp_data[1].rstrip()
                     editor = sshyp_data[2].rstrip()
                     quick_unlock_status = sshyp_data[3].rstrip()
