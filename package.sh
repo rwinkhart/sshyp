@@ -9,9 +9,9 @@ fi
 
 _create_generic() {
     echo -e '\npackaging as generic...\n'
-    mkdir -p output/generictemp/usr/share/{man/man1,bash-completion/completions}
-    cp -r bin output/generictemp/usr/
-    ln -s /usr/bin/sshyp.py output/generictemp/usr/bin/sshyp
+    mkdir -p output/generictemp/usr/{bin,lib/sshyp,share/{man/man1,bash-completion/completions}}
+    cp -r lib/. output/generictemp/usr/lib/sshyp/
+    ln -s /usr/lib/sshyp/sshyp.py output/generictemp/usr/bin/sshyp
     cp -r share output/generictemp/usr/
     cp extra/sshyp-completion.bash output/generictemp/usr/share/bash-completion/completions/sshyp
     cp extra/manpage output/generictemp/usr/share/man/man1/sshyp.1
@@ -73,7 +73,7 @@ sha512sums=\"
 
 _create_hpkg() {
     echo -e '\npackaging for Haiku...\n'
-    mkdir -p output/haikutemp/{boot/system/data/bash-completion/completions,documentation/{man/man1,packages/sshyp}}
+    mkdir -p output/haikutemp/{bin,boot/system/{lib/sshyp,data/bash-completion/completions,documentation/{man/man1,packages/sshyp}}}
     echo "name			sshyp
 version			"$version"-"$revision"
 architecture		any
@@ -100,11 +100,11 @@ urls {
 	\"https://github.com/rwinkhart/sshyp\"
 }
 " > output/haikutemp/.PackageInfo
-    cp -r bin output/haikutemp/
-    sed -i '1 s/.*/#!\/bin\/env\ python3/' output/haikutemp/bin/sshync.py
-    sed -i '1 s/.*/#!\/bin\/env\ python3/' output/haikutemp/bin/sshyp.py
-    sed -i '1 s/.*/#!\/bin\/env\ python3/' output/haikutemp/bin/sshypRemote.py
-    ln -s /bin/sshyp.py output/haikutemp/bin/sshyp
+    cp -r lib/. output/haikutemp/boot/system/lib/sshyp/
+    sed -i '1 s/.*/#!\/bin\/env\ python3/' output/haikutemp/boot/system/lib/sshync.py
+    sed -i '1 s/.*/#!\/bin\/env\ python3/' output/haikutemp/boot/system/lib/sshyp.py
+    sed -i '1 s/.*/#!\/bin\/env\ python3/' output/haikutemp/boot/system/lib/sshypRemote.py
+    ln -s /boot/system/lib/sshyp/sshyp.py output/haikutemp/bin/sshyp
     cp -r share/doc/sshyp/ output/haikutemp/documentation/packages/
     cp -r share/licenses/sshyp/ output/haikutemp/documentation/packages/
     cp extra/sshyp-completion.bash output/haikutemp/boot/system/data/bash-completion/completions/sshyp
@@ -112,7 +112,7 @@ urls {
     gzip output/haikutemp/documentation/man/man1/sshyp.1
     cd output/haikutemp
     package create -b sshyp-"$version"-"$revision"_all.hpkg
-    package add sshyp-"$version"-"$revision"_all.hpkg bin documentation
+    package add sshyp-"$version"-"$revision"_all.hpkg bin boot documentation
     cd ../..
     mv output/haikutemp/sshyp-"$version"-"$revision"_all.hpkg output/
     rm -rf output/haikutemp
@@ -121,7 +121,7 @@ urls {
 
 _create_deb() {
     echo -e '\npackaging for Debian/Ubuntu...\n'
-    mkdir -p output/debiantemp/sshyp_"$version"-"$revision"_all/{DEBIAN,usr/share/{bash-completion/completions,man/man1}}
+    mkdir -p output/debiantemp/sshyp_"$version"-"$revision"_all/{DEBIAN,usr/{lib/sshyp,bin,share/{bash-completion/completions,man/man1}}}
     echo "Package: sshyp
 Version: $version
 Section: utils
@@ -132,8 +132,8 @@ Depends: python3, gnupg, openssh-client, xclip, wl-clipboard
 Priority: optional
 Installed-Size: 185
 " > output/debiantemp/sshyp_"$version"-"$revision"_all/DEBIAN/control
-    cp -r bin output/debiantemp/sshyp_"$version"-"$revision"_all/usr/
-    ln -s /usr/bin/sshyp.py output/debiantemp/sshyp_"$version"-"$revision"_all/usr/bin/sshyp
+    cp -r lib/. output/debiantemp/sshyp_"$version"-"$revision"_all/usr/lib/sshyp/
+    ln -s /usr/lib/sshyp/sshyp.py output/debiantemp/sshyp_"$version"-"$revision"_all/usr/bin/sshyp
     cp -r share output/debiantemp/sshyp_"$version"-"$revision"_all/usr/
     cp extra/sshyp-completion.bash output/debiantemp/sshyp_"$version"-"$revision"_all/usr/share/bash-completion/completions/sshyp
     cp extra/manpage output/debiantemp/sshyp_"$version"-"$revision"_all/usr/share/man/man1/sshyp.1
@@ -146,7 +146,7 @@ Installed-Size: 185
 
 _create_termux() {
     echo -e '\npackaging for Termux...\n'
-    mkdir -p output/termuxtemp/sshyp_"$version"-"$revision"_all_termux/{data/data/com.termux/files/usr/share/{bash-completion/completions,man/man1},DEBIAN}
+    mkdir -p output/termuxtemp/sshyp_"$version"-"$revision"_all_termux/{DEBIAN,data/data/com.termux/files/usr/{lib/sshyp,bin,share/{bash-completion/completions,man/man1}}}
     echo "Package: sshyp
 Version: $version
 Section: utils
@@ -157,8 +157,8 @@ Depends: python, gnupg, openssh, termux-api, termux-am
 Priority: optional
 Installed-Size: 185
 " > output/termuxtemp/sshyp_"$version"-"$revision"_all_termux/DEBIAN/control
-    cp -r bin output/termuxtemp/sshyp_"$version"-"$revision"_all_termux/data/data/com.termux/files/usr/
-    ln -s /data/data/com.termux/files/usr/bin/sshyp.py output/termuxtemp/sshyp_"$version"-"$revision"_all_termux/data/data/com.termux/files/usr/bin/sshyp
+    cp -r lib/. output/termuxtemp/sshyp_"$version"-"$revision"_all_termux/data/data/com.termux/files/usr/lib/sshyp/
+    ln -s /data/data/com.termux/files/usr/lib/sshyp/sshyp.py output/termuxtemp/sshyp_"$version"-"$revision"_all_termux/data/data/com.termux/files/usr/bin/sshyp
     cp -r share output/termuxtemp/sshyp_"$version"-"$revision"_all_termux/data/data/com.termux/files/usr/
     cp extra/sshyp-completion.bash output/termuxtemp/sshyp_"$version"-"$revision"_all_termux/data/data/com.termux/files/usr/share/bash-completion/completions/sshyp
     cp extra/manpage output/termuxtemp/sshyp_"$version"-"$revision"_all_termux/data/data/com.termux/files/usr/share/man/man1/sshyp.1
@@ -190,9 +190,9 @@ tar xf %{_sourcedir}/sshyp-"$version".tar.xz -C %{_sourcedir}
 cp -r %{_sourcedir}/usr %{buildroot}
 %files
 /usr/bin/sshyp
-/usr/bin/sshyp.py
-/usr/bin/sshync.py
-/usr/bin/sshypRemote.py
+/usr/lib/sshyp/sshyp.py
+/usr/lib/sshyp/sshync.py
+/usr/lib/sshyp/sshypRemote.py
 /usr/share/bash-completion/completions/sshyp
 %license /usr/share/licenses/sshyp/license
 %doc /usr/share/doc/sshyp/changelog
@@ -206,7 +206,7 @@ echo -e "\nFedora packaging complete\n"
 
 _create_freebsd_pkg() {
     echo -e '\npackaging for FreeBSD...'
-    mkdir -p output/freebsdtemp/usr/share/{bash-completion/completions,man/man1}
+    mkdir -p output/freebsdtemp/usr/{lib/sshyp,bin,share/{bash-completion/completions,man/man1}}
     echo "name: sshyp
 version: \""$version"\"
 abi = \"FreeBSD:13:*\";
@@ -232,17 +232,17 @@ prefix: /
                    },
                 },
 " > output/freebsdtemp/+MANIFEST
-echo "/usr/bin/sshync.py
-/usr/bin/sshyp
-/usr/bin/sshyp.py
-/usr/bin/sshypRemote.py
+echo "/usr/bin/sshyp
+/usr/lib/sshyp/sshync.py
+/usr/lib/sshyp/sshyp.py
+/usr/lib/sshyp/sshypRemote.py
 /usr/share/bash-completion/completions/sshyp
 /usr/share/doc/sshyp/changelog
 /usr/share/licenses/sshyp/license
 /usr/share/man/man1/sshyp.1.gz
 " > output/freebsdtemp/plist
-cp -r bin output/freebsdtemp/usr/
-ln -s /usr/bin/sshyp.py output/freebsdtemp/usr/bin/sshyp
+cp -r lib/. output/freebsdtemp/usr/lib/sshyp/
+ln -s /usr/lib/sshyp.py output/freebsdtemp/usr/bin/sshyp
 cp -r share output/freebsdtemp/usr/
 cp extra/sshyp-completion.bash output/freebsdtemp/usr/share/bash-completion/completions/sshyp
 cp extra/manpage output/freebsdtemp/usr/share/man/man1/sshyp.1
