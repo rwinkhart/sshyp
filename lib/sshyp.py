@@ -301,8 +301,8 @@ def tweak():  # runs configuration wizard
             # quick-unlock configuration
             print(f"{_divider}\nthis allows you to use a shorter version of your gpg key password and\n"
                   f"requires a constant connection to your sshyp server to authenticate\n")
-            _sshyp_data += [int(input('quick unlock pin length (0 to disable, must be half the length of gpg password '
-                                      'or less) (0): '))]
+            _sshyp_data += [int(input('\nquick unlock pin length (0 to disable, must be half the length of gpg '
+                                      'password or less, set to same value as server) (0): '))]
             if _sshyp_data[3] != 0:
                 print(f"\nquick-unlock has been enabled client-side - in order for this device to be able to read "
                       f"entries,\nyou must first login to the sshyp server and run:\n\nsshyp whitelist add "
@@ -371,6 +371,7 @@ def print_info():  # prints help text based on argument
             print('whitelist                manage the quick-unlock whitelist')
             print('\n\u001b[1mflags:\u001b[0m')
             print('whitelist:')
+            print(' setup               set up the quick-unlock whitelist')
             print(' list/-l             view all registered device ids and their quick-unlock whitelist status')
             print(' add                 whitelist a device id for quick-unlock')
             print(' delete/del          remove a device id from the quick-unlock whitelist\n')
@@ -431,6 +432,7 @@ def print_info():  # prints help text based on argument
             print('\n\u001b[1musage:\u001b[0m sshyp whitelist [flag [<device id>]]\u001b[0m\n')
             print('\u001b[1mflags:\u001b[0m')
             print('whitelist:')
+            print(' setup               set up the quick-unlock whitelist')
             print(' list/-l             view all registered device ids and their quick-unlock whitelist status')
             print(' add                 whitelist a device id for quick-unlock')
             print(' delete/del          remove a device id from the quick-unlock whitelist\n')
@@ -506,6 +508,33 @@ def sync():  # calls sshync to sync changes to the user's server
     system('find ' + directory + ' -type d -exec chmod -R 700 {} +')
     system('find ' + directory + ' -type f -exec chmod -R 600 {} +')
     sshync.run_profile(path.expanduser('~/.config/sshyp/sshyp.sshync'))
+
+
+def whitelist_setup():  # takes input from the user to set up quick-unlock password
+    _gpg_password_temp = str(input('\nfull gpg passphrase: '))
+    _half_length = len(_gpg_password_temp)/2
+    _short_password_length = int(input(f"\nquick unlock pin length (must be half the length of gpg password or less) "
+                                       f"({_half_length}): "))
+    _i, _quick_unlock_password, _quick_unlock_password_excluded = 0, '', ''
+    for _char in _gpg_password_temp:
+        if _i % 2 == 1 and _i < _short_password_length:
+            _quick_unlock_password += _char
+        else:
+            _quick_unlock_password_excluded += _char
+
+    # create assembly key
+    open(path.expanduser('~/.config/sshyp/gpg-gen'), 'w').writelines([
+        'Key-Type: 1\n', 'Key-Length: 4096\n', 'Key-Usage: sign encrypt\n', 'Name-Real: sshyp\n',
+        'Name-Comment: gpg-sshyp-whitelist\n', 'Name-Email: https://github.com/rwinkhart/sshyp\n', 'Expire-Date: 0'])
+    run(gpg + ' --batch --generate-key --passphrase ' + "'" + _quick_unlock_password + "'" + " '" +
+        path.expanduser('~/.config/sshyp/gpg-gen') + "'", shell=True)
+    remove(path.expanduser('~/.config/sshyp/gpg-gen'))
+    _gpg_id = run(f"{gpg} -k", shell=True, stdout=PIPE, text=True).stdout.split('\n')[-4].strip()
+
+    # encrypt excluded with the assembly key
+    _shm_folder, _shm_entry = shm_gen()
+    open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'w').write(_quick_unlock_password_excluded)
+    encrypt(path.expanduser('~/.config/sshyp/excluded.gpg'), _shm_folder, _shm_entry, gpg, _gpg_id)
 
 
 def whitelist_list():  # shows the quick-unlock whitelist status of device ids
@@ -813,6 +842,11 @@ if __name__ == "__main__":
                     whitelist_list()
                 elif argument_list[2] == 'add' or argument_list[2] == 'delete' or argument_list[2] == 'del':
                     whitelist_manage()
+                elif argument_list[2] == 'setup':
+                    whitelist_setup()
+                else:
+                    print_info()
+                    s_exit(0)
             else:
                 print_info()
         elif argument_list[1] == 'add':
