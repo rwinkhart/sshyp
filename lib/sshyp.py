@@ -148,7 +148,7 @@ def decrypt(_entry_dir, _shm_folder, _shm_entry, _gpg_command, _tmp_dir=path.exp
     if _shm_folder == 0 and _shm_entry == 0:
         _command = f"{_gpg_command} -qd --output /dev/null {path.expanduser('~/.config/sshyp/lock.gpg')}"
     else:
-        _command = f"{_gpg_command} -qd --output {_tmp_dir}{_shm_folder}/{_shm_entry} {_entry_dir}.gpg"
+        _command = f"{_gpg_command} -qd --output {_tmp_dir}{_shm_folder}/{_shm_entry} '{_entry_dir}.gpg'"
     try:
         run(_command, shell=True, stderr=PIPE, check=True, close_fds=True)
     except CalledProcessError:
