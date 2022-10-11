@@ -301,16 +301,12 @@ def tweak():  # runs configuration wizard
             # quick-unlock configuration
             print(f"{_divider}\nthis allows you to use a shorter version of your gpg key password and\n"
                   f"requires a constant connection to your sshyp server to authenticate\n")
-            _quick_unlock_enabled = input('enable quick-unlock? (y/N)')
-            if _quick_unlock_enabled.lower() == 'y':
-                _sshyp_data += ['quick']
-                _sshyp_data += [int(input('this must be half the number of characters in your gpg key password or '
-                                          'shorter\n\nquick-unlock key length: '))]
+            _sshyp_data += [int(input('quick unlock pin length (0 to disable, must be half the length of gpg password '
+                                      'or less) (0): '))]
+            if _sshyp_data[3] != 0:
                 print(f"\nquick-unlock has been enabled client-side - in order for this device to be able to read "
                       f"entries,\nyou must first login to the sshyp server and run:\n\nsshyp whitelist add "
                       f"{_device_id}")
-            else:
-                _sshyp_data += ['slow'], 0
 
             # test server connection and attempt to register device id
             copy_id_check(_port, _username_ssh, _ip, _device_id)
@@ -324,9 +320,9 @@ def tweak():  # runs configuration wizard
         for _item in _sshyp_data:
             _lines += 1
             _config_file.write(_item + '\n')
-        while _lines < 5:
+        while _lines < 4:
             _lines += 1
-            _config_file.write('offline\n')
+            _config_file.write('0')
     print(f"{_divider}configuration complete\n")
 
 
@@ -772,9 +768,7 @@ if __name__ == "__main__":
                     directory = path.expanduser('~/.local/share/sshyp/')
                     gpg_id = sshyp_data[1].rstrip()
                     editor = sshyp_data[2].rstrip()
-                    quick_unlock_status = sshyp_data[3].rstrip()
-                    if quick_unlock_status == 'quick':
-                        quick_unlock_length = sshyp_data[4].rstrip()
+                    quick_unlock_length = int(sshyp_data[3].rstrip())
                     if Path(path.expanduser('~/.config/sshyp/sshyp.sshync')).is_file():
                         ssh_info = sshync.get_profile(path.expanduser('~/.config/sshyp/sshyp.sshync'))
                         username_ssh = ssh_info[0].rstrip()
