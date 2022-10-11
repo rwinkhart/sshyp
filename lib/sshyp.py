@@ -521,6 +521,7 @@ def whitelist_setup():  # takes input from the user to set up quick-unlock passw
             _quick_unlock_password += _char
         else:
             _quick_unlock_password_excluded += _char
+        _i += 1
 
     # create assembly key
     open(path.expanduser('~/.config/sshyp/gpg-gen'), 'w').writelines([
