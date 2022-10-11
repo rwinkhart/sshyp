@@ -604,16 +604,14 @@ def rename():  # renames an entry or folder
         s_exit(1)
     if _entry_name.endswith('/'):
         move(f"{directory}{_entry_name}", f"{directory}{_new_name}")
-        system(f"ssh -i '{path.expanduser('~/.ssh/sshyp')}' -p {port} {username_ssh}@{ip} \"mkdir -p '{directory_ssh}"
-               f"{_new_name}'\"")
+        if ssh_error != 1:
+            system(f"ssh -i '{path.expanduser('~/.ssh/sshyp')}' -p {port} {username_ssh}@{ip} \"mkdir -p "
+                   f"'{directory_ssh}{_new_name}'\"")
     else:
         move(f"{directory}{_entry_name}.gpg", f"{directory}{_new_name}.gpg")
     if ssh_error != 1:
         system(f"ssh -i '{path.expanduser('~/.ssh/sshyp')}' -p {port} {username_ssh}@{ip} \"cd /bin; python -c "
                f"'import sshypRemote; sshypRemote.delete(\"'\"{_entry_name}\"'\", 'remotely')'\"")
-    else:
-        from sshypRemote import delete as offline_delete
-        offline_delete(_entry_name, '')
 
 
 def edit():  # edits the contents of an entry
