@@ -538,6 +538,31 @@ def whitelist_setup():  # takes input from the user to set up quick-unlock passw
     encrypt(path.expanduser('~/.config/sshyp/excluded.gpg'), _shm_folder, _shm_entry, gpg, _gpg_id)
 
 
+def whitelist_verify():  # checks the user's whitelist status and fetches the full gpg key password if possible
+    _i, _full_password = 0, ''
+    _server_whitelist = run('ssh -i ' + "'" + path.expanduser('~/.ssh/sshyp') + "' -p " + port + " " + username_ssh +
+                            '@' + ip + " 'ls ~/.config/sshyp/whitelist'", shell=True, stdout=PIPE, text=True)
+    for _device_id in _server_whitelist.stdout.rstrip().split('\n'):
+        if _device_id == client_device_id:
+            _quick_unlock_password = input('\nquick-unlock passphrase: ')
+            _quick_unlock_password_excluded = run(
+                'ssh -i ' + "'" + path.expanduser('~/.ssh/sshyp') + "' -p " + port + " " + username_ssh + '@' + ip +
+                f"'gpg --pinentry-mode loopback --passphrase '{_quick_unlock_password}' "
+                f"-qd ~/.config/sshyp/excluded.gpg'", shell=True, stdout=PIPE, text=True).stdout.rstrip()
+            while _i < len(_quick_unlock_password_excluded):
+                try:
+                    _full_password += _quick_unlock_password_excluded[_i]
+                except IndexError:
+                    pass
+                try:
+                    _full_password += _quick_unlock_password[_i]
+                except IndexError:
+                    pass
+                _i += 1
+            break
+    return _full_password
+
+
 def whitelist_list():  # shows the quick-unlock whitelist status of device ids
     _whitelisted_ids = listdir(path.expanduser('~/.config/sshyp/whitelist'))
     _device_ids = listdir(path.expanduser('~/.config/sshyp/devices'))
