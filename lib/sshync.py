@@ -4,13 +4,13 @@
 
 from os import path, system, walk
 from os.path import expanduser, getmtime, join
-from pathlib import Path
 from sys import exit as s_exit
 
 
 # utility functions
 
 def get_titles_mods(_directory, _destination, _user_data):  # fetches and returns lists of titles and their mod times
+    from pathlib import Path
     _title_list, _mod_list = [], []
     Path(path.expanduser('~/.config/sshync')).mkdir(0o700, parents=True, exist_ok=True)  # create config directory
     # local fetching
