@@ -7,15 +7,14 @@ from pathlib import Path
 from random import randint, SystemRandom
 from shutil import get_terminal_size, move, rmtree
 import sshync
-import string
 from subprocess import CalledProcessError, Popen, PIPE, run
 from sys import argv, exit as s_exit
-from textwrap import fill
 
 
 # BELOW - utility functions
 
 def entry_list_gen(_directory=path.expanduser('~/.local/share/sshyp/')):  # generates and prints full entry list
+    from textwrap import fill
     print('\n\u001b[38;5;0;48;5;15msshyp entries:\u001b[0m\n')
     _entry_list, _color_alternator = [], 1
     for _entry in sorted(listdir(_directory)):
@@ -100,6 +99,7 @@ def entry_name_fetch(_entry_name_location):  # fetches and returns entry name fr
 
 
 def string_gen(_complexity, _length):  # generates and returns a random string based on input
+    import string
     if _complexity == 's':
         _character_pool = string.ascii_letters + string.digits
     else:
