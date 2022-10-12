@@ -544,7 +544,7 @@ def whitelist_setup():  # takes input from the user to set up quick-unlock passw
     # encrypt excluded with the assembly key
     _shm_folder, _shm_entry = shm_gen()
     open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'w').write(_quick_unlock_password_excluded)
-    encrypt(path.expanduser('~/.config/sshyp/excluded.gpg'), _shm_folder, _shm_entry, gpg, _gpg_id)
+    encrypt(path.expanduser('~/.config/sshyp/excluded'), _shm_folder, _shm_entry, gpg, _gpg_id)
     print(f"\nyour quick-unlock passphrase: {_quick_unlock_password}")
 
 
@@ -557,9 +557,9 @@ def whitelist_verify():  # checks the user's whitelist status and fetches the fu
             _quick_unlock_password = input('\nquick-unlock passphrase: ')
             _quick_unlock_password_excluded = run(
                 'ssh -i ' + "'" + path.expanduser('~/.ssh/sshyp') + "' -p " + port + " " + username_ssh + '@' + ip +
-                f"'gpg --pinentry-mode loopback --passphrase '{_quick_unlock_password}' "
+                f" 'gpg --pinentry-mode loopback --passphrase '{_quick_unlock_password}' "
                 f"-qd ~/.config/sshyp/excluded.gpg'", shell=True, stdout=PIPE, text=True).stdout.rstrip()
-            while _i < len(_quick_unlock_password_excluded):
+            while _i < len(_quick_unlock_password_excluded) + len(_quick_unlock_password):
                 try:
                     _full_password += _quick_unlock_password_excluded[_i]
                 except IndexError:
