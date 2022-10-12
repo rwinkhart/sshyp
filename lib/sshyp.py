@@ -143,26 +143,26 @@ def encrypt(_entry_dir, _shm_folder, _shm_entry, _gpg_com, _gpg_id, _tmp_dir=pat
     rmtree(f"{_tmp_dir}{_shm_folder}")
 
 
-def decrypt(_entry_dir, _shm_folder, _shm_entry, _gpg_command, _tmp_dir=path.expanduser('~/.config/sshyp/tmp/')):
+def decrypt(_entry_dir, _shm_folder, _shm_entry, _gpg_com, _tmp_dir=path.expanduser('~/.config/sshyp/tmp/')):
     # decrypts an entry to a temporary directory
     if _shm_folder == 0 and _shm_entry == 0:
         if quick_unlock_enabled == 'y':
             _command = f"gpg --pinentry-mode loopback --passphrase {whitelist_verify()} -qd --output /dev/null " \
                        f"{path.expanduser('~/.config/sshyp/lock.gpg')}"
         else:
-            _command = f"{_gpg_command} -qd --output /dev/null {path.expanduser('~/.config/sshyp/lock.gpg')}"
+            _command = f"{_gpg_com} -qd --output /dev/null {path.expanduser('~/.config/sshyp/lock.gpg')}"
     elif quick_unlock_enabled == 'y':
         _command = f"gpg --pinentry-mode loopback --passphrase '{whitelist_verify()}' -qd --output " \
                    f"{_tmp_dir}{_shm_folder}/{_shm_entry} '{_entry_dir}.gpg'"
     else:
-        _command = f"{_gpg_command} -qd --output {_tmp_dir}{_shm_folder}/{_shm_entry} '{_entry_dir}.gpg'"
+        _command = f"{_gpg_com} -qd --output {_tmp_dir}{_shm_folder}/{_shm_entry} '{_entry_dir}.gpg'"
     try:
         run(_command, shell=True, stderr=PIPE, check=True, close_fds=True)
     except CalledProcessError:
         print(f"\n\u001b[38;5;9merror: could not decrypt - ensure the correct gpg key is present\u001b[0m\n")
         if quick_unlock_enabled == 'y':
-            print(f"\u001b[38;5;9mensure that quick-unlock is properly set up on the server and that this device is "
-                  f"whitelisted\u001b[0m\n")
+            print(f"\u001b[38;5;9mensure that your quick-unlock passphrase was input correctly and that the whitelist "
+                  f"is properly configured on the server\u001b[0m\n")
         s_exit(1)
 
 
