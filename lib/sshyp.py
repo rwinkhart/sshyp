@@ -471,7 +471,7 @@ def read_shortcut():  # shortcut to quickly read an entry
 def sync():  # calls sshync to sync changes to the user's server
     print('\nsyncing entries with the server device...\n')
     # check for deletions
-    system(f"ssh -i '{path.expanduser('~/.ssh/sshyp')}' -p {port} {username_ssh}@{ip} \"cd /bin; python -c "
+    system(f"ssh -i '{path.expanduser('~/.ssh/sshyp')}' -p {port} {username_ssh}@{ip} \"cd /lib/sshyp; python -c "
            f"'import sshypRemote; sshypRemote.deletion_check(\"'\"{client_device_id}\"'\")'\"")
     system(f"scp -pqs -P {port} -i '{path.expanduser('~/.ssh/sshyp')}' {username_ssh}@{ip}:'/home/{username_ssh}"
            f"/.config/sshyp/deletion_database' {path.expanduser('~/.config/sshyp/')}")
@@ -493,7 +493,7 @@ def sync():  # calls sshync to sync changes to the user's server
             if silent_sync != 1:
                 print('location does not exist locally')
     # check for new folders
-    system(f"ssh -i '{path.expanduser('~/.ssh/sshyp')}' -p {port} {username_ssh}@{ip} \"cd /bin; python -c "
+    system(f"ssh -i '{path.expanduser('~/.ssh/sshyp')}' -p {port} {username_ssh}@{ip} \"cd /lib/sshyp; python -c "
            f"'import sshypRemote; sshypRemote.folder_check()'\"")
     system(f"scp -pqs -P {port} -i '{path.expanduser('~/.ssh/sshyp')}' {username_ssh}@{ip}:'/home/{username_ssh}"
            f"/.config/sshyp/folder_database' {path.expanduser('~/.config/sshyp/')}")
@@ -667,7 +667,7 @@ def rename():  # renames an entry or folder
     else:
         move(f"{directory}{_entry_name}.gpg", f"{directory}{_new_name}.gpg")
     if ssh_error != 1:
-        system(f"ssh -i '{path.expanduser('~/.ssh/sshyp')}' -p {port} {username_ssh}@{ip} \"cd /bin; python -c "
+        system(f"ssh -i '{path.expanduser('~/.ssh/sshyp')}' -p {port} {username_ssh}@{ip} \"cd /lib/sshyp; python -c "
                f"'import sshypRemote; sshypRemote.delete(\"'\"{_entry_name}\"'\", 'remotely')'\"")
 
 
@@ -800,7 +800,7 @@ def remove_data():  # deletes an entry from the server and flags it for local de
         _entry_name = entry_name_fetch(1)
     decrypt(path.expanduser('~/.config/sshyp/lock.gpg'), 0, 0, gpg)
     if ssh_error != 1:
-        system(f"ssh -i '{path.expanduser('~/.ssh/sshyp')}' -p {port} {username_ssh}@{ip} \"cd /bin; python -c "
+        system(f"ssh -i '{path.expanduser('~/.ssh/sshyp')}' -p {port} {username_ssh}@{ip} \"cd /lib/sshyp; python -c "
                f"'import sshypRemote; sshypRemote.delete(\"'\"{_entry_name}\"'\", 'remotely')'\"")
     else:
         from sshypRemote import delete as offline_delete
