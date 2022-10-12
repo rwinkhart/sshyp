@@ -523,7 +523,7 @@ def whitelist_setup():  # takes input from the user to set up quick-unlock passw
     _gpg_password_temp = str(input('\nfull gpg passphrase: '))
     _half_length = len(_gpg_password_temp)/2
     _short_password_length = int(input(f"\nquick unlock pin length (must be half the length of gpg password or less) "
-                                       f"({_half_length}): "))
+                                       f"({int(_half_length)}): "))
     _i, _quick_unlock_password, _quick_unlock_password_excluded = 0, '', ''
     for _char in _gpg_password_temp:
         if _i % 2 == 1 and _i < _short_password_length:
@@ -559,7 +559,7 @@ def whitelist_verify():  # checks the user's whitelist status and fetches the fu
                 'ssh -i ' + "'" + path.expanduser('~/.ssh/sshyp') + "' -p " + port + " " + username_ssh + '@' + ip +
                 f" 'gpg --pinentry-mode loopback --passphrase '{_quick_unlock_password}' "
                 f"-qd ~/.config/sshyp/excluded.gpg'", shell=True, stdout=PIPE, text=True).stdout.rstrip()
-            while _i < len(_quick_unlock_password_excluded) + len(_quick_unlock_password):
+            while _i < len(_quick_unlock_password_excluded):
                 try:
                     _full_password += _quick_unlock_password_excluded[_i]
                 except IndexError:
