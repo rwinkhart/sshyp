@@ -306,9 +306,9 @@ def tweak():  # runs configuration wizard
             open(f"{path.expanduser('~/.config/sshyp/devices/')}{_device_id}", 'w')
 
             # quick-unlock configuration
-            print(f"{_divider}\nthis allows you to use a shorter version of your gpg key password and\n"
-                  f"requires a constant connection to your sshyp server to authenticate\n")
-            _sshyp_data += [int(input('\nenable quick-unlock? (y/N) ').lower())]
+            print(f"{_divider}this allows you to use a shorter version of your gpg key password and\n"
+                  f"requires a constant connection to your sshyp server to authenticate")
+            _sshyp_data += [input('\nenable quick-unlock? (y/N) ').lower()]
             if _sshyp_data[3] == 'y':
                 print(f"\nquick-unlock has been enabled client-side - in order for this device to be able to read "
                       f"entries,\nyou must first login to the sshyp server and run:\n\nsshyp whitelist setup "
