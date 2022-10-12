@@ -160,6 +160,9 @@ def decrypt(_entry_dir, _shm_folder, _shm_entry, _gpg_command, _tmp_dir=path.exp
         run(_command, shell=True, stderr=PIPE, check=True, close_fds=True)
     except CalledProcessError:
         print(f"\n\u001b[38;5;9merror: could not decrypt - ensure the correct gpg key is present\u001b[0m\n")
+        if quick_unlock_enabled == 'y':
+            print(f"\u001b[38;5;9mensure that quick-unlock is properly set up on the server and that this device is "
+                  f"whitelisted\u001b[0m\n")
         s_exit(1)
 
 
@@ -533,8 +536,8 @@ def whitelist_setup():  # takes input from the user to set up quick-unlock passw
     open(path.expanduser('~/.config/sshyp/gpg-gen'), 'w').writelines([
         'Key-Type: 1\n', 'Key-Length: 4096\n', 'Key-Usage: sign encrypt\n', 'Name-Real: sshyp\n',
         'Name-Comment: gpg-sshyp-whitelist\n', 'Name-Email: https://github.com/rwinkhart/sshyp\n', 'Expire-Date: 0'])
-    run(gpg + ' --batch --generate-key --passphrase ' + "'" + _quick_unlock_password + "'" + " '" +
-        path.expanduser('~/.config/sshyp/gpg-gen') + "'", shell=True)
+    run('gpg -q --pinentry-mode loopback --batch --generate-key --passphrase ' + "'" + _quick_unlock_password + "'" +
+        " '" + path.expanduser('~/.config/sshyp/gpg-gen') + "'", shell=True)
     remove(path.expanduser('~/.config/sshyp/gpg-gen'))
     _gpg_id = run(f"{gpg} -k", shell=True, stdout=PIPE, text=True).stdout.split('\n')[-4].strip()
 
@@ -542,6 +545,7 @@ def whitelist_setup():  # takes input from the user to set up quick-unlock passw
     _shm_folder, _shm_entry = shm_gen()
     open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'w').write(_quick_unlock_password_excluded)
     encrypt(path.expanduser('~/.config/sshyp/excluded.gpg'), _shm_folder, _shm_entry, gpg, _gpg_id)
+    print(f"\nyour quick-unlock passphrase: {_quick_unlock_password}")
 
 
 def whitelist_verify():  # checks the user's whitelist status and fetches the full gpg key password if possible
