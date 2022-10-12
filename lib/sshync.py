@@ -27,8 +27,9 @@ def get_titles_mods(_directory, _destination, _user_data):  # fetches and return
             open(expanduser('~/.config/sshync/database'), 'a').write(str(_mod) + '\n')
     # remote fetching
     if _destination == 'r':
-        system(f"ssh -i '{_user_data[5]}' -p {_user_data[2]} {_user_data[0]}@{_user_data[1]} \"cd /bin; python -c 'impo"
-               f"rt sshync; sshync.get_titles_mods(\"'\"{_user_data[4]}\"'\", \"'\"l\"'\", \"'\"{_user_data}\"'\")'\"")
+        system(f"ssh -i '{_user_data[5]}' -p {_user_data[2]} {_user_data[0]}@{_user_data[1]} \"cd /lib/sshyp; python -c"
+               f" 'import sshync; sshync.get_titles_mods(\"'\"{_user_data[4]}\"'\", \"'\"l\"'\", \"'\"{_user_data}"
+               f"\"'\")'\"")
         system(f"scp -pqs -P {_user_data[2]} -i '{_user_data[5]}' {_user_data[0]}@{_user_data[1]}:"
                f"'/home/{_user_data[0]}/.config/sshync/database' '{expanduser('~/.config/sshync/')}'")
         _titles, _sep, _mods = '*&^'.join(open(expanduser('~/.config/sshync/database')).readlines()).replace('\n', '')\
