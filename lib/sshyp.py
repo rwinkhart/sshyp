@@ -526,7 +526,7 @@ def whitelist_setup():  # takes input from the user to set up quick-unlock passw
                                        f"({int(_half_length)}): "))
     _i, _quick_unlock_password, _quick_unlock_password_excluded = 0, '', ''
     for _char in _gpg_password_temp:
-        if _i % 2 == 1 and _i < _short_password_length:
+        if _i % 2 == 1 and _i < _short_password_length*2:
             _quick_unlock_password += _char
         else:
             _quick_unlock_password_excluded += _char
