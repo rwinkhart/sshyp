@@ -300,8 +300,8 @@ def tweak():  # runs configuration wizard
                 remove(f"{path.expanduser('~/.config/sshyp/devices/')}{_id}")
             print(f"{_divider}\u001b[4;1mimportant:\u001b[0m this id \u001b[4;1mmust\u001b[0m be unique amongst your "
                   f"client devices\n\nthis is used to keep track of database syncing and quick-unlock permissions\n")
-            _device_id_prefix = str(input('device id: '))
-            _device_id_suffix = string_gen('c', randint(12, 48))
+            _device_id_prefix = str(input('device id: ')) + '-'
+            _device_id_suffix = string_gen('s', randint(24, 48))
             _device_id = _device_id_prefix + _device_id_suffix
             open(f"{path.expanduser('~/.config/sshyp/devices/')}{_device_id}", 'w')
 
