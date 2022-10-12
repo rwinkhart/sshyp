@@ -146,7 +146,14 @@ def encrypt(_entry_dir, _shm_folder, _shm_entry, _gpg_com, _gpg_id, _tmp_dir=pat
 def decrypt(_entry_dir, _shm_folder, _shm_entry, _gpg_command, _tmp_dir=path.expanduser('~/.config/sshyp/tmp/')):
     # decrypts an entry to a temporary directory
     if _shm_folder == 0 and _shm_entry == 0:
-        _command = f"{_gpg_command} -qd --output /dev/null {path.expanduser('~/.config/sshyp/lock.gpg')}"
+        if quick_unlock_enabled == 'y':
+            _command = f"gpg --pinentry-mode loopback --passphrase {whitelist_verify()} -qd --output /dev/null " \
+                       f"{path.expanduser('~/.config/sshyp/lock.gpg')}"
+        else:
+            _command = f"{_gpg_command} -qd --output /dev/null {path.expanduser('~/.config/sshyp/lock.gpg')}"
+    elif quick_unlock_enabled == 'y':
+        _command = f"gpg --pinentry-mode loopback --passphrase '{whitelist_verify()}' -qd --output " \
+                   f"{_tmp_dir}{_shm_folder}/{_shm_entry} '{_entry_dir}.gpg'"
     else:
         _command = f"{_gpg_command} -qd --output {_tmp_dir}{_shm_folder}/{_shm_entry} '{_entry_dir}.gpg'"
     try:
@@ -822,7 +829,7 @@ if __name__ == "__main__":
                     directory = path.expanduser('~/.local/share/sshyp/')
                     gpg_id = sshyp_data[1].rstrip()
                     editor = sshyp_data[2].rstrip()
-                    quick_unlock_length = int(sshyp_data[3].rstrip())
+                    quick_unlock_enabled = sshyp_data[3].rstrip()
                     if Path(path.expanduser('~/.config/sshyp/sshyp.sshync')).is_file():
                         ssh_info = sshync.get_profile(path.expanduser('~/.config/sshyp/sshyp.sshync'))
                         username_ssh = ssh_info[0].rstrip()
