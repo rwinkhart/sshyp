@@ -447,6 +447,7 @@ def print_info():  # prints help text based on argument
             print(' delete/del          remove a device id from the quick-unlock whitelist\n')
         else:
             print('\n\u001b[38;5;9merror: argument (whitelist) only available on server\u001b[0m\n')
+    s_exit(0)
 
 
 def no_arg():  # displays a list of entries and gives an option to select one for viewing
@@ -882,7 +883,6 @@ if __name__ == "__main__":
                     whitelist_setup()
                 else:
                     print_info()
-                    s_exit(0)
             else:
                 print_info()
         elif argument_list[1] == 'add':
@@ -895,7 +895,6 @@ if __name__ == "__main__":
                 add_folder()
             else:
                 print_info()
-                s_exit(0)
         elif argument_list[1] == 'edit':
             if len(argument_list) == 2:
                 print_info()
@@ -908,7 +907,6 @@ if __name__ == "__main__":
                 edit()
             else:
                 print_info()
-                s_exit(0)
         elif argument_list[1] == 'gen':
             gen()
         elif argument_list[1] == 'copy':
@@ -931,15 +929,13 @@ if __name__ == "__main__":
             s_exit(1)
 
         # sync if any changes were made
-        if len(argument_list) > 1 and ssh_error == 0 and \
-                ((argument_list[1] == 'sync' or argument_list[1] == '-s' or argument_list[1] == 'gen' or
-                  argument_list[1] == 'shear' or argument_list[1] == '-rm') or ((argument_list[1] == 'add'
-                                                                                 or argument_list[1] == 'edit')
-                                                                                and len(argument_list) > 2)):
+        if len(argument_list) > 1 and ssh_error == 0 \
+                and ((argument_list[1] == 'sync' or argument_list[1] == '-s' or argument_list[1] == 'gen' or
+                      argument_list[1] == 'shear' or argument_list[1] == '-rm') or
+                     ((argument_list[1] == 'add' or argument_list[1] == 'edit') and len(argument_list) > 2)):
             sync()
-
-        s_exit(0)
 
     except KeyboardInterrupt:
         print('\n')
-        s_exit(0)
+
+s_exit(0)
