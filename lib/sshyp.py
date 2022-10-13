@@ -522,9 +522,14 @@ def sync():  # calls sshync to sync changes to the user's server
 
 def whitelist_setup():  # takes input from the user to set up quick-unlock password
     _gpg_password_temp = str(input('\nfull gpg passphrase: '))
-    _half_length = len(_gpg_password_temp)/2
-    _short_password_length = int(input(f"\nquick unlock pin length (must be half the length of gpg password or less) "
-                                       f"({int(_half_length)}): "))
+    _half_length = int(len(_gpg_password_temp)/2)
+    try:
+        _short_password_length = int(input(f"\nquick unlock pin length (must be half the length of gpg password or "
+                                           f"less) ({_half_length}): "))
+        if _short_password_length > _half_length:
+            _short_password_length = _half_length
+    except ValueError:
+        _short_password_length = _half_length
     _i, _quick_unlock_password, _quick_unlock_password_excluded = 0, '', ''
     for _char in _gpg_password_temp:
         if _i % 2 == 1 and _i < _short_password_length*2:
