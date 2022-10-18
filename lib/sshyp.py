@@ -147,7 +147,7 @@ def decrypt(_entry_dir, _shm_folder, _shm_entry, _gpg_com, _tmp_dir=path.expandu
     # decrypts an entry to a temporary directory
     if _shm_folder == 0 and _shm_entry == 0:
         if quick_unlock_enabled == 'y':
-            _command = f"gpg --pinentry-mode loopback --passphrase {whitelist_verify()} -qd --output /dev/null " \
+            _command = f"gpg --pinentry-mode loopback --passphrase '{whitelist_verify()}' -qd --output /dev/null " \
                        f"{path.expanduser('~/.config/sshyp/lock.gpg')}"
         else:
             _command = f"{_gpg_com} -qd --output /dev/null {path.expanduser('~/.config/sshyp/lock.gpg')}"
@@ -678,7 +678,7 @@ def rename():  # renames an entry or folder
         move(f"{directory}{_entry_name}.gpg", f"{directory}{_new_name}.gpg")
     if ssh_error != 1:
         system(f"ssh -i '{path.expanduser('~/.ssh/sshyp')}' -p {port} {username_ssh}@{ip} \"cd /lib/sshyp; python -c "
-               f"'import sshypRemote; sshypRemote.delete(\"'\"{_entry_name}\"'\", 'remotely')'\"")
+               f"'import sshypRemote; sshypRemote.delete(\"'\"{_entry_name}\"'\", \"'\"remotely\"'\")'\"")
 
 
 def edit():  # edits the contents of an entry
@@ -811,7 +811,7 @@ def remove_data():  # deletes an entry from the server and flags it for local de
     decrypt(path.expanduser('~/.config/sshyp/lock.gpg'), 0, 0, gpg)
     if ssh_error != 1:
         system(f"ssh -i '{path.expanduser('~/.ssh/sshyp')}' -p {port} {username_ssh}@{ip} \"cd /lib/sshyp; python -c "
-               f"'import sshypRemote; sshypRemote.delete(\"'\"{_entry_name}\"'\", 'remotely')'\"")
+               f"'import sshypRemote; sshypRemote.delete(\"'\"{_entry_name}\"'\", \"'\"remotely\"'\")'\"")
     else:
         from sshypRemote import delete as offline_delete
         offline_delete(_entry_name, '')
