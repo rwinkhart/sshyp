@@ -103,7 +103,7 @@ def string_gen(_complexity, _length):  # generates and returns a random string b
     if _complexity == 's':
         _character_pool = string.ascii_letters + string.digits
     else:
-        _character_pool = string.printable.replace('/', '').replace('\\', '')
+        _character_pool = string.digits + string.ascii_letters + string.punctuation.replace('/', '').replace('\\', '')
     _gen = ''.join(SystemRandom().choice(_character_pool) for _ in range(_length))
     _min_special, _special = round(.2 * _length), 0
     for _character in _gen:
