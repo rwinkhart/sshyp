@@ -143,9 +143,9 @@ def encrypt(_entry_dir, _shm_folder, _shm_entry, _gpg_com, _gpg_id, _tmp_dir=pat
     rmtree(f"{_tmp_dir}{_shm_folder}")
 
 
-def decrypt(_entry_dir, _shm_folder, _shm_entry, _gpg_com, _tmp_dir=path.expanduser('~/.config/sshyp/tmp/')):
-    # decrypts an entry to a temporary directory
-    if quick_unlock_enabled == 'y':
+def decrypt(_entry_dir, _shm_folder, _shm_entry, _gpg_com, _quick_enabled,
+            _tmp_dir=path.expanduser('~/.config/sshyp/tmp/')):  # decrypts an entry to a temporary directory
+    if _quick_enabled == 'y':
         _unlock_method = f"gpg --pinentry-mode loopback --passphrase -qd --output "
     else:
         _unlock_method = f"{_gpg_com} -qd --output "
@@ -156,7 +156,7 @@ def decrypt(_entry_dir, _shm_folder, _shm_entry, _gpg_com, _tmp_dir=path.expandu
     try:
         run(_unlock_method + _output_target, shell=True, stderr=PIPE, check=True, close_fds=True)
     except CalledProcessError:
-        if quick_unlock_enabled == 'y':
+        if _quick_enabled == 'y':
             _unlock_method = f"gpg --pinentry-mode loopback --passphrase '{whitelist_verify()}' -qd --output "
             try:
                 run(_unlock_method + _output_target, shell=True, stderr=PIPE, check=True, close_fds=True)
@@ -460,7 +460,7 @@ def no_arg():  # displays a list of entries and gives an option to select one fo
         print(f"\n\u001b[38;5;9merror: entry ({_entry_name}) does not exist\u001b[0m\n")
         s_exit(1)
     _shm_folder, _shm_entry = shm_gen()
-    decrypt(directory + _entry_name, _shm_folder, _shm_entry, gpg)
+    decrypt(directory + _entry_name, _shm_folder, _shm_entry, gpg, quick_unlock_enabled)
     entry_reader(f"{tmp_dir}{_shm_folder}/{_shm_entry}")
     rmtree(f"{tmp_dir}{_shm_folder}")
 
@@ -470,7 +470,7 @@ def read_shortcut():  # shortcut to quickly read an entry
         print(f"\n\u001b[38;5;9merror: entry ({argument.replace('/', '', 1)}) does not exist\u001b[0m\n")
         s_exit(1)
     _shm_folder, _shm_entry = shm_gen()
-    decrypt(directory + argument.replace('/', '', 1), _shm_folder, _shm_entry, gpg)
+    decrypt(directory + argument.replace('/', '', 1), _shm_folder, _shm_entry, gpg, quick_unlock_enabled)
     entry_reader(f"{tmp_dir}{_shm_folder}/{_shm_entry}")
     rmtree(f"{tmp_dir}{_shm_folder}")
 
@@ -694,7 +694,7 @@ def edit():  # edits the contents of an entry
         print(f"\n\u001b[38;5;9merror: entry ({_entry_name}) does not exist\u001b[0m\n")
         s_exit(1)
     _shm_folder, _shm_entry = shm_gen()
-    decrypt(directory + _entry_name, _shm_folder, _shm_entry, gpg)
+    decrypt(directory + _entry_name, _shm_folder, _shm_entry, gpg, quick_unlock_enabled)
     if argument_list[2] == 'username' or argument_list[2] == '-u':
         _detail, _edit_line = str(input('username: ')), 1
     elif argument_list[2] == 'password' or argument_list[2] == '-p':
@@ -743,7 +743,7 @@ def gen():  # generates a password for a new or an existing entry
             .writelines(optimized_edit([_password, _username, _url, _notes], None, -1))
     else:
         _shm_folder, _shm_entry = shm_gen()
-        decrypt(directory + _entry_name, _shm_folder, _shm_entry, gpg)
+        decrypt(directory + _entry_name, _shm_folder, _shm_entry, gpg, quick_unlock_enabled)
         _new_lines = optimized_edit(open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'r').readlines(), pass_gen(), 0)
         open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'w').writelines(_new_lines)
         remove(f"{directory}{_entry_name}.gpg")
@@ -761,7 +761,7 @@ def copy_data():  # copies a specified field of an entry to the clipboard
         print(f"\n\u001b[38;5;9merror: entry ({_entry_name}) does not exist\u001b[0m\n")
         s_exit(1)
     _shm_folder, _shm_entry = shm_gen()
-    decrypt(directory + _entry_name, _shm_folder, _shm_entry, gpg)
+    decrypt(directory + _entry_name, _shm_folder, _shm_entry, gpg, quick_unlock_enabled)
     _copy_line = open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'r').readlines()
     if uname()[0] == 'Haiku':  # Haiku clipboard detection
         if argument_list[2] == 'username' or argument_list[2] == '-u':
@@ -811,7 +811,7 @@ def remove_data():  # deletes an entry from the server and flags it for local de
         _entry_name = entry_name_fetch('entry/folder to shear: ')
     else:
         _entry_name = entry_name_fetch(1)
-    decrypt(path.expanduser('~/.config/sshyp/lock.gpg'), 0, 0, gpg)
+    decrypt(path.expanduser('~/.config/sshyp/lock.gpg'), 0, 0, gpg, quick_unlock_enabled)
     if ssh_error != 1:
         system(f"ssh -i '{path.expanduser('~/.ssh/sshyp')}' -p {port} {username_ssh}@{ip} \"cd /lib/sshyp; python -c "
                f"'import sshypRemote; sshypRemote.delete(\"'\"{_entry_name}\"'\", \"'\"remotely\"'\")'\"")
