@@ -157,15 +157,20 @@ def decrypt(_entry_dir, _shm_folder, _shm_entry, _gpg_com, _quick_enabled,
         run(_unlock_method + _output_target, shell=True, stderr=PIPE, check=True, close_fds=True)
     except CalledProcessError:
         if _quick_enabled == 'y':
-            _unlock_method = f"gpg --pinentry-mode loopback --passphrase '{whitelist_verify()}' -qd --output "
             try:
-                run(_unlock_method + _output_target, shell=True, stderr=PIPE, check=True, close_fds=True)
+                run(f"gpg --pinentry-mode loopback --passphrase '{whitelist_verify()}' -qd --output {_output_target}",
+                    shell=True, stderr=PIPE, check=True, close_fds=True)
             except CalledProcessError:
-                print(f"\n\u001b[38;5;9merror: could not decrypt - ensure the correct gpg key is present and that\n"
-                      f"quick-unlock is properly configured on the server\u001b[0m\n")
-                s_exit(1)
+                print('\n\u001b[38;5;9merror: quick-unlock failed - falling back to standard unlock\n\nyour sshyp '
+                      'server is unreachable or quick-unlock is incorrectly configured\u001b[0m\n')
+                try:
+                    run(f"{_gpg_com} -qd --output {_output_target}", shell=True, stderr=PIPE, check=True,
+                        close_fds=True)
+                except CalledProcessError:
+                    print('\n\u001b[38;5;9merror: could not decrypt - ensure the correct gpg key is present\u001b[0m\n')
+                    s_exit(1)
         else:
-            print(f"\n\u001b[38;5;9merror: could not decrypt - ensure the correct gpg key is present\u001b[0m\n")
+            print('\n\u001b[38;5;9merror: could not decrypt - ensure the correct gpg key is present\u001b[0m\n')
             s_exit(1)
 
 
