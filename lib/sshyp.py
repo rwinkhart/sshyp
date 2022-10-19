@@ -950,5 +950,3 @@ if __name__ == "__main__":
 
     except KeyboardInterrupt:
         print('\n')
-
-s_exit(0)
