@@ -144,22 +144,29 @@ def encrypt(_entry_dir, _shm_folder, _shm_entry, _gpg_com, _gpg_id, _tmp_dir=pat
 
 
 def decrypt(_entry_dir, _shm_folder, _shm_entry, _gpg_com, _tmp_dir=path.expanduser('~/.config/sshyp/tmp/')):
+    # decrypts an entry to a temporary directory
     if quick_unlock_enabled == 'y':
-        _unlock_method = f"gpg --pinentry-mode loopback --passphrase '{whitelist_verify()}' -qd --output "
+        _unlock_method = f"gpg --pinentry-mode loopback --passphrase -qd --output "
     else:
         _unlock_method = f"{_gpg_com} -qd --output "
-    if _shm_folder == 0 and _shm_entry == 0:  # quick lock file decryption
+    if _shm_folder == 0 and _shm_entry == 0:
         _output_target = f"/dev/null {path.expanduser('~/.config/sshyp/lock.gpg')}"
     else:
         _output_target = f"{_tmp_dir}{_shm_folder}/{_shm_entry} '{_entry_dir}.gpg'"
     try:
         run(_unlock_method + _output_target, shell=True, stderr=PIPE, check=True, close_fds=True)
     except CalledProcessError:
-        print(f"\n\u001b[38;5;9merror: could not decrypt - ensure the correct gpg key is present\u001b[0m\n")
         if quick_unlock_enabled == 'y':
-            print(f"\u001b[38;5;9mensure that your quick-unlock passphrase was input correctly and that the whitelist "
-                  f"is properly configured on the server\u001b[0m\n")
-        s_exit(1)
+            _unlock_method = f"gpg --pinentry-mode loopback --passphrase '{whitelist_verify()}' -qd --output "
+            try:
+                run(_unlock_method + _output_target, shell=True, stderr=PIPE, check=True, close_fds=True)
+            except CalledProcessError:
+                print(f"\n\u001b[38;5;9merror: could not decrypt - ensure the correct gpg key is present and that\n"
+                      f"quick-unlock is properly configured on the server\u001b[0m\n")
+                s_exit(1)
+        else:
+            print(f"\n\u001b[38;5;9merror: could not decrypt - ensure the correct gpg key is present\u001b[0m\n")
+            s_exit(1)
 
 
 def optimized_edit(_lines, _edit_data, _edit_line):  # ensures an edited entry is optimized for best compatibility
