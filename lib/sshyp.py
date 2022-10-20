@@ -143,9 +143,9 @@ def encrypt(_entry_dir, _shm_folder, _shm_entry, _gpg_com, _gpg_id, _tmp_dir=pat
     rmtree(f"{_tmp_dir}{_shm_folder}")
 
 
-def decrypt(_entry_dir, _shm_folder, _shm_entry, _gpg_com, _quick_enabled,
+def decrypt(_entry_dir, _shm_folder, _shm_entry, _gpg_com, _quick_pass,
             _tmp_dir=path.expanduser('~/.config/sshyp/tmp/')):  # decrypts an entry to a temporary directory
-    if _quick_enabled == 'y':
+    if not isinstance(_quick_pass, bool):
         _unlock_method = f"gpg --pinentry-mode loopback --passphrase -qd --output "
     else:
         _unlock_method = f"{_gpg_com} -qd --output "
@@ -156,9 +156,9 @@ def decrypt(_entry_dir, _shm_folder, _shm_entry, _gpg_com, _quick_enabled,
     try:
         run(_unlock_method + _output_target, shell=True, stderr=PIPE, check=True, close_fds=True)
     except CalledProcessError:
-        if _quick_enabled == 'y':
+        if not isinstance(_quick_pass, bool):
             try:
-                run(f"gpg --pinentry-mode loopback --passphrase '{whitelist_verify()}' -qd --output {_output_target}",
+                run(f"gpg --pinentry-mode loopback --passphrase '{_quick_pass}' -qd --output {_output_target}",
                     shell=True, stderr=PIPE, check=True, close_fds=True)
             except CalledProcessError:
                 print('\n\u001b[38;5;9merror: quick-unlock failed - falling back to standard unlock\n\nyour sshyp '
@@ -172,6 +172,13 @@ def decrypt(_entry_dir, _shm_folder, _shm_entry, _gpg_com, _quick_enabled,
         else:
             print('\n\u001b[38;5;9merror: could not decrypt - ensure the correct gpg key is present\u001b[0m\n')
             s_exit(1)
+
+
+def determine_decrypt(_entry_dir, _shm_folder, _shm_entry, _gpg_com):
+    if quick_unlock_enabled == 'y':
+        decrypt(_entry_dir, _shm_folder, _shm_entry, _gpg_com, whitelist_verify(port, username_ssh, ip))
+    else:
+        decrypt(_entry_dir, _shm_folder, _shm_entry, _gpg_com, False)
 
 
 def optimized_edit(_lines, _edit_data, _edit_line):  # ensures an edited entry is optimized for best compatibility
@@ -465,7 +472,7 @@ def no_arg():  # displays a list of entries and gives an option to select one fo
         print(f"\n\u001b[38;5;9merror: entry ({_entry_name}) does not exist\u001b[0m\n")
         s_exit(1)
     _shm_folder, _shm_entry = shm_gen()
-    decrypt(directory + _entry_name, _shm_folder, _shm_entry, gpg, quick_unlock_enabled)
+    determine_decrypt(directory + _entry_name, _shm_folder, _shm_entry, gpg)
     entry_reader(f"{tmp_dir}{_shm_folder}/{_shm_entry}")
     rmtree(f"{tmp_dir}{_shm_folder}")
 
@@ -475,7 +482,7 @@ def read_shortcut():  # shortcut to quickly read an entry
         print(f"\n\u001b[38;5;9merror: entry ({argument.replace('/', '', 1)}) does not exist\u001b[0m\n")
         s_exit(1)
     _shm_folder, _shm_entry = shm_gen()
-    decrypt(directory + argument.replace('/', '', 1), _shm_folder, _shm_entry, gpg, quick_unlock_enabled)
+    determine_decrypt(directory + argument.replace('/', '', 1), _shm_folder, _shm_entry, gpg)
     entry_reader(f"{tmp_dir}{_shm_folder}/{_shm_entry}")
     rmtree(f"{tmp_dir}{_shm_folder}")
 
@@ -562,15 +569,16 @@ def whitelist_setup():  # takes input from the user to set up quick-unlock passw
     print(f"\nyour quick-unlock passphrase: {_quick_unlock_password}")
 
 
-def whitelist_verify():  # checks the user's whitelist status and fetches the full gpg key password if possible
+def whitelist_verify(_port, _username_ssh, _ip):
+    # checks the user's whitelist status and fetches the full gpg key password if possible
     _i, _full_password = 0, ''
-    _server_whitelist = run('ssh -i ' + "'" + path.expanduser('~/.ssh/sshyp') + "' -p " + port + " " + username_ssh +
-                            '@' + ip + " 'ls ~/.config/sshyp/whitelist'", shell=True, stdout=PIPE, text=True)
+    _server_whitelist = run('ssh -i ' + "'" + path.expanduser('~/.ssh/sshyp') + "' -p " + _port + " " + _username_ssh +
+                            '@' + _ip + " 'ls ~/.config/sshyp/whitelist'", shell=True, stdout=PIPE, text=True)
     for _device_id in _server_whitelist.stdout.rstrip().split('\n'):
         if _device_id == client_device_id:
             _quick_unlock_password = input('\nquick-unlock passphrase: ')
             _quick_unlock_password_excluded = run(
-                'ssh -i ' + "'" + path.expanduser('~/.ssh/sshyp') + "' -p " + port + " " + username_ssh + '@' + ip +
+                'ssh -i ' + "'" + path.expanduser('~/.ssh/sshyp') + "' -p " + _port + " " + _username_ssh + '@' + _ip +
                 f" 'gpg --pinentry-mode loopback --passphrase '{_quick_unlock_password}' "
                 f"-qd ~/.config/sshyp/excluded.gpg'", shell=True, stdout=PIPE, text=True).stdout.rstrip()
             while _i < len(_quick_unlock_password_excluded):
@@ -699,7 +707,7 @@ def edit():  # edits the contents of an entry
         print(f"\n\u001b[38;5;9merror: entry ({_entry_name}) does not exist\u001b[0m\n")
         s_exit(1)
     _shm_folder, _shm_entry = shm_gen()
-    decrypt(directory + _entry_name, _shm_folder, _shm_entry, gpg, quick_unlock_enabled)
+    determine_decrypt(directory + _entry_name, _shm_folder, _shm_entry, gpg)
     if argument_list[2] == 'username' or argument_list[2] == '-u':
         _detail, _edit_line = str(input('username: ')), 1
     elif argument_list[2] == 'password' or argument_list[2] == '-p':
@@ -748,7 +756,7 @@ def gen():  # generates a password for a new or an existing entry
             .writelines(optimized_edit([_password, _username, _url, _notes], None, -1))
     else:
         _shm_folder, _shm_entry = shm_gen()
-        decrypt(directory + _entry_name, _shm_folder, _shm_entry, gpg, quick_unlock_enabled)
+        determine_decrypt(directory + _entry_name, _shm_folder, _shm_entry, gpg)
         _new_lines = optimized_edit(open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'r').readlines(), pass_gen(), 0)
         open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'w').writelines(_new_lines)
         remove(f"{directory}{_entry_name}.gpg")
@@ -766,7 +774,7 @@ def copy_data():  # copies a specified field of an entry to the clipboard
         print(f"\n\u001b[38;5;9merror: entry ({_entry_name}) does not exist\u001b[0m\n")
         s_exit(1)
     _shm_folder, _shm_entry = shm_gen()
-    decrypt(directory + _entry_name, _shm_folder, _shm_entry, gpg, quick_unlock_enabled)
+    determine_decrypt(directory + _entry_name, _shm_folder, _shm_entry, gpg)
     _copy_line = open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'r').readlines()
     if uname()[0] == 'Haiku':  # Haiku clipboard detection
         if argument_list[2] == 'username' or argument_list[2] == '-u':
@@ -816,7 +824,7 @@ def remove_data():  # deletes an entry from the server and flags it for local de
         _entry_name = entry_name_fetch('entry/folder to shear: ')
     else:
         _entry_name = entry_name_fetch(1)
-    decrypt(path.expanduser('~/.config/sshyp/lock.gpg'), 0, 0, gpg, quick_unlock_enabled)
+    determine_decrypt(path.expanduser('~/.config/sshyp/lock.gpg'), 0, 0, gpg)
     if ssh_error != 1:
         system(f"ssh -i '{path.expanduser('~/.ssh/sshyp')}' -p {port} {username_ssh}@{ip} \"cd /lib/sshyp; python -c "
                f"'import sshypRemote; sshypRemote.delete(\"'\"{_entry_name}\"'\", \"'\"remotely\"'\")'\"")
