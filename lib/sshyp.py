@@ -569,13 +569,13 @@ def whitelist_setup():  # takes input from the user to set up quick-unlock passw
     print(f"\nyour quick-unlock passphrase: {_quick_unlock_password}")
 
 
-def whitelist_verify(_port, _username_ssh, _ip):
+def whitelist_verify(_port, _username_ssh, _ip, _client_device_id):
     # checks the user's whitelist status and fetches the full gpg key password if possible
     _i, _full_password = 0, ''
     _server_whitelist = run('ssh -i ' + "'" + path.expanduser('~/.ssh/sshyp') + "' -p " + _port + " " + _username_ssh +
                             '@' + _ip + " 'ls ~/.config/sshyp/whitelist'", shell=True, stdout=PIPE, text=True)
     for _device_id in _server_whitelist.stdout.rstrip().split('\n'):
-        if _device_id == client_device_id:
+        if _device_id == _client_device_id:
             _quick_unlock_password = input('\nquick-unlock passphrase: ')
             _quick_unlock_password_excluded = run(
                 'ssh -i ' + "'" + path.expanduser('~/.ssh/sshyp') + "' -p " + _port + " " + _username_ssh + '@' + _ip +
