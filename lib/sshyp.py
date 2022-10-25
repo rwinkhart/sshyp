@@ -146,7 +146,7 @@ def encrypt(_entry_dir, _shm_folder, _shm_entry, _gpg_com, _gpg_id, _tmp_dir=pat
 def decrypt(_entry_dir, _shm_folder, _shm_entry, _gpg_com, _quick_pass,
             _tmp_dir=path.expanduser('~/.config/sshyp/tmp/')):  # decrypts an entry to a temporary directory
     if not isinstance(_quick_pass, bool):
-        _unlock_method = f"gpg --pinentry-mode loopback --passphrase -qd --output "
+        _unlock_method = f"gpg --pinentry-mode loopback --passphrase '{_quick_pass}' -qd --output "
     else:
         _unlock_method = f"{_gpg_com} -qd --output "
     if _shm_folder == 0 and _shm_entry == 0:
@@ -157,18 +157,14 @@ def decrypt(_entry_dir, _shm_folder, _shm_entry, _gpg_com, _quick_pass,
         run(_unlock_method + _output_target, shell=True, stderr=PIPE, check=True, close_fds=True)
     except CalledProcessError:
         if not isinstance(_quick_pass, bool):
+            print('\n\u001b[38;5;9merror: your sshyp server is unreachable or quick-unlock is incorrectly '
+                  'configured\n\nfalling back to standard unlock\u001b[0m\n')
             try:
-                run(f"gpg --pinentry-mode loopback --passphrase '{_quick_pass}' -qd --output {_output_target}",
-                    shell=True, stderr=PIPE, check=True, close_fds=True)
+                run(f"{_gpg_com} -qd --output {_output_target}", shell=True, stderr=PIPE, check=True,
+                    close_fds=True)
             except CalledProcessError:
-                print('\n\u001b[38;5;9merror: quick-unlock failed - falling back to standard unlock\n\nyour sshyp '
-                      'server is unreachable or quick-unlock is incorrectly configured\u001b[0m\n')
-                try:
-                    run(f"{_gpg_com} -qd --output {_output_target}", shell=True, stderr=PIPE, check=True,
-                        close_fds=True)
-                except CalledProcessError:
-                    print('\n\u001b[38;5;9merror: could not decrypt - ensure the correct gpg key is present\u001b[0m\n')
-                    s_exit(1)
+                print('\n\u001b[38;5;9merror: could not decrypt - ensure the correct gpg key is present\u001b[0m\n')
+                s_exit(1)
         else:
             print('\n\u001b[38;5;9merror: could not decrypt - ensure the correct gpg key is present\u001b[0m\n')
             s_exit(1)
@@ -176,7 +172,8 @@ def decrypt(_entry_dir, _shm_folder, _shm_entry, _gpg_com, _quick_pass,
 
 def determine_decrypt(_entry_dir, _shm_folder, _shm_entry, _gpg_com):
     if quick_unlock_enabled == 'y':
-        decrypt(_entry_dir, _shm_folder, _shm_entry, _gpg_com, whitelist_verify(port, username_ssh, ip))
+        decrypt(_entry_dir, _shm_folder, _shm_entry, _gpg_com, whitelist_verify(port, username_ssh, ip,
+                                                                                client_device_id))
     else:
         decrypt(_entry_dir, _shm_folder, _shm_entry, _gpg_com, False)
 
@@ -576,22 +573,27 @@ def whitelist_verify(_port, _username_ssh, _ip, _client_device_id):
                             '@' + _ip + " 'ls ~/.config/sshyp/whitelist'", shell=True, stdout=PIPE, text=True)
     for _device_id in _server_whitelist.stdout.rstrip().split('\n'):
         if _device_id == _client_device_id:
-            _quick_unlock_password = input('\nquick-unlock passphrase: ')
-            _quick_unlock_password_excluded = run(
-                'ssh -i ' + "'" + path.expanduser('~/.ssh/sshyp') + "' -p " + _port + " " + _username_ssh + '@' + _ip +
-                f" 'gpg --pinentry-mode loopback --passphrase '{_quick_unlock_password}' "
-                f"-qd ~/.config/sshyp/excluded.gpg'", shell=True, stdout=PIPE, text=True).stdout.rstrip()
-            while _i < len(_quick_unlock_password_excluded):
-                try:
-                    _full_password += _quick_unlock_password_excluded[_i]
-                except IndexError:
-                    pass
-                try:
-                    _full_password += _quick_unlock_password[_i]
-                except IndexError:
-                    pass
-                _i += 1
-            break
+            try:
+                run(f"gpg --pinentry-mode cancel -qd --output /dev/null {path.expanduser('~/.config/sshyp/lock.gpg')}",
+                    shell=True, stderr=PIPE, check=True, close_fds=True)
+                _full_password = False
+            except CalledProcessError:
+                _quick_unlock_password = input('\nquick-unlock passphrase: ')
+                _quick_unlock_password_excluded = \
+                    run('ssh -i ' + "'" + path.expanduser('~/.ssh/sshyp') + "' -p " + _port + " " + _username_ssh + '@'
+                        + _ip + f" 'gpg --pinentry-mode loopback --passphrase '{_quick_unlock_password}' -qd"
+                                f" ~/.config/sshyp/excluded.gpg'", shell=True, stdout=PIPE, text=True).stdout.rstrip()
+                while _i < len(_quick_unlock_password_excluded):
+                    try:
+                        _full_password += _quick_unlock_password_excluded[_i]
+                    except IndexError:
+                        pass
+                    try:
+                        _full_password += _quick_unlock_password[_i]
+                    except IndexError:
+                        pass
+                    _i += 1
+                break
     return _full_password
 
 
