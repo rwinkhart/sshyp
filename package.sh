@@ -35,6 +35,7 @@ url='https://github.com/rwinkhart/sshyp'
 arch=('any')
 license=('GPL-3.0-only')
 depends=(python gnupg openssh xclip wl-clipboard)
+optdepends=('bash-completion: bash completion support')
 source=(\""$source"\")
 sha512sums=('"$sha512"')
 
@@ -129,8 +130,9 @@ Architecture: all
 Maintainer: Randall Winkhart <idgr at tutanota dot com>
 Description: A light-weight, self-hosted, synchronized password manager
 Depends: python3, gnupg, openssh-client, xclip, wl-clipboard
+Suggests: bash-completion
 Priority: optional
-Installed-Size: 185
+Installed-Size: 14584
 " > output/debiantemp/sshyp_"$version"-"$revision"_all/DEBIAN/control
     cp -r lib/. output/debiantemp/sshyp_"$version"-"$revision"_all/usr/lib/sshyp/
     ln -s /usr/lib/sshyp/sshyp.py output/debiantemp/sshyp_"$version"-"$revision"_all/usr/bin/sshyp
@@ -154,8 +156,9 @@ Architecture: all
 Maintainer: Randall Winkhart <idgr at tutanota dot com>
 Description: A light-weight, self-hosted, synchronized password manager
 Depends: python, gnupg, openssh, termux-api, termux-am
+Suggests: bash-completion
 Priority: optional
-Installed-Size: 185
+Installed-Size: 14584
 " > output/termuxtemp/sshyp_"$version"-"$revision"_all_termux/DEBIAN/control
     cp -r lib/. output/termuxtemp/sshyp_"$version"-"$revision"_all_termux/data/data/com.termux/files/usr/lib/sshyp/
     ln -s /data/data/com.termux/files/usr/lib/sshyp/sshyp.py output/termuxtemp/sshyp_"$version"-"$revision"_all_termux/data/data/com.termux/files/usr/bin/sshyp
@@ -183,6 +186,7 @@ License:        GPL-3.0-only
 URL:            https://github.com/rwinkhart/sshyp
 Source0:        sshyp-"$version".tar.xz
 Requires:       python gnupg openssh wl-clipboard
+Recommends:     bash-completion
 %description
 sshyp is a password-store compatible CLI password manager available for UNIX(-like) systems - its primary goal is to make syncing passwords and notes across devices as easy as possible via CLI.
 %install
@@ -276,5 +280,5 @@ elif [ "$1" == "fedora" ]; then
 elif [ "$1" == "freebsd" ]; then
     _create_freebsd_pkg
 else
-    echo -e '\nusage: package.sh [target] <revision>\n\ntargets:\n mainline: pkgbuild apkbuild haiku fedora debian termux\n experimental: freebsd\n coming soon: appimage(mainline) openbsd(mainline) macos(experimental)\n'
+    echo -e '\nusage: package.sh [target] <revision>\n\ntargets:\n mainline: pkgbuild apkbuild haiku fedora debian\n experimental: freebsd\ntermux\n coming soon: appimage(mainline) openbsd(mainline) macos(experimental)\n'
 fi
