@@ -164,10 +164,10 @@ def decrypt(_entry_dir, _shm_folder, _shm_entry, _gpg_com, _quick_pass,
                     close_fds=True)
             except CalledProcessError:
                 print('\n\u001b[38;5;9merror: could not decrypt - ensure the correct gpg key is present\u001b[0m\n')
-                s_exit(1)
+                s_exit(5)
         else:
             print('\n\u001b[38;5;9merror: could not decrypt - ensure the correct gpg key is present\u001b[0m\n')
-            s_exit(1)
+            s_exit(5)
 
 
 def determine_decrypt(_entry_dir, _shm_folder, _shm_entry, _gpg_com):
@@ -467,7 +467,7 @@ def no_arg():  # displays a list of entries and gives an option to select one fo
     _entry_name = entry_name_fetch('entry to read: ')
     if not Path(f"{directory}{_entry_name}.gpg").exists():
         print(f"\n\u001b[38;5;9merror: entry ({_entry_name}) does not exist\u001b[0m\n")
-        s_exit(1)
+        s_exit(3)
     _shm_folder, _shm_entry = shm_gen()
     determine_decrypt(directory + _entry_name, _shm_folder, _shm_entry, gpg)
     entry_reader(f"{tmp_dir}{_shm_folder}/{_shm_entry}")
@@ -477,7 +477,7 @@ def no_arg():  # displays a list of entries and gives an option to select one fo
 def read_shortcut():  # shortcut to quickly read an entry
     if not Path(f"{directory}{argument.replace('/', '', 1)}.gpg").exists():
         print(f"\n\u001b[38;5;9merror: entry ({argument.replace('/', '', 1)}) does not exist\u001b[0m\n")
-        s_exit(1)
+        s_exit(3)
     _shm_folder, _shm_entry = shm_gen()
     determine_decrypt(directory + argument.replace('/', '', 1), _shm_folder, _shm_entry, gpg)
     entry_reader(f"{tmp_dir}{_shm_folder}/{_shm_entry}")
@@ -496,7 +496,7 @@ def sync():  # calls sshync to sync changes to the user's server
     except (FileNotFoundError, IndexError):
         print('\n\u001b[38;5;9merror: the deletion database does not exist or is corrupted\u001b[0m\n')
         _deletion_database = None
-        s_exit(1)
+        s_exit(6)
     for _file in _deletion_database:
         try:
             if silent_sync != 1:
@@ -518,7 +518,7 @@ def sync():  # calls sshync to sync changes to the user's server
     except (FileNotFoundError, IndexError):
         print('\n\u001b[38;5;9merror: the folder database does not exist or is corrupted\u001b[0m\n')
         _folder_database = None
-        s_exit(1)
+        s_exit(6)
     for _folder in _folder_database:
         if Path(f"{path.expanduser('~')}{_folder[:-1]}").is_dir():
             pass
@@ -625,7 +625,7 @@ def whitelist_manage():  # adds or removes quick-unlock whitelisted device ids
             whitelist_list()
         else:
             print(f"\n\u001b[38;5;9merror: device id ({_device_id}) is not registered\u001b[0m\n")
-            s_exit(1)
+            s_exit(2)
 
     elif Path(path.expanduser(f"~/.config/sshyp/whitelist/{_device_id}")).is_file():
         remove(path.expanduser(f"~/.config/sshyp/whitelist/{_device_id}"))
@@ -640,7 +640,7 @@ def add_entry():  # adds a new entry
         _entry_name = entry_name_fetch(2)
     if Path(f"{directory}{_entry_name}.gpg").is_file():
         print(f"\n\u001b[38;5;9merror: entry ({_entry_name}) already exists\u001b[0m\n")
-        s_exit(1)
+        s_exit(4)
     if argument_list[2] == 'note' or argument_list[2] == '-n':
         _shm_folder, _shm_entry = shm_gen()
         system(f"{editor} {tmp_dir}{_shm_folder}/{_shm_entry}-n")
@@ -682,11 +682,11 @@ def rename():  # renames an entry or folder
         _entry_name = entry_name_fetch(2)
     if not Path(f"{directory}{_entry_name}.gpg").is_file() and not Path(f"{directory}{_entry_name}").is_dir():
         print(f"\n\u001b[38;5;9merror: entry ({_entry_name}) does not exist\u001b[0m\n")
-        s_exit(1)
+        s_exit(3)
     _new_name = entry_name_fetch('new name: ')
     if Path(f"{directory}{_new_name}.gpg").is_file() or Path(f"{directory}{_new_name}").is_dir():
         print(f"\n\u001b[38;5;9merror: ({_new_name}) already exists\u001b[0m\n")
-        s_exit(1)
+        s_exit(4)
     if _entry_name.endswith('/'):
         move(f"{directory}{_entry_name}", f"{directory}{_new_name}")
         if ssh_error != 1:
@@ -707,7 +707,7 @@ def edit():  # edits the contents of an entry
         _entry_name = entry_name_fetch(2)
     if not Path(f"{directory}{_entry_name}.gpg").is_file():
         print(f"\n\u001b[38;5;9merror: entry ({_entry_name}) does not exist\u001b[0m\n")
-        s_exit(1)
+        s_exit(3)
     _shm_folder, _shm_entry = shm_gen()
     determine_decrypt(directory + _entry_name, _shm_folder, _shm_entry, gpg)
     if argument_list[2] == 'username' or argument_list[2] == '-u':
@@ -737,13 +737,13 @@ def gen():  # generates a password for a new or an existing entry
         _entry_name = entry_name_fetch(2)
         if not Path(f"{directory}{_entry_name}.gpg").is_file():
             print(f"\n\u001b[38;5;9merror: entry ({_entry_name}) does not exist\u001b[0m\n")
-            s_exit(1)
+            s_exit(3)
     else:
         _entry_name = entry_name_fetch(1)
     if len(argument_list) == 2 or (not argument_list[2] == 'update' and not argument_list[2] == '-u'):
         if Path(f"{directory}{_entry_name}.gpg").is_file():
             print(f"\n\u001b[38;5;9merror: entry ({_entry_name}) already exists\u001b[0m\n")
-            s_exit(1)
+            s_exit(4)
         _username = str(input('username: '))
         _password = pass_gen()
         _url = str(input('url: '))
@@ -774,7 +774,7 @@ def copy_data():  # copies a specified field of an entry to the clipboard
         _entry_name = entry_name_fetch(2)
     if not Path(f"{directory}{_entry_name}.gpg").is_file():
         print(f"\n\u001b[38;5;9merror: entry ({_entry_name}) does not exist\u001b[0m\n")
-        s_exit(1)
+        s_exit(3)
     _shm_folder, _shm_entry = shm_gen()
     determine_decrypt(directory + _entry_name, _shm_folder, _shm_entry, gpg)
     _copy_line = open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'r').readlines()
@@ -876,12 +876,12 @@ if __name__ == "__main__":
                                                  argument_list[1] != "whitelist"):
                     print(f"\n\u001b[38;5;9merror: invalid server argument - run 'sshyp help' to "
                           f"list usable commands\u001b[0m\n")
-                    s_exit(0)
+                    s_exit(1)
             except (FileNotFoundError, IndexError):
                 print('\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
                 print("not all necessary configuration files are present - please run 'sshyp tweak'")
                 print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n')
-                s_exit(1)
+                s_exit(2)
         else:
             tweak()
             s_exit(0)
@@ -942,7 +942,7 @@ if __name__ == "__main__":
                     copy_data()
                 except IndexError:
                     print(f"\n\u001b[38;5;9merror: field does not exist in entry\u001b[0m\n")
-                    s_exit(1)
+                    s_exit(3)
             else:
                 print_info()
         elif argument_list[1] == 'shear' or argument_list[1] == '-rm':
