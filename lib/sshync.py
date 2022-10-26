@@ -64,7 +64,7 @@ def get_profile(_profile_dir):  # returns a list of data read from a sshync job 
     except (FileNotFoundError, IndexError):
         print('\n\u001b[38;5;9merror: the profile does not exist or is corrupted.\u001b[0m\n')
         _profile_data = None
-        s_exit(1)
+        s_exit(3)
     # extract data from profile
     _user = _profile_data[0].rstrip()
     _ip = _profile_data[1].rstrip()
