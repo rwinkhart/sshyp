@@ -185,7 +185,7 @@ BuildArch:      noarch
 License:        GPL-3.0-only
 URL:            https://github.com/rwinkhart/sshyp
 Source0:        sshyp-"$version".tar.xz
-Requires:       python gnupg openssh wl-clipboard
+Requires:       python gnupg openssh-clients wl-clipboard
 Recommends:     bash-completion
 %description
 sshyp is a password-store compatible CLI password manager available for UNIX(-like) systems - its primary goal is to make syncing passwords and notes across devices as easy as possible via CLI.
