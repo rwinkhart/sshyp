@@ -74,7 +74,7 @@ sha512sums=\"
 
 _create_hpkg() {
     echo -e '\npackaging for Haiku...\n'
-    mkdir -p output/haikutemp/{bin,boot/system/{lib/sshyp,data/bash-completion/completions,documentation/{man/man1,packages/sshyp}}}
+    mkdir -p output/haikutemp/{bin,lib/sshyp,documentation/{packages/sshyp,man/man1},data/bash-completion/completions}
     echo "name			sshyp
 version			"$version"-"$revision"
 architecture		any
@@ -83,7 +83,7 @@ description		\"sshyp is the only password-store compatible CLI password manager 
 packager		\"Randall Winkhart <idgr at tutanota dot com>\"
 vendor			\"Randall Winkhart\"
 licenses {
-	\"GPL-3.0-only\"
+	\"GNU GPL v3\"
 }
 copyrights {
 	\"2021-2022 Randall Winkhart\"
@@ -95,25 +95,25 @@ provides {
 requires {
 	gnupg
 	openssh
-	python3
+	python310
 }
 urls {
 	\"https://github.com/rwinkhart/sshyp\"
 }
 " > output/haikutemp/.PackageInfo
-    cp -r lib/. output/haikutemp/boot/system/lib/sshyp/
-    sed -i '1 s/.*/#!\/bin\/env\ python3/' output/haikutemp/boot/system/lib/sshync.py
-    sed -i '1 s/.*/#!\/bin\/env\ python3/' output/haikutemp/boot/system/lib/sshyp.py
-    sed -i '1 s/.*/#!\/bin\/env\ python3/' output/haikutemp/boot/system/lib/sshypRemote.py
-    ln -s /boot/system/lib/sshyp/sshyp.py output/haikutemp/bin/sshyp
+    cp -r lib/. output/haikutemp/lib/sshyp/
+    sed -i '1 s/.*/#!\/bin\/env\ python3.10/' output/haikutemp/lib/sshyp/sshync.py
+    sed -i '1 s/.*/#!\/bin\/env\ python3.10/' output/haikutemp/lib/sshyp/sshyp.py
+    sed -i '1 s/.*/#!\/bin\/env\ python3.10/' output/haikutemp/lib/sshyp/sshypRemote.py
+    ln -s /system/lib/sshyp/sshyp.py output/haikutemp/bin/sshyp
     cp -r share/doc/sshyp/ output/haikutemp/documentation/packages/
     cp -r share/licenses/sshyp/ output/haikutemp/documentation/packages/
-    cp extra/sshyp-completion.bash output/haikutemp/boot/system/data/bash-completion/completions/sshyp
+    cp extra/sshyp-completion.bash output/haikutemp/data/bash-completion/completions/sshyp
     cp extra/manpage output/haikutemp/documentation/man/man1/sshyp.1
     gzip output/haikutemp/documentation/man/man1/sshyp.1
     cd output/haikutemp
     package create -b sshyp-"$version"-"$revision"_all.hpkg
-    package add sshyp-"$version"-"$revision"_all.hpkg bin boot documentation
+    package add sshyp-"$version"-"$revision"_all.hpkg bin lib documentation data
     cd ../..
     mv output/haikutemp/sshyp-"$version"-"$revision"_all.hpkg output/
     rm -rf output/haikutemp
