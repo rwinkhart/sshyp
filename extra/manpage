@@ -61,20 +61,23 @@ add:
  password/-p              add a password entry
  note/-n                  add a note entry
  folder/-f                add a new folder for entries
+
 edit:
  rename/relocate/-r       rename or relocate an entry
  username/-u              change the username of an entry
  password/-p              change the password of an entry
  note/-n                  change the note attached to an entry
  url/-l                   change the url attached to an entry
+
 copy:
  username/-u              copy the username of an entry to your clipboard
  password/-p              copy the password of an entry to your clipboard
  url/-l                   copy the URL of an entry to your clipboard
  note/-n                  copy the note of an entry to your clipboard
+
 gen:
  update/-u                generate a password for an existing entry
- .SH OPTIONS (SERVER)
+.SH OPTIONS (SERVER)
  help/--help/-h           bring up this menu
  version/-v               display sshyp version info
  tweak                    configure sshyp
