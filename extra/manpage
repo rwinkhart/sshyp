@@ -41,8 +41,8 @@ Setting up the quick-unlock whitelist:
 Checking the quick-unlock whitelist status of all registered client devices:
     sshyp whitelist list
 
-Adding a device with the id "laptop-YGuyGUY67F4gj8Hhs" to the quick-unlock whitelist:
-    sshyp whitelist add laptop-YGuyGUY67F4gj8Hhs
+Adding a device with the id "laptop-im|lAoa;&;r&o:ez((g/Dz;EVb.nO_" to the quick-unlock whitelist:
+    sshyp whitelist add 'laptop-im|lAoa;&;r&o:ez((g/Dz;EVb.nO_'
 
 Removing a device with the id "laptop-YGuyGUY67F4gj8Hhs" from the quick-unlock whitelist:
     sshyp whitelist del laptop-YGuyGUY67F4gj8Hhs
