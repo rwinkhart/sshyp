@@ -112,11 +112,17 @@ Client setup:
 Please note that the server setup intentionally does not allow the reading of entries (it does not allow adding a gpg decryption key). For security purposes, only clients can read entries.
 .SH EXIT CODES
 0 - no error
+
 1 - argument error
+
 2 - configuration error
+
 3 - data not found error
+
 4 - data already exists error
+
 5 - decryption/encryption error
+
 6 - server data retrieval error
 .SH AUTHOR
 Randall Winkhart (https://github.com/rwinkhart)
