@@ -104,13 +104,14 @@ def string_gen(_complexity, _length):  # generates and returns a random string b
         _character_pool = string.ascii_letters + string.digits
     else:
         _character_pool = string.digits + string.ascii_letters + string.punctuation.replace('/', '').replace('\\', '')
-    _gen = ''.join(SystemRandom().choice(_character_pool) for _ in range(_length))
     _min_special, _special = round(.2 * _length), 0
-    for _character in _gen:
-        if not _character.isalpha():
-            _special += 1
-    if _special < _min_special:
-        _gen = string_gen(_complexity, _length)
+    while True:
+        _gen = ''.join(SystemRandom().choice(_character_pool) for _ in range(_length))
+        for _character in _gen:
+            if not _character.isalpha():
+                _special += 1
+        if _special >= _min_special:
+            break
     return _gen
 
 
@@ -121,9 +122,6 @@ def pass_gen():  # prompts the user for necessary information to generate a pass
         print(f"\n\u001b[38;5;9merror: a non-integer value was input for password length\u001b[0m\n")
         _gen = pass_gen()
         return _gen
-    if _length > 800:
-        _length = 800
-        print('\n\u001b[38;5;9mpassword length has been limited to the maximum of 800 characters\u001b[0m\n')
     _complexity = str(input('password complexity - simple (for compatibility) or complex (for security)? (s/C) '))
     _gen = string_gen(_complexity.lower(), _length)
     return _gen
