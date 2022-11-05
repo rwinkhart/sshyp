@@ -26,14 +26,10 @@ What sshyp can do:
 
 - securely manage a collection of encrypted passwords and notes via CLI
 - generate new, secure passwords to the user's choice in length and complexity
-- securely sync said passwords and notes seamlessly between devices
-- utilize [extensions](https://github.com/rwinkhart/sshyp-labs) to interact with your entries is additional ways (such as generating TOTP keys)
+- securely sync said passwords and notes seamlessly between devices (or just manage them offline)
+- utilize [extensions](https://github.com/rwinkhart/sshyp-labs) to interact with your entries is additional ways (such as generating TOTP keys or managing your entries in a GUI)
 - everything above with entries created by pass/password-store!
 - everything above on Haiku, FreeBSD, Linux, and Termux (an Android terminal emulator)!
-
-What sshyp will likely do:
-
-- (planned v1.2.0) everything it already does, but also in a GUI for Linux/Haiku
 
 What sshyp definitely won't do:
 
@@ -56,7 +52,7 @@ A packaging script is included in the root directory of the repo in order to pac
 ```
 git clone https://github.com/rwinkhart/sshyp.git
 cd sshyp
-./package.sh
+./package.sh [target] <revision>
 ```
 
 The packaging script has been tested on Arch Linux with "dpkg" as a dependency for Debian/Ubuntu and Termux packaging and "freebsd-pkg" as a dependency for FreeBSD packaging.
@@ -93,8 +89,9 @@ man sshyp
 # Roadmap
 Short-term Goals:
 
-- create minimal GUI app (Linux x86_64, Linux aarch64)
-- various optimizations/bug fixes
+- create minimal GUI app (Linux x86_64, Linux aarch64) - being done as an [extension](https://github.com/rwinkhart/sshyp-labs)
+- significant optimizations
+- vaious bug fixes
 
 Long-term Goals:
 

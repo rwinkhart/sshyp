@@ -1,21 +1,55 @@
-sshyp v1.1.2
+sshyp v1.2.0
 
-the sheecrets update - patch two
+the brisk bahh update
 
-this is a general polish/bugfix release
+this release focuses on speeding up the sshyp user experience by adding
+new features that reduce wasted time
+
+compatibility-breaking changes:
+
+- new configuration options (quick-unlock, offline mode) have been added and
+the configuration files have been reorganized
+    ^ simply running "sshyp tweak" and following the setup wizard will correct any compatibility
+    issues
+- for quick-unlock security, device names have been replaced with more secure device ids
+    ^ older device names are still compatible, but for security reasons it is recommended
+    to delete any pre-existing device names from the server and allow "sshyp tweak" to re-register
+    your devices
 
 user-facing features:
 
-- packaging support for Alpine Linux/postmarketOS
-- the rename() function is no longer unnecessarily verbose
-- handled exception for when the user attempts to copy an entry field that does not exist
+- quick-unlock mode has been added
+    ^ this allows you to use a shortened version of your password by verifying that your device
+    is whitelisted on your sshyp server - it's both faster and more secure than standard unlock,
+    but it requires an active connection to your sshyp server to authenticate (otherwise it will
+    fall back to standard unlock)
+- full support for offline usage
+    ^ though sshyp could be used without a server before, it now can be configured to not attempt
+    to find one ever - this saves time and hides sync failure error messages
+- bash completions have been added
+    ^ if you have bash-completion installed, you can now use the tab key in bash to auto-complete
+    sshyp arguments and entry names (client only, not added for server-specific arguments)
+        ^ if you do not have bash-completion installed, you can source
+        /usr/share/bash-completion/completions/sshyp (Linux/BSD) or
+        /boot/system/data/bash-completion/completions/sshyp (Haiku) in your ~/.bashrc to
+        use this feature
 
 fixes/optimizations:
 
-- replaced shebang with "#!/usr/bin/env python3" for improved compatibility with various systems
-    ^ does not affect Haiku packaging
-- fixed the generic package not actually being compressed
-- reduced lines of code used for cross-device entry deletion
+- fixed entries with multi-word titles failing to decrypt
+- password generation is now much faster and more resource efficient
+- there is no longer a length limit on generated passwords
+- improved visual consistency of help menus
+- rarely used modules are now imported only when needed
+- sshyp now uses one fewer configuration file
+
+other notable changes:
+
+- sshyp is now specifically licensed under the GPL-3.0-only (keyword: only)
+- sshyp now has some possible arguments and its own help menu when running in server mode
+- temporary files in /dev/shm are now generated with more complex names
+- sshyp now installs in /usr/lib/sshyp (Linux/BSD) or /system/lib/sshyp (Haiku) instead of
+/usr/bin or /bin (it is still symlinked to the old directories)
 
 <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 
