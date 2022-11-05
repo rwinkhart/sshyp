@@ -44,8 +44,8 @@ Checking the quick-unlock whitelist status of all registered client devices:
 Adding a device with the id "laptop-im|lAoa;&;r&o:ez((g/Dz;EVb.nO_" to the quick-unlock whitelist:
     sshyp whitelist add 'laptop-im|lAoa;&;r&o:ez((g/Dz;EVb.nO_'
 
-Removing a device with the id "laptop-YGuyGUY67F4gj8Hhs" from the quick-unlock whitelist:
-    sshyp whitelist del laptop-YGuyGUY67F4gj8Hhs
+Removing a device with the id "laptop-im|lAoa;&;r&o:ez((g/Dz;EVb.nO_" from the quick-unlock whitelist:
+    sshyp whitelist del 'laptop-im|lAoa;&;r&o:ez((g/Dz;EVb.nO_'
 .SH OPTIONS (CLIENT)
  help/--help/-h           bring up the help menu
  version/-v               display sshyp version info
