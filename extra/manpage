@@ -1,11 +1,11 @@
-.TH sshyp 1 "27 August 2022" "v1.1.2" "sshyp man page"
+.TH sshyp 1 "05 November 2022" "v1.2.0" "sshyp man page"
 .SH NAME
 sshyp \- A very simple self-hosted, synchronized password manager for UNIX(-like) systems. Alternative to (and compatible with) pass/password-store.
 .SH SYNOPSIS
 sshyp [OPTION] [[FLAG]] [/<entry name>]
 .SH DESCRIPTION
 sshyp is a lightweight password and note management program written in Python. sshyp is used via CLI and is self-hosted with a client-server model. sshyp expects that you have access to a personal server with a properly configured ssh server, ideally accepting remote connections.
-.SH EXAMPLES
+.SH EXAMPLES (CLIENT)
 Setting up sshyp for the first time or altering its configuration (also recommended after major updates):
     sshyp tweak
 
@@ -32,8 +32,19 @@ Manually syncing entries with the server:
 
 Removing an existing folder saved as ~/.local/share/sshyp/social:
     sshyp shear social/
+.SH EXAMPLES (SERVER)
+Setting up the quick-unlock whitelist:
+    sshyp whitelist setup
 
-.SH OPTIONS
+Checking the quick-unlock whitelist status of all registered client devices:
+    sshyp whitelist list
+
+Adding a device with the id "laptop-YGuyGUY67F4gj8Hhs" to the quick-unlock whitelist:
+    sshyp whitelist add laptop-YGuyGUY67F4gj8Hhs
+
+Removing a device with the id "laptop-YGuyGUY67F4gj8Hhs" from the quick-unlock whitelist:
+    sshyp whitelist del laptop-YGuyGUY67F4gj8Hhs
+.SH OPTIONS (CLIENT)
 USAGE: sshyp [OPTION [FLAG] [<entry name>]] | [/<entry name>]
 
  help/--help/-h           bring up the help menu
@@ -45,24 +56,37 @@ USAGE: sshyp [OPTION [FLAG] [<entry name>]] | [/<entry name>]
  copy                     copy details of an entry to your clipboard
  shear/-rm                delete an existing entry
  sync/-s                  manually sync the entry directory via sshync
-.SH FLAGS
+.SH FLAGS (CLIENT)
 add:
- password/-p             add a password entry
- note/-n                 add a note entry
- folder/-f               add a new folder for entries
+ password/-p              add a password entry
+ note/-n                  add a note entry
+ folder/-f                add a new folder for entries
 edit:
- rename/relocate/-r      rename or relocate an entry
- username/-u             change the username of an entry
- password/-p             change the password of an entry
- note/-n                 change the note attached to an entry
- url/-l                  change the url attached to an entry
+ rename/relocate/-r       rename or relocate an entry
+ username/-u              change the username of an entry
+ password/-p              change the password of an entry
+ note/-n                  change the note attached to an entry
+ url/-l                   change the url attached to an entry
 copy:
- username/-u             copy the username of an entry to your clipboard
- password/-p             copy the password of an entry to your clipboard
- url/-l                  copy the URL of an entry to your clipboard
- note/-n                 copy the note of an entry to your clipboard
+ username/-u              copy the username of an entry to your clipboard
+ password/-p              copy the password of an entry to your clipboard
+ url/-l                   copy the URL of an entry to your clipboard
+ note/-n                  copy the note of an entry to your clipboard
 gen:
- update/-u               generate a password for an existing entry
+ update/-u                generate a password for an existing entry
+ .SH OPTIONS (SERVER)
+USAGE: sshyp [option [flag] [<device id>]]
+
+ help/--help/-h           bring up this menu
+ version/-v               display sshyp version info
+ tweak                    configure sshyp
+ whitelist                manage the quick-unlock whitelist
+.SH FLAGS (SERVER)
+whitelist:
+ setup                    set up the quick-unlock whitelist
+ list/-l                  view all registered device ids and their quick-unlock whitelist status
+ add                      whitelist a device id for quick-unlock
+ delete/del               remove a device id from the quick-unlock whitelist
 .SH LIMITATIONS
 The following characters/character sequences are not supported in entry/folder titles:
 
@@ -73,10 +97,11 @@ sshyp operates on a client-server model, and thus requires you to have access to
 The sshyp package includes modes for operating on both client and server devices, so only one package is necessary.
 
 Server setup:
-    Configure an OpenSSH server (if sshyp was installed from the Debian package, the ssh server was not installed as a dependency and needs to be installed manually)
+    Configure an OpenSSH server (if sshyp was installed from the Debian package, openssh-server and openssh-sftp-server must be installed manually - if sshyp was installed from the Fedora package, openssh-server must be installed manually)
     Allow remote access to the SSH server w/public key authentication (disabling password-only authentication recommended)
     Install sshyp
     Run "sshyp tweak" and set the device type as server
+    Optionally, run "sshyp whitelist setup" and configure quick-unlock
     Done!
 
 Client setup:
@@ -87,5 +112,13 @@ Client setup:
     Done!
 
 Please note that the server setup intentionally does not allow the reading of entries (it does not allow adding a gpg decryption key). For security purposes, only clients can read entries.
+.SH EXIT CODES
+0 - no error
+1 - argument error
+2 - configuration error
+3 - data not found error
+4 - data already exists error
+5 - decryption/encryption error
+6 - server data retrieval error
 .SH AUTHOR
 Randall Winkhart (https://github.com/rwinkhart)
