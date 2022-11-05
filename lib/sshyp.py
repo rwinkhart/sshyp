@@ -102,8 +102,11 @@ def string_gen(_complexity, _length):  # generates and returns a random string b
     import string
     if _complexity == 's':
         _character_pool = string.ascii_letters + string.digits
+    elif _complexity == 'f':
+        _character_pool = string.digits + string.ascii_letters + string.punctuation.replace('/', '').replace('\\', '')\
+            .replace("'", '').replace('"', '').replace('`', '')
     else:
-        _character_pool = string.digits + string.ascii_letters + string.punctuation.replace('/', '').replace('\\', '')
+        _character_pool = string.digits + string.ascii_letters + string.punctuation
     _min_special, _special = round(.2 * _length), 0
     while True:
         _gen = ''.join(SystemRandom().choice(_character_pool) for _ in range(_length))
@@ -123,13 +126,15 @@ def pass_gen():  # prompts the user for necessary information to generate a pass
         _gen = pass_gen()
         return _gen
     _complexity = str(input('password complexity - simple (for compatibility) or complex (for security)? (s/C) '))
+    if _complexity != 's' and _complexity != 'S':
+        _complexity = 'c'
     _gen = string_gen(_complexity.lower(), _length)
     return _gen
 
 
 def shm_gen(_tmp_dir=path.expanduser('~/.config/sshyp/tmp/')):  # creates a temporary directory for entry editing
-    _shm_folder_gen = string_gen('s', randint(12, 48))
-    _shm_entry_gen = string_gen('s', randint(12, 48))
+    _shm_folder_gen = string_gen('f', randint(12, 48))
+    _shm_entry_gen = string_gen('f', randint(12, 48))
     Path(_tmp_dir + _shm_folder_gen).mkdir(0o700)
     return _shm_folder_gen, _shm_entry_gen
 
@@ -150,7 +155,7 @@ def decrypt(_entry_dir, _shm_folder, _shm_entry, _gpg_com, _quick_pass,
     if _shm_folder == 0 and _shm_entry == 0:
         _output_target = f"/dev/null {path.expanduser('~/.config/sshyp/lock.gpg')}"
     else:
-        _output_target = f"{_tmp_dir}{_shm_folder}/{_shm_entry} '{_entry_dir}.gpg'"
+        _output_target = f"'{_tmp_dir}{_shm_folder}/{_shm_entry}' '{_entry_dir}.gpg'"
     try:
         run(_unlock_method + _output_target, shell=True, stderr=PIPE, check=True, close_fds=True)
     except CalledProcessError:
@@ -314,7 +319,7 @@ def tweak():  # runs configuration wizard
             print(f"{_divider}\u001b[4;1mimportant:\u001b[0m this id \u001b[4;1mmust\u001b[0m be unique amongst your "
                   f"client devices\n\nthis is used to keep track of database syncing and quick-unlock permissions\n")
             _device_id_prefix = str(input('device id: ')) + '-'
-            _device_id_suffix = string_gen('s', randint(24, 48))
+            _device_id_suffix = string_gen('f', randint(24, 48))
             _device_id = _device_id_prefix + _device_id_suffix
             open(f"{path.expanduser('~/.config/sshyp/devices/')}{_device_id}", 'w')
 
@@ -325,7 +330,7 @@ def tweak():  # runs configuration wizard
             if _sshyp_data[3] == 'y':
                 print(f"\nquick-unlock has been enabled client-side - in order for this device to be able to read "
                       f"entries,\nyou must first login to the sshyp server and run:\n\nsshyp whitelist setup "
-                      f"(if not already done)\nsshyp whitelist add {_device_id}")
+                      f"(if not already done)\nsshyp whitelist add '{_device_id}'")
 
             # test server connection and attempt to register device id
             copy_id_check(_port, _username_ssh, _ip, _device_id)
