@@ -264,10 +264,6 @@ elif [ "$1" == "pkgbuild" ]; then
 elif [ "$1" == "apkbuild" ]; then
     _create_generic
     _create_apkbuild
-elif [ "$1" == "scripts" ]; then
-    _create_generic
-    _create_pkgbuild
-    _create_apkbuild
 elif [ "$1" == "haiku" ]; then  # distribution packages
     _create_hpkg
 elif [ "$1" == "debian" ]; then
@@ -279,6 +275,17 @@ elif [ "$1" == "fedora" ]; then
     _create_rpm
 elif [ "$1" == "freebsd" ]; then
     _create_freebsd_pkg
+elif [ "$1" == "buildable-arch" ]; then
+    _create_generic
+    _create_pkgbuild
+    _create_apkbuild
+    if [[ $(pacman -Q dpkg) == "dpkg"* ]]; then
+        _create_deb
+        _create_termux
+    fi
+    if [[ "$(pacman -Q freebsd-pkg)" == "freebsd-pkg"* ]]; then
+        _create_freebsd_pkg
+    fi
 else
-    echo -e '\nusage: package.sh [target] <revision>\n\ntargets:\n mainline: pkgbuild apkbuild haiku fedora debian\n experimental: freebsd\ntermux\n coming soon: appimage(mainline) openbsd(mainline) macos(experimental)\n'
+    echo -e '\nusage: package.sh [target] <revision>\n\ntargets:\n mainline: pkgbuild apkbuild haiku fedora debian\n experimental: freebsd termux\n other: buildable-arch\n'
 fi
