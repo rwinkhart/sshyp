@@ -203,7 +203,7 @@ def optimized_edit(_lines, _edit_data, _edit_line):  # ensures an edited entry i
 def edit_note(_shm_folder, _shm_entry, _lines):  # edits the note attached to an entry
     _reg_lines = _lines[0:3]
     open(f"{tmp_dir}{_shm_folder}/{_shm_entry}-n", 'w').writelines(_lines[3:])
-    system(f"{editor} {tmp_dir}{_shm_folder}/{_shm_entry}-n")
+    system(f"{editor} '{tmp_dir}{_shm_folder}/{_shm_entry}-n'")
     _new_notes = open(f"{tmp_dir}{_shm_folder}/{_shm_entry}-n").readlines()
     while len(_reg_lines) < 3:
         _reg_lines += ['\n']
@@ -646,7 +646,7 @@ def add_entry():  # adds a new entry
         s_exit(4)
     if argument_list[2] == 'note' or argument_list[2] == '-n':
         _shm_folder, _shm_entry = shm_gen()
-        system(f"{editor} {tmp_dir}{_shm_folder}/{_shm_entry}-n")
+        system(f"{editor} '{tmp_dir}{_shm_folder}/{_shm_entry}-n'")
         _notes = open(f"{tmp_dir}{_shm_folder}/{_shm_entry}-n", 'r').read()
         open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'w').writelines(optimized_edit(['', '', '', _notes], None, -1))
     elif argument_list[2] == 'password' or argument_list[2] == '-p':
@@ -656,7 +656,7 @@ def add_entry():  # adds a new entry
         _add_note = input('add a note to this entry? (y/N) ')
         _shm_folder, _shm_entry = shm_gen()
         if _add_note.lower() == 'y':
-            system(f"{editor} {tmp_dir}{_shm_folder}/{_shm_entry}-n")
+            system(f"{editor} '{tmp_dir}{_shm_folder}/{_shm_entry}-n'")
             _notes = open(f"{tmp_dir}{_shm_folder}/{_shm_entry}-n", 'r').read()
         else:
             _notes = ''
@@ -753,7 +753,7 @@ def gen():  # generates a password for a new or an existing entry
         _add_note = input('add a note to this entry? (y/N) ')
         _shm_folder, _shm_entry = shm_gen()
         if _add_note.lower() == 'y':
-            system(f"{editor} {tmp_dir}{_shm_folder}/{_shm_entry}-n")
+            system(f"{editor} '{tmp_dir}{_shm_folder}/{_shm_entry}-n'")
             _notes = open(f"{tmp_dir}{_shm_folder}/{_shm_entry}-n", 'r').read()
         else:
             _notes = ''
