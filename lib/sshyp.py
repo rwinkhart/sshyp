@@ -160,8 +160,8 @@ def decrypt(_entry_dir, _shm_folder, _shm_entry, _gpg_com, _quick_pass,
         run(_unlock_method + _output_target, shell=True, stderr=PIPE, check=True, close_fds=True)
     except CalledProcessError:
         if not isinstance(_quick_pass, bool):
-            print('\n\u001b[38;5;9merror: your sshyp server is unreachable or quick-unlock is incorrectly '
-                  'configured\n\nfalling back to standard unlock\u001b[0m\n')
+            print('\n\u001b[38;5;9merror: quick-unlock failed as a result of an incorrect passphrase, an unreachable '
+                  'sshyp server, or an invalid configuration\n\nfalling back to standard unlock\u001b[0m\n')
             try:
                 run(f"{_gpg_com} -qd --output {_output_target}", shell=True, stderr=PIPE, check=True,
                     close_fds=True)
