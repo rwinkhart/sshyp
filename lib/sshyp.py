@@ -104,7 +104,7 @@ def string_gen(_complexity, _length):  # generates and returns a random string b
         _character_pool = string.ascii_letters + string.digits
     elif _complexity == 'f':
         _character_pool = string.digits + string.ascii_letters + string.punctuation.replace('/', '').replace('\\', '')\
-            .replace("'", '').replace('"', '').replace('`', '')
+            .replace("'", '').replace('"', '').replace('`', '').replace('~', '')
     else:
         _character_pool = string.digits + string.ascii_letters + string.punctuation
     _min_special, _special = round(.2 * _length), 0
