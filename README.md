@@ -44,6 +44,8 @@ Requests for additional distribution/OS support can be filed as issues.
 
 Extensions are available in the [sshyp-labs](https://github.com/rwinkhart/sshyp-labs) repository.
 
+Bash completions can be enabled by installing your distribution's "bash-completion" package and restarting your terminal.
+
 # Building
 Since sshyp is written entirely in Python, it doesn't need to be compiled. It does, however, need to be packaged for installation.
 
