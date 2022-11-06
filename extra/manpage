@@ -110,6 +110,7 @@ Client setup:
     Run "sshyp tweak" and follow the prompts
     Copy the generated public SSH key (located at ~/.ssh/sshyp.pub) to the server using preferred method (manually adding to authorized_keys, ssh-copy-id, etc.)
     If you already have entries on the server, sync them using "sshyp sync"
+    Optionally, Bash completions can be enabled by installing your distribution's "bash-completion" package and restarting your terminal
     Done!
 
 Please note that the server setup intentionally does not allow the reading of entries (it does not allow adding a gpg decryption key). For security purposes, only clients can read entries.
