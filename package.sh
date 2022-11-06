@@ -106,8 +106,8 @@ urls {
     sed -i '1 s/.*/#!\/bin\/env\ python3.10/' output/haikutemp/lib/sshyp/sshyp.py
     sed -i '1 s/.*/#!\/bin\/env\ python3.10/' output/haikutemp/lib/sshyp/sshypRemote.py
     ln -s /system/lib/sshyp/sshyp.py output/haikutemp/bin/sshyp
-    cp -r share/doc/sshyp/ output/haikutemp/documentation/packages/
-    cp -r share/licenses/sshyp/ output/haikutemp/documentation/packages/
+    cp -r share/doc/sshyp/. output/haikutemp/documentation/packages/sshyp/
+    cp -r share/licenses/sshyp/. output/haikutemp/documentation/packages/sshyp/
     cp extra/sshyp-completion.bash output/haikutemp/data/bash-completion/completions/sshyp
     cp extra/manpage output/haikutemp/documentation/man/man1/sshyp.1
     gzip output/haikutemp/documentation/man/man1/sshyp.1
