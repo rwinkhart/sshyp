@@ -199,7 +199,7 @@ cp -r %{_sourcedir}/usr %{buildroot}
 /usr/lib/sshyp/sshypRemote.py
 /usr/share/bash-completion/completions/sshyp
 %license /usr/share/licenses/sshyp/license
-%doc /usr/share/doc/sshyp/changelog
+%changelog /usr/share/doc/sshyp/changelog
 %doc /usr/share/man/man1/sshyp.1.gz
 " > ~/rpmbuild/SPECS/sshyp.spec
 rpmbuild -bb ~/rpmbuild/SPECS/sshyp.spec
