@@ -246,7 +246,7 @@ echo "/usr/bin/sshyp
 /usr/share/man/man1/sshyp.1.gz
 " > output/freebsdtemp/plist
 cp -r lib/. output/freebsdtemp/usr/lib/sshyp/
-ln -s /usr/lib/sshyp.py output/freebsdtemp/usr/bin/sshyp
+ln -s /usr/lib/sshyp/sshyp.py output/freebsdtemp/usr/bin/sshyp
 cp -r share output/freebsdtemp/usr/
 cp extra/sshyp-completion.bash output/freebsdtemp/usr/share/bash-completion/completions/sshyp
 cp extra/manpage output/freebsdtemp/usr/share/man/man1/sshyp.1
