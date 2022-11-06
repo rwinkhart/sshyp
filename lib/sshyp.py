@@ -867,7 +867,7 @@ if __name__ == "__main__":
                         ip = ssh_info[1].rstrip()
                         port = ssh_info[2].rstrip()
                         directory_ssh = str(ssh_info[4].rstrip())
-                        client_device_id = listdir(path.expanduser('~/.config/sshyp/devices'))[0]
+                        client_device_id = listdir(path.expanduser('~/.config/sshyp/devices'))[0].rstrip()
                         ssh_error = int(open(path.expanduser('~/.config/sshyp/ssh-error')).read().rstrip())
                         if ssh_error != 0:
                             ssh_error = copy_id_check(port, username_ssh, ip, client_device_id)
