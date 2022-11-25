@@ -1,13 +1,8 @@
 #!/usr/bin/env python3
-
-# external modules
-
 from os import listdir, remove, walk
 from os.path import expanduser
 from shutil import rmtree
 
-
-# utility functions
 
 def delete(_file_path, _target_database):  # deletes an entry or folder, should be run remotely via ssh
     try:
@@ -18,14 +13,14 @@ def delete(_file_path, _target_database):  # deletes an entry or folder, should 
     except FileNotFoundError:
         print(f"location does not exist {_target_database}")
     for _device_name in listdir(expanduser('~/.config/sshyp/devices')):
-        open(f"{expanduser('~/.config/sshyp/deleted/')}{_file_path.replace('/', '@')}^&*{_device_name}", 'w')
+        open(expanduser('~/.config/sshyp/deleted/') + _file_path.replace('/', '\x1e') + '\x1f' + _device_name, 'w')
 
 
 def deletion_check(_client_device_name):  # creates a list of entries and folders to be deleted from a local machine
     open(expanduser('~/.config/sshyp/deletion_database'), 'w').write('')
     for _file in listdir(expanduser('~/.config/sshyp/deleted')):
-        _file_path = _file.replace('@', '/').split('^&*')[0]
-        _device = _file.split('^&*')[1]
+        _file_path, _sep, _device = _file.partition('\x1f')
+        _file_path = _file_path.replace('\x1e', '/')
         if _device == _client_device_name:
             try:
                 remove(f"{expanduser('~/.config/sshyp/deleted/')}{_file}")

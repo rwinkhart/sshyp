@@ -1,14 +1,8 @@
 #!/usr/bin/env python3
-
-# external modules
-
 from os import system, walk
 from os.path import getmtime, join
-from sys import exit as s_exit
 from subprocess import PIPE, run
-
-
-# utility functions
+from sys import exit as s_exit
 
 
 def get_local_data(_directory, _device):  # retrieves titles and mod times from the local device
