@@ -1,7 +1,4 @@
 #!/usr/bin/env python3
-
-# external modules
-
 from os import environ, listdir, path, remove, system, uname, walk
 from pathlib import Path
 from random import randint, SystemRandom

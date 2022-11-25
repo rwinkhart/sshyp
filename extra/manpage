@@ -1,4 +1,4 @@
-.TH sshyp 1 "06 November 2022" "v1.2.0" "sshyp man page"
+.TH sshyp 1 "25 November 2022" "v1.2.1" "sshyp man page"
 .SH NAME
 sshyp \- A very simple self-hosted, synchronized password manager for UNIX(-like) systems. Alternative to (and compatible with) pass/password-store.
 .SH SYNOPSIS
@@ -88,10 +88,6 @@ whitelist:
  list/-l                  view all registered device ids and their quick-unlock whitelist status
  add                      whitelist a device id for quick-unlock
  delete/del               remove a device id from the quick-unlock whitelist
-.SH LIMITATIONS
-The following characters/character sequences are not supported in entry/folder titles:
-
-    @   ^&*   *&^
 .SH SETUP
 sshyp operates on a client-server model, and thus requires you to have access to your own server (whether it be a physical home server or a cloud rental) with remote access via SSH.
 
