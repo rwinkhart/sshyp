@@ -2,39 +2,35 @@
 
 # external modules
 
-from os import path, system, walk
-from os.path import expanduser, getmtime, join
+from os import system, walk
+from os.path import getmtime, join
 from sys import exit as s_exit
+from subprocess import PIPE, run
 
 
 # utility functions
 
-def get_titles_mods(_directory, _destination, _user_data):  # fetches and returns lists of titles and their mod times
-    from pathlib import Path
+
+def get_local_data(_directory, _device):  # retrieves titles and mod times from the local device
     _title_list, _mod_list = [], []
-    Path(path.expanduser('~/.config/sshync')).mkdir(0o700, parents=True, exist_ok=True)  # create config directory
-    # local fetching
-    if _destination == 'l':
-        open(expanduser('~/.config/sshync/database'), 'w').write('')  # blanks out database file
-        for _root, _directories, _files in walk(_directory):
-            for _filename in _files:
-                _title_list.append(join(_root.replace(_directory, '', 1), _filename))
-                _mod_list.append(int(getmtime(join(_root, _filename))))
+    for _root, _directories, _files in walk(_directory):
+        for _filename in _files:
+            _title_list.append(join(_root.replace(_directory, '', 1), _filename))
+            _mod_list.append(int(getmtime(join(_root, _filename))))
+    if _device == 'server':
         for _title in _title_list:
-            open(expanduser('~/.config/sshync/database'), 'a').write(str(_title) + '\n')
-        open(expanduser('~/.config/sshync/database'), 'a').write('^&*\n')
-        for _mod in _mod_list:
-            open(expanduser('~/.config/sshync/database'), 'a').write(str(_mod) + '\n')
-    # remote fetching
-    if _destination == 'r':
-        system(f"ssh -i '{_user_data[5]}' -p {_user_data[2]} {_user_data[0]}@{_user_data[1]} \"cd /lib/sshyp; python -c"
-               f" 'import sshync; sshync.get_titles_mods(\"'\"{_user_data[4]}\"'\", \"'\"l\"'\", \"'\"{_user_data}"
-               f"\"'\")'\"")
-        system(f"scp -pqs -P {_user_data[2]} -i '{_user_data[5]}' {_user_data[0]}@{_user_data[1]}:"
-               f"'/home/{_user_data[0]}/.config/sshync/database' '{expanduser('~/.config/sshync/')}'")
-        _titles, _sep, _mods = '*&^'.join(open(expanduser('~/.config/sshync/database')).readlines()).replace('\n', '')\
-            .partition('^&*')
-        _title_list, _mod_list = _titles.split('*&^')[:-1], _mods.split('*&^')[1:]
+            print(_title.rstrip())
+        for _time in _mod_list:
+            print(_time)
+    return _title_list, _mod_list
+
+
+def get_remote_data(_user_data):  # retrieves titles and mod times from the remote server
+    _titles_mods = run(f"ssh -i '{_user_data[5]}' -p {_user_data[2]} {_user_data[0]}@{_user_data[1]} \"cd /lib/sshyp; "
+                       f"python -c 'import sshync; sshync.get_local_data(\"'\"{_user_data[4]}\"'\", \"'\"server\"'\")"
+                       f"'\"", shell=True, stdout=PIPE, text=True).stdout.split('\n')
+    _title_list = _titles_mods[:len(_titles_mods)//2]
+    _mod_list = _titles_mods[len(_titles_mods)//2:]
     return _title_list, _mod_list
 
 
@@ -77,9 +73,9 @@ def get_profile(_profile_dir):  # returns a list of data read from a sshync job 
 
 def run_profile(_profile_dir):  # runs a sshync job profile
     _user_data = get_profile(_profile_dir)
-    _remote_titles_mods_saver = get_titles_mods(_user_data[4], 'r', _user_data)  # saved to prevent re-walking directory
-    _index_l = sort_titles_mods(_remote_titles_mods_saver, get_titles_mods(_user_data[3], 'l', _user_data))
-    _index_r = sort_titles_mods(_index_l, _remote_titles_mods_saver)
+    _remote_titles_mods = get_remote_data(_user_data)
+    _index_l = sort_titles_mods(_remote_titles_mods, get_local_data(_user_data[3], 'client'))
+    _index_r = sort_titles_mods(_index_l, _remote_titles_mods)
     _i = -1
     for _title in _index_l[0]:
         _i += 1
