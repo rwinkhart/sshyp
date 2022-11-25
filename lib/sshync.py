@@ -20,9 +20,9 @@ def get_local_data(_directory, _device):  # retrieves titles and mod times from 
 
 
 def get_remote_data(_user_data):  # retrieves titles and mod times from the remote server
-    _titles_mods = run(f"ssh -i '{_user_data[5]}' -p {_user_data[2]} {_user_data[0]}@{_user_data[1]} \"cd /lib/sshyp; "
-                       f"python -c 'import sshync; sshync.get_local_data(\"'\"{_user_data[4]}\"'\", \"'\"server\"'\")"
-                       f"'\"", shell=True, stdout=PIPE, text=True).stdout.split('\n')
+    _titles_mods = run(['ssh', '-i', _user_data[5], '-p', _user_data[2], f"{_user_data[0]}@{_user_data[1]}",
+                        f'cd /lib/sshyp; python -c \'import sshync; sshync.get_local_data("{_user_data[4]}", '
+                        f'"server")\''], stdout=PIPE, text=True).stdout.split('\n')
     _title_list = _titles_mods[:len(_titles_mods)//2]
     _mod_list = _titles_mods[len(_titles_mods)//2:]
     return _title_list, _mod_list

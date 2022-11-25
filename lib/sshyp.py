@@ -4,7 +4,7 @@ from pathlib import Path
 from random import randint, SystemRandom
 from shutil import get_terminal_size, move, rmtree
 import sshync
-from subprocess import CalledProcessError, Popen, PIPE, run
+from subprocess import CalledProcessError, DEVNULL, Popen, PIPE, run
 from sys import argv, exit as s_exit
 
 
@@ -154,14 +154,13 @@ def decrypt(_entry_dir, _shm_folder, _shm_entry, _gpg_com, _quick_pass,
     else:
         _output_target = f"'{_tmp_dir}{_shm_folder}/{_shm_entry}' '{_entry_dir}.gpg'"
     try:
-        run(_unlock_method + _output_target, shell=True, stderr=PIPE, check=True, close_fds=True)
+        run(_unlock_method + _output_target, shell=True, stderr=DEVNULL, check=True)
     except CalledProcessError:
         if not isinstance(_quick_pass, bool):
             print('\n\u001b[38;5;9merror: quick-unlock failed as a result of an incorrect passphrase, an unreachable '
                   'sshyp server, or an invalid configuration\n\nfalling back to standard unlock\u001b[0m\n')
             try:
-                run(f"{_gpg_com} -qd --output {_output_target}", shell=True, stderr=PIPE, check=True,
-                    close_fds=True)
+                run(f"{_gpg_com} -qd --output {_output_target}", shell=True, stderr=DEVNULL, check=True)
             except CalledProcessError:
                 print('\n\u001b[38;5;9merror: could not decrypt - ensure the correct gpg key is present\u001b[0m\n')
                 s_exit(5)
@@ -210,10 +209,9 @@ def edit_note(_shm_folder, _shm_entry, _lines):  # edits the note attached to an
 
 def copy_id_check(_port, _username_ssh, _ip, _client_device_id):
     # attempts to connect to the user's server via ssh to register the device for syncing
-    _command = f"ssh -o ConnectTimeout=3 -i '{path.expanduser('~/.ssh/sshyp')}' -p {_port} {_username_ssh}@{_ip} " \
-               f"\"touch '/home/{_username_ssh}/.config/sshyp/devices/{_client_device_id}'\""
     try:
-        run(_command, shell=True, stderr=PIPE, check=True, close_fds=True)
+        run(['ssh', '-o', 'ConnectTimeout=3', '-i', path.expanduser('~/.ssh/sshyp'), '-p', _port, f"{_username_ssh}@{_ip}",
+             f"touch '/home/{_username_ssh}/.config/sshyp/devices/{_client_device_id}'"], stderr=DEVNULL, check=True)
     except CalledProcessError:
         print('\n\u001b[38;5;9mwarning: ssh connection could not be made - ensure the public key (~/.ssh/sshyp.pub) is '
               'registered on the remote server and that the entered ip, port, and username are correct\n\nsyncing '
@@ -263,11 +261,10 @@ def tweak():  # runs configuration wizard
                     'Key-Type: 1\n', 'Key-Length: 4096\n', 'Key-Usage: sign encrypt\n', 'Name-Real: sshyp\n',
                     'Name-Comment: gpg-sshyp\n', 'Name-Email: https://github.com/rwinkhart/sshyp\n', 'Expire-Date: 0'])
             if uname()[0] == 'Haiku':
-                run(gpg + ' --batch --generate-key --passphrase ' + "'" +
-                    input('\ngpg passphrase: ') + "'" + " '" +
-                    path.expanduser('~/.config/sshyp/gpg-gen') + "'", shell=True)
+                system(gpg + ' --batch --generate-key --passphrase ' + "'" + input('\ngpg passphrase: ') + "'" + " '"
+                       + path.expanduser('~/.config/sshyp/gpg-gen') + "'")
             else:
-                run(f"{gpg} --batch --generate-key '{path.expanduser('~/.config/sshyp/gpg-gen')}'", shell=True)
+                system(f"{gpg} --batch --generate-key '{path.expanduser('~/.config/sshyp/gpg-gen')}'")
             remove(path.expanduser('~/.config/sshyp/gpg-gen'))
             _sshyp_data += [run(f"{gpg} -k", shell=True, stdout=PIPE, text=True).stdout.split('\n')[-4].strip()]
 
@@ -554,8 +551,8 @@ def whitelist_setup():  # takes input from the user to set up quick-unlock passw
     open(path.expanduser('~/.config/sshyp/gpg-gen'), 'w').writelines([
         'Key-Type: 1\n', 'Key-Length: 4096\n', 'Key-Usage: sign encrypt\n', 'Name-Real: sshyp\n',
         'Name-Comment: gpg-sshyp-whitelist\n', 'Name-Email: https://github.com/rwinkhart/sshyp\n', 'Expire-Date: 0'])
-    run('gpg -q --pinentry-mode loopback --batch --generate-key --passphrase ' + "'" + _quick_unlock_password + "'" +
-        " '" + path.expanduser('~/.config/sshyp/gpg-gen') + "'", shell=True)
+    system('gpg -q --pinentry-mode loopback --batch --generate-key --passphrase ' + "'" + _quick_unlock_password + "'"
+           + " '" + path.expanduser('~/.config/sshyp/gpg-gen') + "'")
     remove(path.expanduser('~/.config/sshyp/gpg-gen'))
     _gpg_id = run(f"{gpg} -k", shell=True, stdout=PIPE, text=True).stdout.split('\n')[-4].strip()
 
@@ -569,21 +566,20 @@ def whitelist_setup():  # takes input from the user to set up quick-unlock passw
 def whitelist_verify(_port, _username_ssh, _ip, _client_device_id):
     # checks the user's whitelist status and fetches the full gpg key password if possible
     try:
-        run(f"gpg --pinentry-mode cancel -qd --output /dev/null {path.expanduser('~/.config/sshyp/lock.gpg')}",
-            shell=True, stderr=PIPE, check=True, close_fds=True)
+        run(['gpg', '--pinentry-mode', 'cancel', '-qd', '--output', '/dev/null', path.
+            expanduser('~/.config/sshyp/lock.gpg')], stderr=DEVNULL, check=True)
         return False
     except CalledProcessError:
         _i, _full_password = 0, ''
-        _server_whitelist = run('ssh -i ' + "'" + path.expanduser('~/.ssh/sshyp') + "' -p " + _port + " " +
-                                _username_ssh + '@' + _ip + " 'ls ~/.config/sshyp/whitelist'",
-                                shell=True, stdout=PIPE, text=True)
-        for _device_id in _server_whitelist.stdout.rstrip().split('\n'):
+        _server_whitelist = run(['ssh', '-i', path.expanduser('~/.ssh/sshyp'), '-p', _port, f"{_username_ssh}@{_ip}",
+                                 'ls ~/.config/sshyp/whitelist'], stdout=PIPE, text=True).stdout.rstrip().split('\n')
+        for _device_id in _server_whitelist:
             if _device_id == _client_device_id:
                 _quick_unlock_password = input('\nquick-unlock passphrase: ')
                 _quick_unlock_password_excluded = \
-                    run('ssh -i ' + "'" + path.expanduser('~/.ssh/sshyp') + "' -p " + _port + " " + _username_ssh + '@'
-                        + _ip + f" 'gpg --pinentry-mode loopback --passphrase '{_quick_unlock_password}' -qd"
-                                f" ~/.config/sshyp/excluded.gpg'", shell=True, stdout=PIPE, text=True).stdout.rstrip()
+                    run(['ssh', '-i', path.expanduser('~/.ssh/sshyp'), '-p',  _port, f"{_username_ssh}@{_ip}",
+                         f"gpg --pinentry-mode loopback --passphrase '{_quick_unlock_password}' "
+                         f"-qd ~/.config/sshyp/excluded.gpg"], stdout=PIPE, text=True).stdout.rstrip()
                 while _i < len(_quick_unlock_password_excluded):
                     try:
                         _full_password += _quick_unlock_password_excluded[_i]
