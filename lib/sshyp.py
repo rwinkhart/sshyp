@@ -759,46 +759,26 @@ def copy_data():  # copies a specified field of an entry to the clipboard
         s_exit(3)
     _shm_folder, _shm_entry = shm_gen()
     determine_decrypt(directory + _entry_name, _shm_folder, _shm_entry, gpg)
-    _copy_line = open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'r').readlines()
+    _copy_line, _index = open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'r').readlines(), 0
+    if argument_list[2] == 'username' or argument_list[2] == '-u':
+        _index = 1
+    elif argument_list[2] == 'password' or argument_list[2] == '-p':
+        _index = 0
+    elif argument_list[2] == 'url' or argument_list[2] == '-l':
+        _index = 2
+    elif argument_list[2] == 'note' or argument_list[2] == '-n':
+        _index = 3
     if uname()[0] == 'Haiku':  # Haiku clipboard detection
-        if argument_list[2] == 'username' or argument_list[2] == '-u':
-            run(['clipboard', '-c', _copy_line[1].rstrip()])
-        elif argument_list[2] == 'password' or argument_list[2] == '-p':
-            run(['clipboard', '-c', _copy_line[0].rstrip()])
-        elif argument_list[2] == 'url' or argument_list[2] == '-l':
-            run(['clipboard', '-c', _copy_line[2].rstrip()])
-        elif argument_list[2] == 'note' or argument_list[2] == '-n':
-            run(['clipboard', '-c', _copy_line[3].rstrip()])
+        run(['clipboard', '-c', _copy_line[_index].rstrip()])
         Popen('sleep 30; clipboard -r', shell=True)
     elif Path("/data/data/com.termux").exists():  # Termux (Android) clipboard detection
-        if argument_list[2] == 'username' or argument_list[2] == '-u':
-            run(['termux-clipboard-set', _copy_line[1].rstrip()])
-        elif argument_list[2] == 'password' or argument_list[2] == '-p':
-            run(['termux-clipboard-set', _copy_line[0].rstrip()])
-        elif argument_list[2] == 'url' or argument_list[2] == '-l':
-            run(['termux-clipboard-set', _copy_line[2].rstrip()])
-        elif argument_list[2] == 'note' or argument_list[2] == '-n':
-            run(['termux-clipboard-set', _copy_line[3].rstrip()])
+        run(['termux-clipboard-set', _copy_line[_index].rstrip()])
         Popen("sleep 30; termux-clipboard-set ''", shell=True)
     elif environ.get('WAYLAND_DISPLAY') == 'wayland-0':  # Wayland clipboard detection
-        if argument_list[2] == 'username' or argument_list[2] == '-u':
-            run(['wl-copy', _copy_line[1].rstrip()])
-        elif argument_list[2] == 'password' or argument_list[2] == '-p':
-            run(['wl-copy', _copy_line[0].rstrip()])
-        elif argument_list[2] == 'url' or argument_list[2] == '-l':
-            run(['wl-copy', _copy_line[2].rstrip()])
-        elif argument_list[2] == 'note' or argument_list[2] == '-n':
-            run(['wl-copy', _copy_line[3].rstrip()])
+        run(['wl-copy', _copy_line[_index].rstrip()])
         Popen('sleep 30; wl-copy -c', shell=True)
     else:  # X11 clipboard detection
-        if argument_list[2] == 'username' or argument_list[2] == '-u':
-            run(['xclip', '-sel', 'c'], stdin=Popen(['echo', '-n', _copy_line[1].rstrip()], stdout=PIPE).stdout)
-        elif argument_list[2] == 'password' or argument_list[2] == '-p':
-            run(['xclip', '-sel', 'c'], stdin=Popen(['echo', '-n', _copy_line[0].rstrip()], stdout=PIPE).stdout)
-        elif argument_list[2] == 'url' or argument_list[2] == '-l':
-            run(['xclip', '-sel', 'c'], stdin=Popen(['echo', '-n', _copy_line[2].rstrip()], stdout=PIPE).stdout)
-        elif argument_list[2] == 'note' or argument_list[2] == '-n':
-            run(['xclip', '-sel', 'c'], stdin=Popen(['echo', '-n', _copy_line[3].rstrip()], stdout=PIPE).stdout)
+        run(['xclip', '-sel', 'c'], stdin=Popen(['echo', '-n', _copy_line[_index].rstrip()], stdout=PIPE).stdout)
         Popen("sleep 30; echo -n '' | xclip -sel c", shell=True)
     rmtree(f"{tmp_dir}{_shm_folder}")
 
