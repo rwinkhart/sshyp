@@ -659,6 +659,7 @@ def add_folder():  # creates a new folder
 
 
 def rename():  # renames an entry or folder
+    from shutil import copy
     if argument == 'edit rename' or argument == 'edit relocate' or argument == 'edit -r':
         _entry_name = entry_name_fetch('entry/folder to rename/relocate: ')
     else:
@@ -671,12 +672,17 @@ def rename():  # renames an entry or folder
         print(f"\n\u001b[38;5;9merror: ({_new_name}) already exists\u001b[0m\n")
         s_exit(4)
     if _entry_name.endswith('/'):
-        move(f"{directory}{_entry_name}", f"{directory}{_new_name}")
         if ssh_error != 1:
+            Path(f"{directory}{_new_name}").mkdir(0o700, parents=True, exist_ok=True)
             run(['ssh', '-i', expanduser('~/.ssh/sshyp'), '-p', port, f"{username_ssh}@{ip}",
                  f"mkdir -p \'{directory_ssh}{_new_name}\'"])
+        else:
+            move(f"{directory}{_entry_name}", f"{directory}{_new_name}")
     else:
-        move(f"{directory}{_entry_name}.gpg", f"{directory}{_new_name}.gpg")
+        if ssh_error != 1:
+            copy(f"{directory}{_entry_name}.gpg", f"{directory}{_new_name}.gpg")
+        else:
+            move(f"{directory}{_entry_name}.gpg", f"{directory}{_new_name}.gpg")
     if ssh_error != 1:
         run(['ssh', '-i', expanduser('~/.ssh/sshyp'), '-p', port, f"{username_ssh}@{ip}",
              f'cd /lib/sshyp; python -c \'import sshypRemote; sshypRemote.delete("{_entry_name}", "remotely")\''])
