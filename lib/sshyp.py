@@ -206,7 +206,7 @@ def optimized_edit(_lines, _edit_data, _edit_line):  # ensures an edited entry i
 def edit_note(_shm_folder, _shm_entry, _lines):  # edits the note attached to an entry
     _reg_lines = _lines[0:3]
     open(f"{tmp_dir}{_shm_folder}/{_shm_entry}-n", 'w').writelines(_lines[3:])
-    system(f"{editor} '{tmp_dir}{_shm_folder}/{_shm_entry}-n'")
+    run([editor, f"{tmp_dir}{_shm_folder}/{_shm_entry}-n"])
     _new_notes = open(f"{tmp_dir}{_shm_folder}/{_shm_entry}-n").readlines()
     while len(_reg_lines) < 3:
         _reg_lines += ['\n']
@@ -293,7 +293,7 @@ def tweak():  # runs configuration wizard
                           f"automatically generated? (Y/n/o(ffline)) "))
         if _ssh_gen.lower() != 'n' and _ssh_gen.lower() != 'o' and _ssh_gen.lower() != 'offline':
             Path(f"{expanduser('~')}/.ssh").mkdir(0o700, exist_ok=True)
-            system('ssh-keygen -t ed25519 -f ~/.ssh/sshyp')
+            run(['ssh-keygen', '-t', 'ed25519', '-f', expanduser('~/.ssh/sshyp')])
         elif _ssh_gen.lower() == 'n':
             print(f"\n\u001b[4;1mensure that the key file you are using is located at "
                   f"{expanduser('~/.ssh/sshyp')}\u001b[0m")
@@ -509,8 +509,8 @@ def sync():  # calls sshync to sync changes to the user's server
                   f"creating...")
             Path(f"{expanduser('~')}{_folder}").mkdir(0o700, parents=True, exist_ok=True)
     # set permissions before uploading
-    system('find ' + directory + ' -type d -exec chmod -R 700 {} +')
-    system('find ' + directory + ' -type f -exec chmod -R 600 {} +')
+    run(['find', directory, '-type', 'd', '-exec', 'chmod', '-R', '700', '{}', '+'])
+    run(['find', directory, '-type', 'f', '-exec', 'chmod', '-R', '600', '{}', '+'])
     sshync.run_profile(expanduser('~/.config/sshyp/sshyp.sshync'))
 
 
@@ -536,8 +536,8 @@ def whitelist_setup():  # takes input from the user to set up quick-unlock passw
     open(expanduser('~/.config/sshyp/gpg-gen'), 'w').writelines([
         'Key-Type: 1\n', 'Key-Length: 4096\n', 'Key-Usage: sign encrypt\n', 'Name-Real: sshyp\n',
         'Name-Comment: gpg-sshyp-whitelist\n', 'Name-Email: https://github.com/rwinkhart/sshyp\n', 'Expire-Date: 0'])
-    system('gpg -q --pinentry-mode loopback --batch --generate-key --passphrase ' + "'" + _quick_unlock_password + "'"
-           + " '" + expanduser('~/.config/sshyp/gpg-gen') + "'")
+    run(['gpg', '-q', '--pinentry-mode', 'loopback', '--batch', '--generate-key', '--passphrase',
+         _quick_unlock_password, expanduser('~/.config/sshyp/gpg-gen')])
     remove(expanduser('~/.config/sshyp/gpg-gen'))
     _gpg_id = run(f"{gpg} -k", shell=True, stdout=PIPE, text=True).stdout.split('\n')[-4].strip()
 
@@ -625,7 +625,7 @@ def add_entry():  # adds a new entry
         s_exit(4)
     if argument_list[2] == 'note' or argument_list[2] == '-n':
         _shm_folder, _shm_entry = shm_gen()
-        system(f"{editor} '{tmp_dir}{_shm_folder}/{_shm_entry}-n'")
+        run([editor, f"{tmp_dir}{_shm_folder}/{_shm_entry}-n"])
         _notes = open(f"{tmp_dir}{_shm_folder}/{_shm_entry}-n", 'r').read()
         open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'w').writelines(optimized_edit(['', '', '', _notes], None, -1))
     elif argument_list[2] == 'password' or argument_list[2] == '-p':
@@ -635,7 +635,7 @@ def add_entry():  # adds a new entry
         _add_note = input('add a note to this entry? (y/N) ')
         _shm_folder, _shm_entry = shm_gen()
         if _add_note.lower() == 'y':
-            system(f"{editor} '{tmp_dir}{_shm_folder}/{_shm_entry}-n'")
+            run([editor, f"{tmp_dir}{_shm_folder}/{_shm_entry}-n"])
             _notes = open(f"{tmp_dir}{_shm_folder}/{_shm_entry}-n", 'r').read()
         else:
             _notes = ''
@@ -653,8 +653,8 @@ def add_folder():  # creates a new folder
         _entry_name = entry_name_fetch(2)
     Path(directory + _entry_name).mkdir(0o700)
     if ssh_error != 1:
-        system(f"ssh -i '{expanduser('~/.ssh/sshyp')}' -p {port} {username_ssh}@{ip} \"mkdir -p "
-               f"'{directory_ssh}{_entry_name}'\"")
+        run(['ssh', '-i', expanduser('~/.ssh/sshyp'), '-p', port, f"{username_ssh}@{ip}",
+             f"mkdir -p \'{directory_ssh}{_entry_name}\'"])
 
 
 def rename():  # renames an entry or folder
@@ -672,13 +672,13 @@ def rename():  # renames an entry or folder
     if _entry_name.endswith('/'):
         move(f"{directory}{_entry_name}", f"{directory}{_new_name}")
         if ssh_error != 1:
-            system(f"ssh -i '{expanduser('~/.ssh/sshyp')}' -p {port} {username_ssh}@{ip} \"mkdir -p "
-                   f"'{directory_ssh}{_new_name}'\"")
+            run(['ssh', '-i', expanduser('~/.ssh/sshyp'), '-p', port, f"{username_ssh}@{ip}",
+                 f"mkdir -p \'{directory_ssh}{_new_name}\'"])
     else:
         move(f"{directory}{_entry_name}.gpg", f"{directory}{_new_name}.gpg")
     if ssh_error != 1:
-        system(f"ssh -i '{expanduser('~/.ssh/sshyp')}' -p {port} {username_ssh}@{ip} \"cd /lib/sshyp; python -c "
-               f"'import sshypRemote; sshypRemote.delete(\"'\"{_entry_name}\"'\", \"'\"remotely\"'\")'\"")
+        run(['ssh', '-i', expanduser('~/.ssh/sshyp'), '-p', port, f"{username_ssh}@{ip}",
+             f'cd /lib/sshyp; python -c \'import sshypRemote; sshypRemote.delete("{_entry_name}", "remotely")\''])
 
 
 def edit():  # edits the contents of an entry
@@ -732,7 +732,7 @@ def gen():  # generates a password for a new or an existing entry
         _add_note = input('add a note to this entry? (y/N) ')
         _shm_folder, _shm_entry = shm_gen()
         if _add_note.lower() == 'y':
-            system(f"{editor} '{tmp_dir}{_shm_folder}/{_shm_entry}-n'")
+            run([editor, f"{tmp_dir}{_shm_folder}/{_shm_entry}-n"])
             _notes = open(f"{tmp_dir}{_shm_folder}/{_shm_entry}-n", 'r').read()
         else:
             _notes = ''
@@ -762,44 +762,44 @@ def copy_data():  # copies a specified field of an entry to the clipboard
     _copy_line = open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'r').readlines()
     if uname()[0] == 'Haiku':  # Haiku clipboard detection
         if argument_list[2] == 'username' or argument_list[2] == '-u':
-            system('clipboard -c ' + "'" + _copy_line[1].rstrip().replace("'", "'\\''") + "'")
+            run(['clipboard', '-c', _copy_line[1].rstrip()])
         elif argument_list[2] == 'password' or argument_list[2] == '-p':
-            system('clipboard -c ' + "'" + _copy_line[0].rstrip().replace("'", "'\\''") + "'")
+            run(['clipboard', '-c', _copy_line[0].rstrip()])
         elif argument_list[2] == 'url' or argument_list[2] == '-l':
-            system('clipboard -c ' + "'" + _copy_line[2].rstrip().replace("'", "'\\''") + "'")
+            run(['clipboard', '-c', _copy_line[2].rstrip()])
         elif argument_list[2] == 'note' or argument_list[2] == '-n':
-            system('clipboard -c ' + "'" + _copy_line[3].rstrip().replace("'", "'\\''") + "'")
-        Popen('sleep 30; clipboard -r', shell=True, close_fds=True)
+            run(['clipboard', '-c', _copy_line[3].rstrip()])
+        Popen('sleep 30; clipboard -r', shell=True)
     elif Path("/data/data/com.termux").exists():  # Termux (Android) clipboard detection
         if argument_list[2] == 'username' or argument_list[2] == '-u':
-            system('termux-clipboard-set ' + "'" + _copy_line[1].rstrip().replace("'", "'\\''") + "'")
+            run(['termux-clipboard-set', _copy_line[1].rstrip()])
         elif argument_list[2] == 'password' or argument_list[2] == '-p':
-            system('termux-clipboard-set ' + "'" + _copy_line[0].rstrip().replace("'", "'\\''") + "'")
+            run(['termux-clipboard-set', _copy_line[0].rstrip()])
         elif argument_list[2] == 'url' or argument_list[2] == '-l':
-            system('termux-clipboard-set ' + "'" + _copy_line[2].rstrip().replace("'", "'\\''") + "'")
+            run(['termux-clipboard-set', _copy_line[2].rstrip()])
         elif argument_list[2] == 'note' or argument_list[2] == '-n':
-            system('termux-clipboard-set ' + "'" + _copy_line[3].rstrip().replace("'", "'\\''") + "'")
-        Popen("sleep 30; termux-clipboard-set ''", shell=True, close_fds=True)
+            run(['termux-clipboard-set', _copy_line[3].rstrip()])
+        Popen("sleep 30; termux-clipboard-set ''", shell=True)
     elif environ.get('WAYLAND_DISPLAY') == 'wayland-0':  # Wayland clipboard detection
         if argument_list[2] == 'username' or argument_list[2] == '-u':
-            system('wl-copy ' + "'" + _copy_line[1].rstrip().replace("'", "'\\''") + "'")
+            run(['wl-copy', _copy_line[1].rstrip()])
         elif argument_list[2] == 'password' or argument_list[2] == '-p':
-            system('wl-copy ' + "'" + _copy_line[0].rstrip().replace("'", "'\\''") + "'")
+            run(['wl-copy', _copy_line[0].rstrip()])
         elif argument_list[2] == 'url' or argument_list[2] == '-l':
-            system('wl-copy ' + "'" + _copy_line[2].rstrip().replace("'", "'\\''") + "'")
+            run(['wl-copy', _copy_line[2].rstrip()])
         elif argument_list[2] == 'note' or argument_list[2] == '-n':
-            system('wl-copy ' + "'" + _copy_line[3].rstrip().replace("'", "'\\''") + "'")
-        Popen('sleep 30; wl-copy -c', shell=True, close_fds=True)
+            run(['wl-copy', _copy_line[3].rstrip()])
+        Popen('sleep 30; wl-copy -c', shell=True)
     else:  # X11 clipboard detection
         if argument_list[2] == 'username' or argument_list[2] == '-u':
-            system('echo -n ' + "'" + _copy_line[1].rstrip().replace("'", "'\\''") + "'" + ' | xclip -sel c')
+            run(['xclip', '-sel', 'c'], stdin=Popen(['echo', '-n', _copy_line[1].rstrip()], stdout=PIPE).stdout)
         elif argument_list[2] == 'password' or argument_list[2] == '-p':
-            system('echo -n ' + "'" + _copy_line[0].rstrip().replace("'", "'\\''") + "'" + ' | xclip -sel c')
+            run(['xclip', '-sel', 'c'], stdin=Popen(['echo', '-n', _copy_line[0].rstrip()], stdout=PIPE).stdout)
         elif argument_list[2] == 'url' or argument_list[2] == '-l':
-            system('echo -n ' + "'" + _copy_line[2].rstrip().replace("'", "'\\''") + "'" + ' | xclip -sel c')
+            run(['xclip', '-sel', 'c'], stdin=Popen(['echo', '-n', _copy_line[2].rstrip()], stdout=PIPE).stdout)
         elif argument_list[2] == 'note' or argument_list[2] == '-n':
-            system('echo -n ' + "'" + _copy_line[3].rstrip().replace("'", "'\\''") + "'" + ' | xclip -sel c')
-        Popen("sleep 30; echo -n '' | xclip -sel c", shell=True, close_fds=True)
+            run(['xclip', '-sel', 'c'], stdin=Popen(['echo', '-n', _copy_line[3].rstrip()], stdout=PIPE).stdout)
+        Popen("sleep 30; echo -n '' | xclip -sel c", shell=True)
     rmtree(f"{tmp_dir}{_shm_folder}")
 
 
@@ -810,8 +810,8 @@ def remove_data():  # deletes an entry from the server and flags it for local de
         _entry_name = entry_name_fetch(1)
     determine_decrypt(expanduser('~/.config/sshyp/lock.gpg'), 0, 0, gpg)
     if ssh_error != 1:
-        system(f"ssh -i '{expanduser('~/.ssh/sshyp')}' -p {port} {username_ssh}@{ip} \"cd /lib/sshyp; python -c "
-               f"'import sshypRemote; sshypRemote.delete(\"'\"{_entry_name}\"'\", \"'\"remotely\"'\")'\"")
+        run(['ssh', '-i', expanduser('~/.ssh/sshyp'), '-p', port, f"{username_ssh}@{ip}",
+             f'cd /lib/sshyp; python -c \'import sshypRemote; sshypRemote.delete("{_entry_name}", "remotely")\''])
     else:
         offline_delete(_entry_name, 'locally')
 
