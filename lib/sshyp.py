@@ -117,12 +117,17 @@ def string_gen(_complexity, _length):  # generates and returns a random string b
 
 
 def pass_gen():  # prompts the user for necessary information to generate a password and passes it to string_gen
-    try:
-        _length = int(input('password length: '))
-    except ValueError:
-        print(f"\n\u001b[38;5;9merror: a non-integer value was input for password length\u001b[0m\n")
-        _gen = pass_gen()
-        return _gen
+    _length = 9
+    while True:
+        try:
+            _length = int(input('password length: '))
+        except ValueError:
+            continue
+        else:
+            if _length < 1:
+                continue
+            else:
+                break
     _complexity = str(input('password complexity - simple (for compatibility) or complex (for security)? (s/C) '))
     if _complexity != 's' and _complexity != 'S':
         _complexity = 'c'
