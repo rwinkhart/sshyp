@@ -523,9 +523,7 @@ def sync():  # calls sshync to sync changes to the user's server
         _folder_database = None
         s_exit(6)
     for _folder in _folder_database:
-        if Path(f"{expanduser('~')}{_folder[:-1]}").is_dir():
-            pass
-        else:
+        if not Path(f"{expanduser('~')}{_folder[:-1]}").is_dir():
             print(f"\u001b[38;5;2m{_folder.replace('/.local/share/sshyp/', '')[:-1]}/\u001b[0m does not exist locally, "
                   f"creating...")
             Path(f"{expanduser('~')}{_folder[:-1]}").mkdir(0o700, parents=True, exist_ok=True)
