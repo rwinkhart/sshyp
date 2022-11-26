@@ -2,11 +2,11 @@
 from os import environ, listdir, remove, system, uname, walk
 from os.path import expanduser
 from pathlib import Path
-from random import randint, SystemRandom
+from random import randint
 from shutil import get_terminal_size, move, rmtree
 import sshync
 from sshypRemote import delete as offline_delete
-from subprocess import CalledProcessError, DEVNULL, Popen, PIPE, run
+from subprocess import CalledProcessError, DEVNULL, PIPE, run
 from sys import argv, exit as s_exit
 
 
@@ -98,6 +98,7 @@ def entry_name_fetch(_entry_name_location):  # fetches and returns entry name fr
 
 
 def string_gen(_complexity, _length):  # generates and returns a random string based on input
+    from random import SystemRandom
     import string
     if _complexity == 's':
         _character_pool = string.ascii_letters + string.digits
@@ -750,6 +751,7 @@ def gen():  # generates a password for a new or an existing entry
 
 
 def copy_data():  # copies a specified field of an entry to the clipboard
+    from subprocess import Popen
     if len(argument_list) < 4:
         _entry_name = entry_name_fetch('entry to copy: ')
     else:

@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 from os import listdir, remove, walk
 from os.path import expanduser
-from shutil import rmtree
 
 
 def delete(_file_path, _target_database):  # deletes an entry or folder
+    from shutil import rmtree
     try:
         if _file_path.endswith('/'):
             rmtree(f"{expanduser('~/.local/share/sshyp/')}{_file_path}")
