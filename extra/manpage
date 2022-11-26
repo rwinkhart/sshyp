@@ -122,7 +122,5 @@ Please note that the server setup intentionally does not allow the reading of en
 4 - data already exists error
 
 5 - decryption/encryption error
-
-6 - server data retrieval error
 .SH AUTHOR
 Randall Winkhart (https://github.com/rwinkhart)
