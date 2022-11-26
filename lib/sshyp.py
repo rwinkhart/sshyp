@@ -232,17 +232,18 @@ def copy_id_check(_port, _username_ssh, _ip, _client_device_id):
 
 
 def tweak():  # runs configuration wizard
+    from os import symlink
     _divider = f"\n{'=' * (get_terminal_size()[0] - int((.5 * get_terminal_size()[0])))}\n\n"
 
     # config directory creation
     Path(expanduser('~/.config/sshyp/devices')).mkdir(0o700, parents=True, exist_ok=True)
     if not Path(f"{expanduser('~/.config/sshyp/tmp')}").exists():
         if uname()[0] == 'Haiku' or uname()[0] == 'FreeBSD':
-            system(f"ln -s /tmp {expanduser('~/.config/sshyp/tmp')}")
+            symlink('/tmp', expanduser('~/.config/sshyp/tmp'))
         elif Path("/data/data/com.termux").exists():
-            system(f"ln -s '/data/data/com.termux/files/usr/tmp' {expanduser('~/.config/sshyp/tmp')}")
+            symlink('/data/data/com.termux/files/usr/tmp', expanduser('~/.config/sshyp/tmp'))
         else:
-            system(f"ln -s /dev/shm {expanduser('~/.config/sshyp/tmp')}")
+            symlink('/dev/shm', expanduser('~/.config/sshyp/tmp'))
 
     # device type configuration
     _device_type = input('\nclient or server installation? (C/s) ')
