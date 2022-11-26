@@ -292,8 +292,7 @@ def tweak():  # runs configuration wizard
                           f"configured\n\nsync support requires a unique ssh key - would you like to have this "
                           f"automatically generated? (Y/n/o(ffline)) "))
         if _ssh_gen.lower() != 'n' and _ssh_gen.lower() != 'o' and _ssh_gen.lower() != 'offline':
-            if uname()[0] == 'Haiku':
-                Path(f"{expanduser('~')}/.ssh").mkdir(0o700, exist_ok=True)
+            Path(f"{expanduser('~')}/.ssh").mkdir(0o700, exist_ok=True)
             system('ssh-keygen -t ed25519 -f ~/.ssh/sshyp')
         elif _ssh_gen.lower() == 'n':
             print(f"\n\u001b[4;1mensure that the key file you are using is located at "
