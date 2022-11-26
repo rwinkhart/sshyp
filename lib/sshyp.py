@@ -5,6 +5,7 @@ from pathlib import Path
 from random import randint, SystemRandom
 from shutil import get_terminal_size, move, rmtree
 import sshync
+from sshypRemote import delete as offline_delete
 from subprocess import CalledProcessError, DEVNULL, Popen, PIPE, run
 from sys import argv, exit as s_exit
 
@@ -490,43 +491,23 @@ def read_shortcut():  # shortcut to quickly read an entry
 def sync():  # calls sshync to sync changes to the user's server
     print('\nsyncing entries with the server device...\n')
     # check for deletions
-    system(f"ssh -i '{expanduser('~/.ssh/sshyp')}' -p {port} {username_ssh}@{ip} \"cd /lib/sshyp; python -c "
-           f"'import sshypRemote; sshypRemote.deletion_check(\"'\"{client_device_id}\"'\")'\"")
-    system(f"scp -pqs -P {port} -i '{expanduser('~/.ssh/sshyp')}' {username_ssh}@{ip}:'/home/{username_ssh}"
-           f"/.config/sshyp/deletion_database' {expanduser('~/.config/sshyp/')}")
-    try:
-        _deletion_database = open(expanduser('~/.config/sshyp/deletion_database')).readlines()
-    except (FileNotFoundError, IndexError):
-        print('\n\u001b[38;5;9merror: the deletion database does not exist or is corrupted\u001b[0m\n')
-        _deletion_database = None
-        s_exit(6)
+    _deletion_database = run(['ssh', '-i', expanduser('~/.ssh/sshyp'), '-p', port, f"{username_ssh}@{ip}",
+                              f'cd /lib/sshyp; python -c \'import sshypRemote; sshypRemote.deletion_check("'
+                              f'{client_device_id}")\''], stdout=PIPE, text=True).stdout.split('\n')
     for _file in _deletion_database:
-        try:
+        if _file != '':
             if silent_sync != 1:
-                print(f"\u001b[38;5;208m{_file[:-1]}\u001b[0m has been sheared, removing...")
-            if _file[:-1].endswith('/'):
-                rmtree(f"{directory}{_file[:-1]}")
-            else:
-                remove(f"{directory}{_file[:-1]}.gpg")
-        except FileNotFoundError:
-            if silent_sync != 1:
-                print('location does not exist locally')
+                print(f"\u001b[38;5;208m{_file}\u001b[0m has been sheared, removing...")
+            offline_delete(_file, 'locally')
     # check for new folders
-    system(f"ssh -i '{expanduser('~/.ssh/sshyp')}' -p {port} {username_ssh}@{ip} \"cd /lib/sshyp; python -c "
-           f"'import sshypRemote; sshypRemote.folder_check()'\"")
-    system(f"scp -pqs -P {port} -i '{expanduser('~/.ssh/sshyp')}' {username_ssh}@{ip}:'/home/{username_ssh}"
-           f"/.config/sshyp/folder_database' {expanduser('~/.config/sshyp/')}")
-    try:
-        _folder_database = open(expanduser('~/.config/sshyp/folder_database')).readlines()
-    except (FileNotFoundError, IndexError):
-        print('\n\u001b[38;5;9merror: the folder database does not exist or is corrupted\u001b[0m\n')
-        _folder_database = None
-        s_exit(6)
+    _folder_database = run(['ssh', '-i', expanduser('~/.ssh/sshyp'), '-p', port, f"{username_ssh}@{ip}",
+                            "cd /lib/sshyp; python -c 'import sshypRemote; sshypRemote.folder_check()'"],
+                           stdout=PIPE, text=True).stdout.split('\n')
     for _folder in _folder_database:
-        if not Path(f"{expanduser('~')}{_folder[:-1]}").is_dir():
-            print(f"\u001b[38;5;2m{_folder.replace('/.local/share/sshyp/', '')[:-1]}/\u001b[0m does not exist locally, "
+        if _folder != '' and not Path(f"{expanduser('~')}{_folder}").is_dir():
+            print(f"\u001b[38;5;2m{_folder.replace('/.local/share/sshyp/', '')}/\u001b[0m does not exist locally, "
                   f"creating...")
-            Path(f"{expanduser('~')}{_folder[:-1]}").mkdir(0o700, parents=True, exist_ok=True)
+            Path(f"{expanduser('~')}{_folder}").mkdir(0o700, parents=True, exist_ok=True)
     # set permissions before uploading
     system('find ' + directory + ' -type d -exec chmod -R 700 {} +')
     system('find ' + directory + ' -type f -exec chmod -R 600 {} +')
@@ -832,8 +813,7 @@ def remove_data():  # deletes an entry from the server and flags it for local de
         system(f"ssh -i '{expanduser('~/.ssh/sshyp')}' -p {port} {username_ssh}@{ip} \"cd /lib/sshyp; python -c "
                f"'import sshypRemote; sshypRemote.delete(\"'\"{_entry_name}\"'\", \"'\"remotely\"'\")'\"")
     else:
-        from sshypRemote import delete as offline_delete
-        offline_delete(_entry_name, '')
+        offline_delete(_entry_name, 'locally')
 
 
 if __name__ == "__main__":
