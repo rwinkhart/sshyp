@@ -782,7 +782,7 @@ def copy_data():  # copies a specified field of an entry to the clipboard
     elif Path("/data/data/com.termux").exists():  # Termux (Android) clipboard detection
         run(['termux-clipboard-set', _copy_line[_index].rstrip()])
         Popen("sleep 30; termux-clipboard-set ''", shell=True)
-    elif environ.get('WAYLAND_DISPLAY') == 'wayland-0':  # Wayland clipboard detection
+    elif environ.get('XDG_SESSION_TYPE') == 'wayland':  # Wayland clipboard detection
         run(['wl-copy', _copy_line[_index].rstrip()])
         Popen('sleep 30; wl-copy -c', shell=True)
     else:  # X11 clipboard detection
