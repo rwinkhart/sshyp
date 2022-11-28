@@ -154,21 +154,21 @@ def encrypt(_entry_dir, _shm_folder, _shm_entry, _gpg_id, _tmp_dir=expanduser('~
 def decrypt(_entry_dir, _shm_folder, _shm_entry, _quick_pass,
             _tmp_dir=expanduser('~/.config/sshyp/tmp/')):  # decrypts an entry to a temporary directory
     if not isinstance(_quick_pass, bool):
-        _unlock_method = f"gpg --pinentry-mode loopback --passphrase '{_quick_pass}' -qd --output "
+        _unlock_method = ['gpg', '--pinentry-mode', 'loopback', '--passphrase', _quick_pass, '-qd', '--output']
     else:
-        _unlock_method = 'gpg -qd --output '
+        _unlock_method = ['gpg', '-qd', '--output']
     if _shm_folder == 0 and _shm_entry == 0:
-        _output_target = f"/dev/null {expanduser('~/.config/sshyp/lock.gpg')}"
+        _output_target = ['/dev/null', expanduser('~/.config/sshyp/lock.gpg')]
     else:
-        _output_target = f"'{_tmp_dir}{_shm_folder}/{_shm_entry}' '{_entry_dir}.gpg'"
+        _output_target = [f"{_tmp_dir}{_shm_folder}/{_shm_entry}", f"{_entry_dir}.gpg"]
     try:
-        run(_unlock_method + _output_target, shell=True, stderr=DEVNULL, check=True)
+        run(_unlock_method + _output_target, stderr=DEVNULL, check=True)
     except CalledProcessError:
         if not isinstance(_quick_pass, bool):
             print('\n\u001b[38;5;9merror: quick-unlock failed as a result of an incorrect passphrase, an unreachable '
                   'sshyp server, or an invalid configuration\n\nfalling back to standard unlock\u001b[0m\n')
             try:
-                run(f"gpg -qd --output {_output_target}", shell=True, stderr=DEVNULL, check=True)
+                run(['gpg', '-qd', '--output'] + _output_target, stderr=DEVNULL, check=True)
             except CalledProcessError:
                 print('\n\u001b[38;5;9merror: could not decrypt - ensure the correct gpg key is present\u001b[0m\n')
                 s_exit(5)
@@ -270,7 +270,7 @@ def tweak():  # runs configuration wizard
                     'Name-Comment: gpg-sshyp\n', 'Name-Email: https://github.com/rwinkhart/sshyp\n', 'Expire-Date: 0'])
             run(['gpg', '--batch', '--generate-key', expanduser('~/.config/sshyp/gpg-gen')])
             remove(expanduser('~/.config/sshyp/gpg-gen'))
-            _sshyp_data += [run('gpg -k', shell=True, stdout=PIPE, text=True).stdout.split('\n')[-4].strip()]
+            _sshyp_data += [run(['gpg', '-k'], stdout=PIPE, text=True).stdout.split('\n')[-4].strip()]
 
         # text editor configuration
         _sshyp_data += [input(f"{_divider}example input: vim\n\npreferred text editor: ")]
@@ -535,7 +535,7 @@ def whitelist_setup():  # takes input from the user to set up quick-unlock passw
     run(['gpg', '-q', '--pinentry-mode', 'loopback', '--batch', '--generate-key', '--passphrase',
          _quick_unlock_password, expanduser('~/.config/sshyp/gpg-gen')])
     remove(expanduser('~/.config/sshyp/gpg-gen'))
-    _gpg_id = run('gpg -k', shell=True, stdout=PIPE, text=True).stdout.split('\n')[-4].strip()
+    _gpg_id = run(['gpg', '-k'], stdout=PIPE, text=True).stdout.split('\n')[-4].strip()
 
     # encrypt excluded with the assembly key
     _shm_folder, _shm_entry = shm_gen()
