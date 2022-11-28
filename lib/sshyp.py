@@ -144,19 +144,19 @@ def shm_gen(_tmp_dir=expanduser('~/.config/sshyp/tmp/')):  # creates a temporary
     return _shm_folder_gen, _shm_entry_gen
 
 
-def encrypt(_entry_dir, _shm_folder, _shm_entry, _gpg_com, _gpg_id, _tmp_dir=expanduser('~/.config/sshyp/tmp/')):
+def encrypt(_entry_dir, _shm_folder, _shm_entry, _gpg_id, _tmp_dir=expanduser('~/.config/sshyp/tmp/')):
     # encrypts an entry and cleans up the temporary files
-    system(f"{_gpg_com} -qr {str(_gpg_id)} -e '{_tmp_dir}{_shm_folder}/{_shm_entry}'")
+    system(f"gpg -qr {str(_gpg_id)} -e '{_tmp_dir}{_shm_folder}/{_shm_entry}'")
     move(f"{_tmp_dir}{_shm_folder}/{_shm_entry}.gpg", f"{_entry_dir}.gpg")
     rmtree(f"{_tmp_dir}{_shm_folder}")
 
 
-def decrypt(_entry_dir, _shm_folder, _shm_entry, _gpg_com, _quick_pass,
+def decrypt(_entry_dir, _shm_folder, _shm_entry, _quick_pass,
             _tmp_dir=expanduser('~/.config/sshyp/tmp/')):  # decrypts an entry to a temporary directory
     if not isinstance(_quick_pass, bool):
         _unlock_method = f"gpg --pinentry-mode loopback --passphrase '{_quick_pass}' -qd --output "
     else:
-        _unlock_method = f"{_gpg_com} -qd --output "
+        _unlock_method = 'gpg -qd --output '
     if _shm_folder == 0 and _shm_entry == 0:
         _output_target = f"/dev/null {expanduser('~/.config/sshyp/lock.gpg')}"
     else:
@@ -168,7 +168,7 @@ def decrypt(_entry_dir, _shm_folder, _shm_entry, _gpg_com, _quick_pass,
             print('\n\u001b[38;5;9merror: quick-unlock failed as a result of an incorrect passphrase, an unreachable '
                   'sshyp server, or an invalid configuration\n\nfalling back to standard unlock\u001b[0m\n')
             try:
-                run(f"{_gpg_com} -qd --output {_output_target}", shell=True, stderr=DEVNULL, check=True)
+                run(f"gpg -qd --output {_output_target}", shell=True, stderr=DEVNULL, check=True)
             except CalledProcessError:
                 print('\n\u001b[38;5;9merror: could not decrypt - ensure the correct gpg key is present\u001b[0m\n')
                 s_exit(5)
@@ -177,12 +177,11 @@ def decrypt(_entry_dir, _shm_folder, _shm_entry, _gpg_com, _quick_pass,
             s_exit(5)
 
 
-def determine_decrypt(_entry_dir, _shm_folder, _shm_entry, _gpg_com):
+def determine_decrypt(_entry_dir, _shm_folder, _shm_entry):
     if quick_unlock_enabled == 'y':
-        decrypt(_entry_dir, _shm_folder, _shm_entry, _gpg_com, whitelist_verify(port, username_ssh, ip,
-                                                                                client_device_id))
+        decrypt(_entry_dir, _shm_folder, _shm_entry, whitelist_verify(port, username_ssh, ip, client_device_id))
     else:
-        decrypt(_entry_dir, _shm_folder, _shm_entry, _gpg_com, False)
+        decrypt(_entry_dir, _shm_folder, _shm_entry, False)
 
 
 def optimized_edit(_lines, _edit_data, _edit_line):  # ensures an edited entry is optimized for best compatibility
@@ -261,7 +260,7 @@ def tweak():  # runs configuration wizard
         _gpg_gen = input(f"{_divider}sshyp requires the use of a unique gpg key - use an (e)xisting key or (g)enerate a"
                          f" new one? (E/g) ")
         if _gpg_gen.lower() != 'g':
-            system(f"{gpg} -k")
+            system('gpg -k')
             _sshyp_data += [str(input('gpg key id: '))]
         else:
             print('\na unique gpg key is being generated for you...')
@@ -269,13 +268,9 @@ def tweak():  # runs configuration wizard
                 open(expanduser('~/.config/sshyp/gpg-gen'), 'w').writelines([
                     'Key-Type: 1\n', 'Key-Length: 4096\n', 'Key-Usage: sign encrypt\n', 'Name-Real: sshyp\n',
                     'Name-Comment: gpg-sshyp\n', 'Name-Email: https://github.com/rwinkhart/sshyp\n', 'Expire-Date: 0'])
-            if uname()[0] == 'Haiku':
-                system(gpg + ' --batch --generate-key --passphrase ' + "'" + input('\ngpg passphrase: ') + "'" + " '"
-                       + expanduser('~/.config/sshyp/gpg-gen') + "'")
-            else:
-                system(f"{gpg} --batch --generate-key '{expanduser('~/.config/sshyp/gpg-gen')}'")
+            system(f"gpg --batch --generate-key '{expanduser('~/.config/sshyp/gpg-gen')}'")
             remove(expanduser('~/.config/sshyp/gpg-gen'))
-            _sshyp_data += [run(f"{gpg} -k", shell=True, stdout=PIPE, text=True).stdout.split('\n')[-4].strip()]
+            _sshyp_data += [run('gpg -k', shell=True, stdout=PIPE, text=True).stdout.split('\n')[-4].strip()]
 
         # text editor configuration
         _sshyp_data += [input(f"{_divider}example input: vim\n\npreferred text editor: ")]
@@ -284,7 +279,7 @@ def tweak():  # runs configuration wizard
         if Path(expanduser('~/.config/sshyp/lock.gpg')).is_file():
             remove(expanduser('~/.config/sshyp/lock.gpg'))
         open(expanduser('~/.config/sshyp/lock'), 'w')
-        system(f"{gpg} -qr {str(_sshyp_data[1])} -e {expanduser('~/.config/sshyp/lock')}")
+        system(f"gpg -qr {str(_sshyp_data[1])} -e {expanduser('~/.config/sshyp/lock')}")
         remove(expanduser('~/.config/sshyp/lock'))
 
         # ssh key configuration
@@ -474,7 +469,7 @@ def no_arg():  # displays a list of entries and gives an option to select one fo
         print(f"\n\u001b[38;5;9merror: entry ({_entry_name}) does not exist\u001b[0m\n")
         s_exit(3)
     _shm_folder, _shm_entry = shm_gen()
-    determine_decrypt(directory + _entry_name, _shm_folder, _shm_entry, gpg)
+    determine_decrypt(directory + _entry_name, _shm_folder, _shm_entry)
     entry_reader(f"{tmp_dir}{_shm_folder}/{_shm_entry}")
     rmtree(f"{tmp_dir}{_shm_folder}")
 
@@ -484,7 +479,7 @@ def read_shortcut():  # shortcut to quickly read an entry
         print(f"\n\u001b[38;5;9merror: entry ({argument.replace('/', '', 1)}) does not exist\u001b[0m\n")
         s_exit(3)
     _shm_folder, _shm_entry = shm_gen()
-    determine_decrypt(directory + argument.replace('/', '', 1), _shm_folder, _shm_entry, gpg)
+    determine_decrypt(directory + argument.replace('/', '', 1), _shm_folder, _shm_entry)
     entry_reader(f"{tmp_dir}{_shm_folder}/{_shm_entry}")
     rmtree(f"{tmp_dir}{_shm_folder}")
 
@@ -540,12 +535,12 @@ def whitelist_setup():  # takes input from the user to set up quick-unlock passw
     run(['gpg', '-q', '--pinentry-mode', 'loopback', '--batch', '--generate-key', '--passphrase',
          _quick_unlock_password, expanduser('~/.config/sshyp/gpg-gen')])
     remove(expanduser('~/.config/sshyp/gpg-gen'))
-    _gpg_id = run(f"{gpg} -k", shell=True, stdout=PIPE, text=True).stdout.split('\n')[-4].strip()
+    _gpg_id = run('gpg -k', shell=True, stdout=PIPE, text=True).stdout.split('\n')[-4].strip()
 
     # encrypt excluded with the assembly key
     _shm_folder, _shm_entry = shm_gen()
     open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'w').write(_quick_unlock_password_excluded)
-    encrypt(expanduser('~/.config/sshyp/excluded'), _shm_folder, _shm_entry, gpg, _gpg_id)
+    encrypt(expanduser('~/.config/sshyp/excluded'), _shm_folder, _shm_entry, _gpg_id)
     print(f"\nyour quick-unlock passphrase: {_quick_unlock_password}")
 
 
@@ -644,7 +639,7 @@ def add_entry():  # adds a new entry
             .writelines(optimized_edit([_password, _username, _url, _notes], None, -1))
     print('\n\u001b[1mentry preview:\u001b[0m')
     entry_reader(f"{tmp_dir}{_shm_folder}/{_shm_entry}")
-    encrypt(directory + _entry_name, _shm_folder, _shm_entry, gpg, gpg_id)
+    encrypt(directory + _entry_name, _shm_folder, _shm_entry, gpg_id)
 
 
 def add_folder():  # creates a new folder
@@ -698,7 +693,7 @@ def edit():  # edits the contents of an entry
         print(f"\n\u001b[38;5;9merror: entry ({_entry_name}) does not exist\u001b[0m\n")
         s_exit(3)
     _shm_folder, _shm_entry = shm_gen()
-    determine_decrypt(directory + _entry_name, _shm_folder, _shm_entry, gpg)
+    determine_decrypt(directory + _entry_name, _shm_folder, _shm_entry)
     if argument_list[2] == 'username' or argument_list[2] == '-u':
         _detail, _edit_line = str(input('username: ')), 1
     elif argument_list[2] == 'password' or argument_list[2] == '-p':
@@ -715,7 +710,7 @@ def edit():  # edits the contents of an entry
     remove(f"{directory}{_entry_name}.gpg")
     print('\n\u001b[1mentry preview:\u001b[0m')
     entry_reader(f"{tmp_dir}{_shm_folder}/{_shm_entry}")
-    encrypt(directory + _entry_name, _shm_folder, _shm_entry, gpg, gpg_id)
+    encrypt(directory + _entry_name, _shm_folder, _shm_entry, gpg_id)
 
 
 def gen():  # generates a password for a new or an existing entry
@@ -747,13 +742,13 @@ def gen():  # generates a password for a new or an existing entry
             .writelines(optimized_edit([_password, _username, _url, _notes], None, -1))
     else:
         _shm_folder, _shm_entry = shm_gen()
-        determine_decrypt(directory + _entry_name, _shm_folder, _shm_entry, gpg)
+        determine_decrypt(directory + _entry_name, _shm_folder, _shm_entry)
         _new_lines = optimized_edit(open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'r').readlines(), pass_gen(), 0)
         open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'w').writelines(_new_lines)
         remove(f"{directory}{_entry_name}.gpg")
     print('\n\u001b[1mentry preview:\u001b[0m')
     entry_reader(f"{tmp_dir}{_shm_folder}/{_shm_entry}")
-    encrypt(directory + _entry_name, _shm_folder, _shm_entry, gpg, gpg_id)
+    encrypt(directory + _entry_name, _shm_folder, _shm_entry, gpg_id)
 
 
 def copy_data():  # copies a specified field of an entry to the clipboard
@@ -766,7 +761,7 @@ def copy_data():  # copies a specified field of an entry to the clipboard
         print(f"\n\u001b[38;5;9merror: entry ({_entry_name}) does not exist\u001b[0m\n")
         s_exit(3)
     _shm_folder, _shm_entry = shm_gen()
-    determine_decrypt(directory + _entry_name, _shm_folder, _shm_entry, gpg)
+    determine_decrypt(directory + _entry_name, _shm_folder, _shm_entry)
     _copy_line, _index = open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'r').readlines(), 0
     if argument_list[2] == 'username' or argument_list[2] == '-u':
         _index = 1
@@ -796,7 +791,7 @@ def remove_data():  # deletes an entry from the server and flags it for local de
         _entry_name = entry_name_fetch('entry/folder to shear: ')
     else:
         _entry_name = entry_name_fetch(1)
-    determine_decrypt(expanduser('~/.config/sshyp/lock.gpg'), 0, 0, gpg)
+    determine_decrypt(expanduser('~/.config/sshyp/lock.gpg'), 0, 0)
     if ssh_error != 1:
         run(['ssh', '-i', expanduser('~/.ssh/sshyp'), '-p', port, f"{username_ssh}@{ip}",
              f'cd /lib/sshyp; python -c \'import sshypRemote; sshypRemote.delete("{_entry_name}", "remotely")\''])
@@ -810,10 +805,6 @@ if __name__ == "__main__":
         # retrieve typed argument
         argument_list = argv
         argument = ' '.join(argument_list[1:])
-        if uname()[0] == 'Haiku':  # set proper gpg command for OS
-            gpg = 'gpg --pinentry-mode loopback'
-        else:
-            gpg = 'gpg'
 
         # import saved userdata
         device_type = ''
