@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from os import environ, listdir, remove, system, uname, walk
+from os import environ, listdir, remove, uname, walk
 from os.path import expanduser
 from pathlib import Path
 from random import randint
@@ -146,7 +146,7 @@ def shm_gen(_tmp_dir=expanduser('~/.config/sshyp/tmp/')):  # creates a temporary
 
 def encrypt(_entry_dir, _shm_folder, _shm_entry, _gpg_id, _tmp_dir=expanduser('~/.config/sshyp/tmp/')):
     # encrypts an entry and cleans up the temporary files
-    system(f"gpg -qr {str(_gpg_id)} -e '{_tmp_dir}{_shm_folder}/{_shm_entry}'")
+    run(['gpg', '-qr', str(_gpg_id), '-e', f"{_tmp_dir}{_shm_folder}/{_shm_entry}"])
     move(f"{_tmp_dir}{_shm_folder}/{_shm_entry}.gpg", f"{_entry_dir}.gpg")
     rmtree(f"{_tmp_dir}{_shm_folder}")
 
@@ -260,7 +260,7 @@ def tweak():  # runs configuration wizard
         _gpg_gen = input(f"{_divider}sshyp requires the use of a unique gpg key - use an (e)xisting key or (g)enerate a"
                          f" new one? (E/g) ")
         if _gpg_gen.lower() != 'g':
-            system('gpg -k')
+            run(['gpg', '-k'])
             _sshyp_data += [str(input('gpg key id: '))]
         else:
             print('\na unique gpg key is being generated for you...')
@@ -268,7 +268,7 @@ def tweak():  # runs configuration wizard
                 open(expanduser('~/.config/sshyp/gpg-gen'), 'w').writelines([
                     'Key-Type: 1\n', 'Key-Length: 4096\n', 'Key-Usage: sign encrypt\n', 'Name-Real: sshyp\n',
                     'Name-Comment: gpg-sshyp\n', 'Name-Email: https://github.com/rwinkhart/sshyp\n', 'Expire-Date: 0'])
-            system(f"gpg --batch --generate-key '{expanduser('~/.config/sshyp/gpg-gen')}'")
+            run(['gpg', '--batch', '--generate-key', expanduser('~/.config/sshyp/gpg-gen')])
             remove(expanduser('~/.config/sshyp/gpg-gen'))
             _sshyp_data += [run('gpg -k', shell=True, stdout=PIPE, text=True).stdout.split('\n')[-4].strip()]
 
@@ -279,7 +279,7 @@ def tweak():  # runs configuration wizard
         if Path(expanduser('~/.config/sshyp/lock.gpg')).is_file():
             remove(expanduser('~/.config/sshyp/lock.gpg'))
         open(expanduser('~/.config/sshyp/lock'), 'w')
-        system(f"gpg -qr {str(_sshyp_data[1])} -e {expanduser('~/.config/sshyp/lock')}")
+        run(['gpg', '-qr', str(_sshyp_data[1]), '-e', expanduser('~/.config/sshyp/lock')])
         remove(expanduser('~/.config/sshyp/lock'))
 
         # ssh key configuration
