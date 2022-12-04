@@ -647,10 +647,11 @@ def add_folder():  # creates a new folder
         _entry_name = entry_name_fetch('name of new folder: ')
     else:
         _entry_name = entry_name_fetch(2)
-    Path(directory + _entry_name).mkdir(0o700)
+    Path(directory + _entry_name).mkdir(0o700, parents=True, exist_ok=True)
     if ssh_error != 1:
         run(['ssh', '-i', expanduser('~/.ssh/sshyp'), '-p', port, f"{username_ssh}@{ip}",
-             f"mkdir -p \'{directory_ssh}{_entry_name}\'"])
+             f'python -c \'from pathlib import Path; Path("{directory_ssh}{_entry_name}")'
+             f'.mkdir(0o700, parents=True, exist_ok=True)\''])
 
 
 def rename():  # renames an entry or folder
@@ -670,7 +671,8 @@ def rename():  # renames an entry or folder
         if ssh_error != 1:
             Path(f"{directory}{_new_name}").mkdir(0o700, parents=True, exist_ok=True)
             run(['ssh', '-i', expanduser('~/.ssh/sshyp'), '-p', port, f"{username_ssh}@{ip}",
-                 f"mkdir -p \'{directory_ssh}{_new_name}\'"])
+                 f'python -c \'from pathlib import Path; Path("{directory_ssh}{_new_name}")'
+                 f'.mkdir(0o700, parents=True, exist_ok=True)\''])
         else:
             move(f"{directory}{_entry_name}", f"{directory}{_new_name}")
     else:
