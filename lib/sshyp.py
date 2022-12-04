@@ -773,15 +773,15 @@ def copy_data():  # copies a specified field of an entry to the clipboard
         _index = 2
     elif argument_list[2] == 'note' or argument_list[2] == '-n':
         _index = 3
-    if uname()[0] == 'Haiku':  # Haiku clipboard detection
+    if environ.get('XDG_SESSION_TYPE') == 'wayland':  # Wayland clipboard detection
+        run(['wl-copy', _copy_line[_index].rstrip()])
+        Popen('sleep 30; wl-copy -c', shell=True)
+    elif uname()[0] == 'Haiku':  # Haiku clipboard detection
         run(['clipboard', '-c', _copy_line[_index].rstrip()])
         Popen('sleep 30; clipboard -r', shell=True)
     elif Path("/data/data/com.termux").exists():  # Termux (Android) clipboard detection
         run(['termux-clipboard-set', _copy_line[_index].rstrip()])
         Popen("sleep 30; termux-clipboard-set ''", shell=True)
-    elif environ.get('XDG_SESSION_TYPE') == 'wayland':  # Wayland clipboard detection
-        run(['wl-copy', _copy_line[_index].rstrip()])
-        Popen('sleep 30; wl-copy -c', shell=True)
     else:  # X11 clipboard detection
         run(['xclip', '-sel', 'c'], stdin=Popen(['echo', '-n', _copy_line[_index].rstrip()], stdout=PIPE).stdout)
         Popen("sleep 30; echo -n '' | xclip -sel c", shell=True)
