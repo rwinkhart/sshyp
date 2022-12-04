@@ -140,7 +140,7 @@ def pass_gen():  # prompts the user for necessary information to generate a pass
 def shm_gen(_tmp_dir=expanduser('~/.config/sshyp/tmp/')):  # creates a temporary directory for entry editing
     _shm_folder_gen = string_gen('f', randint(12, 48))
     _shm_entry_gen = string_gen('f', randint(12, 48))
-    Path(_tmp_dir + _shm_folder_gen).mkdir(0o700)
+    Path(_tmp_dir + _shm_folder_gen).mkdir(mode=0o700)
     return _shm_folder_gen, _shm_entry_gen
 
 
@@ -218,7 +218,8 @@ def copy_id_check(_port, _username_ssh, _ip, _client_device_id):
     # attempts to connect to the user's server via ssh to register the device for syncing
     try:
         run(['ssh', '-o', 'ConnectTimeout=3', '-i', expanduser('~/.ssh/sshyp'), '-p', _port, f"{_username_ssh}@{_ip}",
-             f"touch '/home/{_username_ssh}/.config/sshyp/devices/{_client_device_id}'"], stderr=DEVNULL, check=True)
+             f'python -c \'from pathlib import Path; Path("/home/{_username_ssh}/.config/sshyp/devices/'
+             f'{_client_device_id}").touch(mode=0o400, exist_ok=True)\''], stderr=DEVNULL, check=True)
     except CalledProcessError:
         print('\n\u001b[38;5;9mwarning: ssh connection could not be made - ensure the public key (~/.ssh/sshyp.pub) is '
               'registered on the remote server and that the entered ip, port, and username are correct\n\nsyncing '
@@ -236,7 +237,7 @@ def tweak():  # runs configuration wizard
     _divider = f"\n{'=' * (get_terminal_size()[0] - int((.5 * get_terminal_size()[0])))}\n\n"
 
     # config directory creation
-    Path(expanduser('~/.config/sshyp/devices')).mkdir(0o700, parents=True, exist_ok=True)
+    Path(expanduser('~/.config/sshyp/devices')).mkdir(mode=0o700, parents=True, exist_ok=True)
     if not Path(f"{expanduser('~/.config/sshyp/tmp')}").exists():
         if uname()[0] == 'Haiku' or uname()[0] == 'FreeBSD':
             symlink('/tmp', expanduser('~/.config/sshyp/tmp'))
@@ -249,12 +250,12 @@ def tweak():  # runs configuration wizard
     _device_type = input('\nclient or server installation? (C/s) ')
     if _device_type.lower() == 's':
         _sshyp_data = ['server']
-        Path(expanduser('~/.config/sshyp/deleted')).mkdir(0o700, exist_ok=True)
-        Path(expanduser('~/.config/sshyp/whitelist')).mkdir(0o700, exist_ok=True)
+        Path(expanduser('~/.config/sshyp/deleted')).mkdir(mode=0o700, exist_ok=True)
+        Path(expanduser('~/.config/sshyp/whitelist')).mkdir(mode=0o700, exist_ok=True)
         print(f"\n\u001b[4;1mmake sure the ssh service is running and properly configured\u001b[0m")
     else:
         _sshyp_data = ['client']
-        Path(expanduser('~/.local/share/sshyp')).mkdir(0o700, parents=True, exist_ok=True)
+        Path(expanduser('~/.local/share/sshyp')).mkdir(mode=0o700, parents=True, exist_ok=True)
 
         # gpg configuration
         _gpg_gen = input(f"{_divider}sshyp requires the use of a unique gpg key - use an (e)xisting key or (g)enerate a"
@@ -288,7 +289,7 @@ def tweak():  # runs configuration wizard
                           f"configured\n\nsync support requires a unique ssh key - would you like to have this "
                           f"automatically generated? (Y/n/o(ffline)) "))
         if _ssh_gen.lower() != 'n' and _ssh_gen.lower() != 'o' and _ssh_gen.lower() != 'offline':
-            Path(f"{expanduser('~')}/.ssh").mkdir(0o700, exist_ok=True)
+            Path(f"{expanduser('~')}/.ssh").mkdir(mode=0o700, exist_ok=True)
             run(['ssh-keygen', '-t', 'ed25519', '-f', expanduser('~/.ssh/sshyp')])
         elif _ssh_gen.lower() == 'n':
             print(f"\n\u001b[4;1mensure that the key file you are using is located at "
@@ -503,7 +504,7 @@ def sync():  # calls sshync to sync changes to the user's server
         if _folder != '' and not Path(f"{expanduser('~')}{_folder}").is_dir():
             print(f"\u001b[38;5;2m{_folder.replace('/.local/share/sshyp/', '')}/\u001b[0m does not exist locally, "
                   f"creating...")
-            Path(f"{expanduser('~')}{_folder}").mkdir(0o700, parents=True, exist_ok=True)
+            Path(f"{expanduser('~')}{_folder}").mkdir(mode=0o700, parents=True, exist_ok=True)
     # set permissions before uploading
     run(['find', directory, '-type', 'd', '-exec', 'chmod', '-R', '700', '{}', '+'])
     run(['find', directory, '-type', 'f', '-exec', 'chmod', '-R', '600', '{}', '+'])
@@ -647,11 +648,11 @@ def add_folder():  # creates a new folder
         _entry_name = entry_name_fetch('name of new folder: ')
     else:
         _entry_name = entry_name_fetch(2)
-    Path(directory + _entry_name).mkdir(0o700, parents=True, exist_ok=True)
+    Path(directory + _entry_name).mkdir(mode=0o700, parents=True, exist_ok=True)
     if ssh_error != 1:
         run(['ssh', '-i', expanduser('~/.ssh/sshyp'), '-p', port, f"{username_ssh}@{ip}",
              f'python -c \'from pathlib import Path; Path("{directory_ssh}{_entry_name}")'
-             f'.mkdir(0o700, parents=True, exist_ok=True)\''])
+             f'.mkdir(mode=0o700, parents=True, exist_ok=True)\''])
 
 
 def rename():  # renames an entry or folder
@@ -669,10 +670,10 @@ def rename():  # renames an entry or folder
         s_exit(4)
     if _entry_name.endswith('/'):
         if ssh_error != 1:
-            Path(f"{directory}{_new_name}").mkdir(0o700, parents=True, exist_ok=True)
+            Path(f"{directory}{_new_name}").mkdir(mode=0o700, parents=True, exist_ok=True)
             run(['ssh', '-i', expanduser('~/.ssh/sshyp'), '-p', port, f"{username_ssh}@{ip}",
                  f'python -c \'from pathlib import Path; Path("{directory_ssh}{_new_name}")'
-                 f'.mkdir(0o700, parents=True, exist_ok=True)\''])
+                 f'.mkdir(mode=0o700, parents=True, exist_ok=True)\''])
         else:
             move(f"{directory}{_entry_name}", f"{directory}{_new_name}")
     else:
