@@ -773,7 +773,7 @@ def copy_data():  # copies a specified field of an entry to the clipboard
         _index = 2
     elif argument_list[2] == 'note' or argument_list[2] == '-n':
         _index = 3
-    if environ.get('XDG_SESSION_TYPE') == 'wayland':  # Wayland clipboard detection
+    if 'WAYLAND_DISPLAY' in environ:  # Wayland clipboard detection
         run(['wl-copy', _copy_line[_index].rstrip()])
         Popen('sleep 30; wl-copy -c', shell=True)
     elif uname()[0] == 'Haiku':  # Haiku clipboard detection
