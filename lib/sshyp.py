@@ -4,8 +4,7 @@ from os.path import expanduser
 from pathlib import Path
 from random import randint
 from shutil import get_terminal_size, move, rmtree
-import sshync
-from sshypRemote import delete as offline_delete
+from sshync import delete as offline_delete, run_profile, make_profile, get_profile
 from subprocess import CalledProcessError, DEVNULL, PIPE, run
 from sys import argv, exit as s_exit
 
@@ -307,9 +306,9 @@ def tweak():  # runs configuration wizard
             _username_ssh = str(input('\nusername of the remote server: '))
 
             # sshync profile generation
-            sshync.make_profile(expanduser('~/.config/sshyp/sshyp.sshync'),
-                                expanduser('~/.local/share/sshyp/'), f"/home/{_username_ssh}/.local/share/sshyp/",
-                                expanduser('~/.ssh/sshyp'), _ip, _port, _username_ssh)
+            make_profile(expanduser('~/.config/sshyp/sshyp.sshync'),
+                         expanduser('~/.local/share/sshyp/'), f"/home/{_username_ssh}/.local/share/sshyp/",
+                         expanduser('~/.ssh/sshyp'), _ip, _port, _username_ssh)
 
             # device id configuration
             for _id in listdir(expanduser('~/.config/sshyp/devices')):  # remove existing device id
@@ -487,28 +486,10 @@ def read_shortcut():  # shortcut to quickly read an entry
 
 def sync():  # calls sshync to sync changes to the user's server
     print('\nsyncing entries with the server device...\n')
-    # check for deletions
-    _deletion_database = run(['ssh', '-i', expanduser('~/.ssh/sshyp'), '-p', port, f"{username_ssh}@{ip}",
-                              f'cd /lib/sshyp; python3 -c \'import sshypRemote; sshypRemote.deletion_check("'
-                              f'{client_device_id}")\''], stdout=PIPE, text=True).stdout.split('\n')
-    for _file in _deletion_database:
-        if _file != '':
-            if silent_sync != 1:
-                print(f"\u001b[38;5;208m{_file}\u001b[0m has been sheared, removing...")
-            offline_delete(_file, 'locally')
-    # check for new folders
-    _folder_database = run(['ssh', '-i', expanduser('~/.ssh/sshyp'), '-p', port, f"{username_ssh}@{ip}",
-                            "cd /lib/sshyp; python3 -c 'import sshypRemote; sshypRemote.folder_check()'"],
-                           stdout=PIPE, text=True).stdout.split('\n')
-    for _folder in _folder_database:
-        if _folder != '' and not Path(f"{expanduser('~')}{_folder}").is_dir():
-            print(f"\u001b[38;5;2m{_folder.replace('/.local/share/sshyp/', '')}/\u001b[0m does not exist locally, "
-                  f"creating...")
-            Path(f"{expanduser('~')}{_folder}").mkdir(mode=0o700, parents=True, exist_ok=True)
     # set permissions before uploading
     run(['find', directory, '-type', 'd', '-exec', 'chmod', '-R', '700', '{}', '+'])
     run(['find', directory, '-type', 'f', '-exec', 'chmod', '-R', '600', '{}', '+'])
-    sshync.run_profile(expanduser('~/.config/sshyp/sshyp.sshync'))
+    run_profile(expanduser('~/.config/sshyp/sshyp.sshync'), silent_sync)
 
 
 def whitelist_setup():  # takes input from the user to set up quick-unlock password
@@ -684,7 +665,7 @@ def rename():  # renames an entry or folder
             move(f"{directory}{_entry_name}.gpg", f"{directory}{_new_name}.gpg")
     if ssh_error != 1:
         run(['ssh', '-i', expanduser('~/.ssh/sshyp'), '-p', port, f"{username_ssh}@{ip}",
-             f'cd /lib/sshyp; python3 -c \'import sshypRemote; sshypRemote.delete("{_entry_name}", "remotely")\''])
+             f'cd /lib/sshyp; python3 -c \'from sshync import delete; delete("{_entry_name}", "remotely")\''])
 
 
 def edit():  # edits the contents of an entry
@@ -798,7 +779,7 @@ def remove_data():  # deletes an entry from the server and flags it for local de
     determine_decrypt(expanduser('~/.config/sshyp/lock.gpg'), 0, 0)
     if ssh_error != 1:
         run(['ssh', '-i', expanduser('~/.ssh/sshyp'), '-p', port, f"{username_ssh}@{ip}",
-             f'cd /lib/sshyp; python3 -c \'import sshypRemote; sshypRemote.delete("{_entry_name}", "remotely")\''])
+             f'cd /lib/sshyp; python3 -c \'from sshync import delete; delete("{_entry_name}", "remotely")\''])
     else:
         offline_delete(_entry_name, 'locally')
 
@@ -823,7 +804,7 @@ if __name__ == "__main__":
                     editor = sshyp_data[2].rstrip()
                     quick_unlock_enabled = sshyp_data[3].rstrip()
                     if Path(expanduser('~/.config/sshyp/sshyp.sshync')).is_file():
-                        ssh_info = sshync.get_profile(expanduser('~/.config/sshyp/sshyp.sshync'))
+                        ssh_info = get_profile(expanduser('~/.config/sshyp/sshyp.sshync'))
                         username_ssh = ssh_info[0].rstrip()
                         ip = ssh_info[1].rstrip()
                         port = ssh_info[2].rstrip()
