@@ -218,7 +218,7 @@ def copy_id_check(_port, _username_ssh, _ip, _client_device_id):
     # attempts to connect to the user's server via ssh to register the device for syncing
     try:
         run(['ssh', '-o', 'ConnectTimeout=3', '-i', expanduser('~/.ssh/sshyp'), '-p', _port, f"{_username_ssh}@{_ip}",
-             f'python -c \'from pathlib import Path; Path("/home/{_username_ssh}/.config/sshyp/devices/'
+             f'python3 -c \'from pathlib import Path; Path("/home/{_username_ssh}/.config/sshyp/devices/'
              f'{_client_device_id}").touch(mode=0o400, exist_ok=True)\''], stderr=DEVNULL, check=True)
     except CalledProcessError:
         print('\n\u001b[38;5;9mwarning: ssh connection could not be made - ensure the public key (~/.ssh/sshyp.pub) is '
@@ -489,7 +489,7 @@ def sync():  # calls sshync to sync changes to the user's server
     print('\nsyncing entries with the server device...\n')
     # check for deletions
     _deletion_database = run(['ssh', '-i', expanduser('~/.ssh/sshyp'), '-p', port, f"{username_ssh}@{ip}",
-                              f'cd /lib/sshyp; python -c \'import sshypRemote; sshypRemote.deletion_check("'
+                              f'cd /lib/sshyp; python3 -c \'import sshypRemote; sshypRemote.deletion_check("'
                               f'{client_device_id}")\''], stdout=PIPE, text=True).stdout.split('\n')
     for _file in _deletion_database:
         if _file != '':
@@ -498,7 +498,7 @@ def sync():  # calls sshync to sync changes to the user's server
             offline_delete(_file, 'locally')
     # check for new folders
     _folder_database = run(['ssh', '-i', expanduser('~/.ssh/sshyp'), '-p', port, f"{username_ssh}@{ip}",
-                            "cd /lib/sshyp; python -c 'import sshypRemote; sshypRemote.folder_check()'"],
+                            "cd /lib/sshyp; python3 -c 'import sshypRemote; sshypRemote.folder_check()'"],
                            stdout=PIPE, text=True).stdout.split('\n')
     for _folder in _folder_database:
         if _folder != '' and not Path(f"{expanduser('~')}{_folder}").is_dir():
@@ -554,7 +554,7 @@ def whitelist_verify(_port, _username_ssh, _ip, _client_device_id):
     except CalledProcessError:
         _i, _full_password = 0, ''
         _server_whitelist = run(['ssh', '-i', expanduser('~/.ssh/sshyp'), '-p', _port, f"{_username_ssh}@{_ip}",
-                                 f'python -c \'from os import listdir; print(*listdir("/home/{_username_ssh}'
+                                 f'python3 -c \'from os import listdir; print(*listdir("/home/{_username_ssh}'
                                  f'/.config/sshyp/whitelist"))\''], stdout=PIPE, text=True).stdout.rstrip().split(' ')
         for _device_id in _server_whitelist:
             if _device_id == _client_device_id:
@@ -652,7 +652,7 @@ def add_folder():  # creates a new folder
     Path(directory + _entry_name).mkdir(mode=0o700, parents=True, exist_ok=True)
     if ssh_error != 1:
         run(['ssh', '-i', expanduser('~/.ssh/sshyp'), '-p', port, f"{username_ssh}@{ip}",
-             f'python -c \'from pathlib import Path; Path("{directory_ssh}{_entry_name}")'
+             f'python3 -c \'from pathlib import Path; Path("{directory_ssh}{_entry_name}")'
              f'.mkdir(mode=0o700, parents=True, exist_ok=True)\''])
 
 
@@ -673,7 +673,7 @@ def rename():  # renames an entry or folder
         if ssh_error != 1:
             Path(f"{directory}{_new_name}").mkdir(mode=0o700, parents=True, exist_ok=True)
             run(['ssh', '-i', expanduser('~/.ssh/sshyp'), '-p', port, f"{username_ssh}@{ip}",
-                 f'python -c \'from pathlib import Path; Path("{directory_ssh}{_new_name}")'
+                 f'python3 -c \'from pathlib import Path; Path("{directory_ssh}{_new_name}")'
                  f'.mkdir(mode=0o700, parents=True, exist_ok=True)\''])
         else:
             move(f"{directory}{_entry_name}", f"{directory}{_new_name}")
@@ -684,7 +684,7 @@ def rename():  # renames an entry or folder
             move(f"{directory}{_entry_name}.gpg", f"{directory}{_new_name}.gpg")
     if ssh_error != 1:
         run(['ssh', '-i', expanduser('~/.ssh/sshyp'), '-p', port, f"{username_ssh}@{ip}",
-             f'cd /lib/sshyp; python -c \'import sshypRemote; sshypRemote.delete("{_entry_name}", "remotely")\''])
+             f'cd /lib/sshyp; python3 -c \'import sshypRemote; sshypRemote.delete("{_entry_name}", "remotely")\''])
 
 
 def edit():  # edits the contents of an entry
@@ -798,7 +798,7 @@ def remove_data():  # deletes an entry from the server and flags it for local de
     determine_decrypt(expanduser('~/.config/sshyp/lock.gpg'), 0, 0)
     if ssh_error != 1:
         run(['ssh', '-i', expanduser('~/.ssh/sshyp'), '-p', port, f"{username_ssh}@{ip}",
-             f'cd /lib/sshyp; python -c \'import sshypRemote; sshypRemote.delete("{_entry_name}", "remotely")\''])
+             f'cd /lib/sshyp; python3 -c \'import sshypRemote; sshypRemote.delete("{_entry_name}", "remotely")\''])
     else:
         offline_delete(_entry_name, 'locally')
 
