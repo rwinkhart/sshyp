@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
-from os import walk
-from os.path import getmtime, join
+from os import listdir, remove, walk
+from os.path import expanduser, getmtime, join
+from pathlib import Path
 from subprocess import PIPE, run
 from sys import exit as s_exit
 
@@ -21,8 +22,8 @@ def get_local_data(_directory, _device):  # retrieves titles and mod times from 
 
 def get_remote_data(_user_data):  # retrieves titles and mod times from the remote server
     _titles_mods = run(['ssh', '-i', _user_data[5], '-p', _user_data[2], f"{_user_data[0]}@{_user_data[1]}",
-                        f'cd /lib/sshyp; python3 -c \'import sshync; sshync.get_local_data("{_user_data[4]}", '
-                        f'"server")\''], stdout=PIPE, text=True).stdout.split('\n')
+                        f'cd /lib/sshyp; python3 -c \'from sshync import get_local_data; get_local_data'
+                        f'("{_user_data[4]}", "server")\''], stdout=PIPE, text=True).stdout.split('\n')
     _title_list = _titles_mods[:len(_titles_mods)//2]
     _mod_list = _titles_mods[len(_titles_mods)//2:]
     return _title_list, _mod_list
@@ -44,6 +45,60 @@ def sort_titles_mods(_list_1, _list_2):  # creates and returns two lists (of tit
     return _title_list_2_sorted, _mod_list_2_sorted
 
 
+def delete(_file_path, _target_database):  # deletes an entry or folder
+    from shutil import rmtree
+    try:
+        if _file_path.endswith('/'):
+            rmtree(f"{expanduser('~/.local/share/sshyp/')}{_file_path}")
+        else:
+            remove(f"{expanduser('~/.local/share/sshyp/')}{_file_path}.gpg")
+    except FileNotFoundError:
+        print(f"location does not exist {_target_database}")
+    if _target_database == 'remotely':
+        for _device_name in listdir(expanduser('~/.config/sshyp/devices')):
+            open(expanduser('~/.config/sshyp/deleted/') + _file_path.replace('/', '\x1e') + '\x1f' + _device_name, 'w')
+
+
+def deletion_check(_client_device_name):  # creates a list of entries and folders to be deleted from a client device
+    for _file in listdir(expanduser('~/.config/sshyp/deleted')):
+        _file_path, _sep, _device = _file.partition('\x1f')
+        _file_path = _file_path.replace('\x1e', '/')
+        if _device == _client_device_name:
+            print(_file_path)
+            try:
+                remove(f"{expanduser('~/.config/sshyp/deleted/')}{_file}")
+            except FileNotFoundError:
+                pass
+
+
+def deletion_sync(_user_data, _silent):  # check for deletions
+    _deletion_database = run(['ssh', '-i', _user_data[5], '-p', _user_data[2], f"{_user_data[0]}@{_user_data[1]}",
+                              f'cd /lib/sshyp; python3 -c \'from sshync import deletion_check; deletion_check'
+                              f'("{_user_data[6]}")\''], stdout=PIPE, text=True).stdout.split('\n')
+    for _file in _deletion_database:
+        if _file != '':
+            if _silent != 1:
+                print(f"\u001b[38;5;208m{_file}\u001b[0m has been sheared, removing...")
+            delete(_file, 'locally')
+
+
+def folder_check():  # creates a list of folders to be compared with those of a client device
+    for _root, _directories, _files in walk(expanduser('~/.local/share/sshyp')):
+        for _dir in _directories:
+            print(f"{_root.replace(expanduser('~'), '')}/{_dir}")
+
+
+def folder_sync(_user_data):  # check for new folders
+    _folder_database = run(['ssh', '-i',  _user_data[5], '-p',  _user_data[2], f"{_user_data[0]}@{_user_data[1]}",
+                            "cd /lib/sshyp; python3 -c 'from sshync import folder_check; folder_check()'"],
+                           stdout=PIPE, text=True).stdout.split('\n')
+    for _folder in _folder_database:
+        if _folder != '' and not Path(f"{expanduser('~')}{_folder}").is_dir():
+            print(f"\u001b[38;5;2m{_folder.replace('/.local/share/sshyp/', '')}/\u001b[0m does not exist locally, "
+                  f"creating...")
+            Path(f"{expanduser('~')}{_folder}").mkdir(mode=0o700, parents=True, exist_ok=True)
+
+
 def make_profile(_profile_dir, _local_dir, _remote_dir, _identity, _ip, _port, _user):  # creates a sshync job profile
     open(_profile_dir, 'w').write(f"{_user}\n{_ip}\n{_port}\n{_local_dir}\n{_remote_dir}\n{_identity}\n")
 
@@ -62,11 +117,16 @@ def get_profile(_profile_dir):  # returns a list of data read from a sshync job 
     _local_dir = _profile_data[3].rstrip()
     _remote_dir = _profile_data[4].rstrip()
     _identity = _profile_data[5].rstrip()
-    return _user, _ip, _port, _local_dir, _remote_dir, _identity
+    _client_device_id = listdir(expanduser('~/.config/sshyp/devices'))[0].rstrip()
+    return _user, _ip, _port, _local_dir, _remote_dir, _identity, _client_device_id
 
 
-def run_profile(_profile_dir):  # runs a sshync job profile
-    _user_data = get_profile(_profile_dir)
+def run_profile(_profile_dir, _silent):  # runs a sshync job profile
+    _user_data = get_profile(_profile_dir)  # import profile data
+    deletion_sync(_user_data, _silent)  # check for and sync deletions
+    folder_sync(_user_data)  # check for and sync folders
+
+    # sync new and updated entries
     _remote_titles_mods = get_remote_data(_user_data)
     _index_l = sort_titles_mods(_remote_titles_mods, get_local_data(_user_data[3], 'client'))
     _index_r = sort_titles_mods(_index_l, _remote_titles_mods)
