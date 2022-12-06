@@ -9,7 +9,7 @@ from subprocess import CalledProcessError, DEVNULL, PIPE, run
 from sys import argv, exit as s_exit
 
 
-# BELOW - utility functions
+# UTILITY FUNCTIONS
 
 def entry_list_gen(_directory=expanduser('~/.local/share/sshyp/')):  # generates and prints full entry list
     from textwrap import fill
@@ -228,8 +228,8 @@ def copy_id_check(_port, _username_ssh, _ip, _client_device_id):
     open(expanduser('~/.config/sshyp/ssh-error'), 'w').write('0')
     return 0
 
-# BELOW - argument-specific functions
 
+# ARGUMENT-SPECIFIC FUNCTIONS
 
 def tweak():  # runs configuration wizard
     from os import symlink
