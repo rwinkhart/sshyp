@@ -1,4 +1,4 @@
-.TH sshyp 1 "25 November 2022" "v1.2.1" "sshyp man page"
+.TH sshyp 1 "07 December 2022" "v1.3.0" "sshyp man page"
 .SH NAME
 sshyp \- A very simple self-hosted, synchronized password manager for UNIX(-like) systems. Alternative to (and compatible with) pass/password-store.
 .SH SYNOPSIS
@@ -122,5 +122,7 @@ Please note that the server setup intentionally does not allow the reading of en
 4 - data already exists error
 
 5 - decryption/encryption error
+
+6 - server connection error
 .SH AUTHOR
 Randall Winkhart (https://github.com/rwinkhart)
