@@ -132,14 +132,15 @@ def get_profile(_profile_dir):  # returns a list of data read from a sshync job 
 
 def run_profile(_profile_dir, _silent):  # runs a sshync job profile
     _user_data = get_profile(_profile_dir)  # import profile data
-    # fetch and organize remote lists
+    # fetch remote lists
     _deletion_database, _folder_database, _remote_titles, _remote_mods = remote_list_fetch(_user_data)
     _remote_titles_mods = (_remote_titles, _remote_mods)
-    _index_local = sort_titles_mods(_remote_titles_mods, get_local_data(_user_data[3], 'client'))
-    _index_remote = sort_titles_mods(_index_local, _remote_titles_mods)
     # sync deletions and folders
     deletion_sync(_deletion_database, _silent)
     folder_sync(_folder_database)
+    # sort titles and mods
+    _index_local = sort_titles_mods(_remote_titles_mods, get_local_data(_user_data[3], 'client'))
+    _index_remote = sort_titles_mods(_index_local, _remote_titles_mods)
     # sync new and updated files
     _i = -1
     for _title in _index_local[0]:
