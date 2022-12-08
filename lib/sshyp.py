@@ -93,7 +93,7 @@ def entry_name_fetch(_entry_name_location):  # fetches and returns entry name fr
     if _entry_name.startswith('/'):
         return _entry_name.replace('/', '', 1)
     else:
-        return _entry_name
+        return _entry_name.strip()
 
 
 def string_gen(_complexity, _length):  # generates and returns a random string based on input
