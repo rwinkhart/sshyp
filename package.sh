@@ -104,7 +104,6 @@ urls {
     cp -r lib/. output/haikutemp/lib/sshyp/
     sed -i '1 s/.*/#!\/bin\/env\ python3.10/' output/haikutemp/lib/sshyp/sshync.py
     sed -i '1 s/.*/#!\/bin\/env\ python3.10/' output/haikutemp/lib/sshyp/sshyp.py
-    sed -i '1 s/.*/#!\/bin\/env\ python3.10/' output/haikutemp/lib/sshyp/sshypRemote.py
     ln -s /system/lib/sshyp/sshyp.py output/haikutemp/bin/sshyp
     cp -r share/doc/sshyp/. output/haikutemp/documentation/packages/sshyp/
     cp -r share/licenses/sshyp/. output/haikutemp/documentation/packages/sshyp/
@@ -196,7 +195,6 @@ cp -r %{_sourcedir}/usr %{buildroot}
 /usr/bin/sshyp
 /usr/lib/sshyp/sshyp.py
 /usr/lib/sshyp/sshync.py
-/usr/lib/sshyp/sshypRemote.py
 /usr/share/bash-completion/completions/sshyp
 %license /usr/share/licenses/sshyp/license
 %doc
@@ -240,7 +238,6 @@ prefix: /
 echo "/usr/bin/sshyp
 /usr/lib/sshyp/sshync.py
 /usr/lib/sshyp/sshyp.py
-/usr/lib/sshyp/sshypRemote.py
 /usr/share/bash-completion/completions/sshyp
 /usr/share/doc/sshyp/changelog
 /usr/share/licenses/sshyp/license
