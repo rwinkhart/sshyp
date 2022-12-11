@@ -539,7 +539,8 @@ def whitelist_verify(_port, _username_ssh, _ip, _client_device_id):
                                  f'/.config/sshyp/whitelist"))\''], stdout=PIPE, text=True).stdout.rstrip().split(' ')
         for _device_id in _server_whitelist:
             if _device_id == _client_device_id:
-                _quick_unlock_password = input('\nquick-unlock passphrase: ')
+                from getpass import getpass
+                _quick_unlock_password = getpass(prompt='\nquick-unlock passphrase: ')
                 _quick_unlock_password_excluded = \
                     run(['ssh', '-i', expanduser('~/.ssh/sshyp'), '-p',  _port, f"{_username_ssh}@{_ip}",
                          f"gpg --pinentry-mode loopback --passphrase '{_quick_unlock_password}' "
