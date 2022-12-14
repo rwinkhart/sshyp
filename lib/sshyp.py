@@ -399,9 +399,9 @@ def print_info():  # prints help text based on argument
     elif argument_list[1] == 'version' or argument_list[1] == '-v':
         print('\nsshyp is a simple, self-hosted, sftp-synchronized password manager\nfor unix(-like) systems (haiku/'
               'freebsd/linux/termux)\n\nsshyp is a viable alternative to (and compatible with) pass/password-store\n')
-        print("                ..       \u001b[38;5;9m♥♥ ♥♥\u001b[0m       ..\n         .''.''/()\\     \u001b[38;5;13m"
+        print("                ..       \u001b[38;5;9m♥♥ ♥♥\u001b[0m       ..\n         .''.''/()\\     \u001b[38;5;10m"
               "♥♥♥♥♥♥♥\u001b[0m     /()\\''.''.\n        *       :        \u001b[38;5;9m♥♥♥♥♥\u001b[0m        :       *"
-              "\n         `..'..'          \u001b[38;5;13m♥♥♥\u001b[0m          `..'..'\n         //   \\\\           "
+              "\n         `..'..'          \u001b[38;5;10m♥♥♥\u001b[0m          `..'..'\n         //   \\\\           "
               "\u001b[38;5;9m♥\u001b[0m           //   \\\\")
         print('\u001b[38;5;7;48;5;8m<><><><><><><><><><><><><><><><><><><><><><><><><><><><>\u001b[0m')
         print('\u001b[38;5;7;48;5;8m/\u001b[38;5;15;48;5;15m                                                      '
@@ -410,10 +410,10 @@ def print_info():  # prints help text based on argument
               'randall winkhart\u001b[38;5;15;48;5;15m   \u001b[38;5;7;48;5;8m/\u001b[0m')
         print('\u001b[38;5;7;48;5;8m/\u001b[38;5;15;48;5;15m                                                      '
               '\u001b[38;5;7;48;5;8m/\u001b[0m')
-        print('\u001b[38;5;7;48;5;8m/\u001b[38;5;15;48;5;15m                    \u001b[38;5;15;48;5;8mversion 1.2.0'
+        print('\u001b[38;5;7;48;5;8m/\u001b[38;5;15;48;5;15m                    \u001b[38;5;15;48;5;8mversion 1.3.0'
               '\u001b[38;5;15;48;5;15m                     \u001b[38;5;7;48;5;8m/\u001b[0m')
-        print('\u001b[38;5;7;48;5;8m/\u001b[38;5;15;48;5;15m                \u001b[38;5;15;48;5;8mthe brisk bahh '
-              'update\u001b[38;5;15;48;5;15m                 \u001b[38;5;7;48;5;8m/\u001b[0m')
+        print('\u001b[38;5;7;48;5;8m/\u001b[38;5;15;48;5;15m             \u001b[38;5;15;48;5;8mthe serious shepherd '
+              'update\u001b[38;5;15;48;5;15m              \u001b[38;5;7;48;5;8m/\u001b[0m')
         print('\u001b[38;5;7;48;5;8m/\u001b[38;5;15;48;5;15m                                                      '
               '\u001b[38;5;7;48;5;8m/\u001b[0m')
         print('\u001b[38;5;7;48;5;8m<><><><><><><><><><><><><><><><><><><><><><><><><><><><>\u001b[0m\n')
