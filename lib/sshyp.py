@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from os import environ, listdir, remove, uname, walk
+from os import chmod, environ, listdir, remove, uname, walk
 from os.path import expanduser
 from pathlib import Path
 from random import randint
@@ -32,8 +32,8 @@ def entry_list_gen(_directory=expanduser('~/.local/share/sshyp/')):  # generates
         print(fill(' '.join(_entry_list), width=_width) + '\n')
     except ValueError:
         pass
-    for _root, _directories, _files in walk(_directory):
-        for _dir in sorted(_directories):
+    for _root, _dirs, _files in walk(_directory):
+        for _dir in sorted(_dirs):
             _inner_dir = f"{_root.replace(_directory, '')}/{_dir}"
             print(f"\u001b[38;5;15;48;5;238m{_inner_dir}/\u001b[0m")
             _entry_list, _color_alternator = [], 1
@@ -487,8 +487,11 @@ def read_shortcut():  # shortcut to quickly read an entry
 def sync():  # calls sshync to sync changes to the user's server
     print('\nsyncing entries with the server device...\n')
     # set permissions before uploading
-    run(['find', directory, '-type', 'd', '-exec', 'chmod', '-R', '700', '{}', '+'])
-    run(['find', directory, '-type', 'f', '-exec', 'chmod', '-R', '600', '{}', '+'])
+    for _root, _dirs, _files in walk(expanduser('~/.local/share/sshyp')):
+        for _path in _root.split('\n'):
+            chmod(_path, 0o700)
+        for _file in _files:
+            chmod(_root + '/' + _file, 0o600)
     run_profile(expanduser('~/.config/sshyp/sshyp.sshync'), silent_sync)
 
 
