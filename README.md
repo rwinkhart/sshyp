@@ -1,6 +1,5 @@
 ![sshyp](https://github.com/rwinkhart/sshyp-labs/blob/main/extra/artwork/sshyp-banner.png)
-
-[![CodeQL](https://github.com/rwinkhart/sshyp/actions/workflows/codeql-analysis.yml/badge.svg?branch=main)](https://github.com/rwinkhart/sshyp/actions/workflows/codeql-analysis.yml)
+![release](https://img.shields.io/github/v/release/rwinkhart/sshyp)![python](https://img.shields.io/badge/python-3.7--3.11-yellow)![downloads](https://img.shields.io/github/downloads/rwinkhart/sshyp/total)[![CodeQL](https://github.com/rwinkhart/sshyp/actions/workflows/codeql-analysis.yml/badge.svg?branch=main)](https://github.com/rwinkhart/sshyp/actions/workflows/codeql-analysis.yml)
 
 pronounced as: 'sheep', 'shēp'
 
@@ -91,9 +90,8 @@ man sshyp
 # Roadmap
 Short-term Goals:
 
-- create minimal GUI app (Linux x86_64, Linux aarch64) - being done as an [extension](https://github.com/rwinkhart/sshyp-labs)
-- significant optimizations
-- vaious bug fixes
+- a minimal GUI app - being made as an [extension](https://github.com/rwinkhart/sshyp-labs)
+- improved extension integration (allow extensions to add new arguments)
 
 Long-term Goals:
 

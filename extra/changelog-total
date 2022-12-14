@@ -1,3 +1,51 @@
+sshyp v1.3.0
+
+the serious shepherd update
+
+this release ties up many of sshyp's loose ends where there was
+room for major performance, compatibility, and security improvements
+
+compatibility-breaking changes:
+
+- due to a near full re-write of the syncing functionality, all clients and servers
+must be updated to this release (v1.3.0 is not backwards compatible with any prior release)
+- it is recommended to either delete the contents of ~/.config/sshyp/deleted (on the server-side)
+or sync all of your clients before updating
+    ^ old entries in this folder will throw errors with v1.3.0
+
+user-facing features:
+
+- none - all changes were under-the-hood - the user experience should be
+exactly the same as v1.2.0 - just faster, less buggy, and more secure
+
+major fixes/optimizations:
+
+- a near full re-write of the syncing functionality
+    ^ all syncing logic has been moved into sshync.py (from sshyp.py and sshypRemote.py)
+    ^ in my setup, a dry, local "sshyp sync" went from 2.00+ seconds (v1.2.0) to 0.36 seconds (v1.3.0)
+        ^ the performance improvements are even greater when syncing from outside your local network
+- the following character sequences will no longer break the syncing logic: "@", "^&*", and "*&^"
+    ^ ASCII separator characters 29-31 are now used, instead
+- os.system has been replaced with subprocess.run in all cases, shell=True is no longer used with subprocess.run
+    ^ this protects against shell escape attacks and potentially makes sshyp more compatible with some environments
+- replaced shell commands with python built-in library functions where applicable
+    ^ this brings speed and compatibility improvements
+- sshyp should no longer incorrectly assume an X11 environment when Wayland is in use
+    ^ this fixes clipboard support in some Wayland environments, such as Sway (Plasma/Gnome/Phosh were unaffected)
+- sshyp now uses the default pinentry on Haiku thanks to haikuports/haikuports#7457
+    ^ this brings the Haiku port in-line with the other sshyp packages in terms of security
+- "python3" is now called over ssh, rather than "python"
+    ^ some environments do not have a "python" symlink, or it links to "python2" - changing this increases compatibility
+- fixed an issue from v1.2.0 where renaming threw an error if not in offline mode
+
+other notable changes:
+
+- quick-unlock password input is now hidden while the user is typing
+    ^ user input is now invisible to prevent snooping
+- lots of smaller optimizations not listed here
+
+<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+
 sshyp v1.2.0
 
 the brisk bahh update
