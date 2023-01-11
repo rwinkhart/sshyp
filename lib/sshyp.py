@@ -349,7 +349,7 @@ def tweak():  # runs configuration wizard
 
 def print_info():  # prints help text based on argument
     if argument_list[1] == 'help' or argument_list[1] == '--help' or argument_list[1] == '-h':
-        print('\n\u001b[1msshyp  copyright (c) 2021-2022  randall winkhart\u001b[0m\n')
+        print('\n\u001b[1msshyp  copyright (c) 2021-2023  randall winkhart\u001b[0m\n')
         print("this is free software, and you are welcome to redistribute it under certain conditions;\nthis program "
               "comes with absolutely no warranty;\ntype 'sshyp license' for details")
         if device_type == 'client':
@@ -406,7 +406,7 @@ def print_info():  # prints help text based on argument
         print('\u001b[38;5;7;48;5;8m<><><><><><><><><><><><><><><><><><><><><><><><><><><><>\u001b[0m')
         print('\u001b[38;5;7;48;5;8m/\u001b[38;5;15;48;5;15m                                                      '
               '\u001b[38;5;7;48;5;8m/\u001b[0m')
-        print('\u001b[38;5;7;48;5;8m/\u001b[38;5;15;48;5;15m   \u001b[38;5;15;48;5;8msshyp  copyright (c) 2021-2022  '
+        print('\u001b[38;5;7;48;5;8m/\u001b[38;5;15;48;5;15m   \u001b[38;5;15;48;5;8msshyp  copyright (c) 2021-2023  '
               'randall winkhart\u001b[38;5;15;48;5;15m   \u001b[38;5;7;48;5;8m/\u001b[0m')
         print('\u001b[38;5;7;48;5;8m/\u001b[38;5;15;48;5;15m                                                      '
               '\u001b[38;5;7;48;5;8m/\u001b[0m')
