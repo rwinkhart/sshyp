@@ -299,8 +299,9 @@ def tweak():  # runs configuration wizard
 
         if not _offline_mode:
             # ssh ip+port configuration
-            _ip_port = str(input(f"{_divider}example input: 10.10.10.10:9999\n\nip and ssh port of sshyp server: "))
-            _ip, _sep, _port = _ip_port.partition(':')
+            _iport = str(input(f"{_divider}example inputs:\n\n ipv4: 10.10.10.10:22\n ipv6: [2000:2000:2000:2000:"
+                               f"2000:2000:2000:2000]:22\n domain: mydomain.com:22\n\nip and ssh port of sshyp server: "
+                               )).rstrip(':')
 
             # ssh user configuration
             _username_ssh = str(input('\nusername of the remote server: '))
@@ -308,7 +309,7 @@ def tweak():  # runs configuration wizard
             # sshync profile generation
             make_profile(expanduser('~/.config/sshyp/sshyp.sshync'),
                          expanduser('~/.local/share/sshyp/'), f"/home/{_username_ssh}/.local/share/sshyp/",
-                         expanduser('~/.ssh/sshyp'), _ip, _port, _username_ssh)
+                         expanduser('~/.ssh/sshyp'), _iport[0], _iport[1], _username_ssh)
 
             # device id configuration
             for _id in listdir(expanduser('~/.config/sshyp/devices')):  # remove existing device id
@@ -330,7 +331,7 @@ def tweak():  # runs configuration wizard
                       f"(if not already done)\nsshyp whitelist add '{_device_id}'")
 
             # test server connection and attempt to register device id
-            copy_id_check(_port, _username_ssh, _ip, _device_id)
+            copy_id_check(_iport[1], _username_ssh, _iport[0], _device_id)
 
         elif Path(expanduser('~/.config/sshyp/sshyp.sshync')).is_file():
             remove(expanduser('~/.config/sshyp/sshyp.sshync'))
