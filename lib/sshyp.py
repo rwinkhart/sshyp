@@ -185,7 +185,7 @@ def determine_decrypt(_entry_dir, _shm_folder, _shm_entry):
 
 def optimized_edit(_lines, _edit_data, _edit_line):  # ensures an edited entry is optimized for best compatibility
     while len(_lines) < _edit_line + 1:
-        _lines += ['\n']
+        _lines.append('\n')
     if _edit_data is not None:
         _lines[_edit_line] = _edit_data.strip('\n').rstrip() + '\n'
     for _num in range(len(_lines)):
@@ -208,7 +208,7 @@ def edit_note(_shm_folder, _shm_entry, _lines):  # edits the note attached to an
     run([editor, f"{tmp_dir}{_shm_folder}/{_shm_entry}-n"])
     _new_notes = open(f"{tmp_dir}{_shm_folder}/{_shm_entry}-n").readlines()
     while len(_reg_lines) < 3:
-        _reg_lines += ['\n']
+        _reg_lines.append('\n')
     _noted_lines = _reg_lines + _new_notes
     return _noted_lines
 
@@ -261,7 +261,7 @@ def tweak():  # runs configuration wizard
                          f" new one? (E/g) ")
         if _gpg_gen.lower() != 'g':
             run(['gpg', '-k'])
-            _sshyp_data += [str(input('gpg key id: '))]
+            _sshyp_data.append(str(input('gpg key id: ')))
         else:
             print('\na unique gpg key is being generated for you...')
             if not Path(expanduser('~/.config/sshyp/gpg-gen')).is_file():
@@ -270,10 +270,10 @@ def tweak():  # runs configuration wizard
                     'Name-Comment: gpg-sshyp\n', 'Name-Email: https://github.com/rwinkhart/sshyp\n', 'Expire-Date: 0'])
             run(['gpg', '--batch', '--generate-key', expanduser('~/.config/sshyp/gpg-gen')])
             remove(expanduser('~/.config/sshyp/gpg-gen'))
-            _sshyp_data += [run(['gpg', '-k'], stdout=PIPE, text=True).stdout.split('\n')[-4].strip()]
+            _sshyp_data.append(run(['gpg', '-k'], stdout=PIPE, text=True).stdout.split('\n')[-4].strip())
 
         # text editor configuration
-        _sshyp_data += [input(f"{_divider}example input: vim\n\npreferred text editor: ")]
+        _sshyp_data.append(input(f"{_divider}example input: vim\n\npreferred text editor: "))
 
         # lock file generation
         if Path(expanduser('~/.config/sshyp/lock.gpg')).is_file():
@@ -323,7 +323,7 @@ def tweak():  # runs configuration wizard
             # quick-unlock configuration
             print(f"{_divider}this allows you to use a shorter version of your gpg key password and\n"
                   f"requires a constant connection to your sshyp server to authenticate")
-            _sshyp_data += [input('\nenable quick-unlock? (y/N) ').lower()]
+            _sshyp_data.append(input('\nenable quick-unlock? (y/N) ').lower())
             if _sshyp_data[3] == 'y':
                 print(f"\nquick-unlock has been enabled client-side - in order for this device to be able to read "
                       f"entries,\nyou must first login to the sshyp server and run:\n\nsshyp whitelist setup "
