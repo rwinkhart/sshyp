@@ -301,7 +301,7 @@ def tweak():  # runs configuration wizard
             # ssh ip+port configuration
             _iport = str(input(f"{_divider}example inputs:\n\n ipv4: 10.10.10.10:22\n ipv6: [2000:2000:2000:2000:"
                                f"2000:2000:2000:2000]:22\n domain: mydomain.com:22\n\nip and ssh port of sshyp server: "
-                               )).rstrip(':')
+                               )).rsplit(':')
 
             # ssh user configuration
             _username_ssh = str(input('\nusername of the remote server: '))
