@@ -69,9 +69,9 @@ def remote_list_fetch(_user_data):  # captures and returns all necessary data fr
         print('\n\u001b[38;5;9merror: failed to connect to the remote server\u001b[0m\n')
         _remote_data = ''
         s_exit(6)
-    _deletion_database = _remote_data[0].strip().split('\n')
-    _folder_database = _remote_data[1].strip().split('\n')
-    _titles_mods = _remote_data[2].strip().split('\n')
+    _deletion_database = _remote_data[0].strip().splitlines()
+    _folder_database = _remote_data[1].strip().splitlines()
+    _titles_mods = _remote_data[2].strip().splitlines()
     return _deletion_database, _folder_database, _titles_mods[:len(_titles_mods)//2], \
         _titles_mods[len(_titles_mods)//2:]
 

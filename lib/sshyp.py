@@ -87,7 +87,7 @@ def entry_name_fetch(_entry_name_location):  # fetches and returns entry name fr
         entry_list_gen()
         _entry_name = str(input(_entry_name_location))
     else:
-        _entry_name_split = argument.split(' ')
+        _entry_name_split = argument.split()
         del _entry_name_split[:_entry_name_location]
         _entry_name = ' '.join(_entry_name_split)
     if _entry_name.startswith('/'):
@@ -270,7 +270,7 @@ def tweak():  # runs configuration wizard
                     'Name-Comment: gpg-sshyp\n', 'Name-Email: https://github.com/rwinkhart/sshyp\n', 'Expire-Date: 0'])
             run(['gpg', '--batch', '--generate-key', expanduser('~/.config/sshyp/gpg-gen')])
             remove(expanduser('~/.config/sshyp/gpg-gen'))
-            _sshyp_data.append(run(['gpg', '-k'], stdout=PIPE, text=True).stdout.split('\n')[-4].strip())
+            _sshyp_data.append(run(['gpg', '-k'], stdout=PIPE, text=True).stdout.splitlines()[-3].strip())
 
         # text editor configuration
         _sshyp_data.append(input(f"{_divider}example input: vim\n\npreferred text editor: "))
@@ -489,7 +489,7 @@ def sync():  # calls sshync to sync changes to the user's server
     print('\nsyncing entries with the server device...\n')
     # set permissions before uploading
     for _root, _dirs, _files in walk(expanduser('~/.local/share/sshyp')):
-        for _path in _root.split('\n'):
+        for _path in _root.splitlines():
             chmod(_path, 0o700)
         for _file in _files:
             chmod(_root + '/' + _file, 0o600)
@@ -521,7 +521,7 @@ def whitelist_setup():  # takes input from the user to set up quick-unlock passw
     run(['gpg', '-q', '--pinentry-mode', 'loopback', '--batch', '--generate-key', '--passphrase',
          _quick_unlock_password, expanduser('~/.config/sshyp/gpg-gen')])
     remove(expanduser('~/.config/sshyp/gpg-gen'))
-    _gpg_id = run(['gpg', '-k'], stdout=PIPE, text=True).stdout.split('\n')[-4].strip()
+    _gpg_id = run(['gpg', '-k'], stdout=PIPE, text=True).stdout.splitlines()[-3].strip()
 
     # encrypt excluded with the assembly key
     _shm_folder, _shm_entry = shm_gen()
@@ -540,7 +540,7 @@ def whitelist_verify(_port, _username_ssh, _ip, _client_device_id):
         _i, _full_password = 0, ''
         _server_whitelist = run(['ssh', '-i', expanduser('~/.ssh/sshyp'), '-p', _port, f"{_username_ssh}@{_ip}",
                                  f'python3 -c \'from os import listdir; print(*listdir("/home/{_username_ssh}'
-                                 f'/.config/sshyp/whitelist"))\''], stdout=PIPE, text=True).stdout.rstrip().split(' ')
+                                 f'/.config/sshyp/whitelist"))\''], stdout=PIPE, text=True).stdout.rstrip().split()
         for _device_id in _server_whitelist:
             if _device_id == _client_device_id:
                 from getpass import getpass
@@ -581,7 +581,7 @@ def whitelist_manage():  # adds or removes quick-unlock whitelisted device ids
         whitelist_list()
         _device_id = input('device id: ')
     else:
-        _argument_split = argument.split(' ')
+        _argument_split = argument.split()
         del _argument_split[:2]
         _device_id = ' '.join(_argument_split)
 
