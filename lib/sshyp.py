@@ -87,9 +87,7 @@ def entry_name_fetch(_entry_name_location):  # fetches and returns entry name fr
         entry_list_gen()
         _entry_name = str(input(_entry_name_location))
     else:
-        _entry_name_split = argument.split()
-        del _entry_name_split[:_entry_name_location]
-        _entry_name = ' '.join(_entry_name_split)
+        _entry_name = arguments[_entry_name_location]
     if _entry_name.startswith('/'):
         return _entry_name.replace('/', '', 1)
     else:
@@ -349,7 +347,7 @@ def tweak():  # runs configuration wizard
 
 
 def print_info():  # prints help text based on argument
-    if argument_list[1] == 'help' or argument_list[1] == '--help' or argument_list[1] == '-h':
+    if arguments[0] == 'help' or arguments[0] == '--help' or arguments[0] == '-h':  # TODO update with changed args
         print('\n\u001b[1msshyp  copyright (c) 2021-2023  randall winkhart\u001b[0m\n')
         print("this is free software, and you are welcome to redistribute it under certain conditions;\nthis program "
               "comes with absolutely no warranty;\ntype 'sshyp license' for details")
@@ -397,7 +395,7 @@ def print_info():  # prints help text based on argument
             print(' list/-l                 view all registered device ids and their quick-unlock whitelist status')
             print(' add                     whitelist a device id for quick-unlock')
             print(' delete/del              remove a device id from the quick-unlock whitelist\n')
-    elif argument_list[1] == 'version' or argument_list[1] == '-v':
+    elif arguments[0] == 'version' or arguments[0] == '-v':
         print('\nsshyp is a simple, self-hosted, sftp-synchronized password manager\nfor unix(-like) systems (haiku/'
               'freebsd/linux/termux)\n\nsshyp is a viable alternative to (and compatible with) pass/password-store\n')
         print("                ..       \u001b[38;5;9m♥♥ ♥♥\u001b[0m       ..\n         .''.''/()\\     \u001b[38;5;13m"
@@ -419,20 +417,20 @@ def print_info():  # prints help text based on argument
               '\u001b[38;5;7;48;5;8m/\u001b[0m')
         print('\u001b[38;5;7;48;5;8m<><><><><><><><><><><><><><><><><><><><><><><><><><><><>\u001b[0m\n')
         print('see https://github.com/rwinkhart/sshyp for more information\n')
-    elif argument_list[1] == 'license':
+    elif arguments[0] == 'license':
         print('\nThis program is free software: you can redistribute it and/or modify it under the terms\nof version 3 '
               '(only) of the GNU General Public License as published by the Free Software Foundation.\n\nThis program '
               'is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;\nwithout even the implied '
               'warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\nSee the GNU General Public License for'
               ' more details.\n\nhttps://opensource.org/licenses/GPL-3.0\n')
-    elif argument_list[1] == 'add':
+    elif arguments[0] == 'add':
         print('\n\u001b[1musage:\u001b[0m sshyp add [flag [<entry name>]]\u001b[0m\n')
         print('\u001b[1mflags:\u001b[0m')
         print('add:')
         print(' password/-p             add a password entry')
         print(' note/-n                 add a note entry')
         print(' folder/-f               add a new folder for entries\n')
-    elif argument_list[1] == 'edit':
+    elif arguments[0] == 'edit':
         print('\n\u001b[1musage:\u001b[0m sshyp edit [flag [<entry name>]]\u001b[0m\n')
         print('\u001b[1mflags:\u001b[0m')
         print('edit:')
@@ -441,7 +439,7 @@ def print_info():  # prints help text based on argument
         print(' password/-p             change the password of an entry')
         print(' url/-l                  change the url attached to an entry')
         print(' note/-n                 change the note attached to an entry\n')
-    elif argument_list[1] == 'copy':
+    elif arguments[0] == 'copy':
         print('\n\u001b[1musage:\u001b[0m sshyp copy [flag [<entry name>]]\u001b[0m\n')
         print('\u001b[1mflags:\u001b[0m')
         print('copy:')
@@ -449,7 +447,7 @@ def print_info():  # prints help text based on argument
         print(' password/-p             copy the password of an entry to your clipboard')
         print(' url/-l                  copy the url of an entry to your clipboard')
         print(' note/-n                 copy the note of an entry to your clipboard\n')
-    elif argument_list[1] == 'whitelist':
+    elif arguments[0] == 'whitelist':
         if device_type == 'server':
             print('\n\u001b[1musage:\u001b[0m sshyp whitelist [flag [<device id>]]\u001b[0m\n')
             print('\u001b[1mflags:\u001b[0m')
@@ -476,11 +474,11 @@ def no_arg():  # displays a list of entries and gives an option to select one fo
 
 
 def read_shortcut():  # shortcut to quickly read an entry
-    if not Path(f"{directory}{argument.replace('/', '', 1)}.gpg").exists():
-        print(f"\n\u001b[38;5;9merror: entry ({argument.replace('/', '', 1)}) does not exist\u001b[0m\n")
+    if not Path(f"{directory}{arguments[0].replace('/', '', 1)}.gpg").exists():
+        print(f"\n\u001b[38;5;9merror: entry ({arguments[0].replace('/', '', 1)}) does not exist\u001b[0m\n")
         s_exit(3)
     _shm_folder, _shm_entry = shm_gen()
-    determine_decrypt(directory + argument.replace('/', '', 1), _shm_folder, _shm_entry)
+    determine_decrypt(directory + arguments[0].replace('/', '', 1), _shm_folder, _shm_entry)
     entry_reader(f"{tmp_dir}{_shm_folder}/{_shm_entry}")
     rmtree(f"{tmp_dir}{_shm_folder}")
 
@@ -577,15 +575,13 @@ def whitelist_list():  # shows the quick-unlock whitelist status of device ids
 
 
 def whitelist_manage():  # adds or removes quick-unlock whitelisted device ids
-    if len(argument_list) == 3:
+    if arg_count == 2:
         whitelist_list()
         _device_id = input('device id: ')
     else:
-        _argument_split = argument.split()
-        del _argument_split[:2]
-        _device_id = ' '.join(_argument_split)
+        _device_id = arguments[2]
 
-    if argument_list[2] == 'add':
+    if arguments[1] == 'add':
         if _device_id in listdir(expanduser('~/.config/sshyp/devices')):
             open(expanduser(f"~/.config/sshyp/whitelist/{_device_id}"), 'w').write('')
             whitelist_list()
@@ -600,19 +596,19 @@ def whitelist_manage():  # adds or removes quick-unlock whitelisted device ids
 
 def add_entry():  # adds a new entry
     _shm_folder, _shm_entry = None, None  # sets base-line values to avoid errors
-    if len(argument_list) < 4:
+    if arg_count < 3:
         _entry_name = entry_name_fetch('name of new entry: ')
     else:
         _entry_name = entry_name_fetch(2)
     if Path(f"{directory}{_entry_name}.gpg").is_file():
         print(f"\n\u001b[38;5;9merror: entry ({_entry_name}) already exists\u001b[0m\n")
         s_exit(4)
-    if argument_list[2] == 'note' or argument_list[2] == '-n':
+    if arguments[1] == 'note' or arguments[1] == '-n':
         _shm_folder, _shm_entry = shm_gen()
         run([editor, f"{tmp_dir}{_shm_folder}/{_shm_entry}-n"])
         _notes = open(f"{tmp_dir}{_shm_folder}/{_shm_entry}-n", 'r').read()
         open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'w').writelines(optimized_edit(['', '', '', _notes], None, -1))
-    elif argument_list[2] == 'password' or argument_list[2] == '-p':
+    elif arguments[1] == 'password' or arguments[1] == '-p':
         _username = str(input('username: '))
         _password = str(input('password: '))
         _url = str(input('url: '))
@@ -631,7 +627,7 @@ def add_entry():  # adds a new entry
 
 
 def add_folder():  # creates a new folder
-    if len(argument_list) < 4:
+    if arg_count < 3:
         _entry_name = entry_name_fetch('name of new folder: ')
     else:
         _entry_name = entry_name_fetch(2)
@@ -644,7 +640,7 @@ def add_folder():  # creates a new folder
 
 def rename():  # renames an entry or folder
     from shutil import copy
-    if argument == 'edit rename' or argument == 'edit relocate' or argument == 'edit -r':
+    if arg_count < 3:
         _entry_name = entry_name_fetch('entry/folder to rename/relocate: ')
     else:
         _entry_name = entry_name_fetch(2)
@@ -675,7 +671,7 @@ def rename():  # renames an entry or folder
 
 def edit():  # edits the contents of an entry
     _shm_folder, _shm_entry, _detail, _edit_line = None, None, None, None  # sets values to avoid PEP8 warnings
-    if len(argument_list) < 4:
+    if arg_count < 3:
         _entry_name = entry_name_fetch('entry to edit: ')
     else:
         _entry_name = entry_name_fetch(2)
@@ -684,13 +680,13 @@ def edit():  # edits the contents of an entry
         s_exit(3)
     _shm_folder, _shm_entry = shm_gen()
     determine_decrypt(directory + _entry_name, _shm_folder, _shm_entry)
-    if argument_list[2] == 'username' or argument_list[2] == '-u':
+    if arguments[1] == 'username' or arguments[1] == '-u':
         _detail, _edit_line = str(input('username: ')), 1
-    elif argument_list[2] == 'password' or argument_list[2] == '-p':
+    elif arguments[1] == 'password' or arguments[1] == '-p':
         _detail, _edit_line = str(input('password: ')), 0
-    elif argument_list[2] == 'url' or argument_list[2] == '-l':
+    elif arguments[1] == 'url' or arguments[1] == '-l':
         _detail, _edit_line = str(input('url: ')), 2
-    if argument_list[2] == 'note' or argument_list[2] == '-n':
+    if arguments[1] == 'note' or arguments[1] == '-n':
         _edit_line = 2
         _new_lines = optimized_edit(edit_note(_shm_folder, _shm_entry,
                                               open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'r').readlines()), None, -1)
@@ -705,16 +701,16 @@ def edit():  # edits the contents of an entry
 
 def gen():  # generates a password for a new or an existing entry
     _username, _url, _notes = None, None, None  # sets base-line values to avoid errors
-    if argument == 'gen update' or argument == 'gen -u' or argument == 'gen':
+    if arg_count < 2 or (arg_count < 3 and (arguments[1] == 'update' or arguments[1] == '-u')):
         _entry_name = entry_name_fetch('name of entry: ')
-    elif argument_list[2] == 'update' or argument_list[2] == '-u':
+    elif arguments[1] == 'update' or arguments[1] == '-u':
         _entry_name = entry_name_fetch(2)
         if not Path(f"{directory}{_entry_name}.gpg").is_file():
             print(f"\n\u001b[38;5;9merror: entry ({_entry_name}) does not exist\u001b[0m\n")
             s_exit(3)
     else:
         _entry_name = entry_name_fetch(1)
-    if len(argument_list) == 2 or (not argument_list[2] == 'update' and not argument_list[2] == '-u'):
+    if arg_count == 1 or (not arguments[1] == 'update' and not arguments[1] == '-u'):
         if Path(f"{directory}{_entry_name}.gpg").is_file():
             print(f"\n\u001b[38;5;9merror: entry ({_entry_name}) already exists\u001b[0m\n")
             s_exit(4)
@@ -743,7 +739,7 @@ def gen():  # generates a password for a new or an existing entry
 
 def copy_data():  # copies a specified field of an entry to the clipboard
     from subprocess import Popen
-    if len(argument_list) < 4:
+    if arg_count < 3:
         _entry_name = entry_name_fetch('entry to copy: ')
     else:
         _entry_name = entry_name_fetch(2)
@@ -753,13 +749,13 @@ def copy_data():  # copies a specified field of an entry to the clipboard
     _shm_folder, _shm_entry = shm_gen()
     determine_decrypt(directory + _entry_name, _shm_folder, _shm_entry)
     _copy_line, _index = open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'r').readlines(), 0
-    if argument_list[2] == 'username' or argument_list[2] == '-u':
+    if arguments[1] == 'username' or arguments[1] == '-u':
         _index = 1
-    elif argument_list[2] == 'password' or argument_list[2] == '-p':
+    elif arguments[1] == 'password' or arguments[1] == '-p':
         _index = 0
-    elif argument_list[2] == 'url' or argument_list[2] == '-l':
+    elif arguments[1] == 'url' or arguments[1] == '-l':
         _index = 2
-    elif argument_list[2] == 'note' or argument_list[2] == '-n':
+    elif arguments[1] == 'note' or arguments[1] == '-n':
         _index = 3
     if 'WAYLAND_DISPLAY' in environ:  # Wayland clipboard detection
         run(['wl-copy', _copy_line[_index].rstrip()])
@@ -777,7 +773,7 @@ def copy_data():  # copies a specified field of an entry to the clipboard
 
 
 def remove_data():  # deletes an entry from the server and flags it for local deletion on sync
-    if argument == 'shear' or argument == '-rm':
+    if arg_count < 2:
         _entry_name = entry_name_fetch('entry/folder to shear: ')
     else:
         _entry_name = entry_name_fetch(1)
@@ -793,12 +789,14 @@ if __name__ == "__main__":
     try:
         silent_sync, ssh_error = 0, 0
         # retrieve typed argument
-        argument_list = argv
-        argument = ' '.join(argument_list[1:])
+        arguments = argv[1:]
+        arg_count = len(arguments)
+        if arg_count < 1:
+            no_arg()
 
         # import saved userdata
         device_type = ''
-        if argument != 'tweak':
+        if arguments[0] != 'tweak':
             tmp_dir = expanduser('~/.config/sshyp/tmp/')
             try:
                 sshyp_data = open(expanduser('~/.config/sshyp/sshyp-data')).readlines()
@@ -820,10 +818,9 @@ if __name__ == "__main__":
                             ssh_error = copy_id_check(port, username_ssh, ip, client_device_id)
                     else:
                         ssh_error = 1
-                elif len(argument_list) <= 1 or (argument_list[1] != "help" and argument_list[1] != "--help" and
-                                                 argument_list[1] != "-h" and argument_list[1] != "license" and
-                                                 argument_list[1] != "version" and argument_list[1] != "-v" and
-                                                 argument_list[1] != "whitelist"):
+                elif arguments[0] != "help" and arguments[0] != "--help" and arguments[0] != "-h" and arguments[0] \
+                        != "license" and arguments[0] != "version" and arguments[0] != "-v" and arguments[0] \
+                        != "whitelist":
                     print(f"\n\u001b[38;5;9merror: invalid server argument - run 'sshyp help' to "
                           f"list usable commands\u001b[0m\n")
                     s_exit(1)
@@ -836,76 +833,62 @@ if __name__ == "__main__":
             tweak()
             s_exit(0)
 
-        # run function based on arguments
-        if argument.startswith('/'):
-            read_shortcut()
-        elif argument == '':
-            no_arg()
-        elif argument == 'help' or argument == '--help' or argument == '-h' or argument == 'license' or argument \
-                == 'version' or argument == '-v':
-            print_info()
-        elif argument_list[1] == 'whitelist':
-            if device_type == 'server':
-                if len(argument_list) == 2:
-                    print_info()
-                elif argument_list[2] == 'list' or argument_list[2] == '-l':
+        # run function based on arguments TODO re-order based on priority
+        if arg_count > 1:  # 2 ARG
+            if device_type == 'server' and arguments[0] == 'whitelist':
+                if arguments[1] == 'list' or arguments[1] == '-l':
                     whitelist_list()
-                elif argument_list[2] == 'add' or argument_list[2] == 'delete' or argument_list[2] == 'del':
+                elif arguments[1] == 'add' or arguments[1] == 'delete' or arguments[1] == 'del':
                     whitelist_manage()
-                elif argument_list[2] == 'setup':
+                elif arguments[1] == 'setup':
                     whitelist_setup()
                 else:
                     print_info()
-            else:
+            elif arguments[0] == 'add':
+                if arguments[1] == 'note' or arguments[1] == '-n' or arguments[1] == 'password' or arguments[1] == '-p':
+                    add_entry()
+                elif arguments[1] == 'folder' or arguments[1] == '-f':
+                    add_folder()
+            elif arguments[0] == 'edit':
+                if arguments[1] == 'rename' or arguments[1] == 'relocate' or arguments[1] == '-r':
+                    silent_sync = 1
+                    rename()
+                elif arguments[1] == 'username' or arguments[1] == '-u' or arguments[1] == 'password' or arguments[1] \
+                        == '-p' or arguments[1] == 'url' or arguments[1] == '-l' or arguments[1] == 'note' or \
+                        arguments[1] == '-n':
+                    edit()
+            elif arguments[0] == 'gen':
+                gen()
+            elif arguments[0] == 'copy':
+                if arguments[1] == 'username' or arguments[1] == '-u' or arguments[1] == 'password' or arguments[1] \
+                        == '-p' or arguments[1] == 'url' or arguments[1] == '-l' or arguments[1] == 'note' or \
+                        arguments[1] == '-n':
+                    try:
+                        copy_data()
+                    except IndexError:
+                        print(f"\n\u001b[38;5;9merror: field does not exist in entry\u001b[0m\n")
+                        s_exit(3)
+
+        elif arg_count > 0:  # 1 ARG
+            if arguments[0].startswith('/'):
+                read_shortcut()
+            elif arguments[0] == 'gen':
+                gen()
+            elif arguments[0] == 'help' or arguments[0] == '-h' or arguments[0] == 'license' or arguments[0] == \
+                    'version' or arguments[0] == '-v' or arguments[0] == 'add' or arguments[0] == 'edit' or \
+                    arguments[0] == 'copy' or (device_type == 'server' and arguments[0] == 'whitelist'):
                 print_info()
-        elif argument_list[1] == 'add':
-            if len(argument_list) == 2:
-                print_info()
-            elif argument_list[2] == 'note' or argument_list[2] == '-n' or argument_list[2] == 'password' or \
-                    argument_list[2] == '-p':
-                add_entry()
-            elif argument_list[2] == 'folder' or argument_list[2] == '-f':
-                add_folder()
-            else:
-                print_info()
-        elif argument_list[1] == 'edit':
-            if len(argument_list) == 2:
-                print_info()
-            elif argument_list[2] == 'rename' or argument_list[2] == 'relocate' or argument_list[2] == '-r':
-                silent_sync = 1
-                rename()
-            elif argument_list[2] == 'username' or argument_list[2] == '-u' or argument_list[2] == 'password' or \
-                    argument_list[2] == '-p' or argument_list[2] == 'url' or argument_list[2] == '-l' or \
-                    argument_list[2] == 'note' or argument_list[2] == '-n':
-                edit()
-            else:
-                print_info()
-        elif argument_list[1] == 'gen':
-            gen()
-        elif argument_list[1] == 'copy':
-            if len(argument_list) == 2:
-                print_info()
-            elif argument_list[2] == 'username' or argument_list[2] == '-u' or argument_list[2] == 'password' or \
-                    argument_list[2] == '-p' or argument_list[2] == 'url' or argument_list[2] == '-l' or \
-                    argument_list[2] == 'note' or argument_list[2] == '-n':
-                try:
-                    copy_data()
-                except IndexError:
-                    print(f"\n\u001b[38;5;9merror: field does not exist in entry\u001b[0m\n")
-                    s_exit(3)
-            else:
-                print_info()
-        elif argument_list[1] == 'shear' or argument_list[1] == '-rm':
-            remove_data()
-        elif argument_list[1] != 'sync' and argument_list[1] != '-s':
+            elif arguments[0] == 'shear' or arguments[0] == '-rm':
+                remove_data()
+
+        elif arguments[0] != 'sync' and arguments[0] != '-s':  # no match
             print(f"\n\u001b[38;5;9merror: invalid argument - run 'sshyp help' to list usable commands\u001b[0m\n")
             s_exit(1)
 
-        # sync if any changes were made
-        if len(argument_list) > 1 and ssh_error == 0 \
-                and ((argument_list[1] == 'sync' or argument_list[1] == '-s' or argument_list[1] == 'gen' or
-                      argument_list[1] == 'shear' or argument_list[1] == '-rm') or
-                     ((argument_list[1] == 'add' or argument_list[1] == 'edit') and len(argument_list) > 2)):
+        # sync if any changes were made TODO fix sync triggering on false args, such as "sshyp edit test"
+        if ssh_error == 0 and ((arguments[0] == 'sync' or arguments[0] == '-s' or arguments[0] == 'gen' or
+                                arguments[0] == 'shear' or arguments[0] == '-rm') or
+                               ((arguments[0] == 'add' or arguments[0] == 'edit') and arg_count > 1)):
             sync()
 
     except KeyboardInterrupt:
