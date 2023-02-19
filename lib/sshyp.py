@@ -603,12 +603,12 @@ def add_entry():  # adds a new entry
     if Path(f"{directory}{_entry_name}.gpg").is_file():
         print(f"\n\u001b[38;5;9merror: entry ({_entry_name}) already exists\u001b[0m\n")
         s_exit(4)
-    if arguments[arg_start+1] == 'note' or arguments[arg_start+1] == '-n':
+    if arguments[arg_start_p] == 'note' or arguments[arg_start_p] == '-n':
         _shm_folder, _shm_entry = shm_gen()
         run([editor, f"{tmp_dir}{_shm_folder}/{_shm_entry}-n"])
         _notes = open(f"{tmp_dir}{_shm_folder}/{_shm_entry}-n", 'r').read()
         open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'w').writelines(optimized_edit(['', '', '', _notes], None, -1))
-    elif arguments[arg_start+1] == 'password' or arguments[arg_start+1] == '-p':  # TODO does this need to have the if?
+    elif arguments[arg_start_p] == 'password' or arguments[arg_start_p] == '-p':  # TODO does this need to have the if?
         _username = str(input('username: '))
         _password = str(input('password: '))
         _url = str(input('url: '))
@@ -680,13 +680,13 @@ def edit():  # edits the contents of an entry
         s_exit(3)
     _shm_folder, _shm_entry = shm_gen()
     determine_decrypt(directory + _entry_name, _shm_folder, _shm_entry)
-    if arguments[arg_start+1] == 'username' or arguments[arg_start+1] == '-u':
+    if arguments[arg_start_p] == 'username' or arguments[arg_start_p] == '-u':
         _detail, _edit_line = str(input('username: ')), 1
-    elif arguments[arg_start+1] == 'password' or arguments[arg_start+1] == '-p':
+    elif arguments[arg_start_p] == 'password' or arguments[arg_start_p] == '-p':
         _detail, _edit_line = str(input('password: ')), 0
-    elif arguments[arg_start+1] == 'url' or arguments[arg_start+1] == '-l':
+    elif arguments[arg_start_p] == 'url' or arguments[arg_start_p] == '-l':
         _detail, _edit_line = str(input('url: ')), 2
-    if arguments[arg_start+1] == 'note' or arguments[arg_start+1] == '-n':
+    if arguments[arg_start_p] == 'note' or arguments[arg_start_p] == '-n':
         _edit_line = 2
         _new_lines = optimized_edit(edit_note(_shm_folder, _shm_entry,
                                               open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'r').readlines()), None, -1)
@@ -701,16 +701,16 @@ def edit():  # edits the contents of an entry
 
 def gen():  # generates a password for a new or an existing entry
     _username, _url, _notes = None, None, None  # sets base-line values to avoid errors
-    if arg_count < 2 or (arg_count < 3 and (arguments[arg_start+1] == 'update' or arguments[arg_start+1] == '-u')):
+    if arg_count < 2 or (arg_count < 3 and (arguments[arg_start_p] == 'update' or arguments[arg_start_p] == '-u')):
         _entry_name = entry_name_fetch('name of entry: ')
-    elif arguments[arg_start+1] == 'update' or arguments[arg_start+1] == '-u':
+    elif arguments[arg_start_p] == 'update' or arguments[arg_start_p] == '-u':
         _entry_name = entry_name_fetch()
         if not Path(f"{directory}{_entry_name}.gpg").is_file():
             print(f"\n\u001b[38;5;9merror: entry ({_entry_name}) does not exist\u001b[0m\n")
             s_exit(3)
     else:  # TODO combine with above
         _entry_name = entry_name_fetch()
-    if arg_count == 1 or (not arguments[arg_start+1] == 'update' and not arguments[arg_start+1] == '-u'):
+    if arg_count == 1 or (not arguments[arg_start_p] == 'update' and not arguments[arg_start_p] == '-u'):
         if Path(f"{directory}{_entry_name}.gpg").is_file():
             print(f"\n\u001b[38;5;9merror: entry ({_entry_name}) already exists\u001b[0m\n")
             s_exit(4)
@@ -749,13 +749,13 @@ def copy_data():  # copies a specified field of an entry to the clipboard
     _shm_folder, _shm_entry = shm_gen()
     determine_decrypt(directory + _entry_name, _shm_folder, _shm_entry)
     _copy_line, _index = open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'r').readlines(), 0
-    if arguments[arg_start+1] == 'username' or arguments[arg_start+1] == '-u':
+    if arguments[arg_start_p] == 'username' or arguments[arg_start_p] == '-u':
         _index = 1
-    elif arguments[arg_start+1] == 'password' or arguments[arg_start+1] == '-p':
+    elif arguments[arg_start_p] == 'password' or arguments[arg_start_p] == '-p':
         _index = 0
-    elif arguments[arg_start+1] == 'url' or arguments[arg_start+1] == '-l':
+    elif arguments[arg_start_p] == 'url' or arguments[arg_start_p] == '-l':
         _index = 2
-    elif arguments[arg_start+1] == 'note' or arguments[arg_start+1] == '-n':
+    elif arguments[arg_start_p] == 'note' or arguments[arg_start_p] == '-n':
         _index = 3
     if 'WAYLAND_DISPLAY' in environ:  # Wayland clipboard detection
         run(['wl-copy', _copy_line[_index].rstrip()])
@@ -794,9 +794,10 @@ if __name__ == "__main__":
         if arg_count < 1:
             no_arg()  # TODO fix being available on server
         if arguments[0].startswith('/'):
-            arg_start = 1  # TODO save arg_start+1 to separate variable
+            arg_start = 1
         else:
             arg_start = 0
+        arg_start_p = arg_start + 1
 
         # import saved userdata
         device_type = ''
@@ -840,39 +841,39 @@ if __name__ == "__main__":
         # run function based on arguments
         if arg_count > 1:
             if arguments[arg_start] == 'copy':
-                if arguments[arg_start+1] == 'username' or arguments[arg_start+1] == '-u' or arguments[arg_start+1] == \
-                        'password' or arguments[arg_start+1] == '-p' or arguments[arg_start+1] == 'url' or arguments[
-                        arg_start+1] == '-l' or arguments[arg_start+1] == 'note' or arguments[arg_start+1] == '-n':
+                if arguments[arg_start_p] == 'username' or arguments[arg_start_p] == '-u' or arguments[arg_start_p] == \
+                        'password' or arguments[arg_start_p] == '-p' or arguments[arg_start_p] == 'url' or arguments[
+                        arg_start_p] == '-l' or arguments[arg_start_p] == 'note' or arguments[arg_start_p] == '-n':
                     try:
                         copy_data()
                     except IndexError:
                         print(f"\n\u001b[38;5;9merror: field does not exist in entry\u001b[0m\n")
                         s_exit(3)
             elif arguments[arg_start] == 'add':
-                if arguments[arg_start+1] == 'note' or arguments[arg_start+1] == '-n' or arguments[arg_start+1] == \
-                        'password' or arguments[arg_start+1] == '-p':
+                if arguments[arg_start_p] == 'note' or arguments[arg_start_p] == '-n' or arguments[arg_start_p] == \
+                        'password' or arguments[arg_start_p] == '-p':
                     add_entry()
-                elif arguments[arg_start+1] == 'folder' or arguments[arg_start+1] == '-f':
+                elif arguments[arg_start_p] == 'folder' or arguments[arg_start_p] == '-f':
                     add_folder()
             elif arguments[arg_start] == 'edit':
-                if arguments[arg_start+1] == 'rename' or arguments[arg_start+1] == 'relocate' or \
-                        arguments[arg_start+1] == '-r':
+                if arguments[arg_start_p] == 'rename' or arguments[arg_start_p] == 'relocate' or \
+                        arguments[arg_start_p] == '-r':
                     silent_sync = 1
                     rename()
-                elif arguments[arg_start+1] == 'username' or arguments[arg_start+1] == '-u' or arguments[arg_start+1] \
-                        == 'password' or arguments[arg_start+1] == '-p' or arguments[arg_start+1] == 'url' or \
-                        arguments[arg_start+1] == '-l' or arguments[arg_start+1] == 'note' or arguments[arg_start+1] ==\
+                elif arguments[arg_start_p] == 'username' or arguments[arg_start_p] == '-u' or arguments[arg_start_p] \
+                        == 'password' or arguments[arg_start_p] == '-p' or arguments[arg_start_p] == 'url' or \
+                        arguments[arg_start_p] == '-l' or arguments[arg_start_p] == 'note' or arguments[arg_start_p] ==\
                         '-n':
                     edit()
             elif arguments[arg_start] == 'gen':
                 gen()
             elif device_type == 'server' and arguments[arg_start] == 'whitelist':
-                if arguments[arg_start+1] == 'list' or arguments[arg_start+1] == '-l':
+                if arguments[arg_start_p] == 'list' or arguments[arg_start_p] == '-l':
                     whitelist_list()
-                elif arguments[arg_start+1] == 'add' or arguments[arg_start+1] == 'delete' or arguments[arg_start+1] \
+                elif arguments[arg_start_p] == 'add' or arguments[arg_start_p] == 'delete' or arguments[arg_start_p] \
                         == 'del':
                     whitelist_manage()
-                elif arguments[arg_start+1] == 'setup':
+                elif arguments[arg_start_p] == 'setup':
                     whitelist_setup()
                 else:
                     print_info()
