@@ -82,8 +82,8 @@ def entry_reader(_decrypted_entry):  # displays the contents of an entry in a re
                 print(f"\u001b[38;5;15;48;5;238mpassword:\u001b[0m\n{_entry_lines[0]}\n")
 
 
-def entry_name_fetch(_entry_name_location):  # fetches and returns entry name from user input or from provided argument
-    if type(_entry_name_location) == str:
+def entry_name_fetch(_entry_name_location=None):  # fetches and returns entry name from user input
+    if _entry_name_location is not None:
         entry_list_gen()
         _entry_name = str(input(_entry_name_location))
     else:
@@ -599,7 +599,7 @@ def add_entry():  # adds a new entry
     if arg_count < 3:
         _entry_name = entry_name_fetch('name of new entry: ')
     else:
-        _entry_name = entry_name_fetch(None)
+        _entry_name = entry_name_fetch()
     if Path(f"{directory}{_entry_name}.gpg").is_file():
         print(f"\n\u001b[38;5;9merror: entry ({_entry_name}) already exists\u001b[0m\n")
         s_exit(4)
@@ -630,7 +630,7 @@ def add_folder():  # creates a new folder
     if arg_count < 3:
         _entry_name = entry_name_fetch('name of new folder: ')
     else:
-        _entry_name = entry_name_fetch(None)
+        _entry_name = entry_name_fetch()
     Path(directory + _entry_name).mkdir(mode=0o700, parents=True, exist_ok=True)
     if ssh_error != 1:
         run(['ssh', '-i', expanduser('~/.ssh/sshyp'), '-p', port, f"{username_ssh}@{ip}",
@@ -643,7 +643,7 @@ def rename():  # renames an entry or folder
     if arg_count < 3:
         _entry_name = entry_name_fetch('entry/folder to rename/relocate: ')
     else:
-        _entry_name = entry_name_fetch(None)
+        _entry_name = entry_name_fetch()
     if not Path(f"{directory}{_entry_name}.gpg").is_file() and not Path(f"{directory}{_entry_name}").is_dir():
         print(f"\n\u001b[38;5;9merror: entry ({_entry_name}) does not exist\u001b[0m\n")
         s_exit(3)
@@ -674,7 +674,7 @@ def edit():  # edits the contents of an entry
     if arg_count < 3:
         _entry_name = entry_name_fetch('entry to edit: ')
     else:
-        _entry_name = entry_name_fetch(None)
+        _entry_name = entry_name_fetch()
     if not Path(f"{directory}{_entry_name}.gpg").is_file():
         print(f"\n\u001b[38;5;9merror: entry ({_entry_name}) does not exist\u001b[0m\n")
         s_exit(3)
@@ -704,12 +704,12 @@ def gen():  # generates a password for a new or an existing entry
     if arg_count < 2 or (arg_count < 3 and (arguments[arg_start+1] == 'update' or arguments[arg_start+1] == '-u')):
         _entry_name = entry_name_fetch('name of entry: ')
     elif arguments[arg_start+1] == 'update' or arguments[arg_start+1] == '-u':
-        _entry_name = entry_name_fetch(None)
+        _entry_name = entry_name_fetch()
         if not Path(f"{directory}{_entry_name}.gpg").is_file():
             print(f"\n\u001b[38;5;9merror: entry ({_entry_name}) does not exist\u001b[0m\n")
             s_exit(3)
     else:  # TODO combine with above
-        _entry_name = entry_name_fetch(None)
+        _entry_name = entry_name_fetch()
     if arg_count == 1 or (not arguments[arg_start+1] == 'update' and not arguments[arg_start+1] == '-u'):
         if Path(f"{directory}{_entry_name}.gpg").is_file():
             print(f"\n\u001b[38;5;9merror: entry ({_entry_name}) already exists\u001b[0m\n")
@@ -742,7 +742,7 @@ def copy_data():  # copies a specified field of an entry to the clipboard
     if arg_count < 3:
         _entry_name = entry_name_fetch('entry to copy: ')
     else:
-        _entry_name = entry_name_fetch(None)
+        _entry_name = entry_name_fetch()
     if not Path(f"{directory}{_entry_name}.gpg").is_file():
         print(f"\n\u001b[38;5;9merror: entry ({_entry_name}) does not exist\u001b[0m\n")
         s_exit(3)
@@ -776,7 +776,7 @@ def remove_data():  # deletes an entry from the server and flags it for local de
     if arg_count < 2:
         _entry_name = entry_name_fetch('entry/folder to shear: ')
     else:
-        _entry_name = entry_name_fetch(None)
+        _entry_name = entry_name_fetch()
     determine_decrypt(expanduser('~/.config/sshyp/lock.gpg'), 0, 0)
     if ssh_error != 1:
         run(['ssh', '-i', expanduser('~/.ssh/sshyp'), '-p', port, f"{username_ssh}@{ip}",
@@ -794,7 +794,7 @@ if __name__ == "__main__":
         if arg_count < 1:
             no_arg()  # TODO fix being available on server
         if arguments[0].startswith('/'):
-            arg_start = 1
+            arg_start = 1  # TODO save arg_start+1 to separate variable
         else:
             arg_start = 0
 
