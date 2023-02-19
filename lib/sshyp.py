@@ -792,7 +792,7 @@ if __name__ == "__main__":
         arguments = argv[1:]
         arg_count = len(arguments)
         if arg_count < 1:
-            no_arg()
+            no_arg()  # TODO fix being available on server
 
         # import saved userdata
         device_type = ''
@@ -833,17 +833,17 @@ if __name__ == "__main__":
             tweak()
             s_exit(0)
 
-        # run function based on arguments TODO re-order based on priority
-        if arg_count > 1:  # 2 ARG
-            if device_type == 'server' and arguments[0] == 'whitelist':
-                if arguments[1] == 'list' or arguments[1] == '-l':
-                    whitelist_list()
-                elif arguments[1] == 'add' or arguments[1] == 'delete' or arguments[1] == 'del':
-                    whitelist_manage()
-                elif arguments[1] == 'setup':
-                    whitelist_setup()
-                else:
-                    print_info()
+        # run function based on arguments
+        if arg_count > 1:
+            if arguments[0] == 'copy':
+                if arguments[1] == 'username' or arguments[1] == '-u' or arguments[1] == 'password' or arguments[1] \
+                        == '-p' or arguments[1] == 'url' or arguments[1] == '-l' or arguments[1] == 'note' or \
+                        arguments[1] == '-n':
+                    try:
+                        copy_data()
+                    except IndexError:
+                        print(f"\n\u001b[38;5;9merror: field does not exist in entry\u001b[0m\n")
+                        s_exit(3)
             elif arguments[0] == 'add':
                 if arguments[1] == 'note' or arguments[1] == '-n' or arguments[1] == 'password' or arguments[1] == '-p':
                     add_entry()
@@ -859,29 +859,29 @@ if __name__ == "__main__":
                     edit()
             elif arguments[0] == 'gen':
                 gen()
-            elif arguments[0] == 'copy':
-                if arguments[1] == 'username' or arguments[1] == '-u' or arguments[1] == 'password' or arguments[1] \
-                        == '-p' or arguments[1] == 'url' or arguments[1] == '-l' or arguments[1] == 'note' or \
-                        arguments[1] == '-n':
-                    try:
-                        copy_data()
-                    except IndexError:
-                        print(f"\n\u001b[38;5;9merror: field does not exist in entry\u001b[0m\n")
-                        s_exit(3)
+            elif device_type == 'server' and arguments[0] == 'whitelist':
+                if arguments[1] == 'list' or arguments[1] == '-l':
+                    whitelist_list()
+                elif arguments[1] == 'add' or arguments[1] == 'delete' or arguments[1] == 'del':
+                    whitelist_manage()
+                elif arguments[1] == 'setup':
+                    whitelist_setup()
+                else:
+                    print_info()
 
-        elif arg_count > 0:  # 1 ARG
+        elif arg_count > 0:
             if arguments[0].startswith('/'):
                 read_shortcut()
             elif arguments[0] == 'gen':
                 gen()
+            elif arguments[0] == 'shear' or arguments[0] == '-rm':
+                remove_data()
             elif arguments[0] == 'help' or arguments[0] == '-h' or arguments[0] == 'license' or arguments[0] == \
                     'version' or arguments[0] == '-v' or arguments[0] == 'add' or arguments[0] == 'edit' or \
                     arguments[0] == 'copy' or (device_type == 'server' and arguments[0] == 'whitelist'):
                 print_info()
-            elif arguments[0] == 'shear' or arguments[0] == '-rm':
-                remove_data()
 
-        elif arguments[0] != 'sync' and arguments[0] != '-s':  # no match
+        elif arguments[0] != 'sync' and arguments[0] != '-s':
             print(f"\n\u001b[38;5;9merror: invalid argument - run 'sshyp help' to list usable commands\u001b[0m\n")
             s_exit(1)
 
