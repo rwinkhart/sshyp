@@ -18,7 +18,9 @@ _sshyp_completions() {
   local compwords=("${COMP_WORDS[@]:1:$COMP_CWORD-1}")
   local compline="${compwords[*]}"
 
-  if [ "${#COMP_WORDS[@]}" -gt "3" ] && (! echo "${COMP_WORDS[@]}" | grep -q '/' || echo "${COMP_WORDS[@]}" | grep -q 'shear'); then
+  if [ "${#COMP_WORDS[@]}" -gt "2" ] && echo "${COMP_WORDS[@]}" | grep -q 'shear'; then
+    return
+  elif [ "${#COMP_WORDS[@]}" -gt "3" ] && (! echo "${COMP_WORDS[@]}" | grep -q '/' || echo "${COMP_WORDS[@]}" | grep -q 'shear'); then
     return
   elif [ "${#COMP_WORDS[@]}" -gt "4" ]; then
     return
