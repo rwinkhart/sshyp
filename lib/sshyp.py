@@ -701,15 +701,14 @@ def edit():  # edits the contents of an entry
 
 def gen():  # generates a password for a new or an existing entry
     _username, _url, _notes = None, None, None  # sets base-line values to avoid errors
-    if arg_count < 2 or (arg_count < 3 and (arguments[arg_start_p] == 'update' or arguments[arg_start_p] == '-u')):
+    if arg_count < 2 or (arg_count < 3 and (arguments[arg_start_p] == 'update' or arguments[arg_start_p] == '-u')):  # TODO fix index error "sshyp /test/test gen"
         _entry_name = entry_name_fetch('name of entry: ')
-    elif arguments[arg_start_p] == 'update' or arguments[arg_start_p] == '-u':
+    else:
         _entry_name = entry_name_fetch()
-        if not Path(f"{directory}{_entry_name}.gpg").is_file():
+        if (arguments[arg_start_p] == 'update' or arguments[arg_start_p] == '-u') and \
+                not Path(f"{directory}{_entry_name}.gpg").is_file():
             print(f"\n\u001b[38;5;9merror: entry ({_entry_name}) does not exist\u001b[0m\n")
             s_exit(3)
-    else:  # TODO combine with above
-        _entry_name = entry_name_fetch()
     if arg_count == 1 or (not arguments[arg_start_p] == 'update' and not arguments[arg_start_p] == '-u'):
         if Path(f"{directory}{_entry_name}.gpg").is_file():
             print(f"\n\u001b[38;5;9merror: entry ({_entry_name}) already exists\u001b[0m\n")
