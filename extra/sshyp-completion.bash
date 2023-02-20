@@ -35,7 +35,7 @@ _sshyp_completions() {
   elif [[ "$compline" == '/'* ]]; then
     while read -r; do COMPREPLY+=( "$REPLY" ); done < <( compgen -W "add gen edit copy shear" -- "$cur" )
   else
-    while read -r; do COMPREPLY+=( "$REPLY" ); done < <( compgen -W "help version tweak add gen edit copy shear sync $(printf "'%s' " "${trimmed_paths[@]}")" -- "$cur" )
+    while read -r; do ITEM=${REPLY// /\\ }; COMPREPLY+=( "$ITEM" ); done < <( compgen -W "help version tweak add gen edit copy shear sync $(printf "'%s' " "${trimmed_paths[@]}")" -- "$cur" )
   fi
 
 } &&
