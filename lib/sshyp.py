@@ -574,7 +574,7 @@ def whitelist_list():  # shows the quick-unlock whitelist status of device ids
     print()
 
 
-def whitelist_manage():  # adds or removes quick-unlock whitelisted device ids
+def whitelist_manage():  # adds or removes quick-unlock whitelisted device ids TODO flip arguments for new standard
     if arg_count == 2:
         whitelist_list()
         _device_id = input('device id: ')
@@ -595,8 +595,8 @@ def whitelist_manage():  # adds or removes quick-unlock whitelisted device ids
 
 
 def add_entry():  # adds a new entry
-    _shm_folder, _shm_entry = None, None  # sets base-line values to avoid errors
-    if arg_count < 3:
+    _shm_folder, _shm_entry = None, None  # sets values to avoid PEP8 warnings
+    if arg_start == 0:
         _entry_name = entry_name_fetch('name of new entry: ')
     else:
         _entry_name = entry_name_fetch()
@@ -627,7 +627,7 @@ def add_entry():  # adds a new entry
 
 
 def add_folder():  # creates a new folder
-    if arg_count < 3:
+    if arg_start == 0:
         _entry_name = entry_name_fetch('name of new folder: ')
     else:
         _entry_name = entry_name_fetch()
@@ -640,7 +640,7 @@ def add_folder():  # creates a new folder
 
 def rename():  # renames an entry or folder
     from shutil import copy
-    if arg_count < 3:
+    if arg_start == 0:
         _entry_name = entry_name_fetch('entry/folder to rename/relocate: ')
     else:
         _entry_name = entry_name_fetch()
@@ -671,7 +671,7 @@ def rename():  # renames an entry or folder
 
 def edit():  # edits the contents of an entry
     _shm_folder, _shm_entry, _detail, _edit_line = None, None, None, None  # sets values to avoid PEP8 warnings
-    if arg_count < 3:
+    if arg_start == 0:
         _entry_name = entry_name_fetch('entry to edit: ')
     else:
         _entry_name = entry_name_fetch()
@@ -700,16 +700,15 @@ def edit():  # edits the contents of an entry
 
 
 def gen():  # generates a password for a new or an existing entry
-    _username, _url, _notes = None, None, None  # sets base-line values to avoid errors
-    if arg_count < 2 or (arg_count < 3 and (arguments[arg_start_p] == 'update' or arguments[arg_start_p] == '-u')):  # TODO fix index error "sshyp /test/test gen"
+    _username, _url, _notes = None, None, None  # sets values to avoid PEP8 warnings
+    if arg_start == 0:
         _entry_name = entry_name_fetch('name of entry: ')
     else:
         _entry_name = entry_name_fetch()
-        if (arguments[arg_start_p] == 'update' or arguments[arg_start_p] == '-u') and \
-                not Path(f"{directory}{_entry_name}.gpg").is_file():
+        if (arg_count > 2) and not Path(f"{directory}{_entry_name}.gpg").is_file():
             print(f"\n\u001b[38;5;9merror: entry ({_entry_name}) does not exist\u001b[0m\n")
             s_exit(3)
-    if arg_count == 1 or (not arguments[arg_start_p] == 'update' and not arguments[arg_start_p] == '-u'):
+    if arg_count < 2 or (arg_start == 1 and arg_count < 3):
         if Path(f"{directory}{_entry_name}.gpg").is_file():
             print(f"\n\u001b[38;5;9merror: entry ({_entry_name}) already exists\u001b[0m\n")
             s_exit(4)
@@ -738,7 +737,7 @@ def gen():  # generates a password for a new or an existing entry
 
 def copy_data():  # copies a specified field of an entry to the clipboard
     from subprocess import Popen
-    if arg_count < 3:
+    if arg_start == 0:
         _entry_name = entry_name_fetch('entry to copy: ')
     else:
         _entry_name = entry_name_fetch()
@@ -772,7 +771,7 @@ def copy_data():  # copies a specified field of an entry to the clipboard
 
 
 def remove_data():  # deletes an entry from the server and flags it for local deletion on sync
-    if arg_count < 2:
+    if arg_start == 0:
         _entry_name = entry_name_fetch('entry/folder to shear: ')
     else:
         _entry_name = entry_name_fetch()
@@ -866,6 +865,8 @@ if __name__ == "__main__":
                     edit()
             elif arguments[arg_start] == 'gen':
                 gen()
+            elif arguments[arg_start] == 'shear' or arguments[arg_start] == '-rm':
+                remove_data()
             elif device_type == 'server' and arguments[arg_start] == 'whitelist':
                 if arguments[arg_start_p] == 'list' or arguments[arg_start_p] == '-l':
                     whitelist_list()
@@ -894,9 +895,9 @@ if __name__ == "__main__":
             s_exit(1)
 
         # sync if any changes were made TODO fix sync triggering on false args, such as "sshyp edit test"
-        if ssh_error == 0 and ((arguments[0] == 'sync' or arguments[0] == '-s' or arguments[0] == 'gen' or
-                                arguments[0] == 'shear' or arguments[0] == '-rm') or
-                               ((arguments[0] == 'add' or arguments[0] == 'edit') and arg_count > 1)):
+        if ssh_error == 0 and ((arguments[0] == 'sync' or arguments[0] == '-s' or arguments[arg_start] == 'gen' or
+                                arguments[arg_start] == 'shear' or arguments[arg_start] == '-rm') or
+                               ((arguments[arg_start] == 'add' or arguments[arg_start] == 'edit') and arg_count > 1)):
             sync()
 
     except KeyboardInterrupt:  # TODO handle exception for unfinished args, such as "sshyp /test/test edit"
