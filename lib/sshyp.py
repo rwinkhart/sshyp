@@ -603,12 +603,12 @@ def add_entry():  # adds a new entry
     if Path(f"{directory}{_entry_name}.gpg").is_file():
         print(f"\n\u001b[38;5;9merror: entry ({_entry_name}) already exists\u001b[0m\n")
         s_exit(4)
-    if arguments[arg_start_p] == 'note' or arguments[arg_start_p] == '-n':
+    if arguments[arg_start_p] == 'note' or arguments[arg_start_p] == '-n':  # note entry
         _shm_folder, _shm_entry = shm_gen()
         run([editor, f"{tmp_dir}{_shm_folder}/{_shm_entry}-n"])
         _notes = open(f"{tmp_dir}{_shm_folder}/{_shm_entry}-n", 'r').read()
         open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'w').writelines(optimized_edit(['', '', '', _notes], None, -1))
-    elif arguments[arg_start_p] == 'password' or arguments[arg_start_p] == '-p':  # TODO does this need to have the if?
+    else:  # password entry
         _username = str(input('username: '))
         _password = str(input('password: '))
         _url = str(input('url: '))
