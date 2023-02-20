@@ -15,36 +15,29 @@ _path_gen() {
 # completely (https://github.com/dannyben/completely)
 
 _sshyp_completions() {
-  if [ "${#COMP_WORDS[@]}" -gt "4" ]; then
+  local cur=${COMP_WORDS[COMP_CWORD]}
+  local compwords=("${COMP_WORDS[@]:1:$COMP_CWORD-1}")
+  local compline="${compwords[*]}"
+
+  if [ "${#COMP_WORDS[@]}" -gt "3" ] && (! echo "${COMP_WORDS[@]}" | grep -q '/' || echo "${COMP_WORDS[@]}" | grep -q 'shear'); then
+    return
+  elif [ "${#COMP_WORDS[@]}" -gt "4" ]; then
     return
   fi
-  local cur=${COMP_WORDS[COMP_CWORD]}
-  local compline="${COMP_WORDS[@]:1:$COMP_CWORD-1}"
 
-  case "$compline" in
-    'add password'* | 'add -p'* | 'add note'* | 'add -n'* | 'add folder'*| 'add -f'* | 'edit relocate'* | 'edit -r'* | 'edit username'* | 'edit -u'* | 'edit password'* | 'edit -p'* | 'edit url'* | 'edit -l'* | 'edit note'* | 'edit -n'* | 'copy username'* | 'copy -u'* | 'copy password'* | 'copy -p'* | 'copy note'* | 'copy -n'* | 'copy url'* | 'copy -l'* | 'gen update'* | 'gen -u'*)
-      while read; do COMPREPLY+=( "$REPLY" ); done < <( compgen -W  "$(printf "'%s' " "${trimmed_paths[@]}")" -- "$cur" )
-      ;;
+  if [[ "$compline" == *'edit'* ]]; then
+    while read -r; do COMPREPLY+=( "$REPLY" ); done < <( compgen -W "relocate username password note url" -- "$cur" )
+  elif [[ "$compline" == *'copy'* ]]; then
+    while read -r; do COMPREPLY+=( "$REPLY" ); done < <( compgen -W "username password url note" -- "$cur" )
+  elif [[ "$compline" == *'add'* ]]; then
+    while read -r; do COMPREPLY+=( "$REPLY" ); done < <( compgen -W "password note folder" -- "$cur" )
+  elif [[ "$compline" == *'gen'* ]]; then
+    while read -r; do COMPREPLY+=( "$REPLY" ); done < <( compgen -W "update" -- "$cur" )
+  elif [[ "$compline" == '/'* ]]; then
+    while read -r; do COMPREPLY+=( "$REPLY" ); done < <( compgen -W "add gen edit copy shear" -- "$cur" )
+  else
+    while read -r; do COMPREPLY+=( "$REPLY" ); done < <( compgen -W "help version tweak add gen edit copy shear sync $(printf "'%s' " "${trimmed_paths[@]}")" -- "$cur" )
+  fi
 
-    'edit'*)
-      while read; do COMPREPLY+=( "$REPLY" ); done < <( compgen -W "relocate username password note url" -- "$cur" )
-      ;;
-
-    'copy'*)
-      while read; do COMPREPLY+=( "$REPLY" ); done < <( compgen -W "username password url note" -- "$cur" )
-      ;;
-
-    'add'*)
-      while read; do COMPREPLY+=( "$REPLY" ); done < <( compgen -W "password note folder" -- "$cur" )
-      ;;
-
-    'gen'*)
-      while read; do COMPREPLY+=( "$REPLY" ); done < <( compgen -W "update" -- "$cur" )
-      ;;
-    *)
-      while read; do COMPREPLY+=( "$REPLY" ); done < <( compgen -W "help version tweak add gen edit copy shear sync $(printf "'%s' " "${trimmed_paths[@]}")" -- "$cur" )
-      ;;
-
-  esac
 } &&
 _path_gen && complete -F _sshyp_completions sshyp
