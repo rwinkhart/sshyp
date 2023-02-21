@@ -168,10 +168,10 @@ def decrypt(_entry_dir, _shm_folder, _shm_entry, _quick_pass,
                 run(['gpg', '-qd', '--output'] + _output_target, stderr=DEVNULL, check=True)
             except CalledProcessError:
                 print('\n\u001b[38;5;9merror: could not decrypt - ensure the correct gpg key is present\u001b[0m\n')
-                s_exit(5)
+                s_exit(4)
         else:
             print('\n\u001b[38;5;9merror: could not decrypt - ensure the correct gpg key is present\u001b[0m\n')
-            s_exit(5)
+            s_exit(4)
 
 
 def determine_decrypt(_entry_dir, _shm_folder, _shm_entry):
@@ -414,8 +414,8 @@ def print_info():  # prints help text based on argument
         print('\n\u001b[1msshyp  copyright (c) 2021-2023  randall winkhart\u001b[0m\n')
         print("this is free software, and you are welcome to redistribute it under certain conditions;\nthis program "
               "comes with absolutely no warranty;\ntype 'sshyp license' for details")
-        if device_type == 'client':  # TODO update for re-order (also man page)
-            print('\n\u001b[1musage:\u001b[0m sshyp [option [flag] [<entry name>]] | [/<entry name>]\n')
+        if device_type == 'client':
+            print('\n\u001b[1musage:\u001b[0m sshyp [/<entry name>] [option [flag]]\n')
             print('\u001b[1moptions:\u001b[0m')
             print('help/-h                  bring up this menu')
             print('version/-v               display sshyp version info')
@@ -465,7 +465,7 @@ def no_arg():  # displays a list of entries and gives an option to select one fo
     _entry_name = entry_name_fetch('entry to read: ')
     if not Path(f"{directory}{_entry_name}.gpg").exists():
         print(f"\n\u001b[38;5;9merror: entry ({_entry_name}) does not exist\u001b[0m\n")  # TODO display with starting '/' in ALL errors
-        s_exit(3)
+        s_exit(2)
     _shm_folder, _shm_entry = shm_gen()
     determine_decrypt(directory + _entry_name, _shm_folder, _shm_entry)
     entry_reader(f"{tmp_dir}{_shm_folder}/{_shm_entry}")
@@ -475,7 +475,7 @@ def no_arg():  # displays a list of entries and gives an option to select one fo
 def read_shortcut():  # shortcut to quickly read an entry
     if not Path(f"{directory}{arguments[0].replace('/', '', 1)}.gpg").exists():
         print(f"\n\u001b[38;5;9merror: entry ({arguments[0].replace('/', '', 1)}) does not exist\u001b[0m\n")
-        s_exit(3)
+        s_exit(2)
     _shm_folder, _shm_entry = shm_gen()
     determine_decrypt(directory + arguments[0].replace('/', '', 1), _shm_folder, _shm_entry)
     entry_reader(f"{tmp_dir}{_shm_folder}/{_shm_entry}")
@@ -586,7 +586,7 @@ def whitelist_manage():  # adds or removes quick-unlock whitelisted device ids
             whitelist_list()
         else:
             print(f"\n\u001b[38;5;9merror: device id ({_device_id}) is not registered\u001b[0m\n")
-            s_exit(2)
+            s_exit(1)
 
     elif Path(expanduser(f"~/.config/sshyp/whitelist/{_device_id}")).is_file():
         remove(expanduser(f"~/.config/sshyp/whitelist/{_device_id}"))
@@ -601,7 +601,7 @@ def add_entry():  # adds a new entry
         _entry_name = entry_name_fetch()
     if Path(f"{directory}{_entry_name}.gpg").is_file():
         print(f"\n\u001b[38;5;9merror: entry ({_entry_name}) already exists\u001b[0m\n")
-        s_exit(4)
+        s_exit(3)
     if arguments[arg_start_p] == 'note' or arguments[arg_start_p] == '-n':  # note entry
         _shm_folder, _shm_entry = shm_gen()
         run([editor, f"{tmp_dir}{_shm_folder}/{_shm_entry}-n"])
@@ -645,11 +645,11 @@ def rename():  # renames an entry or folder
         _entry_name = entry_name_fetch()
     if not Path(f"{directory}{_entry_name}.gpg").is_file() and not Path(f"{directory}{_entry_name}").is_dir():
         print(f"\n\u001b[38;5;9merror: entry ({_entry_name}) does not exist\u001b[0m\n")
-        s_exit(3)
+        s_exit(2)
     _new_name = entry_name_fetch('new name: ')
     if Path(f"{directory}{_new_name}.gpg").is_file() or Path(f"{directory}{_new_name}").is_dir():
         print(f"\n\u001b[38;5;9merror: ({_new_name}) already exists\u001b[0m\n")
-        s_exit(4)
+        s_exit(3)
     if _entry_name.endswith('/'):
         if not ssh_error:
             Path(f"{directory}{_new_name}").mkdir(mode=0o700, parents=True, exist_ok=True)
@@ -676,7 +676,7 @@ def edit():  # edits the contents of an entry
         _entry_name = entry_name_fetch()
     if not Path(f"{directory}{_entry_name}.gpg").is_file():
         print(f"\n\u001b[38;5;9merror: entry ({_entry_name}) does not exist\u001b[0m\n")
-        s_exit(3)
+        s_exit(2)
     _shm_folder, _shm_entry = shm_gen()
     determine_decrypt(directory + _entry_name, _shm_folder, _shm_entry)
     if arguments[arg_start_p] == 'username' or arguments[arg_start_p] == '-u':
@@ -706,11 +706,11 @@ def gen():  # generates a password for a new or an existing entry
         _entry_name = entry_name_fetch()
         if (arg_count > 2) and not Path(f"{directory}{_entry_name}.gpg").is_file():
             print(f"\n\u001b[38;5;9merror: entry ({_entry_name}) does not exist\u001b[0m\n")
-            s_exit(3)
+            s_exit(2)
     if arg_count < 2 or (arg_start == 1 and arg_count < 3):
         if Path(f"{directory}{_entry_name}.gpg").is_file():
             print(f"\n\u001b[38;5;9merror: entry ({_entry_name}) already exists\u001b[0m\n")
-            s_exit(4)
+            s_exit(3)
         _username = str(input('username: '))
         _password = pass_gen()
         _url = str(input('url: '))
@@ -742,7 +742,7 @@ def copy_data():  # copies a specified field of an entry to the clipboard
         _entry_name = entry_name_fetch()
     if not Path(f"{directory}{_entry_name}.gpg").is_file():
         print(f"\n\u001b[38;5;9merror: entry ({_entry_name}) does not exist\u001b[0m\n")
-        s_exit(3)
+        s_exit(2)
     _shm_folder, _shm_entry = shm_gen()
     determine_decrypt(directory + _entry_name, _shm_folder, _shm_entry)
     _copy_line, _index = open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'r').readlines(), 0
@@ -826,7 +826,7 @@ if __name__ == "__main__":
                 print('\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
                 print("not all necessary configuration files are present - please run 'sshyp tweak'")
                 print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n')
-                s_exit(2)
+                s_exit(1)
         else:
             success_flag = 1
             tweak()
@@ -842,7 +842,7 @@ if __name__ == "__main__":
                         copy_data()
                     except IndexError:
                         print(f"\n\u001b[38;5;9merror: field does not exist in entry\u001b[0m\n")
-                        s_exit(3)
+                        s_exit(2)
             elif arguments[arg_start] == 'add':
                 if arguments[arg_start_p] == 'note' or arguments[arg_start_p] == '-n' or arguments[arg_start_p] == \
                         'password' or arguments[arg_start_p] == '-p':

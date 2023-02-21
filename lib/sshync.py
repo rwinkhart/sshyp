@@ -68,7 +68,7 @@ def remote_list_fetch(_user_data):  # captures and returns all necessary data fr
     except CalledProcessError:
         print('\n\u001b[38;5;9merror: failed to connect to the remote server\u001b[0m\n')
         _remote_data = ''
-        s_exit(6)
+        s_exit(5)
     _deletion_database = _remote_data[0].strip().splitlines()
     _folder_database = _remote_data[1].strip().splitlines()
     _titles_mods = _remote_data[2].strip().splitlines()
@@ -119,7 +119,7 @@ def get_profile(_profile_dir):  # returns a list of data read from a sshync job 
     except (FileNotFoundError, IndexError):
         print('\n\u001b[38;5;9merror: the profile does not exist or is corrupted\u001b[0m\n')
         _profile_data = None
-        s_exit(3)
+        s_exit(2)
     _user = _profile_data[0].rstrip()
     _ip = _profile_data[1].rstrip()
     _port = _profile_data[2].rstrip()

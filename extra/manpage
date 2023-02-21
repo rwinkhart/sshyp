@@ -1,8 +1,8 @@
-.TH sshyp 1 "14 December 2022" "v1.3.0" "sshyp man page"
+.TH sshyp 1 "21 February 2023" "v1.4.0" "sshyp man page"
 .SH NAME
 sshyp \- A very simple self-hosted, synchronized password manager for UNIX(-like) systems. Alternative to (and compatible with) pass/password-store.
 .SH SYNOPSIS
-Client Usage: sshyp [option [flag] [<entry name>]] | [/<entry name>]
+Client Usage: sshyp [/<entry name>] [option [flag]]
 
 Server Usage: sshyp [option [flag] [<device id>]]
 .SH DESCRIPTION
@@ -18,22 +18,22 @@ Reading an existing entry saved as ~/.local/share/sshyp/development/github.gpg:
     sshyp /development/github
 
 Copying the password of an existing entry saved as ~/.local/share/sshyp/financial/bank.gpg:
-    sshyp copy -p /financial/bank
+    sshyp /financial/bank copy -p
 
 Editing the username of an existing entry saved as ~/.local/share/sshyp/game.gpg:
-    sshyp edit -u game
+    sshyp /game edit -u
 
 Making a new entry saved as ~/.local/share/sshyp/school/university.gpg using the built-in password generator:
-    sshyp gen /school/university
+    sshyp /school/university gen
 
-Creating a note-only entry saved as ~/.local/share/sshyp/notes/testNote.gpg:
-    sshyp add -n /notes/testNote
+Creating a note-only entry saved as ~/.local/share/sshyp/notes/test note.gpg:
+    sshyp /notes/test\ note add -n
 
 Manually syncing entries with the server:
     sshyp sync
 
 Removing an existing folder saved as ~/.local/share/sshyp/social:
-    sshyp shear social/
+    sshyp /social/ shear
 .SH EXAMPLES (SERVER)
 Setting up the quick-unlock whitelist:
     sshyp whitelist setup
@@ -41,21 +41,21 @@ Setting up the quick-unlock whitelist:
 Checking the quick-unlock whitelist status of all registered client devices:
     sshyp whitelist list
 
-Adding a device with the id "laptop-im|lAoa;&;r&o:ez((g/Dz;EVb.nO_" to the quick-unlock whitelist:
+Adding a device with the id 'laptop-im|lAoa;&;r&o:ez((g/Dz;EVb.nO_' to the quick-unlock whitelist:
     sshyp whitelist add 'laptop-im|lAoa;&;r&o:ez((g/Dz;EVb.nO_'
 
-Removing a device with the id "laptop-im|lAoa;&;r&o:ez((g/Dz;EVb.nO_" from the quick-unlock whitelist:
+Removing a device with the id 'laptop-im|lAoa;&;r&o:ez((g/Dz;EVb.nO_' from the quick-unlock whitelist:
     sshyp whitelist del 'laptop-im|lAoa;&;r&o:ez((g/Dz;EVb.nO_'
 .SH OPTIONS (CLIENT)
- help/--help/-h           bring up the help menu
+ help/-h                  bring up the help menu
  version/-v               display sshyp version info
  tweak                    configure sshyp
  add                      add an entry
  gen                      generate a new password
  edit                     edit an existing entry
  copy                     copy details of an entry to your clipboard
- shear/-rm                delete an existing entry
- sync/-s                  manually sync the entry directory via sshync
+ shear                    delete an existing entry
+ sync                     manually sync the entry directory via sshync
 .SH FLAGS (CLIENT)
 add:
  password/-p              add a password entry
@@ -78,7 +78,7 @@ copy:
 gen:
  update/-u                generate a password for an existing entry
 .SH OPTIONS (SERVER)
- help/--help/-h           bring up this menu
+ help/-h                  bring up this menu
  version/-v               display sshyp version info
  tweak                    configure sshyp
  whitelist                manage the quick-unlock whitelist
@@ -113,16 +113,14 @@ Please note that the server setup intentionally does not allow the reading of en
 .SH EXIT CODES
 0 - no error
 
-1 - argument error
+1 - configuration error
 
-2 - configuration error
+2 - data not found error
 
-3 - data not found error
+3 - data already exists error
 
-4 - data already exists error
+4 - decryption/encryption error
 
-5 - decryption/encryption error
-
-6 - server connection error
+5 - server connection error
 .SH AUTHOR
 Randall Winkhart (https://github.com/rwinkhart)
