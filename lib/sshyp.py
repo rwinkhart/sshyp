@@ -822,12 +822,6 @@ if __name__ == "__main__":
                             ssh_error = False
                     else:
                         ssh_error = True
-                elif arguments[0] != "help" and arguments[0] != "--help" and arguments[0] != "-h" and arguments[0] \
-                        != "license" and arguments[0] != "version" and arguments[0] != "-v" and arguments[0] \
-                        != "whitelist":
-                    print(f"\n\u001b[38;5;9merror: invalid server argument - run 'sshyp help' to "
-                          f"list usable commands\u001b[0m\n")
-                    s_exit(1)
             except (FileNotFoundError, IndexError):
                 print('\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
                 print("not all necessary configuration files are present - please run 'sshyp tweak'")
