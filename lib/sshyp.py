@@ -414,18 +414,18 @@ def print_info():  # prints help text based on argument
         print('\n\u001b[1msshyp  copyright (c) 2021-2023  randall winkhart\u001b[0m\n')
         print("this is free software, and you are welcome to redistribute it under certain conditions;\nthis program "
               "comes with absolutely no warranty;\ntype 'sshyp license' for details")
-        if device_type == 'client':  # TODO update for re-order (also man page), remove -rm
+        if device_type == 'client':  # TODO update for re-order (also man page)
             print('\n\u001b[1musage:\u001b[0m sshyp [option [flag] [<entry name>]] | [/<entry name>]\n')
             print('\u001b[1moptions:\u001b[0m')
-            print('help/-h           bring up this menu')
+            print('help/-h                  bring up this menu')
             print('version/-v               display sshyp version info')
             print('tweak                    configure sshyp')
             print('add                      add an entry')
             print('gen                      generate a new password')
             print('edit                     edit an existing entry')
             print('copy                     copy details of an entry to your clipboard')
-            print('shear/-rm                delete an existing entry')
-            print('sync/-s                  manually sync the entry directory via sshync')
+            print('shear                    delete an existing entry')
+            print('sync                     manually sync the entry directory via sshync')
             print('\n\u001b[1mflags:\u001b[0m')
             print('add:')
             print(' password/-p             add a password entry')
@@ -448,7 +448,7 @@ def print_info():  # prints help text based on argument
         else:
             print('\n\u001b[1musage:\u001b[0m sshyp [option [flag] [<device id>]]\n')
             print('\u001b[1moptions:\u001b[0m')
-            print('help/--help/-h           bring up this menu')
+            print('help/-h                  bring up this menu')
             print('version/-v               display sshyp version info')
             print('tweak                    configure sshyp')
             print('whitelist                manage the quick-unlock whitelist')
@@ -871,7 +871,7 @@ if __name__ == "__main__":
             elif arguments[arg_start] == 'gen':
                 success_flag, sync_flag = True, True
                 gen()
-            elif arguments[arg_start] == 'shear' or arguments[arg_start] == '-rm':
+            elif arguments[arg_start] == 'shear':
                 success_flag, sync_flag = True, True
                 remove_data()
             elif device_type == 'server' and arguments[arg_start] == 'whitelist':
@@ -893,7 +893,7 @@ if __name__ == "__main__":
             elif arguments[0] == 'gen':
                 success_flag, sync_flag = True, True
                 gen()
-            elif arguments[0] == 'shear' or arguments[0] == '-rm':
+            elif arguments[0] == 'shear':
                 success_flag, sync_flag = True, True
                 remove_data()
 
