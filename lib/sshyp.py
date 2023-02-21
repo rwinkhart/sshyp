@@ -222,9 +222,9 @@ def copy_id_check(_port, _username_ssh, _ip, _client_device_id):
               'registered on the remote server and that the entered ip, port, and username are correct\n\nsyncing '
               'functionality will be disabled until this is addressed\u001b[0m\n')
         open(expanduser('~/.config/sshyp/ssh-error'), 'w').write('1')
-        return 1
+        return True
     open(expanduser('~/.config/sshyp/ssh-error'), 'w').write('0')
-    return 0
+    return False
 
 
 # ARGUMENT-SPECIFIC FUNCTIONS
@@ -347,55 +347,7 @@ def tweak():  # runs configuration wizard
 
 
 def print_info():  # prints help text based on argument
-    if arguments[0] == 'help' or arguments[0] == '-h':
-        print('\n\u001b[1msshyp  copyright (c) 2021-2023  randall winkhart\u001b[0m\n')
-        print("this is free software, and you are welcome to redistribute it under certain conditions;\nthis program "
-              "comes with absolutely no warranty;\ntype 'sshyp license' for details")
-        if device_type == 'client':
-            print('\n\u001b[1musage:\u001b[0m sshyp [option [flag] [<entry name>]] | [/<entry name>]\n')
-            print('\u001b[1moptions:\u001b[0m')
-            print('help/-h           bring up this menu')
-            print('version/-v               display sshyp version info')
-            print('tweak                    configure sshyp')
-            print('add                      add an entry')
-            print('gen                      generate a new password')
-            print('edit                     edit an existing entry')
-            print('copy                     copy details of an entry to your clipboard')
-            print('shear/-rm                delete an existing entry')
-            print('sync/-s                  manually sync the entry directory via sshync')
-            print('\n\u001b[1mflags:\u001b[0m')
-            print('add:')
-            print(' password/-p             add a password entry')
-            print(' note/-n                 add a note entry')
-            print(' folder/-f               add a new folder for entries')
-            print('edit:')
-            print(' rename/relocate/-r      rename or relocate an entry')
-            print(' username/-u             change the username of an entry')
-            print(' password/-p             change the password of an entry')
-            print(' url/-l                  change the url attached to an entry')
-            print(' note/-n                 change the note attached to an entry')
-            print('copy:')
-            print(' username/-u             copy the username of an entry to your clipboard')
-            print(' password/-p             copy the password of an entry to your clipboard')
-            print(' url/-l                  copy the url of an entry to your clipboard')
-            print(' note/-n                 copy the note of an entry to your clipboard')
-            print('gen:')
-            print(' update/-u               generate a password for an existing entry')
-            print("\n\u001b[1mtip:\u001b[0m you can quickly read an entry with 'sshyp /<entry name>'\n")
-        else:
-            print('\n\u001b[1musage:\u001b[0m sshyp [option [flag] [<device id>]]\n')
-            print('\u001b[1moptions:\u001b[0m')
-            print('help/--help/-h           bring up this menu')
-            print('version/-v               display sshyp version info')
-            print('tweak                    configure sshyp')
-            print('whitelist                manage the quick-unlock whitelist')
-            print('\n\u001b[1mflags:\u001b[0m')
-            print('whitelist:')
-            print(' setup                   set up the quick-unlock whitelist')
-            print(' list/-l                 view all registered device ids and their quick-unlock whitelist status')
-            print(' add                     whitelist a device id for quick-unlock')
-            print(' delete/del              remove a device id from the quick-unlock whitelist\n')
-    elif arguments[0] == 'version' or arguments[0] == '-v':
+    if arguments[0] == 'version' or arguments[0] == '-v':
         print('\nsshyp is a simple, self-hosted, sftp-synchronized password manager\nfor unix(-like) systems (haiku/'
               'freebsd/linux/termux)\n\nsshyp is a viable alternative to (and compatible with) pass/password-store\n')
         print("                ..       \u001b[38;5;9m♥♥ ♥♥\u001b[0m       ..\n         .''.''/()\\     \u001b[38;5;13m"
@@ -458,14 +410,61 @@ def print_info():  # prints help text based on argument
             print(' delete/del              remove a device id from the quick-unlock whitelist\n')
         else:
             print('\n\u001b[38;5;9merror: argument (whitelist) only available on server\u001b[0m\n')
-    s_exit(0)
+    else:
+        print('\n\u001b[1msshyp  copyright (c) 2021-2023  randall winkhart\u001b[0m\n')
+        print("this is free software, and you are welcome to redistribute it under certain conditions;\nthis program "
+              "comes with absolutely no warranty;\ntype 'sshyp license' for details")
+        if device_type == 'client':  # TODO update for re-order (also man page), remove -rm
+            print('\n\u001b[1musage:\u001b[0m sshyp [option [flag] [<entry name>]] | [/<entry name>]\n')
+            print('\u001b[1moptions:\u001b[0m')
+            print('help/-h           bring up this menu')
+            print('version/-v               display sshyp version info')
+            print('tweak                    configure sshyp')
+            print('add                      add an entry')
+            print('gen                      generate a new password')
+            print('edit                     edit an existing entry')
+            print('copy                     copy details of an entry to your clipboard')
+            print('shear/-rm                delete an existing entry')
+            print('sync/-s                  manually sync the entry directory via sshync')
+            print('\n\u001b[1mflags:\u001b[0m')
+            print('add:')
+            print(' password/-p             add a password entry')
+            print(' note/-n                 add a note entry')
+            print(' folder/-f               add a new folder for entries')
+            print('edit:')
+            print(' rename/relocate/-r      rename or relocate an entry')
+            print(' username/-u             change the username of an entry')
+            print(' password/-p             change the password of an entry')
+            print(' url/-l                  change the url attached to an entry')
+            print(' note/-n                 change the note attached to an entry')
+            print('copy:')
+            print(' username/-u             copy the username of an entry to your clipboard')
+            print(' password/-p             copy the password of an entry to your clipboard')
+            print(' url/-l                  copy the url of an entry to your clipboard')
+            print(' note/-n                 copy the note of an entry to your clipboard')
+            print('gen:')
+            print(' update/-u               generate a password for an existing entry')
+            print("\n\u001b[1mtip:\u001b[0m you can quickly read an entry with 'sshyp /<entry name>'\n")
+        else:
+            print('\n\u001b[1musage:\u001b[0m sshyp [option [flag] [<device id>]]\n')
+            print('\u001b[1moptions:\u001b[0m')
+            print('help/--help/-h           bring up this menu')
+            print('version/-v               display sshyp version info')
+            print('tweak                    configure sshyp')
+            print('whitelist                manage the quick-unlock whitelist')
+            print('\n\u001b[1mflags:\u001b[0m')
+            print('whitelist:')
+            print(' setup                   set up the quick-unlock whitelist')
+            print(' list/-l                 view all registered device ids and their quick-unlock whitelist status')
+            print(' add                     whitelist a device id for quick-unlock')
+            print(' delete/del              remove a device id from the quick-unlock whitelist\n')
 
 
 def no_arg():  # displays a list of entries and gives an option to select one for viewing
     print("\nfor a list of usable commands, run 'sshyp help'")
     _entry_name = entry_name_fetch('entry to read: ')
     if not Path(f"{directory}{_entry_name}.gpg").exists():
-        print(f"\n\u001b[38;5;9merror: entry ({_entry_name}) does not exist\u001b[0m\n")
+        print(f"\n\u001b[38;5;9merror: entry ({_entry_name}) does not exist\u001b[0m\n")  # TODO display with starting '/' in ALL errors
         s_exit(3)
     _shm_folder, _shm_entry = shm_gen()
     determine_decrypt(directory + _entry_name, _shm_folder, _shm_entry)
@@ -574,7 +573,7 @@ def whitelist_list():  # shows the quick-unlock whitelist status of device ids
     print()
 
 
-def whitelist_manage():  # adds or removes quick-unlock whitelisted device ids TODO flip arguments for new standard
+def whitelist_manage():  # adds or removes quick-unlock whitelisted device ids
     if arg_count == 2:
         whitelist_list()
         _device_id = input('device id: ')
@@ -632,7 +631,7 @@ def add_folder():  # creates a new folder
     else:
         _entry_name = entry_name_fetch()
     Path(directory + _entry_name).mkdir(mode=0o700, parents=True, exist_ok=True)
-    if ssh_error != 1:
+    if not ssh_error:
         run(['ssh', '-i', expanduser('~/.ssh/sshyp'), '-p', port, f"{username_ssh}@{ip}",
              f'python3 -c \'from pathlib import Path; Path("{directory_ssh}{_entry_name}")'
              f'.mkdir(mode=0o700, parents=True, exist_ok=True)\''])
@@ -652,7 +651,7 @@ def rename():  # renames an entry or folder
         print(f"\n\u001b[38;5;9merror: ({_new_name}) already exists\u001b[0m\n")
         s_exit(4)
     if _entry_name.endswith('/'):
-        if ssh_error != 1:
+        if not ssh_error:
             Path(f"{directory}{_new_name}").mkdir(mode=0o700, parents=True, exist_ok=True)
             run(['ssh', '-i', expanduser('~/.ssh/sshyp'), '-p', port, f"{username_ssh}@{ip}",
                  f'python3 -c \'from pathlib import Path; Path("{directory_ssh}{_new_name}")'
@@ -660,11 +659,11 @@ def rename():  # renames an entry or folder
         else:
             move(f"{directory}{_entry_name}", f"{directory}{_new_name}")
     else:
-        if ssh_error != 1:
+        if not ssh_error:
             copy(f"{directory}{_entry_name}.gpg", f"{directory}{_new_name}.gpg")
         else:
             move(f"{directory}{_entry_name}.gpg", f"{directory}{_new_name}.gpg")
-    if ssh_error != 1:
+    if not ssh_error:
         run(['ssh', '-i', expanduser('~/.ssh/sshyp'), '-p', port, f"{username_ssh}@{ip}",
              f'cd /lib/sshyp; python3 -c \'from sshync import delete; delete("{_entry_name}", "remotely")\''])
 
@@ -776,7 +775,7 @@ def remove_data():  # deletes an entry from the server and flags it for local de
     else:
         _entry_name = entry_name_fetch()
     determine_decrypt(expanduser('~/.config/sshyp/lock.gpg'), 0, 0)
-    if ssh_error != 1:
+    if not ssh_error:
         run(['ssh', '-i', expanduser('~/.ssh/sshyp'), '-p', port, f"{username_ssh}@{ip}",
              f'cd /lib/sshyp; python3 -c \'from sshync import delete; delete("{_entry_name}", "remotely")\''])
     else:
@@ -785,7 +784,7 @@ def remove_data():  # deletes an entry from the server and flags it for local de
 
 if __name__ == "__main__":
     try:
-        silent_sync, ssh_error = 0, 0
+        ssh_error, success_flag, sync_flag, silent_sync = False, False, False, False
         # retrieve typed argument
         arguments = argv[1:]
         arg_count = len(arguments)
@@ -817,10 +816,12 @@ if __name__ == "__main__":
                         directory_ssh = str(ssh_info[4].rstrip())
                         client_device_id = listdir(expanduser('~/.config/sshyp/devices'))[0].rstrip()
                         ssh_error = int(open(expanduser('~/.config/sshyp/ssh-error')).read().rstrip())
-                        if ssh_error != 0:
+                        if ssh_error == 1:
                             ssh_error = copy_id_check(port, username_ssh, ip, client_device_id)
+                        else:
+                            ssh_error = False
                     else:
-                        ssh_error = 1
+                        ssh_error = True
                 elif arguments[0] != "help" and arguments[0] != "--help" and arguments[0] != "-h" and arguments[0] \
                         != "license" and arguments[0] != "version" and arguments[0] != "-v" and arguments[0] \
                         != "whitelist":
@@ -833,8 +834,8 @@ if __name__ == "__main__":
                 print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n')
                 s_exit(2)
         else:
+            success_flag = 1
             tweak()
-            s_exit(0)
 
         # run function based on arguments
         if arg_count > 1:
@@ -843,6 +844,7 @@ if __name__ == "__main__":
                         'password' or arguments[arg_start_p] == '-p' or arguments[arg_start_p] == 'url' or arguments[
                         arg_start_p] == '-l' or arguments[arg_start_p] == 'note' or arguments[arg_start_p] == '-n':
                     try:
+                        success_flag = 1
                         copy_data()
                     except IndexError:
                         print(f"\n\u001b[38;5;9merror: field does not exist in entry\u001b[0m\n")
@@ -850,54 +852,54 @@ if __name__ == "__main__":
             elif arguments[arg_start] == 'add':
                 if arguments[arg_start_p] == 'note' or arguments[arg_start_p] == '-n' or arguments[arg_start_p] == \
                         'password' or arguments[arg_start_p] == '-p':
+                    success_flag, sync_flag = True, True
                     add_entry()
                 elif arguments[arg_start_p] == 'folder' or arguments[arg_start_p] == '-f':
+                    success_flag = 1
                     add_folder()
             elif arguments[arg_start] == 'edit':
                 if arguments[arg_start_p] == 'rename' or arguments[arg_start_p] == 'relocate' or \
                         arguments[arg_start_p] == '-r':
-                    silent_sync = 1
+                    success_flag, sync_flag, silent_sync = True, True, True
                     rename()
                 elif arguments[arg_start_p] == 'username' or arguments[arg_start_p] == '-u' or arguments[arg_start_p] \
                         == 'password' or arguments[arg_start_p] == '-p' or arguments[arg_start_p] == 'url' or \
                         arguments[arg_start_p] == '-l' or arguments[arg_start_p] == 'note' or arguments[arg_start_p] ==\
                         '-n':
+                    success_flag, sync_flag = True, True
                     edit()
             elif arguments[arg_start] == 'gen':
+                success_flag, sync_flag = True, True
                 gen()
             elif arguments[arg_start] == 'shear' or arguments[arg_start] == '-rm':
+                success_flag, sync_flag = True, True
                 remove_data()
             elif device_type == 'server' and arguments[arg_start] == 'whitelist':
                 if arguments[arg_start_p] == 'list' or arguments[arg_start_p] == '-l':
+                    success_flag = True
                     whitelist_list()
                 elif arguments[arg_start_p] == 'add' or arguments[arg_start_p] == 'delete' or arguments[arg_start_p] \
                         == 'del':
+                    success_flag = True
                     whitelist_manage()
                 elif arguments[arg_start_p] == 'setup':
+                    success_flag = True
                     whitelist_setup()
-                else:
-                    print_info()
 
         elif arg_count > 0:
             if arg_start == 1:
+                success_flag = True
                 read_shortcut()
             elif arguments[0] == 'gen':
+                success_flag, sync_flag = True, True
                 gen()
             elif arguments[0] == 'shear' or arguments[0] == '-rm':
+                success_flag, sync_flag = True, True
                 remove_data()
-            elif arguments[0] == 'help' or arguments[0] == '-h' or arguments[0] == 'license' or arguments[0] == \
-                    'version' or arguments[0] == '-v' or arguments[0] == 'add' or arguments[0] == 'edit' or \
-                    arguments[0] == 'copy' or (device_type == 'server' and arguments[0] == 'whitelist'):
-                print_info()
 
-        elif arguments[0] != 'sync' and arguments[0] != '-s':
-            print(f"\n\u001b[38;5;9merror: invalid argument - run 'sshyp help' to list usable commands\u001b[0m\n")
-            s_exit(1)
-
-        # sync if any changes were made TODO fix sync triggering on false args, such as "sshyp edit test"
-        if ssh_error == 0 and ((arguments[0] == 'sync' or arguments[0] == '-s' or arguments[arg_start] == 'gen' or
-                                arguments[arg_start] == 'shear' or arguments[arg_start] == '-rm') or
-                               ((arguments[arg_start] == 'add' or arguments[arg_start] == 'edit') and arg_count > 1)):
+        if success_flag == 0 and arguments[0] != 'sync':
+            print_info()
+        elif (not ssh_error and sync_flag) or arguments[0] == 'sync':
             sync()
 
     except KeyboardInterrupt:  # TODO handle exception for unfinished args, such as "sshyp /test/test edit"
