@@ -79,7 +79,7 @@ def remote_list_fetch(_user_data):  # captures and returns all necessary data fr
 def deletion_sync(_deletion_database, _silent):  # checks for and acts upon files and folders marked for deletion
     for _file in _deletion_database:
         if _file != '':
-            if _silent != 1:
+            if not _silent:
                 print(f"\u001b[38;5;208m{_file}\u001b[0m has been sheared, removing...")
             delete(_file, 'locally')
 
