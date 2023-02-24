@@ -832,7 +832,7 @@ if __name__ == "__main__":
             tweak()
 
         # run function based on arguments
-        if arg_count > 1:
+        if (arg_count == 2 and arg_start == 0) or (arg_count == 3 and arg_start == 1):
             if arguments[arg_start] == 'copy':
                 if arguments[arg_start_p] == 'username' or arguments[arg_start_p] == '-u' or arguments[arg_start_p] == \
                         'password' or arguments[arg_start_p] == '-p' or arguments[arg_start_p] == 'url' or arguments[
@@ -862,12 +862,10 @@ if __name__ == "__main__":
                         '-n':
                     success_flag, sync_flag = True, True
                     edit()
-            elif arguments[arg_start] == 'gen':
+            elif arguments[arg_start] == 'gen' and (arguments[arg_start_p] == 'update' or
+                                                    arguments[arg_start_p] == '-u'):
                 success_flag, sync_flag = True, True
                 gen()
-            elif arguments[arg_start] == 'shear':
-                success_flag, sync_flag = True, True
-                remove_data()
             elif device_type == 'server' and arguments[arg_start] == 'whitelist':
                 if arguments[arg_start_p] == 'list' or arguments[arg_start_p] == '-l':
                     success_flag = True
@@ -880,14 +878,14 @@ if __name__ == "__main__":
                     success_flag = True
                     whitelist_setup()
 
-        elif arg_count > 0:
-            if arg_start == 1:
+        elif arg_count == 1 or (arg_count == 2 and arg_start == 1):
+            if arg_count == 1 and arg_start == 1:
                 success_flag = True
                 read_shortcut()
-            elif arguments[0] == 'gen':
+            elif arguments[arg_start] == 'gen':
                 success_flag, sync_flag = True, True
                 gen()
-            elif arguments[0] == 'shear':
+            elif arguments[arg_start]:
                 success_flag, sync_flag = True, True
                 remove_data()
 
@@ -896,5 +894,5 @@ if __name__ == "__main__":
         elif (not ssh_error and sync_flag) or arguments[0] == 'sync':
             sync()
 
-    except KeyboardInterrupt:  # TODO handle exception for unfinished args, such as "sshyp /test/test edit"
+    except KeyboardInterrupt:
         print('\n')
