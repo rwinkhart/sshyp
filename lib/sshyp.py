@@ -831,65 +831,59 @@ if __name__ == "__main__":
             s_exit()
 
         # run function based on arguments
-        if arg_count < 1:
-            no_arg()
+        if device_type == 'client':
+            if arg_count < 1:
+                no_arg()
 
-        elif (arg_count == 2 and arg_start == 0) or (arg_count == 3 and arg_start == 1):
-            if arguments[arg_start] == 'copy':
-                if arguments[arg_start_p] == 'username' or arguments[arg_start_p] == '-u' or arguments[arg_start_p] == \
-                        'password' or arguments[arg_start_p] == '-p' or arguments[arg_start_p] == 'url' or arguments[
-                        arg_start_p] == '-l' or arguments[arg_start_p] == 'note' or arguments[arg_start_p] == '-n':
-                    try:
+            elif (arg_count == 2 and arg_start == 0) or (arg_count == 3 and arg_start == 1):
+                if arguments[arg_start] == 'copy':
+                    if arguments[arg_start_p] in ['username', '-u', 'password', '-p', 'url', '-l', 'note', '-n']:  # TODO use 'in' syntax more broadly
+                        try:
+                            success_flag = 1
+                            copy_data()
+                        except IndexError:
+                            print(f"\n\u001b[38;5;9merror: field does not exist in entry\u001b[0m\n")
+                            s_exit(2)
+                elif arguments[arg_start] == 'add':
+                    if arguments[arg_start_p] in ['note', '-n', 'password', '-p']:
+                        success_flag, sync_flag = True, True
+                        add_entry()
+                    elif arguments[arg_start_p] == 'folder' or arguments[arg_start_p] == '-f':
                         success_flag = 1
-                        copy_data()
-                    except IndexError:
-                        print(f"\n\u001b[38;5;9merror: field does not exist in entry\u001b[0m\n")
-                        s_exit(2)
-            elif arguments[arg_start] == 'add':
-                if arguments[arg_start_p] == 'note' or arguments[arg_start_p] == '-n' or arguments[arg_start_p] == \
-                        'password' or arguments[arg_start_p] == '-p':
+                        add_folder()
+                elif arguments[arg_start] == 'edit':
+                    if arguments[arg_start_p] in ['rename', 'relocate', '-r']:
+                        success_flag, sync_flag, silent_sync = True, True, True
+                        rename()
+                    elif arguments[arg_start_p] in ['username', '-u', 'password', '-p', 'url', '-l', 'note', '-n']:
+                        success_flag, sync_flag = True, True
+                        edit()
+                elif arguments[arg_start] == 'gen' and arguments[arg_start_p] in ['update', '-u']:
                     success_flag, sync_flag = True, True
-                    add_entry()
-                elif arguments[arg_start_p] == 'folder' or arguments[arg_start_p] == '-f':
-                    success_flag = 1
-                    add_folder()
-            elif arguments[arg_start] == 'edit':
-                if arguments[arg_start_p] == 'rename' or arguments[arg_start_p] == 'relocate' or \
-                        arguments[arg_start_p] == '-r':
-                    success_flag, sync_flag, silent_sync = True, True, True
-                    rename()
-                elif arguments[arg_start_p] == 'username' or arguments[arg_start_p] == '-u' or arguments[arg_start_p] \
-                        == 'password' or arguments[arg_start_p] == '-p' or arguments[arg_start_p] == 'url' or \
-                        arguments[arg_start_p] == '-l' or arguments[arg_start_p] == 'note' or arguments[arg_start_p] ==\
-                        '-n':
+                    gen()
+
+            elif arg_count == 1 or (arg_count == 2 and arg_start == 1):
+                if arg_count == 1 and arg_start == 1:
+                    success_flag = True
+                    read_shortcut()
+                elif arguments[arg_start] == 'gen':
                     success_flag, sync_flag = True, True
-                    edit()
-            elif arguments[arg_start] == 'gen' and (arguments[arg_start_p] == 'update' or
-                                                    arguments[arg_start_p] == '-u'):
-                success_flag, sync_flag = True, True
-                gen()
-            elif device_type == 'server' and arguments[arg_start] == 'whitelist':
+                    gen()
+                elif arguments[arg_start] == 'shear':
+                    success_flag, sync_flag = True, True
+                    remove_data()
+
+        else:  # server arguments
+            if arg_count == 1 and arguments[arg_start_p] == 'setup':
+                success_flag = True
+                whitelist_setup()
+            elif arg_count > 1 and arguments[arg_start] == 'whitelist':
                 if arguments[arg_start_p] == 'list' or arguments[arg_start_p] == '-l':
                     success_flag = True
                     whitelist_list()
-                elif arguments[arg_start_p] == 'add' or arguments[arg_start_p] == 'delete' or arguments[arg_start_p] \
-                        == 'del':
+                elif arguments[arg_start_p] in ['add', 'delete', 'del']:
                     success_flag = True
                     whitelist_manage()
-                elif arguments[arg_start_p] == 'setup':
-                    success_flag = True
-                    whitelist_setup()
-
-        elif arg_count == 1 or (arg_count == 2 and arg_start == 1):
-            if arg_count == 1 and arg_start == 1:
-                success_flag = True
-                read_shortcut()
-            elif arguments[arg_start] == 'gen':
-                success_flag, sync_flag = True, True
-                gen()
-            elif arguments[arg_start] == 'shear':
-                success_flag, sync_flag = True, True
-                remove_data()
 
         if success_flag == 0 and arguments[0] != 'sync':
             print_info()
