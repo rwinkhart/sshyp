@@ -154,7 +154,7 @@ def decrypt(_entry_dir, _shm_folder, _shm_entry, _quick_pass,
         _unlock_method = ['gpg', '--pinentry-mode', 'loopback', '--passphrase', _quick_pass, '-qd', '--output']
     else:
         _unlock_method = ['gpg', '-qd', '--output']
-    if _shm_folder == 0 and _shm_entry == 0:  # TODO set to 'None'
+    if _shm_folder is None and _shm_entry is None:
         _output_target = ['/dev/null', expanduser('~/.config/sshyp/lock.gpg')]
     else:
         _output_target = [f"{_tmp_dir}{_shm_folder}/{_shm_entry}", f"{_entry_dir}.gpg"]
@@ -773,7 +773,7 @@ def remove_data():  # deletes an entry from the server and flags it for local de
         _entry_name = entry_name_fetch('entry/folder to shear: ')
     else:
         _entry_name = entry_name_fetch()
-    determine_decrypt(expanduser('~/.config/sshyp/lock.gpg'), 0, 0)
+    determine_decrypt(expanduser('~/.config/sshyp/lock.gpg'), None, None)
     if not ssh_error:
         run(['ssh', '-i', expanduser('~/.ssh/sshyp'), '-p', port, f"{username_ssh}@{ip}",
              f'cd /lib/sshyp; python3 -c \'from sshync import delete; delete("{_entry_name}", "remotely")\''])
