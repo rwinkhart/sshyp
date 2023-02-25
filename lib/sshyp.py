@@ -594,7 +594,7 @@ def whitelist_manage():  # adds or removes quick-unlock whitelisted device ids
 
 
 def add_entry():  # adds a new entry
-    _shm_folder, _shm_entry = None, None  # sets values to avoid PEP8 warnings
+    _shm_folder, _shm_entry = None, None  # set to avoid PEP8 warnings
     if arg_start == 0:
         _entry_name = entry_name_fetch('name of new entry: ')
     else:
@@ -669,7 +669,7 @@ def rename():  # renames an entry or folder
 
 
 def edit():  # edits the contents of an entry
-    _shm_folder, _shm_entry, _detail, _edit_line = None, None, None, None  # sets values to avoid PEP8 warnings
+    _shm_folder, _shm_entry, _detail, _edit_line = None, None, None, None  # set to avoid PEP8 warnings
     if arg_start == 0:
         _entry_name = entry_name_fetch('entry to edit: ')
     else:
@@ -699,7 +699,7 @@ def edit():  # edits the contents of an entry
 
 
 def gen():  # generates a password for a new or an existing entry
-    _username, _url, _notes = None, None, None  # sets values to avoid PEP8 warnings
+    _username, _url, _notes = None, None, None  # set to avoid PEP8 warnings
     if arg_start == 0:
         _entry_name = entry_name_fetch('name of entry: ')
     else:
@@ -785,20 +785,19 @@ def remove_data():  # deletes an entry from the server and flags it for local de
 if __name__ == "__main__":
     try:
         ssh_error, success_flag, sync_flag, silent_sync = False, False, False, False
+        arg_start, arg_start_p, device_type = None, None, None  # set to avoid PEP8 warnings
         # retrieve typed argument
         arguments = argv[1:]
         arg_count = len(arguments)
-        if arg_count < 1:
-            no_arg()  # TODO fix being available on server
-        if arguments[0].startswith('/'):
-            arg_start = 1
-        else:
-            arg_start = 0
-        arg_start_p = arg_start + 1
 
-        # import saved userdata
-        device_type = ''
-        if arguments[0] != 'tweak':
+        if arg_count < 1 or (arg_count > 0 and arguments[0] != 'tweak'):
+            if arg_count > 0 and arguments[0].startswith('/'):
+                arg_start = 1
+            else:
+                arg_start = 0
+            arg_start_p = arg_start + 1
+
+            # import saved userdata
             tmp_dir = expanduser('~/.config/sshyp/tmp/')
             try:
                 sshyp_data = open(expanduser('~/.config/sshyp/sshyp-data')).readlines()
@@ -828,11 +827,14 @@ if __name__ == "__main__":
                 print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n')
                 s_exit(1)
         else:
-            success_flag = 1
             tweak()
+            s_exit()
 
         # run function based on arguments
-        if (arg_count == 2 and arg_start == 0) or (arg_count == 3 and arg_start == 1):
+        if arg_count < 1:
+            no_arg()
+
+        elif (arg_count == 2 and arg_start == 0) or (arg_count == 3 and arg_start == 1):
             if arguments[arg_start] == 'copy':
                 if arguments[arg_start_p] == 'username' or arguments[arg_start_p] == '-u' or arguments[arg_start_p] == \
                         'password' or arguments[arg_start_p] == '-p' or arguments[arg_start_p] == 'url' or arguments[
@@ -885,7 +887,7 @@ if __name__ == "__main__":
             elif arguments[arg_start] == 'gen':
                 success_flag, sync_flag = True, True
                 gen()
-            elif arguments[arg_start]:
+            elif arguments[arg_start]:  # TODO shear
                 success_flag, sync_flag = True, True
                 remove_data()
 
