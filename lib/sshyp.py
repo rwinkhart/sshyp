@@ -128,7 +128,7 @@ def pass_gen():  # prompts the user for necessary information to generate a pass
             else:
                 break
     _complexity = str(input('password complexity - simple (for compatibility) or complex (for security)? (s/C) '))
-    if _complexity not in ['s', 'S']:
+    if _complexity not in ('s', 'S'):
         _complexity = 'c'
     _gen = string_gen(_complexity.lower(), _length)
     return _gen
@@ -236,7 +236,7 @@ def tweak():  # runs configuration wizard
     # config directory creation
     Path(expanduser('~/.config/sshyp/devices')).mkdir(mode=0o700, parents=True, exist_ok=True)
     if not Path(f"{expanduser('~/.config/sshyp/tmp')}").exists():
-        if uname()[0] in ['Haiku', 'FreeBSD']:
+        if uname()[0] in ('Haiku', 'FreeBSD'):
             symlink('/tmp', expanduser('~/.config/sshyp/tmp'))
         elif Path("/data/data/com.termux").exists():
             symlink('/data/data/com.termux/files/usr/tmp', expanduser('~/.config/sshyp/tmp'))
@@ -285,13 +285,13 @@ def tweak():  # runs configuration wizard
         _ssh_gen = (input(f"{_divider}make sure the ssh service on the remote server is running and properly "
                           f"configured\n\nsync support requires a unique ssh key - would you like to have this "
                           f"automatically generated? (Y/n/o(ffline)) "))
-        if _ssh_gen.lower() not in ['n', 'o', 'offline']:
+        if _ssh_gen.lower() not in ('n', 'o', 'offline'):
             Path(f"{expanduser('~')}/.ssh").mkdir(mode=0o700, exist_ok=True)
             run(['ssh-keygen', '-t', 'ed25519', '-f', expanduser('~/.ssh/sshyp')])
         elif _ssh_gen.lower() == 'n':
             print(f"\n\u001b[4;1mensure that the key file you are using is located at "
                   f"{expanduser('~/.ssh/sshyp')}\u001b[0m")
-        elif _ssh_gen.lower() in ['o', 'offline']:
+        elif _ssh_gen.lower() in ('o', 'offline'):
             _offline_mode = True
             print('\nsshyp has been set to offline mode - to enable syncing, run "sshyp tweak" again')
 
@@ -347,7 +347,7 @@ def tweak():  # runs configuration wizard
 
 
 def print_info():  # prints help text based on argument
-    if arguments[0] in ['version', '-v']:
+    if arguments[0] in ('version', '-v'):
         print('\nsshyp is a simple, self-hosted, sftp-synchronized password manager\nfor unix(-like) systems (haiku/'
               'freebsd/linux/termux)\n\nsshyp is a viable alternative to (and compatible with) pass/password-store\n')
         print("                ..       \u001b[38;5;9m♥♥ ♥♥\u001b[0m       ..\n         .''.''/()\\     \u001b[38;5;13m"
@@ -602,7 +602,7 @@ def add_entry():  # adds a new entry
     if Path(f"{directory}{_entry_name}.gpg").is_file():
         print(f"\n\u001b[38;5;9merror: entry (/{_entry_name}) already exists\u001b[0m\n")
         s_exit(3)
-    if arguments[arg_start_p] in ['note', '-n']:  # note entry
+    if arguments[arg_start_p] in ('note', '-n'):  # note entry
         _shm_folder, _shm_entry = shm_gen()
         run([editor, f"{tmp_dir}{_shm_folder}/{_shm_entry}-n"])
         _notes = open(f"{tmp_dir}{_shm_folder}/{_shm_entry}-n", 'r').read()
@@ -679,13 +679,13 @@ def edit():  # edits the contents of an entry
         s_exit(2)
     _shm_folder, _shm_entry = shm_gen()
     determine_decrypt(directory + _entry_name, _shm_folder, _shm_entry)
-    if arguments[arg_start_p] in ['username', '-u']:
+    if arguments[arg_start_p] in ('username', '-u'):
         _detail, _edit_line = str(input('username: ')), 1
-    elif arguments[arg_start_p] in ['password', '-p']:
+    elif arguments[arg_start_p] in ('password', '-p'):
         _detail, _edit_line = str(input('password: ')), 0
-    elif arguments[arg_start_p] in ['url', '-l']:
+    elif arguments[arg_start_p] in ('url', '-l'):
         _detail, _edit_line = str(input('url: ')), 2
-    if arguments[arg_start_p] in ['note', '-n']:
+    if arguments[arg_start_p] in ('note', '-n'):
         _edit_line = 2
         _new_lines = optimized_edit(edit_note(_shm_folder, _shm_entry,
                                               open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'r').readlines()), None, -1)
@@ -705,7 +705,7 @@ def gen():  # generates a password for a new or an existing entry
     else:
         _entry_name = entry_name_fetch()
     _shm_folder, _shm_entry = shm_gen()
-    if arg_count > 1 and arguments[arg_start_p] in ['update', '-u']:  # gen update
+    if arg_count > 1 and arguments[arg_start_p] in ('update', '-u'):  # gen update
         if not Path(f"{directory}{_entry_name}.gpg").is_file():
             print(f"\n\u001b[38;5;9merror: entry (/{_entry_name}) does not exist\u001b[0m\n")
             s_exit(2)
@@ -745,13 +745,13 @@ def copy_data():  # copies a specified field of an entry to the clipboard
     _shm_folder, _shm_entry = shm_gen()
     determine_decrypt(directory + _entry_name, _shm_folder, _shm_entry)
     _copy_line, _index = open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'r').readlines(), 0
-    if arguments[arg_start_p] in ['username', '-u']:
+    if arguments[arg_start_p] in ('username', '-u'):
         _index = 1
-    elif arguments[arg_start_p] in ['password', '-p']:
+    elif arguments[arg_start_p] in ('password', '-p'):
         _index = 0
-    elif arguments[arg_start_p] in ['url', '-l']:
+    elif arguments[arg_start_p] in ('url', '-l'):
         _index = 2
-    elif arguments[arg_start_p] in ['note', '-n']:
+    elif arguments[arg_start_p] in ('note', '-n'):
         _index = 3
     if 'WAYLAND_DISPLAY' in environ:  # Wayland clipboard detection
         run(['wl-copy', _copy_line[_index].rstrip()])
@@ -836,7 +836,7 @@ if __name__ == "__main__":
 
             elif (arg_count == 2 and arg_start == 0) or (arg_count == 3 and arg_start == 1):
                 if arguments[arg_start] == 'copy':
-                    if arguments[arg_start_p] in ['username', '-u', 'password', '-p', 'url', '-l', 'note', '-n']:
+                    if arguments[arg_start_p] in ('username', '-u', 'password', '-p', 'url', '-l', 'note', '-n'):
                         try:
                             success_flag = 1
                             copy_data()
@@ -844,20 +844,20 @@ if __name__ == "__main__":
                             print(f"\n\u001b[38;5;9merror: field does not exist in entry\u001b[0m\n")
                             s_exit(2)
                 elif arguments[arg_start] == 'add':
-                    if arguments[arg_start_p] in ['note', '-n', 'password', '-p']:
+                    if arguments[arg_start_p] in ('note', '-n', 'password', '-p'):
                         success_flag, sync_flag = True, True
                         add_entry()
-                    elif arguments[arg_start_p] in ['folder', '-f']:
+                    elif arguments[arg_start_p] in ('folder', '-f'):
                         success_flag = 1
                         add_folder()
                 elif arguments[arg_start] == 'edit':
-                    if arguments[arg_start_p] in ['rename', 'relocate', '-r']:
+                    if arguments[arg_start_p] in ('rename', 'relocate', '-r'):
                         success_flag, sync_flag, silent_sync = True, True, True
                         rename()
-                    elif arguments[arg_start_p] in ['username', '-u', 'password', '-p', 'url', '-l', 'note', '-n']:
+                    elif arguments[arg_start_p] in ('username', '-u', 'password', '-p', 'url', '-l', 'note', '-n'):
                         success_flag, sync_flag = True, True
                         edit()
-                elif arguments[arg_start] == 'gen' and arguments[arg_start_p] in ['update', '-u']:
+                elif arguments[arg_start] == 'gen' and arguments[arg_start_p] in ('update', '-u'):
                     success_flag, sync_flag = True, True
                     gen()
 
@@ -877,10 +877,10 @@ if __name__ == "__main__":
                 success_flag = True
                 whitelist_setup()
             elif arg_count > 1 and arguments[arg_start] == 'whitelist':
-                if arguments[arg_start_p] in ['list', '-l']:
+                if arguments[arg_start_p] in ('list', '-l'):
                     success_flag = True
                     whitelist_list()
-                elif arguments[arg_start_p] in ['add', 'del']:
+                elif arguments[arg_start_p] in ('add', 'del'):
                     success_flag = True
                     whitelist_manage()
 
