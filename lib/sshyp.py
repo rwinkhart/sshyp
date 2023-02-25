@@ -887,7 +887,7 @@ if __name__ == "__main__":
             elif arguments[arg_start] == 'gen':
                 success_flag, sync_flag = True, True
                 gen()
-            elif arguments[arg_start]:  # TODO shear
+            elif arguments[arg_start] == 'shear':
                 success_flag, sync_flag = True, True
                 remove_data()
 
