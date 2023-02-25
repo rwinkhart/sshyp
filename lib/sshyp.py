@@ -457,7 +457,7 @@ def print_info():  # prints help text based on argument
             print(' setup                   set up the quick-unlock whitelist')
             print(' list/-l                 view all registered device ids and their quick-unlock whitelist status')
             print(' add                     whitelist a device id for quick-unlock')
-            print(' delete/del              remove a device id from the quick-unlock whitelist\n')
+            print(' del                     remove a device id from the quick-unlock whitelist\n')
 
 
 def no_arg():  # displays a list of entries and gives an option to select one for viewing
@@ -881,7 +881,7 @@ if __name__ == "__main__":
                 if arguments[arg_start_p] == 'list' or arguments[arg_start_p] == '-l':
                     success_flag = True
                     whitelist_list()
-                elif arguments[arg_start_p] in ['add', 'delete', 'del']:
+                elif arguments[arg_start_p] in ['add', 'del']:
                     success_flag = True
                     whitelist_manage()
 
