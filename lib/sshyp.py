@@ -464,7 +464,7 @@ def no_arg():  # displays a list of entries and gives an option to select one fo
     print("\nfor a list of usable commands, run 'sshyp help'")
     _entry_name = entry_name_fetch('entry to read: ')
     if not Path(f"{directory}{_entry_name}.gpg").exists():
-        print(f"\n\u001b[38;5;9merror: entry ({_entry_name}) does not exist\u001b[0m\n")  # TODO display with starting '/' in ALL errors
+        print(f"\n\u001b[38;5;9merror: entry (/{_entry_name}) does not exist\u001b[0m\n")
         s_exit(2)
     _shm_folder, _shm_entry = shm_gen()
     determine_decrypt(directory + _entry_name, _shm_folder, _shm_entry)
@@ -474,7 +474,7 @@ def no_arg():  # displays a list of entries and gives an option to select one fo
 
 def read_shortcut():  # shortcut to quickly read an entry
     if not Path(f"{directory}{arguments[0].replace('/', '', 1)}.gpg").exists():
-        print(f"\n\u001b[38;5;9merror: entry ({arguments[0].replace('/', '', 1)}) does not exist\u001b[0m\n")
+        print(f"\n\u001b[38;5;9merror: entry (/{arguments[0].replace('/', '', 1)}) does not exist\u001b[0m\n")
         s_exit(2)
     _shm_folder, _shm_entry = shm_gen()
     determine_decrypt(directory + arguments[0].replace('/', '', 1), _shm_folder, _shm_entry)
@@ -600,7 +600,7 @@ def add_entry():  # adds a new entry
     else:
         _entry_name = entry_name_fetch()
     if Path(f"{directory}{_entry_name}.gpg").is_file():
-        print(f"\n\u001b[38;5;9merror: entry ({_entry_name}) already exists\u001b[0m\n")
+        print(f"\n\u001b[38;5;9merror: entry (/{_entry_name}) already exists\u001b[0m\n")
         s_exit(3)
     if arguments[arg_start_p] in ['note', '-n']:  # note entry
         _shm_folder, _shm_entry = shm_gen()
@@ -644,11 +644,11 @@ def rename():  # renames an entry or folder
     else:
         _entry_name = entry_name_fetch()
     if not Path(f"{directory}{_entry_name}.gpg").is_file() and not Path(f"{directory}{_entry_name}").is_dir():
-        print(f"\n\u001b[38;5;9merror: entry ({_entry_name}) does not exist\u001b[0m\n")
+        print(f"\n\u001b[38;5;9merror: entry (/{_entry_name}) does not exist\u001b[0m\n")
         s_exit(2)
     _new_name = entry_name_fetch('new name: ')
     if Path(f"{directory}{_new_name}.gpg").is_file() or Path(f"{directory}{_new_name}").is_dir():
-        print(f"\n\u001b[38;5;9merror: ({_new_name}) already exists\u001b[0m\n")
+        print(f"\n\u001b[38;5;9merror: (/{_new_name}) already exists\u001b[0m\n")
         s_exit(3)
     if _entry_name.endswith('/'):
         if not ssh_error:
@@ -675,7 +675,7 @@ def edit():  # edits the contents of an entry
     else:
         _entry_name = entry_name_fetch()
     if not Path(f"{directory}{_entry_name}.gpg").is_file():
-        print(f"\n\u001b[38;5;9merror: entry ({_entry_name}) does not exist\u001b[0m\n")
+        print(f"\n\u001b[38;5;9merror: entry (/{_entry_name}) does not exist\u001b[0m\n")
         s_exit(2)
     _shm_folder, _shm_entry = shm_gen()
     determine_decrypt(directory + _entry_name, _shm_folder, _shm_entry)
@@ -704,18 +704,23 @@ def gen():  # generates a password for a new or an existing entry
         _entry_name = entry_name_fetch('name of entry: ')
     else:
         _entry_name = entry_name_fetch()
-        if (arg_count > 2) and not Path(f"{directory}{_entry_name}.gpg").is_file():
-            print(f"\n\u001b[38;5;9merror: entry ({_entry_name}) does not exist\u001b[0m\n")
+    _shm_folder, _shm_entry = shm_gen()
+    if arg_count > 1 and arguments[arg_start_p] in ['update', '-u']:  # gen update
+        if not Path(f"{directory}{_entry_name}.gpg").is_file():
+            print(f"\n\u001b[38;5;9merror: entry (/{_entry_name}) does not exist\u001b[0m\n")
             s_exit(2)
-    if arg_count < 2 or (arg_start == 1 and arg_count < 3):
+        determine_decrypt(directory + _entry_name, _shm_folder, _shm_entry)
+        _new_lines = optimized_edit(open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'r').readlines(), pass_gen(), 0)
+        open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'w').writelines(_new_lines)
+        remove(f"{directory}{_entry_name}.gpg")
+    else:  # gen
         if Path(f"{directory}{_entry_name}.gpg").is_file():
-            print(f"\n\u001b[38;5;9merror: entry ({_entry_name}) already exists\u001b[0m\n")
+            print(f"\n\u001b[38;5;9merror: entry (/{_entry_name}) already exists\u001b[0m\n")
             s_exit(3)
         _username = str(input('username: '))
         _password = pass_gen()
         _url = str(input('url: '))
         _add_note = input('add a note to this entry? (y/N) ')
-        _shm_folder, _shm_entry = shm_gen()
         if _add_note.lower() == 'y':
             run([editor, f"{tmp_dir}{_shm_folder}/{_shm_entry}-n"])
             _notes = open(f"{tmp_dir}{_shm_folder}/{_shm_entry}-n", 'r').read()
@@ -723,12 +728,6 @@ def gen():  # generates a password for a new or an existing entry
             _notes = ''
         open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'w')\
             .writelines(optimized_edit([_password, _username, _url, _notes], None, -1))
-    else:
-        _shm_folder, _shm_entry = shm_gen()
-        determine_decrypt(directory + _entry_name, _shm_folder, _shm_entry)
-        _new_lines = optimized_edit(open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'r').readlines(), pass_gen(), 0)
-        open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'w').writelines(_new_lines)
-        remove(f"{directory}{_entry_name}.gpg")
     print('\n\u001b[1mentry preview:\u001b[0m')
     entry_reader(f"{tmp_dir}{_shm_folder}/{_shm_entry}")
     encrypt(directory + _entry_name, _shm_folder, _shm_entry, gpg_id)
@@ -741,7 +740,7 @@ def copy_data():  # copies a specified field of an entry to the clipboard
     else:
         _entry_name = entry_name_fetch()
     if not Path(f"{directory}{_entry_name}.gpg").is_file():
-        print(f"\n\u001b[38;5;9merror: entry ({_entry_name}) does not exist\u001b[0m\n")
+        print(f"\n\u001b[38;5;9merror: entry (/{_entry_name}) does not exist\u001b[0m\n")
         s_exit(2)
     _shm_folder, _shm_entry = shm_gen()
     determine_decrypt(directory + _entry_name, _shm_folder, _shm_entry)
@@ -837,7 +836,7 @@ if __name__ == "__main__":
 
             elif (arg_count == 2 and arg_start == 0) or (arg_count == 3 and arg_start == 1):
                 if arguments[arg_start] == 'copy':
-                    if arguments[arg_start_p] in ['username', '-u', 'password', '-p', 'url', '-l', 'note', '-n']:  # TODO use 'in' syntax more broadly
+                    if arguments[arg_start_p] in ['username', '-u', 'password', '-p', 'url', '-l', 'note', '-n']:
                         try:
                             success_flag = 1
                             copy_data()
