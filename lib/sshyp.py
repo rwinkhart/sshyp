@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import os
 from os import chmod, environ, listdir, remove, uname, walk
 from os.path import expanduser
 from pathlib import Path
@@ -464,7 +465,12 @@ def no_arg():  # displays a list of entries and gives an option to select one fo
     print("\nfor a list of usable commands, run 'sshyp help'")
     _entry_name = entry_name_fetch('entry to read: ')
     if not Path(f"{directory}{_entry_name}.gpg").exists():
-        print(f"\n\u001b[38;5;9merror: entry (/{_entry_name}) does not exist\u001b[0m\n")
+        if not _entry_name:
+            print(f"\n\u001b[38;5;9merror: missing entry name\u001b[0m\n")
+        elif os.path.isdir(f"{directory}{_entry_name}"):
+            print(f"\n\u001b[38;5;9merror: entry ({_entry_name}) is a directory\u001b[0m\n")
+        else:
+            print(f"\n\u001b[38;5;9merror: entry ({_entry_name}) does not exist\u001b[0m\n")
         s_exit(2)
     _shm_folder, _shm_entry = shm_gen()
     determine_decrypt(directory + _entry_name, _shm_folder, _shm_entry)
@@ -474,7 +480,12 @@ def no_arg():  # displays a list of entries and gives an option to select one fo
 
 def read_shortcut():  # shortcut to quickly read an entry
     if not Path(f"{directory}{arguments[0].replace('/', '', 1)}.gpg").exists():
-        print(f"\n\u001b[38;5;9merror: entry (/{arguments[0].replace('/', '', 1)}) does not exist\u001b[0m\n")
+        if not arguments[0].replace('/', '', 1):
+            print(f"\n\u001b[38;5;9merror: missing entry name\u001b[0m\n")
+        elif os.path.isdir(f"{directory}{arguments[0].replace('/', '', 1)}"):
+            print(f"\n\u001b[38;5;9merror: entry ({arguments[0].replace('/', '', 1)}) is a directory\u001b[0m\n")
+        else:
+            print(f"\n\u001b[38;5;9merror: entry ({arguments[0].replace('/', '', 1)}) does not exist\u001b[0m\n")
         s_exit(2)
     _shm_folder, _shm_entry = shm_gen()
     determine_decrypt(directory + arguments[0].replace('/', '', 1), _shm_folder, _shm_entry)
