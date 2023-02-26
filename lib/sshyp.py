@@ -805,6 +805,7 @@ def extension_runner():
                 _output_com = _extension_config.get('config', 'output').split()
     if _output_com is not None:
         run(_output_com)
+        s_exit()
     else:
         print_info()
 
