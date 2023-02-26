@@ -9,7 +9,7 @@ fi
 
 _create_generic() {
     echo -e '\npackaging as generic...\n'
-    mkdir -p output/generictemp/usr/{bin,lib/sshyp,share/{man/man1,bash-completion/completions}}
+    mkdir -p output/generictemp/usr/{bin,lib/sshyp/extensions,share/{man/man1,bash-completion/completions}}
     cp -r lib/. output/generictemp/usr/lib/sshyp/
     ln -s /usr/lib/sshyp/sshyp.py output/generictemp/usr/bin/sshyp
     cp -r share output/generictemp/usr/
@@ -74,7 +74,7 @@ sha512sums=\"
 
 _create_hpkg() {
     echo -e '\npackaging for Haiku...\n'
-    mkdir -p output/haikutemp/{bin,lib/sshyp,documentation/{packages/sshyp,man/man1},data/bash-completion/completions}
+    mkdir -p output/haikutemp/{bin,lib/sshyp/extensions,documentation/{packages/sshyp,man/man1},data/bash-completion/completions}
     echo "name			sshyp
 version			"$version"-"$revision"
 architecture		any
@@ -121,7 +121,7 @@ urls {
 
 _create_deb() {
     echo -e '\npackaging for Debian/Ubuntu...\n'
-    mkdir -p output/debiantemp/sshyp_"$version"-"$revision"_all/{DEBIAN,usr/{lib/sshyp,bin,share/{bash-completion/completions,man/man1}}}
+    mkdir -p output/debiantemp/sshyp_"$version"-"$revision"_all/{DEBIAN,usr/{lib/sshyp/extensions,bin,share/{bash-completion/completions,man/man1}}}
     echo "Package: sshyp
 Version: $version
 Section: utils
@@ -147,7 +147,7 @@ Installed-Size: 14584
 
 _create_termux() {
     echo -e '\npackaging for Termux...\n'
-    mkdir -p output/termuxtemp/sshyp_"$version"-"$revision"_all_termux/{DEBIAN,data/data/com.termux/files/usr/{lib/sshyp,bin,share/{bash-completion/completions,man/man1}}}
+    mkdir -p output/termuxtemp/sshyp_"$version"-"$revision"_all_termux/{DEBIAN,data/data/com.termux/files/usr/{lib/sshyp/extensions,bin,share/{bash-completion/completions,man/man1}}}
     echo "Package: sshyp
 Version: $version
 Section: utils
@@ -209,7 +209,7 @@ echo -e "\nFedora packaging complete\n"
 
 _create_freebsd_pkg() {
     echo -e '\npackaging for FreeBSD...'
-    mkdir -p output/freebsdtemp/usr/{lib/sshyp,bin,share/{bash-completion/completions,man/man1}}
+    mkdir -p output/freebsdtemp/usr/{lib/sshyp/extensions,bin,share/{bash-completion/completions,man/man1}}
     echo "name: sshyp
 version: \""$version"\"
 abi = \"FreeBSD:13:*\";

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from os import chmod, environ, listdir, remove, uname, walk
-from os.path import expanduser, isdir
+from os.path import expanduser, isdir, realpath
 from pathlib import Path
 from random import randint
 from shutil import get_terminal_size, move, rmtree
@@ -791,6 +791,24 @@ def remove_data():  # deletes an entry from the server and flags it for local de
         offline_delete(_entry_name, 'locally')
 
 
+def extension_runner():
+    from configparser import ConfigParser
+    _output_com, _extension_dir = None, realpath(__file__).rsplit('/', 1)[0] + '/extensions/'
+    for _extension in listdir(_extension_dir):
+        _extension_config = ConfigParser()
+        _extension_config.read(_extension_dir + _extension)
+        _input_com = _extension_config.get('config', 'input').split()
+        if _input_com == arguments[arg_start:]:
+            if arg_start == 1:
+                _output_com = _extension_config.get('config', 'output').split().insert(0, arguments[0])
+            else:
+                _output_com = _extension_config.get('config', 'output').split()
+    if _output_com is not None:
+        run(_output_com)
+    else:
+        print_info()
+
+
 if __name__ == "__main__":
     try:
         ssh_error, success_flag, sync_flag, silent_sync = False, False, False, False
@@ -895,7 +913,10 @@ if __name__ == "__main__":
                     whitelist_manage()
 
         if success_flag == 0 and arguments[0] != 'sync':
-            print_info()
+            if device_type == 'client' and arguments[arg_start] not in ('help', '-h'):
+                extension_runner()
+            else:
+                print_info()
         elif (not ssh_error and sync_flag) or arguments[0] == 'sync':
             sync()
 
