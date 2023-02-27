@@ -715,7 +715,8 @@ def gen():  # generates a password for a new or an existing entry
     else:
         _entry_name = entry_name_fetch()
     _shm_folder, _shm_entry = shm_gen()
-    if arg_count > 1 and arguments[arg_start_p] in ('update', '-u'):  # gen update
+    if ((arg_count == 2 and arg_start == 0) or (arg_count == 3 and arg_start == 1)) and arguments[arg_start_p] \
+            in ('update', '-u'):  # gen update
         if not Path(f"{directory}{_entry_name}.gpg").is_file():
             print(f"\n\u001b[38;5;9merror: entry (/{_entry_name}) does not exist\u001b[0m\n")
             s_exit(2)
