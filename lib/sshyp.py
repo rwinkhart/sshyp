@@ -901,16 +901,16 @@ if __name__ == "__main__":
                     remove_data()
 
         else:  # server arguments
-            if arg_count == 1 and arguments[arg_start_p] == 'setup':
-                success_flag = True
-                whitelist_setup()
-            elif arg_count > 1 and arguments[arg_start] == 'whitelist':
-                if arguments[arg_start_p] in ('list', '-l'):
+            if arg_count > 1 and arguments[0] == 'whitelist':
+                if arguments[1] in ('list', '-l'):
                     success_flag = True
                     whitelist_list()
-                elif arguments[arg_start_p] in ('add', 'del'):
+                elif arguments[1] in ('add', 'del'):
                     success_flag = True
                     whitelist_manage()
+                elif arguments[1] == 'setup':
+                    success_flag = True
+                    whitelist_setup()
 
         if success_flag == 0 and arguments[0] != 'sync':
             if device_type == 'client' and arguments[arg_start] not in ('help', '-h'):
