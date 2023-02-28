@@ -1,10 +1,10 @@
-.TH sshyp 1 "25 February 2023" "v1.4.0" "sshyp man page"
+.TH sshyp 1 "28 February 2023" "v1.4.0" "sshyp man page"
 .SH NAME
 sshyp \- A very simple self-hosted, synchronized password manager for UNIX(-like) systems. Alternative to (and compatible with) pass/password-store.
 .SH SYNOPSIS
-Client Usage: sshyp [/<entry name>] [option [flag]]
+Client Usage: sshyp [</entry name> [option] [flag]] [option]
 
-Server Usage: sshyp [option [flag] [<device id>]]
+Server Usage: sshyp <option> [flag] [<device id>]
 .SH DESCRIPTION
 sshyp is a lightweight password and note management program written in Python. sshyp is used via CLI and is self-hosted with a client-server model. sshyp expects that you have access to a personal server with a properly configured ssh server, ideally accepting remote connections.
 .SH EXAMPLES (CLIENT)

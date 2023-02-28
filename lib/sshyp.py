@@ -364,14 +364,14 @@ def print_info():  # prints help text based on argument
               'warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\nSee the GNU General Public License for'
               ' more details.\n\nhttps://opensource.org/licenses/GPL-3.0\n')
     elif arguments[0] == 'add' and device_type == 'client':
-        print('\n\u001b[1musage:\u001b[0m sshyp add [flag [<entry name>]]\u001b[0m\n')
+        print('\n\u001b[1musage:\u001b[0m sshyp </entry name> add <flag>\u001b[0m\n')
         print('\u001b[1mflags:\u001b[0m')
         print('add:')
         print(' password/-p             add a password entry')
         print(' note/-n                 add a note entry')
         print(' folder/-f               add a new folder for entries\n')
     elif arguments[0] == 'edit' and device_type == 'client':
-        print('\n\u001b[1musage:\u001b[0m sshyp edit [flag [<entry name>]]\u001b[0m\n')
+        print('\n\u001b[1musage:\u001b[0m sshyp </entry name> edit <flag>\u001b[0m\n')
         print('\u001b[1mflags:\u001b[0m')
         print('edit:')
         print(' rename/relocate/-r      rename or relocate an entry')
@@ -380,7 +380,7 @@ def print_info():  # prints help text based on argument
         print(' url/-l                  change the url attached to an entry')
         print(' note/-n                 change the note attached to an entry\n')
     elif arguments[0] == 'copy' and device_type == 'client':
-        print('\n\u001b[1musage:\u001b[0m sshyp copy [flag [<entry name>]]\u001b[0m\n')
+        print('\n\u001b[1musage:\u001b[0m sshyp </entry name> copy <flag>\u001b[0m\n')
         print('\u001b[1mflags:\u001b[0m')
         print('copy:')
         print(' username/-u             copy the username of an entry to your clipboard')
@@ -389,7 +389,7 @@ def print_info():  # prints help text based on argument
         print(' note/-n                 copy the note of an entry to your clipboard\n')
     elif arguments[0] == 'whitelist':
         if device_type == 'server':
-            print('\n\u001b[1musage:\u001b[0m sshyp whitelist [flag [<device id>]]\u001b[0m\n')
+            print('\n\u001b[1musage:\u001b[0m sshyp whitelist <flag> [device id]\u001b[0m\n')
             print('\u001b[1mflags:\u001b[0m')
             print('whitelist:')
             print(' setup                   set up the quick-unlock whitelist')
@@ -403,7 +403,7 @@ def print_info():  # prints help text based on argument
         print("this is free software, and you are welcome to redistribute it under certain conditions;\nthis program "
               "comes with absolutely no warranty;\ntype 'sshyp license' for details")
         if device_type == 'client':
-            print('\n\u001b[1musage:\u001b[0m sshyp [/<entry name>] [option [flag]]\n')
+            print('\n\u001b[1musage:\u001b[0m sshyp [</entry name> [option] [flag]] [option]\n')
             print('\u001b[1moptions:\u001b[0m')
             print('help/-h                  bring up this menu')
             print('version/-v               display sshyp version info')
@@ -435,7 +435,7 @@ def print_info():  # prints help text based on argument
             print("\n\u001b[1mtip 1:\u001b[0m you can quickly read an entry with 'sshyp /<entry name>'")
             print("\u001b[1mtip 2:\u001b[0m type 'sshyp' to view a list of saved entries\n")
         else:
-            print('\n\u001b[1musage:\u001b[0m sshyp [option [flag] [<device id>]]\n')
+            print('\n\u001b[1musage:\u001b[0m sshyp <option> [flag] [<device id>]\n')
             print('\u001b[1moptions:\u001b[0m')
             print('help/-h                  bring up this menu')
             print('version/-v               display sshyp version info')
