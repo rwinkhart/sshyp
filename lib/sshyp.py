@@ -747,19 +747,22 @@ def remove_data():  # deletes an entry from the server and flags it for local de
 def extension_runner():  # checks extension config files for matches to argument, runs extensions
     from configparser import ConfigParser
     _output_com, _extension_dir = None, realpath(__file__).rsplit('/', 1)[0] + '/extensions/'
-    for _extension in listdir(_extension_dir):
-        _extension_config = ConfigParser()
-        _extension_config.read(_extension_dir + _extension)
-        _input_com = _extension_config.get('config', 'input').split()
-        if _input_com == arguments[arg_start:]:
-            _output_com = _extension_config.get('config', 'output').split()
-            if arg_start == 1:
-                _output_com.append(arguments[0])
-    if _output_com is not None:
-        run(_output_com)
-        s_exit()
+    if isdir(_extension_dir):
+        for _extension in listdir(_extension_dir):
+            _extension_config = ConfigParser()
+            _extension_config.read(_extension_dir + _extension)
+            _input_com = _extension_config.get('config', 'input').split()
+            if _input_com == arguments[arg_start:]:
+                _output_com = _extension_config.get('config', 'output').split()
+                if arg_start == 1:
+                    _output_com.append(arguments[0])
+        if _output_com is not None:
+            run(_output_com)
+        else:
+            print_info()
     else:
         print_info()
+    s_exit()
 
 
 if __name__ == "__main__":
