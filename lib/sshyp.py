@@ -13,47 +13,29 @@ from sys import argv, exit as s_exit
 
 def entry_list_gen(_directory=expanduser('~/.local/share/sshyp/')):  # generates and prints full entry list
     from textwrap import fill
+    _ran = False
     print("\nfor a list of usable commands, run 'sshyp help'\n\n\u001b[38;5;0;48;5;15msshyp entries:\u001b[0m\n")
-    _entry_list, _color_alternator = [], 1
-    for _entry in sorted(listdir(_directory)):
-        if Path(f"{_directory}{_entry}").is_file():
-            if _color_alternator == 1:
-                _entry_list.append(f"{_entry.replace('.gpg', '')}")
-                _color_alternator = 2
+    for _root, _dirs, _files in sorted(walk(_directory, topdown=True)):
+        _entry_list, _color_alternator = [], 1
+        if _ran:
+            print(f"\u001b[38;5;15;48;5;238m{_root.replace(expanduser('~/.local/share/sshyp'), '', 1)}/\u001b[0m")
+        else:
+            _ran = True
+        for filename in sorted(_files):
+            if _color_alternator > 0:
+                _entry_list.append(filename[:-4])
             else:
-                _entry_list.append(f"\u001b[38;5;8m{_entry.replace('.gpg', '')}\u001b[0m")
-                _color_alternator = 1
-    _real = len(' '.join(_entry_list)) - (5.5 * len(_entry_list))
-    if _real <= get_terminal_size()[0]:
-        _width = len(' '.join(_entry_list))
-    else:
-        _width = (len(' '.join(_entry_list)) / (_real / get_terminal_size()[0]) - 25)
-    try:
-        print(fill(' '.join(_entry_list), width=_width) + '\n')
-    except ValueError:
-        pass
-    for _root, _dirs, _files in walk(_directory):
-        for _dir in sorted(_dirs):
-            _inner_dir = f"{_root.replace(_directory, '')}/{_dir}"
-            print(f"\u001b[38;5;15;48;5;238m{_inner_dir}/\u001b[0m")
-            _entry_list, _color_alternator = [], 1
-            for _s_root, _s_directories, _s_files in walk(f"{_directory[:-1]}{_inner_dir}"):
-                for _entry in sorted(_s_files):
-                    if _color_alternator == 1:
-                        _entry_list.append(f"{_entry.replace('.gpg', '')}")
-                        _color_alternator = 2
-                    else:
-                        _entry_list.append(f"\u001b[38;5;8m{_entry.replace('.gpg', '')}\u001b[0m")
-                        _color_alternator = 1
-            _real = len(' '.join(_entry_list)) - (5.5 * len(_entry_list))
-            if _real <= get_terminal_size()[0]:
-                _width = len(' '.join(_entry_list))
-            else:
-                _width = (len(' '.join(_entry_list)) / (_real / get_terminal_size()[0]) - 25)
-            try:
-                print(fill(' '.join(_entry_list), width=_width) + '\n')
-            except ValueError:
-                print('\u001b[38;5;9m-empty directory-\u001b[0m\n')
+                _entry_list.append(f"\u001b[38;5;8m{filename[:-4]}\u001b[0m")
+            _color_alternator = _color_alternator * -1
+        _real = len(' '.join(_entry_list)) - (5.5 * len(_entry_list))
+        if _real <= get_terminal_size()[0]:
+            _width = len(' '.join(_entry_list))
+        else:
+            _width = (len(' '.join(_entry_list)) / (_real / get_terminal_size()[0]) - 25)
+        if len(_entry_list) > 0:
+            print(fill(' '.join(_entry_list), width=_width) + '\n')
+        else:
+            print('\u001b[38;5;9m-empty directory-\u001b[0m\n')
 
 
 def entry_reader(_decrypted_entry):  # displays the contents of an entry in a readable format
