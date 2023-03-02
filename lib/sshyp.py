@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from os import chmod, environ, listdir, remove, uname, walk
-from os.path import expanduser, isdir, realpath
+from os.path import exists, expanduser, isdir, isfile, realpath
 from pathlib import Path
 from random import randint
 from shutil import get_terminal_size, move, rmtree
@@ -205,10 +205,10 @@ def tweak():  # runs configuration wizard
 
     # config directory creation
     Path(expanduser('~/.config/sshyp/devices')).mkdir(mode=0o700, parents=True, exist_ok=True)
-    if not Path(f"{expanduser('~/.config/sshyp/tmp')}").exists():
+    if not exists(expanduser('~/.config/sshyp/tmp')):
         if uname()[0] in ('Haiku', 'FreeBSD'):
             symlink('/tmp', expanduser('~/.config/sshyp/tmp'))
-        elif Path("/data/data/com.termux").exists():
+        elif exists('/data/data/com.termux'):
             symlink('/data/data/com.termux/files/usr/tmp', expanduser('~/.config/sshyp/tmp'))
         else:
             symlink('/dev/shm', expanduser('~/.config/sshyp/tmp'))
@@ -232,7 +232,7 @@ def tweak():  # runs configuration wizard
             _sshyp_data.append(str(input('gpg key id: ')))
         else:
             print('\na unique gpg key is being generated for you...')
-            if not Path(expanduser('~/.config/sshyp/gpg-gen')).is_file():
+            if not isfile(expanduser('~/.config/sshyp/gpg-gen')):
                 open(expanduser('~/.config/sshyp/gpg-gen'), 'w').writelines([
                     'Key-Type: 1\n', 'Key-Length: 4096\n', 'Key-Usage: sign encrypt\n', 'Name-Real: sshyp\n',
                     'Name-Comment: gpg-sshyp\n', 'Name-Email: https://github.com/rwinkhart/sshyp\n', 'Expire-Date: 0'])
@@ -244,7 +244,7 @@ def tweak():  # runs configuration wizard
         _sshyp_data.append(input(f"{_divider}example input: vim\n\npreferred text editor: "))
 
         # lock file generation
-        if Path(expanduser('~/.config/sshyp/lock.gpg')).is_file():
+        if isfile(expanduser('~/.config/sshyp/lock.gpg')):
             remove(expanduser('~/.config/sshyp/lock.gpg'))
         open(expanduser('~/.config/sshyp/lock'), 'w')
         run(['gpg', '-qr', str(_sshyp_data[1]), '-e', expanduser('~/.config/sshyp/lock')])
@@ -301,7 +301,7 @@ def tweak():  # runs configuration wizard
             # test server connection and attempt to register device id
             copy_id_check(_iport[1], _username_ssh, _iport[0], _device_id)
 
-        elif Path(expanduser('~/.config/sshyp/sshyp.sshync')).is_file():
+        elif isfile(expanduser('~/.config/sshyp/sshyp.sshync')):
             remove(expanduser('~/.config/sshyp/sshyp.sshync'))
 
     # write main config file (sshyp-data)
@@ -432,7 +432,7 @@ def print_info():  # prints help text based on argument
 
 
 def read_shortcut():  # shortcut to quickly read an entry
-    if not Path(f"{directory}{arguments[0].replace('/', '', 1)}.gpg").exists():
+    if not exists(f"{directory}{arguments[0].replace('/', '', 1)}.gpg"):
         if not arguments[0].replace('/', '', 1):
             print(f"\n\u001b[38;5;9merror: missing entry name\u001b[0m\n")
         elif isdir(f"{directory}{arguments[0].replace('/', '', 1)}"):
@@ -552,7 +552,7 @@ def whitelist_manage():  # adds or removes quick-unlock whitelisted device ids
             print(f"\n\u001b[38;5;9merror: device id ({_device_id}) is not registered\u001b[0m\n")
             s_exit(1)
 
-    elif Path(expanduser(f"~/.config/sshyp/whitelist/{_device_id}")).is_file():
+    elif isfile(expanduser(f"~/.config/sshyp/whitelist/{_device_id}")):
         remove(expanduser(f"~/.config/sshyp/whitelist/{_device_id}"))
         whitelist_list()
 
@@ -560,7 +560,7 @@ def whitelist_manage():  # adds or removes quick-unlock whitelisted device ids
 def add_entry():  # adds a new entry
     _shm_folder, _shm_entry = None, None  # set to avoid PEP8 warnings
     _entry_name = arguments[0]
-    if Path(f"{directory}{_entry_name}.gpg").is_file():
+    if isfile(f"{directory}{_entry_name}.gpg"):
         print(f"\n\u001b[38;5;9merror: entry (/{_entry_name}) already exists\u001b[0m\n")
         s_exit(3)
     if arguments[2] in ('note', '-n'):  # note entry
@@ -598,13 +598,13 @@ def add_folder():  # creates a new folder
 def rename():  # renames an entry or folder
     from shutil import copy
     _entry_name = arguments[0]
-    if not Path(f"{directory}{_entry_name}.gpg").is_file() and not Path(f"{directory}{_entry_name}").is_dir():
+    if not isfile(f"{directory}{_entry_name}.gpg") and not isdir(f"{directory}{_entry_name}"):
         print(f"\n\u001b[38;5;9merror: entry (/{_entry_name}) does not exist\u001b[0m\n")
         s_exit(2)
     _new_name = str(input('new name: '))
     if _new_name.startswith('/'):
         _new_name.replace('/', '', 1)
-    if Path(f"{directory}{_new_name}.gpg").is_file() or Path(f"{directory}{_new_name}").is_dir():
+    if isfile(f"{directory}{_new_name}.gpg") or isdir(f"{directory}{_new_name}"):
         print(f"\n\u001b[38;5;9merror: (/{_new_name}) already exists\u001b[0m\n")
         s_exit(3)
     if _entry_name.endswith('/'):
@@ -628,7 +628,7 @@ def rename():  # renames an entry or folder
 def edit():  # edits the contents of an entry
     _shm_folder, _shm_entry, _detail, _edit_line = None, None, None, None  # set to avoid PEP8 warnings
     _entry_name = arguments[0]
-    if not Path(f"{directory}{_entry_name}.gpg").is_file():
+    if not isfile(f"{directory}{_entry_name}.gpg"):
         print(f"\n\u001b[38;5;9merror: entry (/{_entry_name}) does not exist\u001b[0m\n")
         s_exit(2)
     _shm_folder, _shm_entry = shm_gen()
@@ -657,17 +657,17 @@ def gen():  # generates a password for a new or an existing entry
     _entry_name = arguments[0]
     _shm_folder, _shm_entry = shm_gen()
     if arg_count == 3 and arguments[2] in ('update', '-u'):  # gen update
-        if not Path(f"{directory}{_entry_name}.gpg").is_file():
+        if not isfile(f"{directory}{_entry_name}.gpg"):
             print(f"\n\u001b[38;5;9merror: entry (/{_entry_name}) does not exist\u001b[0m\n")
             s_exit(2)
         determine_decrypt(directory + _entry_name, _shm_folder, _shm_entry)
         _new_lines = optimized_edit(open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'r').readlines(), pass_gen(), 0)
         open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'w').writelines(_new_lines)
         remove(f"{directory}{_entry_name}.gpg")
-    else:  # gen
-        if Path(f"{directory}{_entry_name}.gpg").is_file():
-            print(f"\n\u001b[38;5;9merror: entry (/{_entry_name}) already exists\u001b[0m\n")
-            s_exit(3)
+    elif isfile(f"{directory}{_entry_name}.gpg"):  # gen
+        print(f"\n\u001b[38;5;9merror: entry (/{_entry_name}) already exists\u001b[0m\n")
+        s_exit(3)
+    else:
         _username = str(input('username: '))
         _password = pass_gen()
         _url = str(input('url: '))
@@ -687,7 +687,7 @@ def gen():  # generates a password for a new or an existing entry
 def copy_data():  # copies a specified field of an entry to the clipboard
     from subprocess import Popen
     _entry_name = arguments[0]
-    if not Path(f"{directory}{_entry_name}.gpg").is_file():
+    if not isfile(f"{directory}{_entry_name}.gpg"):
         print(f"\n\u001b[38;5;9merror: entry (/{_entry_name}) does not exist\u001b[0m\n")
         s_exit(2)
     _shm_folder, _shm_entry = shm_gen()
@@ -707,7 +707,7 @@ def copy_data():  # copies a specified field of an entry to the clipboard
     elif uname()[0] == 'Haiku':  # Haiku clipboard detection
         run(['clipboard', '-c', _copy_line[_index].rstrip()])
         Popen('sleep 30; clipboard -r', shell=True)
-    elif Path("/data/data/com.termux").exists():  # Termux (Android) clipboard detection
+    elif exists("/data/data/com.termux"):  # Termux (Android) clipboard detection
         run(['termux-clipboard-set', _copy_line[_index].rstrip()])
         Popen("sleep 30; termux-clipboard-set ''", shell=True)
     else:  # X11 clipboard detection
@@ -771,7 +771,7 @@ if __name__ == "__main__":
                     gpg_id = sshyp_data[1].rstrip()
                     editor = sshyp_data[2].rstrip()
                     quick_unlock_enabled = sshyp_data[3].rstrip()
-                    if Path(expanduser('~/.config/sshyp/sshyp.sshync')).is_file():
+                    if isfile(expanduser('~/.config/sshyp/sshyp.sshync')):
                         ssh_info = get_profile(expanduser('~/.config/sshyp/sshyp.sshync'))
                         username_ssh = ssh_info[0].rstrip()
                         ip = ssh_info[1].rstrip()

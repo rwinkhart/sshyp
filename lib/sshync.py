@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from os import listdir, remove, walk
-from os.path import expanduser, getmtime, join
+from os.path import expanduser, isdir, getmtime, join
 from subprocess import CalledProcessError, PIPE, run
 from sys import exit as s_exit
 
@@ -87,7 +87,7 @@ def deletion_sync(_deletion_database, _silent):  # checks for and acts upon file
 def folder_sync(_folder_database):  # creates matches of remote folders on the local client
     from pathlib import Path
     for _folder in _folder_database:
-        if _folder != '' and not Path(f"{expanduser('~')}{_folder}").is_dir():
+        if _folder != '' and not isdir(f"{expanduser('~')}{_folder}"):
             print(f"\u001b[38;5;2m{_folder.replace('/.local/share/sshyp/', '')}/\u001b[0m does not exist locally, "
                   f"creating...")
             Path(f"{expanduser('~')}{_folder}").mkdir(mode=0o700, parents=True, exist_ok=True)
