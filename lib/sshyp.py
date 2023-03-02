@@ -827,15 +827,16 @@ if __name__ == "__main__":
                     gen()
 
             elif arg_count == 2 and arg_start == 1:
-                if arg_count == 1:
-                    success_flag = True
-                    read_shortcut()
-                elif arguments[1] == 'gen':
+                if arguments[1] == 'gen':
                     success_flag, sync_flag = True, True
                     gen()
                 elif arguments[1] == 'shear':
                     success_flag, sync_flag = True, True
                     remove_data()
+
+            elif arg_count == 1 and arg_start == 1:
+                success_flag = True
+                read_shortcut()
 
         elif arg_count == 0:  # server arguments
             if arg_count > 1 and arguments[0] == 'whitelist':
