@@ -32,11 +32,12 @@ def remote_list_gen(_client_device_name, _remote_dir):  # prints all necessary r
 
 def delete(_file_path, _target_database):  # deletes a file or folder and/or marks it for deletion upon syncing
     from shutil import rmtree
+    _directory = f"{home}/.local/share/sshyp/"
     try:
-        if _file_path.endswith('/'):  # TODO properly check if _file_path is a directory
-            rmtree(f"{home}/.local/share/sshyp/{_file_path}")
+        if isdir(_directory + _file_path):
+            rmtree(_directory + _file_path)
         else:
-            remove(f"{home}/.local/share/sshyp/{_file_path}.gpg")
+            remove(f"{_directory}{_file_path}.gpg")
     except FileNotFoundError:
         print(f"location does not exist {_target_database}")
     if _target_database == 'remotely':

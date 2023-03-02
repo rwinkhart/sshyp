@@ -595,16 +595,25 @@ def add_folder():  # creates a new folder
 
 def rename():  # renames an entry or folder
     from shutil import copy
-    if not isfile(f"{directory}{entry_name}.gpg") and not isdir(f"{directory}{entry_name}"):
-        print(f"\n\u001b[38;5;9merror: entry (/{entry_name}) does not exist\u001b[0m\n")
+    _file = True
+    if not exists(f"{directory}{entry_name}.gpg") and not exists(f"{directory}{entry_name}"):
+        print(f"\n\u001b[38;5;9merror: (/{entry_name}) does not exist\u001b[0m\n")
         s_exit(2)
-    _new_name = str(input('new name: '))
-    if _new_name.startswith('/'):
-        _new_name = _new_name[1:]
-    if isfile(f"{directory}{_new_name}.gpg") or isdir(f"{directory}{_new_name}"):
-        print(f"\n\u001b[38;5;9merror: (/{_new_name}) already exists\u001b[0m\n")
-        s_exit(3)
-    if entry_name.endswith('/'):  # TODO properly check if entry_name is a directory
+    elif not isfile(f"{directory}{entry_name}.gpg"):
+        _file = False
+    _new_name = str(input('new name: ')).strip('/')
+    if _file:  # if renaming a file
+        if isfile(f"{directory}{_new_name}.gpg"):  # check if the new file already exists
+            print(f"\n\u001b[38;5;9merror: (/{_new_name}) already exists\u001b[0m\n")
+            s_exit(3)
+        if not ssh_error:
+            copy(f"{directory}{entry_name}.gpg", f"{directory}{_new_name}.gpg")
+        else:
+            move(f"{directory}{entry_name}.gpg", f"{directory}{_new_name}.gpg")
+    else:  # if renaming a folder
+        if isdir(f"{directory}{_new_name}"):  # check if the new folder already exists
+            print(f"\n\u001b[38;5;9merror: (/{_new_name}/) already exists\u001b[0m\n")
+            s_exit(3)
         if not ssh_error:
             Path(f"{directory}{_new_name}").mkdir(mode=0o700, parents=True, exist_ok=True)
             run(['ssh', '-i', f"{home}/.ssh/sshyp", '-p', port, f"{username_ssh}@{ip}",
@@ -612,11 +621,6 @@ def rename():  # renames an entry or folder
                  f'.mkdir(mode=0o700, parents=True, exist_ok=True)\''])
         else:
             move(f"{directory}{entry_name}", f"{directory}{_new_name}")
-    else:
-        if not ssh_error:
-            copy(f"{directory}{entry_name}.gpg", f"{directory}{_new_name}.gpg")
-        else:
-            move(f"{directory}{entry_name}.gpg", f"{directory}{_new_name}.gpg")
     if not ssh_error:
         run(['ssh', '-i', f"{home}/.ssh/sshyp", '-p', port, f"{username_ssh}@{ip}",
              f'cd /lib/sshyp; python3 -c \'from sshync import delete; delete("{entry_name}", "remotely")\''])
@@ -751,7 +755,7 @@ if __name__ == "__main__":
         if arg_count < 1 or (arg_count > 0 and arguments[0] != 'tweak'):
             if arg_count > 0 and arguments[0].startswith('/'):
                 arg_start = 1
-                entry_name = arguments[0][1:]
+                entry_name = arguments[0].strip('/')
             else:
                 arg_start = 0
 
