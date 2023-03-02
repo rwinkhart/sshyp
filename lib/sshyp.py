@@ -7,18 +7,19 @@ from shutil import get_terminal_size, move, rmtree
 from sshync import delete as offline_delete, run_profile, make_profile, get_profile
 from subprocess import CalledProcessError, DEVNULL, PIPE, run
 from sys import argv, exit as s_exit
+home = expanduser("~")
 
 
 # UTILITY FUNCTIONS
 
-def entry_list_gen(_directory=expanduser('~/.local/share/sshyp/')):  # generates and prints full entry list
+def entry_list_gen(_directory=f"{home}/.local/share/sshyp/"):  # generates and prints full entry list
     from textwrap import fill
     _ran = False
     print("\nfor a list of usable commands, run 'sshyp help'\n\n\u001b[38;5;0;48;5;15msshyp entries:\u001b[0m\n")
     for _root, _dirs, _files in sorted(walk(_directory, topdown=True)):
         _entry_list, _color_alternator = [], 1
         if _ran:
-            print(f"\u001b[38;5;15;48;5;238m{_root.replace(expanduser('~/.local/share/sshyp'), '', 1)}/\u001b[0m")
+            print(f"\u001b[38;5;15;48;5;238m{_root.replace(f'{home}/.local/share/sshyp', '', 1)}/\u001b[0m")
         for filename in sorted(_files):
             if _color_alternator > 0:
                 _entry_list.append(filename[:-4])
@@ -104,14 +105,14 @@ def pass_gen():  # prompts the user for necessary information to generate a pass
     return _gen
 
 
-def shm_gen(_tmp_dir=expanduser('~/.config/sshyp/tmp/')):  # creates a temporary directory for entry editing
+def shm_gen(_tmp_dir=f"{home}/.config/sshyp/tmp/"):  # creates a temporary directory for entry editing
     _shm_folder_gen = string_gen('f', randint(12, 48))
     _shm_entry_gen = string_gen('f', randint(12, 48))
     Path(_tmp_dir + _shm_folder_gen).mkdir(mode=0o700)
     return _shm_folder_gen, _shm_entry_gen
 
 
-def encrypt(_entry_dir, _shm_folder, _shm_entry, _gpg_id, _tmp_dir=expanduser('~/.config/sshyp/tmp/')):
+def encrypt(_entry_dir, _shm_folder, _shm_entry, _gpg_id, _tmp_dir=f"{home}/.config/sshyp/tmp/"):
     # encrypts an entry and cleans up the temporary files
     run(['gpg', '-qr', str(_gpg_id), '-e', f"{_tmp_dir}{_shm_folder}/{_shm_entry}"])
     move(f"{_tmp_dir}{_shm_folder}/{_shm_entry}.gpg", f"{_entry_dir}.gpg")
@@ -119,13 +120,13 @@ def encrypt(_entry_dir, _shm_folder, _shm_entry, _gpg_id, _tmp_dir=expanduser('~
 
 
 def decrypt(_entry_dir, _shm_folder, _shm_entry, _quick_pass,
-            _tmp_dir=expanduser('~/.config/sshyp/tmp/')):  # decrypts an entry to a temporary directory
+            _tmp_dir=f"{home}/.config/sshyp/tmp/"):  # decrypts an entry to a temporary directory
     if not isinstance(_quick_pass, bool):
         _unlock_method = ['gpg', '--pinentry-mode', 'loopback', '--passphrase', _quick_pass, '-qd', '--output']
     else:
         _unlock_method = ['gpg', '-qd', '--output']
     if _shm_folder is None and _shm_entry is None:
-        _output_target = ['/dev/null', expanduser('~/.config/sshyp/lock.gpg')]
+        _output_target = ['/dev/null', f"{home}/.config/sshyp/lock.gpg"]
     else:
         _output_target = [f"{_tmp_dir}{_shm_folder}/{_shm_entry}", f"{_entry_dir}.gpg"]
     try:
@@ -184,16 +185,16 @@ def edit_note(_shm_folder, _shm_entry, _lines):  # edits the note attached to an
 def copy_id_check(_port, _username_ssh, _ip, _client_device_id):
     # attempts to connect to the user's server via ssh to register the device for syncing
     try:
-        run(['ssh', '-o', 'ConnectTimeout=3', '-i', expanduser('~/.ssh/sshyp'), '-p', _port, f"{_username_ssh}@{_ip}",
+        run(['ssh', '-o', 'ConnectTimeout=3', '-i', f"{home}/.ssh/sshyp", '-p', _port, f"{_username_ssh}@{_ip}",
              f'python3 -c \'from pathlib import Path; Path("/home/{_username_ssh}/.config/sshyp/devices/'
              f'{_client_device_id}").touch(mode=0o400, exist_ok=True)\''], stderr=DEVNULL, check=True)
     except CalledProcessError:
         print('\n\u001b[38;5;9mwarning: ssh connection could not be made - ensure the public key (~/.ssh/sshyp.pub) is '
               'registered on the remote server and that the entered ip, port, and username are correct\n\nsyncing '
               'functionality will be disabled until this is addressed\u001b[0m\n')
-        open(expanduser('~/.config/sshyp/ssh-error'), 'w').write('1')
+        open(f"{home}/.config/sshyp/ssh-error", 'w').write('1')
         return True
-    open(expanduser('~/.config/sshyp/ssh-error'), 'w').write('0')
+    open(f"{home}/.config/sshyp/ssh-error", 'w').write('0')
     return False
 
 
@@ -204,25 +205,25 @@ def tweak():  # runs configuration wizard
     _divider = f"\n{'=' * (get_terminal_size()[0] - int((.5 * get_terminal_size()[0])))}\n\n"
 
     # config directory creation
-    Path(expanduser('~/.config/sshyp/devices')).mkdir(mode=0o700, parents=True, exist_ok=True)
-    if not exists(expanduser('~/.config/sshyp/tmp')):
+    Path(f"{home}/.config/sshyp/devices").mkdir(mode=0o700, parents=True, exist_ok=True)
+    if not exists(f"{home}/.config/sshyp/tmp"):
         if uname()[0] in ('Haiku', 'FreeBSD'):
-            symlink('/tmp', expanduser('~/.config/sshyp/tmp'))
+            symlink('/tmp', f"{home}/.config/sshyp/tmp")
         elif exists('/data/data/com.termux'):
-            symlink('/data/data/com.termux/files/usr/tmp', expanduser('~/.config/sshyp/tmp'))
+            symlink('/data/data/com.termux/files/usr/tmp', f"{home}/.config/sshyp/tmp")
         else:
-            symlink('/dev/shm', expanduser('~/.config/sshyp/tmp'))
+            symlink('/dev/shm', f"{home}/.config/sshyp/tmp")
 
     # device type configuration
     _device_type = input('\nclient or server installation? (C/s) ')
     if _device_type.lower() == 's':
         _sshyp_data = ['server']
-        Path(expanduser('~/.config/sshyp/deleted')).mkdir(mode=0o700, exist_ok=True)
-        Path(expanduser('~/.config/sshyp/whitelist')).mkdir(mode=0o700, exist_ok=True)
+        Path(f"{home}/.config/sshyp/deleted").mkdir(mode=0o700, exist_ok=True)
+        Path(f"{home}/.config/sshyp/whitelist").mkdir(mode=0o700, exist_ok=True)
         print(f"\n\u001b[4;1mmake sure the ssh service is running and properly configured\u001b[0m")
     else:
         _sshyp_data = ['client']
-        Path(expanduser('~/.local/share/sshyp')).mkdir(mode=0o700, parents=True, exist_ok=True)
+        Path(f"{home}/.local/share/sshyp").mkdir(mode=0o700, parents=True, exist_ok=True)
 
         # gpg configuration
         _gpg_gen = input(f"{_divider}sshyp requires the use of a unique gpg key - use an (e)xisting key or (g)enerate a"
@@ -232,23 +233,23 @@ def tweak():  # runs configuration wizard
             _sshyp_data.append(str(input('gpg key id: ')))
         else:
             print('\na unique gpg key is being generated for you...')
-            if not isfile(expanduser('~/.config/sshyp/gpg-gen')):
-                open(expanduser('~/.config/sshyp/gpg-gen'), 'w').writelines([
+            if not isfile(f"{home}/.config/sshyp/gpg-gen"):
+                open(f"{home}/.config/sshyp/gpg-gen", 'w').writelines([
                     'Key-Type: 1\n', 'Key-Length: 4096\n', 'Key-Usage: sign encrypt\n', 'Name-Real: sshyp\n',
                     'Name-Comment: gpg-sshyp\n', 'Name-Email: https://github.com/rwinkhart/sshyp\n', 'Expire-Date: 0'])
-            run(['gpg', '--batch', '--generate-key', expanduser('~/.config/sshyp/gpg-gen')])
-            remove(expanduser('~/.config/sshyp/gpg-gen'))
+            run(['gpg', '--batch', '--generate-key', f"{home}/.config/sshyp/gpg-gen"])
+            remove(f"{home}/.config/sshyp/gpg-gen")
             _sshyp_data.append(run(['gpg', '-k'], stdout=PIPE, text=True).stdout.splitlines()[-3].strip())
 
         # text editor configuration
         _sshyp_data.append(input(f"{_divider}example input: vim\n\npreferred text editor: "))
 
         # lock file generation
-        if isfile(expanduser('~/.config/sshyp/lock.gpg')):
-            remove(expanduser('~/.config/sshyp/lock.gpg'))
-        open(expanduser('~/.config/sshyp/lock'), 'w')
-        run(['gpg', '-qr', str(_sshyp_data[1]), '-e', expanduser('~/.config/sshyp/lock')])
-        remove(expanduser('~/.config/sshyp/lock'))
+        if isfile(f"{home}/.config/sshyp/lock.gpg"):
+            remove(f"{home}/.config/sshyp/lock.gpg")
+        open(f"{home}/.config/sshyp/lock", 'w')
+        run(['gpg', '-qr', str(_sshyp_data[1]), '-e', f"{home}/.config/sshyp/lock"])
+        remove(f"{home}/.config/sshyp/lock")
 
         # ssh key configuration
         _offline_mode = False
@@ -256,11 +257,10 @@ def tweak():  # runs configuration wizard
                           f"configured\n\nsync support requires a unique ssh key - would you like to have this "
                           f"automatically generated? (Y/n/o(ffline)) "))
         if _ssh_gen.lower() not in ('n', 'o', 'offline'):
-            Path(f"{expanduser('~')}/.ssh").mkdir(mode=0o700, exist_ok=True)
-            run(['ssh-keygen', '-t', 'ed25519', '-f', expanduser('~/.ssh/sshyp')])
+            Path(f"{home}/.ssh").mkdir(mode=0o700, exist_ok=True)
+            run(['ssh-keygen', '-t', 'ed25519', '-f', f"{home}/.ssh/sshyp"])
         elif _ssh_gen.lower() == 'n':
-            print(f"\n\u001b[4;1mensure that the key file you are using is located at "
-                  f"{expanduser('~/.ssh/sshyp')}\u001b[0m")
+            print(f"\n\u001b[4;1mensure that the key file you are using is located at {home}/.ssh/sshyp\u001b[0m")
         elif _ssh_gen.lower() in ('o', 'offline'):
             _offline_mode = True
             print('\nsshyp has been set to offline mode - to enable syncing, run "sshyp tweak" again')
@@ -275,19 +275,19 @@ def tweak():  # runs configuration wizard
             _username_ssh = str(input('\nusername of the remote server: '))
 
             # sshync profile generation
-            make_profile(expanduser('~/.config/sshyp/sshyp.sshync'),
-                         expanduser('~/.local/share/sshyp/'), f"/home/{_username_ssh}/.local/share/sshyp/",
-                         expanduser('~/.ssh/sshyp'), _iport[0], _iport[1], _username_ssh)
+            make_profile(f"{home}/.config/sshyp/sshyp.sshync",
+                         f"{home}/.local/share/sshyp/", f"/home/{_username_ssh}/.local/share/sshyp/",
+                         f"{home}/.ssh/sshyp", _iport[0], _iport[1], _username_ssh)
 
             # device id configuration
-            for _id in listdir(expanduser('~/.config/sshyp/devices')):  # remove existing device id
-                remove(f"{expanduser('~/.config/sshyp/devices/')}{_id}")
+            for _id in listdir(f"{home}/.config/sshyp/devices"):  # remove existing device id
+                remove(f"{home}/.config/sshyp/devices/{_id}")
             print(f"{_divider}\u001b[4;1mimportant:\u001b[0m this id \u001b[4;1mmust\u001b[0m be unique amongst your "
                   f"client devices\n\nthis is used to keep track of database syncing and quick-unlock permissions\n")
             _device_id_prefix = str(input('device id: ')) + '-'
             _device_id_suffix = string_gen('f', randint(24, 48))
             _device_id = _device_id_prefix + _device_id_suffix
-            open(f"{expanduser('~/.config/sshyp/devices/')}{_device_id}", 'w')
+            open(f"{home}/.config/sshyp/devices/{_device_id}", 'w')
 
             # quick-unlock configuration
             print(f"{_divider}this allows you to use a shorter version of your gpg key password and\n"
@@ -301,11 +301,11 @@ def tweak():  # runs configuration wizard
             # test server connection and attempt to register device id
             copy_id_check(_iport[1], _username_ssh, _iport[0], _device_id)
 
-        elif isfile(expanduser('~/.config/sshyp/sshyp.sshync')):
-            remove(expanduser('~/.config/sshyp/sshyp.sshync'))
+        elif isfile(f"{home}/.config/sshyp/sshyp.sshync"):
+            remove(f"{home}/.config/sshyp/sshyp.sshync")
 
     # write main config file (sshyp-data)
-    with open(expanduser('~/.config/sshyp/sshyp-data'), 'w') as _config_file:
+    with open(f"{home}/.config/sshyp/sshyp-data", 'w') as _config_file:
         _lines = 0
         for _item in _sshyp_data:
             _lines += 1
@@ -449,12 +449,12 @@ def read_shortcut():  # shortcut to quickly read an entry
 def sync():  # calls sshync to sync changes to the user's server
     print('\nsyncing entries with the server device...\n')
     # set permissions before uploading
-    for _root, _dirs, _files in walk(expanduser('~/.local/share/sshyp')):
+    for _root, _dirs, _files in walk(f"{home}/.local/share/sshyp"):
         for _path in _root.splitlines():
             chmod(_path, 0o700)
         for _file in _files:
             chmod(_root + '/' + _file, 0o600)
-    run_profile(expanduser('~/.config/sshyp/sshyp.sshync'), silent_sync)
+    run_profile(f"{home}/.config/sshyp/sshyp.sshync", silent_sync)
 
 
 def whitelist_setup():  # takes input from the user to set up quick-unlock password
@@ -476,18 +476,18 @@ def whitelist_setup():  # takes input from the user to set up quick-unlock passw
         _i += 1
 
     # create assembly key
-    open(expanduser('~/.config/sshyp/gpg-gen'), 'w').writelines([
+    open(f"{home}/.config/sshyp/gpg-gen", 'w').writelines([
         'Key-Type: 1\n', 'Key-Length: 4096\n', 'Key-Usage: sign encrypt\n', 'Name-Real: sshyp\n',
         'Name-Comment: gpg-sshyp-whitelist\n', 'Name-Email: https://github.com/rwinkhart/sshyp\n', 'Expire-Date: 0'])
     run(['gpg', '-q', '--pinentry-mode', 'loopback', '--batch', '--generate-key', '--passphrase',
-         _quick_unlock_password, expanduser('~/.config/sshyp/gpg-gen')])
-    remove(expanduser('~/.config/sshyp/gpg-gen'))
+         _quick_unlock_password, f"{home}/.config/sshyp/gpg-gen"])
+    remove(f"{home}/.config/sshyp/gpg-gen")
     _gpg_id = run(['gpg', '-k'], stdout=PIPE, text=True).stdout.splitlines()[-3].strip()
 
     # encrypt excluded with the assembly key
     _shm_folder, _shm_entry = shm_gen()
     open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'w').write(_quick_unlock_password_excluded)
-    encrypt(expanduser('~/.config/sshyp/excluded'), _shm_folder, _shm_entry, _gpg_id)
+    encrypt(f"{home}/.config/sshyp/excluded", _shm_folder, _shm_entry, _gpg_id)
     print(f"\nyour quick-unlock passphrase: {_quick_unlock_password}")
 
 
@@ -495,11 +495,11 @@ def whitelist_verify(_port, _username_ssh, _ip, _client_device_id):
     # checks the user's whitelist status and fetches the full gpg key password if possible
     try:
         run(['gpg', '--pinentry-mode', 'cancel', '-qd', '--output', '/dev/null',
-             expanduser('~/.config/sshyp/lock.gpg')], stderr=DEVNULL, check=True)
+             f"{home}/.config/sshyp/lock.gpg"], stderr=DEVNULL, check=True)
         return False
     except CalledProcessError:
         _i, _full_password = 0, ''
-        _server_whitelist = run(['ssh', '-i', expanduser('~/.ssh/sshyp'), '-p', _port, f"{_username_ssh}@{_ip}",
+        _server_whitelist = run(['ssh', '-i', f"{home}/.ssh/sshyp", '-p', _port, f"{_username_ssh}@{_ip}",
                                  f'python3 -c \'from os import listdir; print(*listdir("/home/{_username_ssh}'
                                  f'/.config/sshyp/whitelist"))\''], stdout=PIPE, text=True).stdout.rstrip().split()
         for _device_id in _server_whitelist:
@@ -507,7 +507,7 @@ def whitelist_verify(_port, _username_ssh, _ip, _client_device_id):
                 from getpass import getpass
                 _quick_unlock_password = getpass(prompt='\nquick-unlock passphrase: ')
                 _quick_unlock_password_excluded = \
-                    run(['ssh', '-i', expanduser('~/.ssh/sshyp'), '-p',  _port, f"{_username_ssh}@{_ip}",
+                    run(['ssh', '-i', f"{home}/.ssh/sshyp", '-p',  _port, f"{_username_ssh}@{_ip}",
                          f"gpg --pinentry-mode loopback --passphrase '{_quick_unlock_password}' "
                          f"-qd ~/.config/sshyp/excluded.gpg"], stdout=PIPE, text=True).stdout.rstrip()
                 while _i < len(_quick_unlock_password_excluded):
@@ -525,8 +525,8 @@ def whitelist_verify(_port, _username_ssh, _ip, _client_device_id):
 
 
 def whitelist_list():  # shows the quick-unlock whitelist status of device ids
-    _whitelisted_ids = listdir(expanduser('~/.config/sshyp/whitelist'))
-    _device_ids = listdir(expanduser('~/.config/sshyp/devices'))
+    _whitelisted_ids = listdir(f"{home}/.config/sshyp/whitelist")
+    _device_ids = listdir(f"{home}/.config/sshyp/devices")
     print('\n\u001b[1mquick-unlock whitelisted device ids:\u001b[0m')
     for _id in _whitelisted_ids:
         print(_id)
@@ -545,15 +545,15 @@ def whitelist_manage():  # adds or removes quick-unlock whitelisted device ids
         _device_id = arguments[2]
 
     if arguments[1] == 'add':
-        if _device_id in listdir(expanduser('~/.config/sshyp/devices')):
-            open(expanduser(f"~/.config/sshyp/whitelist/{_device_id}"), 'w').write('')
+        if _device_id in listdir(f"{home}/.config/sshyp/devices"):
+            open(f"{home}/.config/sshyp/whitelist/{_device_id}", 'w').write('')
             whitelist_list()
         else:
             print(f"\n\u001b[38;5;9merror: device id ({_device_id}) is not registered\u001b[0m\n")
             s_exit(1)
 
-    elif isfile(expanduser(f"~/.config/sshyp/whitelist/{_device_id}")):
-        remove(expanduser(f"~/.config/sshyp/whitelist/{_device_id}"))
+    elif isfile(f"{home}/.config/sshyp/whitelist/{_device_id}"):
+        remove(f"{home}/.config/sshyp/whitelist/{_device_id}")
         whitelist_list()
 
 
@@ -590,7 +590,7 @@ def add_folder():  # creates a new folder
     _entry_name = arguments[0]
     Path(directory + _entry_name).mkdir(mode=0o700, parents=True, exist_ok=True)
     if not ssh_error:
-        run(['ssh', '-i', expanduser('~/.ssh/sshyp'), '-p', port, f"{username_ssh}@{ip}",
+        run(['ssh', '-i', f"{home}/.ssh/sshyp", '-p', port, f"{username_ssh}@{ip}",
              f'python3 -c \'from pathlib import Path; Path("{directory_ssh}{_entry_name}")'
              f'.mkdir(mode=0o700, parents=True, exist_ok=True)\''])
 
@@ -610,7 +610,7 @@ def rename():  # renames an entry or folder
     if _entry_name.endswith('/'):
         if not ssh_error:
             Path(f"{directory}{_new_name}").mkdir(mode=0o700, parents=True, exist_ok=True)
-            run(['ssh', '-i', expanduser('~/.ssh/sshyp'), '-p', port, f"{username_ssh}@{ip}",
+            run(['ssh', '-i', f"{home}/.ssh/sshyp", '-p', port, f"{username_ssh}@{ip}",
                  f'python3 -c \'from pathlib import Path; Path("{directory_ssh}{_new_name}")'
                  f'.mkdir(mode=0o700, parents=True, exist_ok=True)\''])
         else:
@@ -621,7 +621,7 @@ def rename():  # renames an entry or folder
         else:
             move(f"{directory}{_entry_name}.gpg", f"{directory}{_new_name}.gpg")
     if not ssh_error:
-        run(['ssh', '-i', expanduser('~/.ssh/sshyp'), '-p', port, f"{username_ssh}@{ip}",
+        run(['ssh', '-i', f"{home}/.ssh/sshyp", '-p', port, f"{username_ssh}@{ip}",
              f'cd /lib/sshyp; python3 -c \'from sshync import delete; delete("{_entry_name}", "remotely")\''])
 
 
@@ -718,9 +718,9 @@ def copy_data():  # copies a specified field of an entry to the clipboard
 
 def remove_data():  # deletes an entry from the server and flags it for local deletion on sync
     _entry_name = arguments[0]
-    determine_decrypt(expanduser('~/.config/sshyp/lock.gpg'), None, None)
+    determine_decrypt(f"{home}/.config/sshyp/lock.gpg", None, None)
     if not ssh_error:
-        run(['ssh', '-i', expanduser('~/.ssh/sshyp'), '-p', port, f"{username_ssh}@{ip}",
+        run(['ssh', '-i', f"{home}/.ssh/sshyp", '-p', port, f"{username_ssh}@{ip}",
              f'cd /lib/sshyp; python3 -c \'from sshync import delete; delete("{_entry_name}", "remotely")\''])
     else:
         offline_delete(_entry_name, 'locally')
@@ -762,23 +762,23 @@ if __name__ == "__main__":
                 arg_start = 0
 
             # import saved userdata
-            tmp_dir = expanduser('~/.config/sshyp/tmp/')
+            tmp_dir = f"{home}/.config/sshyp/tmp/"
             try:
-                sshyp_data = open(expanduser('~/.config/sshyp/sshyp-data')).readlines()
+                sshyp_data = open(f"{home}/.config/sshyp/sshyp-data").readlines()
                 device_type = sshyp_data[0].rstrip()
                 if device_type == 'client':
-                    directory = expanduser('~/.local/share/sshyp/')
+                    directory = f"{home}/.local/share/sshyp/"
                     gpg_id = sshyp_data[1].rstrip()
                     editor = sshyp_data[2].rstrip()
                     quick_unlock_enabled = sshyp_data[3].rstrip()
-                    if isfile(expanduser('~/.config/sshyp/sshyp.sshync')):
-                        ssh_info = get_profile(expanduser('~/.config/sshyp/sshyp.sshync'))
+                    if isfile(f"{home}/.config/sshyp/sshyp.sshync"):
+                        ssh_info = get_profile(f"{home}/.config/sshyp/sshyp.sshync")
                         username_ssh = ssh_info[0].rstrip()
                         ip = ssh_info[1].rstrip()
                         port = ssh_info[2].rstrip()
                         directory_ssh = str(ssh_info[4].rstrip())
-                        client_device_id = listdir(expanduser('~/.config/sshyp/devices'))[0].rstrip()
-                        ssh_error = int(open(expanduser('~/.config/sshyp/ssh-error')).read().rstrip())
+                        client_device_id = listdir(f"{home}/.config/sshyp/devices")[0].rstrip()
+                        ssh_error = int(open(f"{home}/.config/sshyp/ssh-error").read().rstrip())
                         if ssh_error == 1:
                             ssh_error = copy_id_check(port, username_ssh, ip, client_device_id)
                         else:
