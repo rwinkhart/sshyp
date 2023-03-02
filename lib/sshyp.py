@@ -850,7 +850,7 @@ if __name__ == "__main__":
                     whitelist_setup()
 
         if arg_count > 0 and success_flag == 0 and arguments[0] != 'sync':
-            if device_type == 'client' and arguments[0] not in ('help', '-h'):
+            if device_type == 'client' and arguments[0] not in ('help', '-h', 'version', '-v', 'license'):
                 extension_runner()
             else:
                 print_info()
