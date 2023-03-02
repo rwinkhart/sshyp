@@ -838,8 +838,11 @@ if __name__ == "__main__":
                 success_flag = True
                 read_shortcut()
 
-        elif arg_count == 0:  # server arguments
-            if arg_count > 1 and arguments[0] == 'whitelist':
+        else:  # server arguments
+            if arg_count < 1:
+                arguments.append('help')
+                print_info()
+            elif arg_count > 1 and arguments[0] == 'whitelist':
                 if arguments[1] in ('list', '-l'):
                     success_flag = True
                     whitelist_list()
