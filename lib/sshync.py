@@ -9,7 +9,7 @@ from sys import exit as s_exit
 
 def remote_list_gen(_client_device_name, _remote_dir):  # prints all necessary remote data to stdout
     # deletions
-    for _file in listdir(expanduser('~/.config/sshyp/deleted')):
+    for _file in listdir(expanduser('~/.config/sshyp/deleted')):  # TODO copy expanduser change from sshyp
         _file_path, _sep, _device = _file.partition('\x1f')
         _file_path = _file_path.replace('\x1e', '/')
         if _device == _client_device_name:
@@ -32,7 +32,7 @@ def remote_list_gen(_client_device_name, _remote_dir):  # prints all necessary r
 def delete(_file_path, _target_database):  # deletes a file or folder and/or marks it for deletion upon syncing
     from shutil import rmtree
     try:
-        if _file_path.endswith('/'):
+        if _file_path.endswith('/'):  # TODO properly check if _file_path is a directory
             rmtree(f"{expanduser('~/.local/share/sshyp/')}{_file_path}")
         else:
             remove(f"{expanduser('~/.local/share/sshyp/')}{_file_path}.gpg")

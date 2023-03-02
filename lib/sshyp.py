@@ -432,16 +432,16 @@ def print_info():  # prints help text based on argument
 
 
 def read_shortcut():  # shortcut to quickly read an entry
-    if not exists(f"{directory}{arguments[0].replace('/', '', 1)}.gpg"):
-        if not arguments[0].replace('/', '', 1):
+    if not exists(f"{directory}{entry_name}.gpg"):
+        if not entry_name:
             print(f"\n\u001b[38;5;9merror: missing entry name\u001b[0m\n")
-        elif isdir(f"{directory}{arguments[0].replace('/', '', 1)}"):
+        elif isdir(f"{directory}{entry_name}"):
             print(f"\n\u001b[38;5;9merror: entry ({arguments[0]}) is a directory\u001b[0m\n")
         else:
             print(f"\n\u001b[38;5;9merror: entry ({arguments[0]}) does not exist\u001b[0m\n")
         s_exit(2)
     _shm_folder, _shm_entry = shm_gen()
-    determine_decrypt(directory + arguments[0].replace('/', '', 1), _shm_folder, _shm_entry)
+    determine_decrypt(directory + entry_name, _shm_folder, _shm_entry)
     entry_reader(f"{tmp_dir}{_shm_folder}/{_shm_entry}")
     rmtree(f"{tmp_dir}{_shm_folder}")
 
@@ -559,9 +559,8 @@ def whitelist_manage():  # adds or removes quick-unlock whitelisted device ids
 
 def add_entry():  # adds a new entry
     _shm_folder, _shm_entry = None, None  # set to avoid PEP8 warnings
-    _entry_name = arguments[0]
-    if isfile(f"{directory}{_entry_name}.gpg"):
-        print(f"\n\u001b[38;5;9merror: entry (/{_entry_name}) already exists\u001b[0m\n")
+    if isfile(f"{directory}{entry_name}.gpg"):
+        print(f"\n\u001b[38;5;9merror: entry (/{entry_name}) already exists\u001b[0m\n")
         s_exit(3)
     if arguments[2] in ('note', '-n'):  # note entry
         _shm_folder, _shm_entry = shm_gen()
@@ -583,56 +582,53 @@ def add_entry():  # adds a new entry
             .writelines(optimized_edit([_password, _username, _url, _notes], None, -1))
     print('\n\u001b[1mentry preview:\u001b[0m')
     entry_reader(f"{tmp_dir}{_shm_folder}/{_shm_entry}")
-    encrypt(directory + _entry_name, _shm_folder, _shm_entry, gpg_id)
+    encrypt(directory + entry_name, _shm_folder, _shm_entry, gpg_id)
 
 
 def add_folder():  # creates a new folder
-    _entry_name = arguments[0]
-    Path(directory + _entry_name).mkdir(mode=0o700, parents=True, exist_ok=True)
+    Path(directory + entry_name).mkdir(mode=0o700, parents=True, exist_ok=True)
     if not ssh_error:
         run(['ssh', '-i', f"{home}/.ssh/sshyp", '-p', port, f"{username_ssh}@{ip}",
-             f'python3 -c \'from pathlib import Path; Path("{directory_ssh}{_entry_name}")'
+             f'python3 -c \'from pathlib import Path; Path("{directory_ssh}{entry_name}")'
              f'.mkdir(mode=0o700, parents=True, exist_ok=True)\''])
 
 
 def rename():  # renames an entry or folder
     from shutil import copy
-    _entry_name = arguments[0]
-    if not isfile(f"{directory}{_entry_name}.gpg") and not isdir(f"{directory}{_entry_name}"):
-        print(f"\n\u001b[38;5;9merror: entry (/{_entry_name}) does not exist\u001b[0m\n")
+    if not isfile(f"{directory}{entry_name}.gpg") and not isdir(f"{directory}{entry_name}"):
+        print(f"\n\u001b[38;5;9merror: entry (/{entry_name}) does not exist\u001b[0m\n")
         s_exit(2)
     _new_name = str(input('new name: '))
     if _new_name.startswith('/'):
-        _new_name.replace('/', '', 1)
+        _new_name = _new_name[1:]
     if isfile(f"{directory}{_new_name}.gpg") or isdir(f"{directory}{_new_name}"):
         print(f"\n\u001b[38;5;9merror: (/{_new_name}) already exists\u001b[0m\n")
         s_exit(3)
-    if _entry_name.endswith('/'):
+    if entry_name.endswith('/'):  # TODO properly check if entry_name is a directory
         if not ssh_error:
             Path(f"{directory}{_new_name}").mkdir(mode=0o700, parents=True, exist_ok=True)
             run(['ssh', '-i', f"{home}/.ssh/sshyp", '-p', port, f"{username_ssh}@{ip}",
                  f'python3 -c \'from pathlib import Path; Path("{directory_ssh}{_new_name}")'
                  f'.mkdir(mode=0o700, parents=True, exist_ok=True)\''])
         else:
-            move(f"{directory}{_entry_name}", f"{directory}{_new_name}")
+            move(f"{directory}{entry_name}", f"{directory}{_new_name}")
     else:
         if not ssh_error:
-            copy(f"{directory}{_entry_name}.gpg", f"{directory}{_new_name}.gpg")
+            copy(f"{directory}{entry_name}.gpg", f"{directory}{_new_name}.gpg")
         else:
-            move(f"{directory}{_entry_name}.gpg", f"{directory}{_new_name}.gpg")
+            move(f"{directory}{entry_name}.gpg", f"{directory}{_new_name}.gpg")
     if not ssh_error:
         run(['ssh', '-i', f"{home}/.ssh/sshyp", '-p', port, f"{username_ssh}@{ip}",
-             f'cd /lib/sshyp; python3 -c \'from sshync import delete; delete("{_entry_name}", "remotely")\''])
+             f'cd /lib/sshyp; python3 -c \'from sshync import delete; delete("{entry_name}", "remotely")\''])
 
 
 def edit():  # edits the contents of an entry
     _shm_folder, _shm_entry, _detail, _edit_line = None, None, None, None  # set to avoid PEP8 warnings
-    _entry_name = arguments[0]
-    if not isfile(f"{directory}{_entry_name}.gpg"):
-        print(f"\n\u001b[38;5;9merror: entry (/{_entry_name}) does not exist\u001b[0m\n")
+    if not isfile(f"{directory}{entry_name}.gpg"):
+        print(f"\n\u001b[38;5;9merror: entry (/{entry_name}) does not exist\u001b[0m\n")
         s_exit(2)
     _shm_folder, _shm_entry = shm_gen()
-    determine_decrypt(directory + _entry_name, _shm_folder, _shm_entry)
+    determine_decrypt(directory + entry_name, _shm_folder, _shm_entry)
     if arguments[2] in ('username', '-u'):
         _detail, _edit_line = str(input('username: ')), 1
     elif arguments[2] in ('password', '-p'):
@@ -646,26 +642,25 @@ def edit():  # edits the contents of an entry
     else:
         _new_lines = optimized_edit(open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'r').readlines(), _detail, _edit_line)
     open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'w').writelines(_new_lines)
-    remove(f"{directory}{_entry_name}.gpg")
+    remove(f"{directory}{entry_name}.gpg")
     print('\n\u001b[1mentry preview:\u001b[0m')
     entry_reader(f"{tmp_dir}{_shm_folder}/{_shm_entry}")
-    encrypt(directory + _entry_name, _shm_folder, _shm_entry, gpg_id)
+    encrypt(directory + entry_name, _shm_folder, _shm_entry, gpg_id)
 
 
 def gen():  # generates a password for a new or an existing entry
     _username, _url, _notes = None, None, None  # set to avoid PEP8 warnings
-    _entry_name = arguments[0]
     _shm_folder, _shm_entry = shm_gen()
     if arg_count == 3 and arguments[2] in ('update', '-u'):  # gen update
-        if not isfile(f"{directory}{_entry_name}.gpg"):
-            print(f"\n\u001b[38;5;9merror: entry (/{_entry_name}) does not exist\u001b[0m\n")
+        if not isfile(f"{directory}{entry_name}.gpg"):
+            print(f"\n\u001b[38;5;9merror: entry (/{entry_name}) does not exist\u001b[0m\n")
             s_exit(2)
-        determine_decrypt(directory + _entry_name, _shm_folder, _shm_entry)
+        determine_decrypt(directory + entry_name, _shm_folder, _shm_entry)
         _new_lines = optimized_edit(open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'r').readlines(), pass_gen(), 0)
         open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'w').writelines(_new_lines)
-        remove(f"{directory}{_entry_name}.gpg")
-    elif isfile(f"{directory}{_entry_name}.gpg"):  # gen
-        print(f"\n\u001b[38;5;9merror: entry (/{_entry_name}) already exists\u001b[0m\n")
+        remove(f"{directory}{entry_name}.gpg")
+    elif isfile(f"{directory}{entry_name}.gpg"):  # gen
+        print(f"\n\u001b[38;5;9merror: entry (/{entry_name}) already exists\u001b[0m\n")
         s_exit(3)
     else:
         _username = str(input('username: '))
@@ -681,17 +676,16 @@ def gen():  # generates a password for a new or an existing entry
             .writelines(optimized_edit([_password, _username, _url, _notes], None, -1))
     print('\n\u001b[1mentry preview:\u001b[0m')
     entry_reader(f"{tmp_dir}{_shm_folder}/{_shm_entry}")
-    encrypt(directory + _entry_name, _shm_folder, _shm_entry, gpg_id)
+    encrypt(directory + entry_name, _shm_folder, _shm_entry, gpg_id)
 
 
 def copy_data():  # copies a specified field of an entry to the clipboard
     from subprocess import Popen
-    _entry_name = arguments[0]
-    if not isfile(f"{directory}{_entry_name}.gpg"):
-        print(f"\n\u001b[38;5;9merror: entry (/{_entry_name}) does not exist\u001b[0m\n")
+    if not isfile(f"{directory}{entry_name}.gpg"):
+        print(f"\n\u001b[38;5;9merror: entry (/{entry_name}) does not exist\u001b[0m\n")
         s_exit(2)
     _shm_folder, _shm_entry = shm_gen()
-    determine_decrypt(directory + _entry_name, _shm_folder, _shm_entry)
+    determine_decrypt(directory + entry_name, _shm_folder, _shm_entry)
     _copy_line, _index = open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'r').readlines(), 0
     if arguments[2] in ('username', '-u'):
         _index = 1
@@ -717,13 +711,12 @@ def copy_data():  # copies a specified field of an entry to the clipboard
 
 
 def remove_data():  # deletes an entry from the server and flags it for local deletion on sync
-    _entry_name = arguments[0]
     determine_decrypt(f"{home}/.config/sshyp/lock.gpg", None, None)
     if not ssh_error:
         run(['ssh', '-i', f"{home}/.ssh/sshyp", '-p', port, f"{username_ssh}@{ip}",
-             f'cd /lib/sshyp; python3 -c \'from sshync import delete; delete("{_entry_name}", "remotely")\''])
+             f'cd /lib/sshyp; python3 -c \'from sshync import delete; delete("{entry_name}", "remotely")\''])
     else:
-        offline_delete(_entry_name, 'locally')
+        offline_delete(entry_name, 'locally')
 
 
 def extension_runner():  # checks extension config files for matches to argument, runs extensions
@@ -758,6 +751,7 @@ if __name__ == "__main__":
         if arg_count < 1 or (arg_count > 0 and arguments[0] != 'tweak'):
             if arg_count > 0 and arguments[0].startswith('/'):
                 arg_start = 1
+                entry_name = arguments[0][1:]
             else:
                 arg_start = 0
 
