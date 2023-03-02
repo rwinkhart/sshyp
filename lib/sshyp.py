@@ -414,7 +414,7 @@ def print_info():  # prints help text based on argument
             print(' note/-n                 copy the note of an entry to your clipboard')
             print('gen:')
             print(' update/-u               generate a password for an existing entry')
-            print("\n\u001b[1mtip 1:\u001b[0m you can quickly read an entry with 'sshyp /<entry name>'")
+            print("\n\u001b[1mtip 1:\u001b[0m you can quickly read an entry with 'sshyp </entry name>'")
             print("\u001b[1mtip 2:\u001b[0m type 'sshyp' to view a list of saved entries\n")
         else:
             print('\n\u001b[1musage:\u001b[0m sshyp <option> [flag] [<device id>]\n')
