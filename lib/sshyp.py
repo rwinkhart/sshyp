@@ -19,8 +19,6 @@ def entry_list_gen(_directory=expanduser('~/.local/share/sshyp/')):  # generates
         _entry_list, _color_alternator = [], 1
         if _ran:
             print(f"\u001b[38;5;15;48;5;238m{_root.replace(expanduser('~/.local/share/sshyp'), '', 1)}/\u001b[0m")
-        else:
-            _ran = True
         for filename in sorted(_files):
             if _color_alternator > 0:
                 _entry_list.append(filename[:-4])
@@ -34,8 +32,10 @@ def entry_list_gen(_directory=expanduser('~/.local/share/sshyp/')):  # generates
             _width = (len(' '.join(_entry_list)) / (_real / get_terminal_size()[0]) - 25)
         if len(_entry_list) > 0:
             print(fill(' '.join(_entry_list), width=_width) + '\n')
-        else:
+        elif _ran:
             print('\u001b[38;5;9m-empty directory-\u001b[0m\n')
+        else:
+            _ran = True
 
 
 def entry_reader(_decrypted_entry):  # displays the contents of an entry in a readable format
