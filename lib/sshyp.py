@@ -144,7 +144,7 @@ def decrypt(_entry_dir, _shm_folder, _shm_entry, _quick_pass,
             s_exit(4)
 
 
-def determine_decrypt(_entry_dir, _shm_folder, _shm_entry):
+def determine_decrypt(_entry_dir, _shm_folder, _shm_entry):  # call decrypt() based on quick-unlock status
     if quick_unlock_enabled == 'y':
         decrypt(_entry_dir, _shm_folder, _shm_entry, whitelist_verify(port, username_ssh, ip, client_device_id))
     else:
