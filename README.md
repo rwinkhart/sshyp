@@ -12,8 +12,6 @@ sshyp is a very simple self-hosted, synchronized password manager for UNIX(-like
 
 sshyp is compatible with entries created by pass/password-store, as its original goal was to be like pass/password-store, but far more user-friendly to synchronize with a self-hosted server.
 
-sshyp is (as of writing) the only password-store compatible CLI password manager available for Haiku.
-
 sshyp makes use of a custom sftp wrapper, called sshync (ssh+sync), to reliably sync user entries with a local or remote server.
 
 The name "sshyp" is a combination of its syncing library, "sshync", and "passwords".
@@ -33,26 +31,20 @@ What sshyp can do:
 - securely sync said passwords and notes seamlessly between devices (or just manage them offline)
 - utilize [extensions](https://github.com/rwinkhart/sshyp-labs) to interact with your entries is additional ways (such as generating TOTP keys or managing your entries in a GUI)
 - everything above with entries created by pass/password-store!
-- everything above on Haiku, FreeBSD, Linux, and Termux (an Android terminal emulator)!
-
-What sshyp definitely won't do:
-
-- Non-UNIX(-like) support, e.g. Windows (I'd be happy to link to third-party ports, if someone were to make them)
+- everything above on Haiku, FreeBSD, Linux, and Termux!
 
 # Installation
 Please see the [installation guide](https://github.com/rwinkhart/sshyp/wiki/Installation) in the sshyp wiki for directions specific to your distribution/OS.
 
 Pre-built packages exist for Haiku, FreeBSD, Alpine Linux, Arch Linux, Debian/Ubuntu Linux, Fedora Linux, and Termux. These can be downloaded from the releases page.
 
-Requests for additional distribution/OS support can be filed as issues.
+Support for additional environments, such as MacOS and OpenBSD, is coming soon.
 
 Extensions are available in the [sshyp-labs](https://github.com/rwinkhart/sshyp-labs) repository.
 
 Bash completions can be enabled by installing your distribution's "bash-completion" package and restarting your terminal.
 
 # Building
-Since sshyp is written entirely in Python, it doesn't need to be compiled. It does, however, need to be packaged for installation.
-
 A packaging script is included in the root directory of the repo in order to package sshyp for your distribution. To package sshyp from source, simply run:
 
 ```
@@ -61,11 +53,11 @@ cd sshyp
 ./package.sh [target] <revision>
 ```
 
-The packaging script has been tested on Arch Linux with "dpkg" as a dependency for Debian/Ubuntu and Termux packaging and "freebsd-pkg" as a dependency for FreeBSD packaging.
+The packaging script has been tested on Arch Linux with "dpkg" as a dependency for Debian/Ubuntu/Termux packaging and "freebsd-pkg" as a dependency for FreeBSD packaging.
 
 Haiku and Fedora packaging must be done on their own respective distributions.
 
-The AUR version and the packages attatched to the release tags were already packaged using this script.
+The AUR version and the packages attached to the release tags were already packaged using this script.
 
 Currently, the script can create packages for Haiku, FreeBSD, Alpine Linux (APKBUILD), Arch Linux (PKGBUILD), Debian/Ubuntu Linux, Fedora Linux, Termux, and generic.
 
@@ -78,15 +70,15 @@ sshyp tweak
 
 This command will allow you to configure the settings necessary for sshyp to function. To ensure configuration compatibility, it is a good idea to run 'sshyp tweak' after each major update.
 
-Please note that decrypting and reading entries is disabled on server devices for security reasons. Only devices configured as clients can use the gpg key to decrypt entries.
+Please note that decrypting and reading entries is disabled on server devices for security reasons. Only devices configured as clients can use the GPG key to decrypt entries.
 
 All available options can be found with:
 
 ```
-sshyp --help
+sshyp help
 ```
 
-Or alternatively, in the manpage:
+Or alternatively, in the man page:
 
 ```
 man sshyp
@@ -95,8 +87,9 @@ man sshyp
 # Roadmap
 Short-term Goals:
 
+- MacOS support
+- improved temporary directory security
 - a minimal GUI app - being made as an [extension](https://github.com/rwinkhart/sshyp-labs)
-- improved extension integration (allow extensions to add new arguments)
 
 Long-term Goals:
 

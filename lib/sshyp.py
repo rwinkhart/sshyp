@@ -318,8 +318,7 @@ def tweak():  # runs configuration wizard
 
 def print_info():  # prints help text based on argument
     if arguments[0] in ('version', '-v'):
-        print('\nsshyp is a simple, self-hosted, sftp-synchronized password manager\nfor unix(-like) systems (haiku/'
-              'freebsd/linux/termux)\n\nsshyp is a viable alternative to (and compatible with) pass/password-store\n')
+        print('\nsshyp is a simple, self-hosted, sftp-synchronized\npassword manager for unix(-like) systems\n')
         print("                ..       \u001b[38;5;9m♥♥ ♥♥\u001b[0m       ..\n         .''.''/()\\     \u001b[38;5;13m"
               "♥♥♥♥♥♥♥\u001b[0m     /()\\''.''.\n        *       :        \u001b[38;5;9m♥♥♥♥♥\u001b[0m        :       *"
               "\n         `..'..'          \u001b[38;5;13m♥♥♥\u001b[0m          `..'..'\n         //   \\\\           "
@@ -331,10 +330,10 @@ def print_info():  # prints help text based on argument
               'randall winkhart\u001b[38;5;15;48;5;15m   \u001b[38;5;7;48;5;8m/\u001b[0m')
         print('\u001b[38;5;7;48;5;8m/\u001b[38;5;15;48;5;15m                                                      '
               '\u001b[38;5;7;48;5;8m/\u001b[0m')
-        print('\u001b[38;5;7;48;5;8m/\u001b[38;5;15;48;5;15m                    \u001b[38;5;15;48;5;8mversion 1.3.0'
+        print('\u001b[38;5;7;48;5;8m/\u001b[38;5;15;48;5;15m                    \u001b[38;5;15;48;5;8mversion 1.4.0'
               '\u001b[38;5;15;48;5;15m                     \u001b[38;5;7;48;5;8m/\u001b[0m')
-        print('\u001b[38;5;7;48;5;8m/\u001b[38;5;15;48;5;15m             \u001b[38;5;15;48;5;8mthe serious shepherd '
-              'update\u001b[38;5;15;48;5;15m              \u001b[38;5;7;48;5;8m/\u001b[0m')
+        print('\u001b[38;5;7;48;5;8m/\u001b[38;5;15;48;5;15m         \u001b[38;5;15;48;5;8mthe argumentative '
+              'agronomist update\u001b[38;5;15;48;5;15m          \u001b[38;5;7;48;5;8m/\u001b[0m')
         print('\u001b[38;5;7;48;5;8m/\u001b[38;5;15;48;5;15m                                                      '
               '\u001b[38;5;7;48;5;8m/\u001b[0m')
         print('\u001b[38;5;7;48;5;8m<><><><><><><><><><><><><><><><><><><><><><><><><><><><>\u001b[0m\n')
