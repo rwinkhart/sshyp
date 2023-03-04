@@ -209,7 +209,7 @@ echo -e "\nFedora packaging complete\n"
 
 _create_freebsd_pkg() {
     echo -e '\npackaging for FreeBSD...'
-    mkdir -p output/freebsdtemp/usr/{lib/sshyp/extensions,bin,share/{bash-completion/completions,man/man1}}
+    mkdir -p output/freebsdtemp/usr/{lib/sshyp/extensions,bin,share/man/man1,local/share/bash-completion/completions}
     echo "name: sshyp
 version: \""$version"\"
 abi = \"FreeBSD:13:*\";
@@ -246,7 +246,7 @@ echo "/usr/bin/sshyp
 cp -r lib/. output/freebsdtemp/usr/lib/sshyp/
 ln -s /usr/lib/sshyp/sshyp.py output/freebsdtemp/usr/bin/sshyp
 cp -r share output/freebsdtemp/usr/
-cp extra/sshyp-completion.bash output/freebsdtemp/usr/share/bash-completion/completions/sshyp
+cp extra/sshyp-completion.bash output/freebsdtemp/usr/local/share/bash-completion/completions/sshyp
 cp extra/manpage output/freebsdtemp/usr/share/man/man1/sshyp.1
 gzip output/freebsdtemp/usr/share/man/man1/sshyp.1
 pkg create -m output/freebsdtemp/ -r output/freebsdtemp/ -p output/freebsdtemp/plist -o output/

@@ -36,7 +36,7 @@ def entry_list_gen(_directory=f"{home}/.local/share/sshyp/"):  # generates and p
         elif _ran:
             print('\u001b[38;5;9m-empty directory-\u001b[0m\n')
         _ran = True
-        
+
 
 def entry_reader(_decrypted_entry):  # displays the contents of an entry in a readable format
     _entry_lines, _notes_flag = open(_decrypted_entry, 'r').readlines(), 0
