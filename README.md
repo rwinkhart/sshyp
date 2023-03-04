@@ -34,6 +34,9 @@ What sshyp can do:
 - everything above on Haiku, FreeBSD, Linux, and Termux!
 
 # Installation
+**Important:** *Bash completions will NOT function until you install your distribution's "bash-completion" package or manually source the Bash completion script.*
+*A restart of your terminal is required after installing "bash-completion".*
+
 Please see the [installation guide](https://github.com/rwinkhart/sshyp/wiki/Installation) in the sshyp wiki for directions specific to your distribution/OS.
 
 Pre-built packages exist for Haiku, FreeBSD, Alpine Linux, Arch Linux, Debian/Ubuntu Linux, Fedora Linux, and Termux. These can be downloaded from the releases page.
@@ -41,8 +44,6 @@ Pre-built packages exist for Haiku, FreeBSD, Alpine Linux, Arch Linux, Debian/Ub
 Support for additional environments, such as MacOS and OpenBSD, is coming soon.
 
 Extensions are available in the [sshyp-labs](https://github.com/rwinkhart/sshyp-labs) repository.
-
-Bash completions can be enabled by installing your distribution's "bash-completion" package and restarting your terminal.
 
 # Building
 A packaging script is included in the root directory of the repo in order to package sshyp for your distribution. To package sshyp from source, simply run:
