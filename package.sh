@@ -238,7 +238,7 @@ prefix: /
 echo "/usr/bin/sshyp
 /usr/lib/sshyp/sshync.py
 /usr/lib/sshyp/sshyp.py
-/usr/share/bash-completion/completions/sshyp
+/usr/local/share/bash-completion/completions/sshyp
 /usr/share/doc/sshyp/changelog
 /usr/share/licenses/sshyp/license
 /usr/share/man/man1/sshyp.1.gz
