@@ -3,7 +3,7 @@
 _path_gen() {
     local sshyp_path="$HOME/.local/share/sshyp"
     local sshyp_path_length="$(("${#sshyp_path}" + 1))"
-    mapfile -t full_paths < <(find "$sshyp_path" -type f -exec ls {} \;)
+    full_paths=(~/.local/share/sshyp/**/*.gpg)
     for path in "${full_paths[@]}"; do
         trimmed_path=$(echo ${path%????} | cut -c"$sshyp_path_length"-)
         trimmed_paths+=("$trimmed_path")
