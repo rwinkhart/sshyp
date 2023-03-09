@@ -9,11 +9,12 @@ fi
 
 _create_generic() {
     echo -e '\npackaging as generic...\n'
-    mkdir -p output/generictemp/usr/{bin,lib/sshyp/extensions,share/{man/man1,bash-completion/completions}}
+    mkdir -p output/generictemp/usr/{bin,lib/sshyp/extensions,share/{man/man1,bash-completion/completions,zsh/functions/Completion/Unix}}
     cp -r lib/. output/generictemp/usr/lib/sshyp/
     ln -s /usr/lib/sshyp/sshyp.py output/generictemp/usr/bin/sshyp
     cp -r share output/generictemp/usr/
-    cp extra/sshyp-completion.bash output/generictemp/usr/share/bash-completion/completions/sshyp
+    cp extra/completion.bash output/generictemp/usr/share/bash-completion/completions/sshyp
+    cp extra/completion.zsh output/generictemp/usr/share/zsh/functions/Completion/Unix/_sshyp
     cp extra/manpage output/generictemp/usr/share/man/man1/sshyp.1
     gzip output/generictemp/usr/share/man/man1/sshyp.1
     tar -C output/generictemp -cvJf output/sshyp-"$version".tar.xz usr/
@@ -107,7 +108,7 @@ urls {
     ln -s /system/lib/sshyp/sshyp.py output/haikutemp/bin/sshyp
     cp -r share/doc/sshyp/. output/haikutemp/documentation/packages/sshyp/
     cp -r share/licenses/sshyp/. output/haikutemp/documentation/packages/sshyp/
-    cp extra/sshyp-completion.bash output/haikutemp/data/bash-completion/completions/sshyp
+    cp extra/completion.bash output/haikutemp/data/bash-completion/completions/sshyp
     cp extra/manpage output/haikutemp/documentation/man/man1/sshyp.1
     gzip output/haikutemp/documentation/man/man1/sshyp.1
     cd output/haikutemp
@@ -136,7 +137,7 @@ Installed-Size: 14584
     cp -r lib/. output/debiantemp/sshyp_"$version"-"$revision"_all/usr/lib/sshyp/
     ln -s /usr/lib/sshyp/sshyp.py output/debiantemp/sshyp_"$version"-"$revision"_all/usr/bin/sshyp
     cp -r share output/debiantemp/sshyp_"$version"-"$revision"_all/usr/
-    cp extra/sshyp-completion.bash output/debiantemp/sshyp_"$version"-"$revision"_all/usr/share/bash-completion/completions/sshyp
+    cp extra/completion.bash output/debiantemp/sshyp_"$version"-"$revision"_all/usr/share/bash-completion/completions/sshyp
     cp extra/manpage output/debiantemp/sshyp_"$version"-"$revision"_all/usr/share/man/man1/sshyp.1
     gzip output/debiantemp/sshyp_"$version"-"$revision"_all/usr/share/man/man1/sshyp.1
     dpkg-deb --build --root-owner-group output/debiantemp/sshyp_"$version"-"$revision"_all/
@@ -162,7 +163,7 @@ Installed-Size: 14584
     cp -r lib/. output/termuxtemp/sshyp_"$version"-"$revision"_all_termux/data/data/com.termux/files/usr/lib/sshyp/
     ln -s /data/data/com.termux/files/usr/lib/sshyp/sshyp.py output/termuxtemp/sshyp_"$version"-"$revision"_all_termux/data/data/com.termux/files/usr/bin/sshyp
     cp -r share output/termuxtemp/sshyp_"$version"-"$revision"_all_termux/data/data/com.termux/files/usr/
-    cp extra/sshyp-completion.bash output/termuxtemp/sshyp_"$version"-"$revision"_all_termux/data/data/com.termux/files/usr/share/bash-completion/completions/sshyp
+    cp extra/completion.bash output/termuxtemp/sshyp_"$version"-"$revision"_all_termux/data/data/com.termux/files/usr/share/bash-completion/completions/sshyp
     cp extra/manpage output/termuxtemp/sshyp_"$version"-"$revision"_all_termux/data/data/com.termux/files/usr/share/man/man1/sshyp.1
     gzip output/termuxtemp/sshyp_"$version"-"$revision"_all_termux/data/data/com.termux/files/usr/share/man/man1/sshyp.1
     dpkg-deb --build --root-owner-group output/termuxtemp/sshyp_"$version"-"$revision"_all_termux/
@@ -246,7 +247,7 @@ echo "/usr/bin/sshyp
 cp -r lib/. output/freebsdtemp/usr/lib/sshyp/
 ln -s /usr/lib/sshyp/sshyp.py output/freebsdtemp/usr/bin/sshyp
 cp -r share output/freebsdtemp/usr/
-cp extra/sshyp-completion.bash output/freebsdtemp/usr/local/share/bash-completion/completions/sshyp
+cp extra/completion.bash output/freebsdtemp/usr/local/share/bash-completion/completions/sshyp
 cp extra/manpage output/freebsdtemp/usr/share/man/man1/sshyp.1
 gzip output/freebsdtemp/usr/share/man/man1/sshyp.1
 pkg create -m output/freebsdtemp/ -r output/freebsdtemp/ -p output/freebsdtemp/plist -o output/
