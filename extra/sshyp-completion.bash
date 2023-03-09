@@ -2,11 +2,12 @@
 
 _path_gen() {
     local sshyp_path="$HOME/.local/share/sshyp"
-    local sshyp_path_length="$(("${#sshyp_path}" + 1))"
-    full_paths=(~/.local/share/sshyp/**/*.gpg)
+    local glob_status=$(shopt -p globstar)
+    [ -z "${glob_status##*u*}" ] && shopt -s globstar  # if recursive globbing is disabled, enable it
+    full_paths=("$sshyp_path"/**/*.gpg)
+    $glob_status  # set recursive globbing to user default
     for path in "${full_paths[@]}"; do
-        trimmed_path=$(echo ${path%????} | cut -c"$sshyp_path_length"-)
-        trimmed_paths+=("$trimmed_path")
+        trimmed_paths+=("${path:${#sshyp_path}:-4}")
     done
 } &&
 
