@@ -17,7 +17,7 @@ _create_generic() {
     cp extra/completion.zsh output/generictemp/usr/share/zsh/functions/Completion/Unix/_sshyp
     cp extra/manpage output/generictemp/usr/share/man/man1/sshyp.1
     gzip output/generictemp/usr/share/man/man1/sshyp.1
-    tar -C output/generictemp -cvJf output/sshyp-"$version".tar.xz usr/
+    XZ_OPT=-e6 tar -C output/generictemp -cvJf output/sshyp-"$version".tar.xz usr/
     rm -rf output/generictemp
     sha512="$(sha512sum output/sshyp-"$version".tar.xz | awk '{print $1;}')"
     echo -e "\nsha512 sum:\n$sha512"
