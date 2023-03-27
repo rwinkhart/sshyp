@@ -11,16 +11,16 @@ case ${words[-2]} in
     compadd $trimmed_paths
     ;;
   /* )
-    compadd {add,edit,copy,gen,shear}
+    compadd {add,gen,edit,copy,shear}
     ;;
   add )
-    compadd {folder,note,password}
+    compadd {password,note,folder}
     ;;
   copy )
-    compadd {note,password,url,username}
+    compadd {password,username,url,note}
     ;;
   edit )
-    compadd {note,password,relocate,url,username}
+    compadd {password,username,url,note,relocate}
     ;;
   gen )
     compadd update

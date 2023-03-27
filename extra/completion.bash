@@ -20,16 +20,16 @@ _sshyp_completions() {
       while read -r; do ITEM=${REPLY// /\\ }; COMPREPLY+=( "$ITEM" ); done < <( compgen -W "$(printf "'%s' " "${trimmed_paths[@]}")" -- "$cur" )
       ;;
     /* )
-      while read -r; do COMPREPLY+=( "$REPLY" ); done < <( compgen -W "add edit copy gen shear" -- "$cur" )
+      while read -r; do COMPREPLY+=( "$REPLY" ); done < <( compgen -W "add gen edit copy shear" -- "$cur" )
       ;;
     add )
-      while read -r; do COMPREPLY+=( "$REPLY" ); done < <( compgen -W "folder note password" -- "$cur" )
+      while read -r; do COMPREPLY+=( "$REPLY" ); done < <( compgen -W "password note folder" -- "$cur" )
       ;;
     copy )
-      while read -r; do COMPREPLY+=( "$REPLY" ); done < <( compgen -W "note password url username" -- "$cur" )
+      while read -r; do COMPREPLY+=( "$REPLY" ); done < <( compgen -W "password username url note" -- "$cur" )
       ;;
     edit )
-      while read -r; do COMPREPLY+=( "$REPLY" ); done < <( compgen -W "note password relocate url username" -- "$cur" )
+      while read -r; do COMPREPLY+=( "$REPLY" ); done < <( compgen -W "password username url note relocate" -- "$cur" )
       ;;
     gen )
       while read -r; do COMPREPLY+=( "$REPLY" ); done < <( compgen -W "update" -- "$cur" )
