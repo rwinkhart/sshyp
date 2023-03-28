@@ -8,7 +8,7 @@ else
 fi
 
 _create_generic() {
-    printf '\npackaging as generic...\n\n'
+    printf '\npackaging as generic...\n'
     mkdir -p output/generictemp/usr/bin \
          output/generictemp/usr/lib/sshyp/extensions \
          output/generictemp/usr/share/man/man1 \
@@ -24,13 +24,12 @@ _create_generic() {
     XZ_OPT=-e6 tar -C output/generictemp -cvJf output/sshyp-"$version".tar.xz usr/
     rm -rf output/generictemp
     sha512="$(sha512sum output/sshyp-"$version".tar.xz | awk '{print $1;}')"
-    printf '\nsha512 sum:\n$sha512\n'
     printf '\ngeneric packaging complete\n\n'
 } &&
 
 _create_pkgbuild() {
     source='https://github.com/rwinkhart/sshyp/releases/download/v$pkgver/sshyp-$pkgver.tar.xz'
-    printf '\ngenerating PKGBUILD...\n\n'
+    printf '\ngenerating PKGBUILD...\n'
     printf "# Maintainer: Randall Winkhart <idgr at tutanota dot com>
 pkgname=sshyp
 pkgver="$version"
@@ -52,7 +51,7 @@ package() {
 } &&
 
 _create_apkbuild() {
-    printf '\ngenerating APKBUILD...\n\n'
+    printf '\ngenerating APKBUILD...\n'
     printf "# Maintainer: Randall Winkhart <idgr@tutanota.com>
 pkgname=sshyp
 pkgver="$version"
@@ -78,7 +77,7 @@ sha512sums=\"
 } &&
 
 _create_hpkg() {
-    printf '\npackaging for Haiku...\n\n'
+    printf '\npackaging for Haiku...\n'
     mkdir -p output/haikutemp/bin \
          output/haikutemp/lib/sshyp/extensions \
          output/haikutemp/documentation/packages/sshyp \
@@ -129,7 +128,7 @@ urls {
 } &&
 
 _create_deb() {
-    printf '\npackaging for Debian/Ubuntu...\n\n'
+    printf '\npackaging for Debian/Ubuntu...\n'
     mkdir -p output/debiantemp/sshyp_"$version"-"$revision"_all/DEBIAN \
          output/debiantemp/sshyp_"$version"-"$revision"_all/usr/lib/sshyp/extensions \
          output/debiantemp/sshyp_"$version"-"$revision"_all/usr/bin \
@@ -159,7 +158,7 @@ Installed-Size: 14584
 } &&
 
 _create_termux() {
-    printf '\npackaging for Termux...\n\n'
+    printf '\npackaging for Termux...\n'
     mkdir -p output/termuxtemp/sshyp_"$version"-"$revision"_all_termux/DEBIAN \
          output/termuxtemp/sshyp_"$version"-"$revision"_all_termux/data/data/com.termux/files/usr/lib/sshyp/extensions \
          output/termuxtemp/sshyp_"$version"-"$revision"_all_termux/data/data/com.termux/files/usr/bin \
@@ -189,7 +188,7 @@ Installed-Size: 14584
 } &&
 
 _create_rpm() {
-    printf '\npackaging for Fedora...\n\n'
+    printf '\npackaging for Fedora...\n'
     rm -rf ~/rpmbuild
     rpmdev-setuptree
     cp output/sshyp-"$version".tar.xz ~/rpmbuild/SOURCES
@@ -225,7 +224,7 @@ printf '\nFedora packaging complete\n\n'
 } &&
 
 _create_freebsd_pkg() {
-    printf '\npackaging for FreeBSD...\n\n'
+    printf '\npackaging for FreeBSD...\n'
     mkdir -p output/freebsdtemp/usr/lib/sshyp/extensions \
          output/freebsdtemp/usr/bin \
          output/freebsdtemp/usr/share/man/man1 \
