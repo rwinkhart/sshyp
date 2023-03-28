@@ -67,6 +67,9 @@ source=\""$source"\"
 
 package() {
     mkdir -p "\"\$pkgdir\""
+    mkdir -p "\"\$srcdir/usr/share/zsh/site-functions"\"
+    mv "\"\$srcdir/usr/share/zsh/functions/Completion/Unix/_sshyp"\" "\"\$srcdir/usr/share/zsh/site-functions/_sshyp"\"
+    rm -rf "\"\$srcdir/usr/share/zsh/functions"\"
     cp -r "\"\$srcdir/usr/"\" "\"\$pkgdir\""
 }
 
@@ -83,7 +86,8 @@ _create_hpkg() {
          output/haikutemp/lib/sshyp/extensions \
          output/haikutemp/documentation/packages/sshyp \
          output/haikutemp/documentation/man/man1 \
-         output/haikutemp/data/bash-completion/completions
+         output/haikutemp/data/bash-completion/completions \
+         output/haikutemp/data/zsh/site-functions
     printf "name			sshyp
 version			"$version"-"$revision"
 architecture		any
@@ -95,7 +99,7 @@ licenses {
 	\"GNU GPL v3\"
 }
 copyrights {
-	\"2021-2022 Randall Winkhart\"
+	\"2021-2023 Randall Winkhart\"
 }
 provides {
 	sshyp = "$version"
@@ -117,6 +121,7 @@ urls {
     cp -r share/doc/sshyp/. output/haikutemp/documentation/packages/sshyp/
     cp -r share/licenses/sshyp/. output/haikutemp/documentation/packages/sshyp/
     cp extra/completion.bash output/haikutemp/data/bash-completion/completions/sshyp
+    cp extra/completion.zsh output/haikutemp/data/zsh/site-functions/_sshyp
     cp extra/manpage output/haikutemp/documentation/man/man1/sshyp.1
     gzip output/haikutemp/documentation/man/man1/sshyp.1
     cd output/haikutemp
@@ -133,8 +138,9 @@ _create_deb() {
     mkdir -p output/debiantemp/sshyp_"$version"-"$revision"_all/DEBIAN \
          output/debiantemp/sshyp_"$version"-"$revision"_all/usr/lib/sshyp/extensions \
          output/debiantemp/sshyp_"$version"-"$revision"_all/usr/bin \
+         output/debiantemp/sshyp_"$version"-"$revision"_all/usr/share/man/man1 \
          output/debiantemp/sshyp_"$version"-"$revision"_all/usr/share/bash-completion/completions \
-         output/debiantemp/sshyp_"$version"-"$revision"_all/usr/share/man/man1
+         output/debiantemp/sshyp_"$version"-"$revision"_all/usr/share/zsh/functions/Completion/Unix
     printf "Package: sshyp
 Version: $version
 Section: utils
@@ -150,6 +156,7 @@ Installed-Size: 14584
     ln -s /usr/lib/sshyp/sshyp.py output/debiantemp/sshyp_"$version"-"$revision"_all/usr/bin/sshyp
     cp -r share output/debiantemp/sshyp_"$version"-"$revision"_all/usr/
     cp extra/completion.bash output/debiantemp/sshyp_"$version"-"$revision"_all/usr/share/bash-completion/completions/sshyp
+    cp extra/completion.zsh output/debiantemp/sshyp_"$version"-"$revision"_all/usr/share/zsh/functions/Completion/Unix/_sshyp
     cp extra/manpage output/debiantemp/sshyp_"$version"-"$revision"_all/usr/share/man/man1/sshyp.1
     gzip output/debiantemp/sshyp_"$version"-"$revision"_all/usr/share/man/man1/sshyp.1
     dpkg-deb --build --root-owner-group output/debiantemp/sshyp_"$version"-"$revision"_all/
@@ -163,8 +170,9 @@ _create_termux() {
     mkdir -p output/termuxtemp/sshyp_"$version"-"$revision"_all_termux/DEBIAN \
          output/termuxtemp/sshyp_"$version"-"$revision"_all_termux/data/data/com.termux/files/usr/lib/sshyp/extensions \
          output/termuxtemp/sshyp_"$version"-"$revision"_all_termux/data/data/com.termux/files/usr/bin \
+         output/termuxtemp/sshyp_"$version"-"$revision"_all_termux/data/data/com.termux/files/usr/share/man/man1 \
          output/termuxtemp/sshyp_"$version"-"$revision"_all_termux/data/data/com.termux/files/usr/share/bash-completion/completions \
-         output/termuxtemp/sshyp_"$version"-"$revision"_all_termux/data/data/com.termux/files/usr/share/man/man1
+         output/debiantemp/sshyp_"$version"-"$revision"_all_termux/data/data/com.termux/files/usr/share/zsh/functions/Completion/Unix
     printf "Package: sshyp
 Version: $version
 Section: utils
@@ -180,6 +188,7 @@ Installed-Size: 14584
     ln -s /data/data/com.termux/files/usr/lib/sshyp/sshyp.py output/termuxtemp/sshyp_"$version"-"$revision"_all_termux/data/data/com.termux/files/usr/bin/sshyp
     cp -r share output/termuxtemp/sshyp_"$version"-"$revision"_all_termux/data/data/com.termux/files/usr/
     cp extra/completion.bash output/termuxtemp/sshyp_"$version"-"$revision"_all_termux/data/data/com.termux/files/usr/share/bash-completion/completions/sshyp
+    cp extra/completion.zsh output/termuxtemp/sshyp_"$version"-"$revision"_all_termux/data/data/com.termux/files/usr/share/zsh/functions/Completion/Unix/_sshyp
     cp extra/manpage output/termuxtemp/sshyp_"$version"-"$revision"_all_termux/data/data/com.termux/files/usr/share/man/man1/sshyp.1
     gzip output/termuxtemp/sshyp_"$version"-"$revision"_all_termux/data/data/com.termux/files/usr/share/man/man1/sshyp.1
     dpkg-deb --build --root-owner-group output/termuxtemp/sshyp_"$version"-"$revision"_all_termux/
@@ -213,6 +222,7 @@ cp -r %{_sourcedir}/usr %{buildroot}
 /usr/lib/sshyp/sshyp.py
 /usr/lib/sshyp/sshync.py
 /usr/share/bash-completion/completions/sshyp
+/usr/share/zsh/functions/Completion/Unix/_sshyp
 %license /usr/share/licenses/sshyp/license
 %doc
 /usr/share/doc/sshyp/changelog
@@ -229,7 +239,8 @@ _create_freebsd_pkg() {
     mkdir -p output/freebsdtemp/usr/lib/sshyp/extensions \
          output/freebsdtemp/usr/bin \
          output/freebsdtemp/usr/share/man/man1 \
-         output/freebsdtemp/usr/local/share/bash-completion/completions
+         output/freebsdtemp/usr/local/share/bash-completion/completions \
+         output/freebsdtemp/usr/local/share/zsh/site-functions
     printf "name: sshyp
 version: \""$version"\"
 abi = \"FreeBSD:13:*\";
@@ -259,6 +270,7 @@ printf "/usr/bin/sshyp
 /usr/lib/sshyp/sshync.py
 /usr/lib/sshyp/sshyp.py
 /usr/local/share/bash-completion/completions/sshyp
+/usr/local/share/zsh/site-functions/_sshyp
 /usr/share/doc/sshyp/changelog
 /usr/share/licenses/sshyp/license
 /usr/share/man/man1/sshyp.1.gz
@@ -267,6 +279,7 @@ cp -r lib/. output/freebsdtemp/usr/lib/sshyp/
 ln -s /usr/lib/sshyp/sshyp.py output/freebsdtemp/usr/bin/sshyp
 cp -r share output/freebsdtemp/usr/
 cp extra/completion.bash output/freebsdtemp/usr/local/share/bash-completion/completions/sshyp
+cp extra/completion.zsh output/freebsdtemp/usr/local/share/zsh/site-functions/_sshyp
 cp extra/manpage output/freebsdtemp/usr/share/man/man1/sshyp.1
 gzip output/freebsdtemp/usr/share/man/man1/sshyp.1
 pkg create -m output/freebsdtemp/ -r output/freebsdtemp/ -p output/freebsdtemp/plist -o output/
