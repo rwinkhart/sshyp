@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/sh
 
 version=$(sed -n '1{p;q}' share/doc/sshyp/changelog | cut -c8-)
 if [ -z "$2" ]; then
@@ -8,8 +8,12 @@ else
 fi
 
 _create_generic() {
-    echo -e '\npackaging as generic...\n'
-    mkdir -p output/generictemp/usr/{bin,lib/sshyp/extensions,share/{man/man1,bash-completion/completions,zsh/functions/Completion/Unix}}
+    printf '\npackaging as generic...\n\n'
+    mkdir -p output/generictemp/usr/bin \
+         output/generictemp/usr/lib/sshyp/extensions \
+         output/generictemp/usr/share/man/man1 \
+         output/generictemp/usr/share/bash-completion/completions \
+         output/generictemp/usr/share/zsh/functions/Completion/Unix
     cp -r lib/. output/generictemp/usr/lib/sshyp/
     ln -s /usr/lib/sshyp/sshyp.py output/generictemp/usr/bin/sshyp
     cp -r share output/generictemp/usr/
@@ -20,14 +24,14 @@ _create_generic() {
     XZ_OPT=-e6 tar -C output/generictemp -cvJf output/sshyp-"$version".tar.xz usr/
     rm -rf output/generictemp
     sha512="$(sha512sum output/sshyp-"$version".tar.xz | awk '{print $1;}')"
-    echo -e "\nsha512 sum:\n$sha512"
-    echo -e "\ngeneric packaging complete\n"
+    printf '\nsha512 sum:\n$sha512\n'
+    printf '\ngeneric packaging complete\n\n'
 } &&
 
 _create_pkgbuild() {
     source='https://github.com/rwinkhart/sshyp/releases/download/v$pkgver/sshyp-$pkgver.tar.xz'
-    echo -e '\ngenerating PKGBUILD...'
-    echo "# Maintainer: Randall Winkhart <idgr at tutanota dot com>
+    printf '\ngenerating PKGBUILD...\n\n'
+    printf "# Maintainer: Randall Winkhart <idgr at tutanota dot com>
 pkgname=sshyp
 pkgver="$version"
 pkgrel="$revision"
@@ -44,12 +48,12 @@ package() {
     tar xf sshyp-"\"\$pkgver\"".tar.xz -C "\"\${pkgdir}\""
 }
 " > output/PKGBUILD
-    echo -e "\nPKGBUILD generated\n"
+    printf '\nPKGBUILD generated\n\n'
 } &&
 
 _create_apkbuild() {
-    echo -e '\ngenerating APKBUILD...'
-    echo "# Maintainer: Randall Winkhart <idgr@tutanota.com>
+    printf '\ngenerating APKBUILD...\n\n'
+    printf "# Maintainer: Randall Winkhart <idgr@tutanota.com>
 pkgname=sshyp
 pkgver="$version"
 pkgrel="$((revision-1))"
@@ -70,13 +74,17 @@ sha512sums=\"
 "$sha512'  'sshyp-\"\$pkgver\".tar.xz"
 \"
 " > output/APKBUILD
-    echo -e "\nAPKBUILD generated\n"
+    printf '\nAPKBUILD generated\n\n'
 } &&
 
 _create_hpkg() {
-    echo -e '\npackaging for Haiku...\n'
-    mkdir -p output/haikutemp/{bin,lib/sshyp/extensions,documentation/{packages/sshyp,man/man1},data/bash-completion/completions}
-    echo "name			sshyp
+    printf '\npackaging for Haiku...\n\n'
+    mkdir -p output/haikutemp/bin \
+         output/haikutemp/lib/sshyp/extensions \
+         output/haikutemp/documentation/packages/sshyp \
+         output/haikutemp/documentation/man/man1 \
+         output/haikutemp/data/bash-completion/completions
+    printf "name			sshyp
 version			"$version"-"$revision"
 architecture		any
 summary			\"A light-weight, self-hosted, synchronized password manager\"
@@ -117,13 +125,17 @@ urls {
     cd ../..
     mv output/haikutemp/sshyp-"$version"-"$revision"_all.hpkg output/
     rm -rf output/haikutemp
-    echo -e "\nHaiku packaging complete\n"
+    printf '\nHaiku packaging complete\n\n'
 } &&
 
 _create_deb() {
-    echo -e '\npackaging for Debian/Ubuntu...\n'
-    mkdir -p output/debiantemp/sshyp_"$version"-"$revision"_all/{DEBIAN,usr/{lib/sshyp/extensions,bin,share/{bash-completion/completions,man/man1}}}
-    echo "Package: sshyp
+    printf '\npackaging for Debian/Ubuntu...\n\n'
+    mkdir -p output/debiantemp/sshyp_"$version"-"$revision"_all/DEBIAN \
+         output/debiantemp/sshyp_"$version"-"$revision"_all/usr/lib/sshyp/extensions \
+         output/debiantemp/sshyp_"$version"-"$revision"_all/usr/bin \
+         output/debiantemp/sshyp_"$version"-"$revision"_all/usr/share/bash-completion/completions \
+         output/debiantemp/sshyp_"$version"-"$revision"_all/usr/share/man/man1
+    printf "Package: sshyp
 Version: $version
 Section: utils
 Architecture: all
@@ -143,13 +155,17 @@ Installed-Size: 14584
     dpkg-deb --build --root-owner-group output/debiantemp/sshyp_"$version"-"$revision"_all/
     mv output/debiantemp/sshyp_"$version"-"$revision"_all.deb output/
     rm -rf output/debiantemp
-    echo -e "\nDebian/Ubuntu packaging complete\n"
+    printf '\nDebian/Ubuntu packaging complete\n\n'
 } &&
 
 _create_termux() {
-    echo -e '\npackaging for Termux...\n'
-    mkdir -p output/termuxtemp/sshyp_"$version"-"$revision"_all_termux/{DEBIAN,data/data/com.termux/files/usr/{lib/sshyp/extensions,bin,share/{bash-completion/completions,man/man1}}}
-    echo "Package: sshyp
+    printf '\npackaging for Termux...\n\n'
+    mkdir -p output/termuxtemp/sshyp_"$version"-"$revision"_all_termux/DEBIAN \
+         output/termuxtemp/sshyp_"$version"-"$revision"_all_termux/data/data/com.termux/files/usr/lib/sshyp/extensions \
+         output/termuxtemp/sshyp_"$version"-"$revision"_all_termux/data/data/com.termux/files/usr/bin \
+         output/termuxtemp/sshyp_"$version"-"$revision"_all_termux/data/data/com.termux/files/usr/share/bash-completion/completions \
+         output/termuxtemp/sshyp_"$version"-"$revision"_all_termux/data/data/com.termux/files/usr/share/man/man1
+    printf "Package: sshyp
 Version: $version
 Section: utils
 Architecture: all
@@ -169,15 +185,15 @@ Installed-Size: 14584
     dpkg-deb --build --root-owner-group output/termuxtemp/sshyp_"$version"-"$revision"_all_termux/
     mv output/termuxtemp/sshyp_"$version"-"$revision"_all_termux.deb output/
     rm -rf output/termuxtemp
-    echo -e "\nTermux packaging complete\n"
+    printf '\nTermux packaging complete\n\n'
 } &&
 
 _create_rpm() {
-    echo -e '\npackaging for Fedora...\n'
+    printf '\npackaging for Fedora...\n\n'
     rm -rf ~/rpmbuild
     rpmdev-setuptree
     cp output/sshyp-"$version".tar.xz ~/rpmbuild/SOURCES
-    echo "Name:           sshyp
+    printf "Name:           sshyp
 Version:        "$version"
 Release:        "$revision"
 Summary:        A light-weight, self-hosted, synchronized password manager
@@ -205,13 +221,16 @@ cp -r %{_sourcedir}/usr %{buildroot}
 rpmbuild -bb ~/rpmbuild/SPECS/sshyp.spec
 mv ~/rpmbuild/RPMS/noarch/* output/
 rm -rf ~/rpmbuild
-echo -e "\nFedora packaging complete\n"
+printf '\nFedora packaging complete\n\n'
 } &&
 
 _create_freebsd_pkg() {
-    echo -e '\npackaging for FreeBSD...'
-    mkdir -p output/freebsdtemp/usr/{lib/sshyp/extensions,bin,share/man/man1,local/share/bash-completion/completions}
-    echo "name: sshyp
+    printf '\npackaging for FreeBSD...\n\n'
+    mkdir -p output/freebsdtemp/usr/lib/sshyp/extensions \
+         output/freebsdtemp/usr/bin \
+         output/freebsdtemp/usr/share/man/man1 \
+         output/freebsdtemp/usr/local/share/bash-completion/completions
+    printf "name: sshyp
 version: \""$version"\"
 abi = \"FreeBSD:13:*\";
 arch = \"freebsd:13:*\";
@@ -236,7 +255,7 @@ prefix: /
                    },
                 },
 " > output/freebsdtemp/+MANIFEST
-echo "/usr/bin/sshyp
+printf "/usr/bin/sshyp
 /usr/lib/sshyp/sshync.py
 /usr/lib/sshyp/sshyp.py
 /usr/local/share/bash-completion/completions/sshyp
@@ -252,39 +271,50 @@ cp extra/manpage output/freebsdtemp/usr/share/man/man1/sshyp.1
 gzip output/freebsdtemp/usr/share/man/man1/sshyp.1
 pkg create -m output/freebsdtemp/ -r output/freebsdtemp/ -p output/freebsdtemp/plist -o output/
 rm -rf output/freebsdtemp
-echo -e "\nFreeBSD packaging complete\n"
+printf '\nFreeBSD packaging complete\n\n'
 } &&
 
-if [ "$1" == "generic" ]; then  # build scripts
-    _create_generic
-elif [ "$1" == "pkgbuild" ]; then
-    _create_generic
-    _create_pkgbuild
-elif [ "$1" == "apkbuild" ]; then
-    _create_generic
-    _create_apkbuild
-elif [ "$1" == "haiku" ]; then  # distribution packages
-    _create_hpkg
-elif [ "$1" == "debian" ]; then
-    _create_deb
-elif [ "$1" == "termux" ]; then
-    _create_termux
-elif [ "$1" == "fedora" ]; then
-    _create_generic
-    _create_rpm
-elif [ "$1" == "freebsd" ]; then
-    _create_freebsd_pkg
-elif [ "$1" == "buildable-arch" ]; then
-    _create_generic
-    _create_pkgbuild
-    _create_apkbuild
-    if [[ $(pacman -Q dpkg) == "dpkg"* ]]; then
+case "$1" in
+    generic)
+        _create_generic
+        ;;
+    pkgbuild)
+        _create_generic
+        _create_pkgbuild
+        ;;
+    apkbuild)
+        _create_generic
+        _create_apkbuild
+        ;;
+    haiku)
+        _create_hpkg
+        ;;
+    debian)
         _create_deb
+        ;;
+    termux)
         _create_termux
-    fi
-    if [[ "$(pacman -Q freebsd-pkg)" == "freebsd-pkg"* ]]; then
+        ;;
+    fedora)
+        _create_generic
+        _create_rpm
+        ;;
+    freebsd)
         _create_freebsd_pkg
-    fi
-else
-    echo -e '\nusage: package.sh [target] <revision>\n\ntargets:\n mainline: pkgbuild apkbuild haiku fedora debian\n experimental: freebsd termux\n other: buildable-arch\n'
-fi
+        ;;
+    buildable-arch)
+        _create_generic
+        _create_pkgbuild
+        _create_apkbuild
+        if [ $(pacman -Q dpkg) = "dpkg"* ]; then
+            _create_deb
+            _create_termux
+        fi
+        if [ "$(pacman -Q freebsd-pkg)" = "freebsd-pkg"* ]; then
+            _create_freebsd_pkg
+        fi
+        ;;
+    *)
+    printf '\nusage: package.sh [target] <revision>\n\ntargets:\n mainline: pkgbuild apkbuild haiku fedora debian\n experimental: freebsd termux\n other: buildable-arch\n\n'
+    ;;
+esac
