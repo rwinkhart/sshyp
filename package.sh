@@ -305,13 +305,17 @@ case "$1" in
         _create_generic
         _create_pkgbuild
         _create_apkbuild
-        if [ $(pacman -Q dpkg) = "dpkg"* ]; then
+        case "$(pacman -Q dpkg)" in
+            dpkg*)
             _create_deb
             _create_termux
-        fi
-        if [ "$(pacman -Q freebsd-pkg)" = "freebsd-pkg"* ]; then
+            ;;
+        esac
+        case "$(pacman -Q freebsd-pkg)" in
+            freebsd-pkg*)
             _create_freebsd_pkg
-        fi
+            ;;
+        esac
         ;;
     *)
     printf '\nusage: package.sh [target] <revision>\n\ntargets:\n mainline: pkgbuild apkbuild haiku fedora debian\n experimental: freebsd termux\n other: buildable-arch\n\n'
