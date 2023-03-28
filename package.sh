@@ -51,6 +51,7 @@ package() {
 } &&
 
 _create_apkbuild() {
+    source='https://github.com/rwinkhart/sshyp/releases/download/v$pkgver/sshyp-$pkgver.tar.xz'
     printf '\ngenerating APKBUILD...\n'
     printf "# Maintainer: Randall Winkhart <idgr@tutanota.com>
 pkgname=sshyp
