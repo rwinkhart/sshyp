@@ -172,7 +172,7 @@ _create_termux() {
          output/termuxtemp/sshyp_"$version"-"$revision"_all_termux/data/data/com.termux/files/usr/bin \
          output/termuxtemp/sshyp_"$version"-"$revision"_all_termux/data/data/com.termux/files/usr/share/man/man1 \
          output/termuxtemp/sshyp_"$version"-"$revision"_all_termux/data/data/com.termux/files/usr/share/bash-completion/completions \
-         output/debiantemp/sshyp_"$version"-"$revision"_all_termux/data/data/com.termux/files/usr/share/zsh/functions/Completion/Unix
+         output/termuxtemp/sshyp_"$version"-"$revision"_all_termux/data/data/com.termux/files/usr/share/zsh/functions/Completion/Unix
     printf "Package: sshyp
 Version: $version
 Section: utils
