@@ -21,14 +21,14 @@ _create_generic() {
     cp extra/completion.zsh output/generictemp/usr/share/zsh/functions/Completion/Unix/_sshyp
     cp extra/manpage output/generictemp/usr/share/man/man1/sshyp.1
     gzip output/generictemp/usr/share/man/man1/sshyp.1
-    XZ_OPT=-e6 tar -C output/generictemp -cvJf output/sshyp-"$version".tar.xz usr/
+    XZ_OPT=-e6 tar -C output/generictemp -cvJf output/GENERIC-sshyp-"$version".tar.xz usr/
     rm -rf output/generictemp
-    sha512="$(sha512sum output/sshyp-"$version".tar.xz | awk '{print $1;}')"
+    sha512="$(sha512sum output/GENERIC-sshyp-"$version".tar.xz | awk '{print $1;}')"
     printf '\ngeneric packaging complete\n\n'
 } &&
 
 _create_pkgbuild() {
-    local source='https://github.com/rwinkhart/sshyp/releases/download/v$pkgver/sshyp-$pkgver.tar.xz'
+    local source='https://github.com/rwinkhart/sshyp/releases/download/v$pkgver/GENERIC-sshyp-$pkgver.tar.xz'
     printf '\ngenerating PKGBUILD...\n'
     printf "# Maintainer: Randall Winkhart <idgr at tutanota dot com>
 pkgname=sshyp
@@ -44,14 +44,14 @@ source=(\""$source"\")
 sha512sums=('"$sha512"')
 
 package() {
-    tar xf sshyp-"\"\$pkgver\"".tar.xz -C "\"\${pkgdir}\""
+    tar xf GENERIC-sshyp-"\"\$pkgver\"".tar.xz -C "\"\${pkgdir}\""
 }
 " > output/PKGBUILD
     printf '\nPKGBUILD generated\n\n'
 } &&
 
 _create_apkbuild() {
-    local source='https://github.com/rwinkhart/sshyp/releases/download/v$pkgver/sshyp-$pkgver.tar.xz'
+    local source='https://github.com/rwinkhart/sshyp/releases/download/v$pkgver/GENERIC-sshyp-$pkgver.tar.xz'
     printf '\ngenerating APKBUILD...\n'
     printf "# Maintainer: Randall Winkhart <idgr@tutanota.com>
 pkgname=sshyp
@@ -74,7 +74,7 @@ package() {
 }
 
 sha512sums=\"
-"$sha512'  'sshyp-\"\$pkgver\".tar.xz"
+"$sha512'  'GENERIC-sshyp-\"\$pkgver\".tar.xz"
 \"
 " > output/APKBUILD
     printf '\nAPKBUILD generated\n\n'
@@ -125,10 +125,10 @@ urls {
     cp extra/manpage output/haikutemp/documentation/man/man1/sshyp.1
     gzip output/haikutemp/documentation/man/man1/sshyp.1
     cd output/haikutemp
-    package create -b sshyp-"$version"-"$revision"_all.hpkg
-    package add sshyp-"$version"-"$revision"_all.hpkg bin lib documentation data
+    package create -b HAIKU-sshyp-"$version"-"$revision"_all.hpkg
+    package add HAIKU-sshyp-"$version"-"$revision"_all.hpkg bin lib documentation data
     cd ../..
-    mv output/haikutemp/sshyp-"$version"-"$revision"_all.hpkg output/
+    mv output/haikutemp/HAIKU-sshyp-"$version"-"$revision"_all.hpkg output/
     rm -rf output/haikutemp
     printf '\nHaiku packaging complete\n\n'
 } &&
@@ -160,7 +160,7 @@ Installed-Size: 14584
     cp extra/manpage output/debiantemp/sshyp_"$version"-"$revision"_all/usr/share/man/man1/sshyp.1
     gzip output/debiantemp/sshyp_"$version"-"$revision"_all/usr/share/man/man1/sshyp.1
     dpkg-deb --build --root-owner-group output/debiantemp/sshyp_"$version"-"$revision"_all/
-    mv output/debiantemp/sshyp_"$version"-"$revision"_all.deb output/
+    mv output/debiantemp/sshyp_"$version"-"$revision"_all.deb output/DEBIAN-sshyp_"$version"-"$revision"_all.deb
     rm -rf output/debiantemp
     printf '\nDebian/Ubuntu packaging complete\n\n'
 } &&
@@ -192,7 +192,7 @@ Installed-Size: 14584
     cp extra/manpage output/termuxtemp/sshyp_"$version"-"$revision"_all_termux/data/data/com.termux/files/usr/share/man/man1/sshyp.1
     gzip output/termuxtemp/sshyp_"$version"-"$revision"_all_termux/data/data/com.termux/files/usr/share/man/man1/sshyp.1
     dpkg-deb --build --root-owner-group output/termuxtemp/sshyp_"$version"-"$revision"_all_termux/
-    mv output/termuxtemp/sshyp_"$version"-"$revision"_all_termux.deb output/
+    mv output/termuxtemp/sshyp_"$version"-"$revision"_all_termux.deb output/TERMUX-sshyp_"$version"-"$revision"_all_termux.deb
     rm -rf output/termuxtemp
     printf '\nTermux packaging complete\n\n'
 } &&
@@ -201,7 +201,7 @@ _create_rpm() {
     printf '\npackaging for Fedora...\n'
     rm -rf ~/rpmbuild
     rpmdev-setuptree
-    cp output/sshyp-"$version".tar.xz ~/rpmbuild/SOURCES
+    cp output/GENERIC-sshyp-"$version".tar.xz ~/rpmbuild/SOURCES
     printf "Name:           sshyp
 Version:        "$version"
 Release:        "$revision"
@@ -209,13 +209,13 @@ Summary:        A light-weight, self-hosted, synchronized password manager
 BuildArch:      noarch
 License:        GPL-3.0-only
 URL:            https://github.com/rwinkhart/sshyp
-Source0:        sshyp-"$version".tar.xz
+Source0:        GENERIC-sshyp-"$version".tar.xz
 Requires:       python gnupg openssh-clients wl-clipboard
 Recommends:     bash-completion
 %description
 sshyp is a password-store compatible CLI password manager available for UNIX(-like) systems - its primary goal is to make syncing passwords and notes across devices as easy as possible via CLI.
 %install
-tar xf %{_sourcedir}/sshyp-"$version".tar.xz -C %{_sourcedir}
+tar xf %{_sourcedir}/GENERIC-sshyp-"$version".tar.xz -C %{_sourcedir}
 cp -r %{_sourcedir}/usr %{buildroot}
 %files
 /usr/bin/sshyp
@@ -229,7 +229,7 @@ cp -r %{_sourcedir}/usr %{buildroot}
 /usr/share/man/man1/sshyp.1.gz
 " > ~/rpmbuild/SPECS/sshyp.spec
 rpmbuild -bb ~/rpmbuild/SPECS/sshyp.spec
-mv ~/rpmbuild/RPMS/noarch/* output/
+mv ~/rpmbuild/RPMS/noarch/sshyp-"$version"-"$revision".noarch.rpm output/FEDORA-sshyp-"$version"-"$revision".noarch.rpm
 rm -rf ~/rpmbuild
 printf '\nFedora packaging complete\n\n'
 } &&
@@ -283,6 +283,7 @@ cp extra/completion.zsh output/freebsdtemp/usr/local/share/zsh/site-functions/_s
 cp extra/manpage output/freebsdtemp/usr/share/man/man1/sshyp.1
 gzip output/freebsdtemp/usr/share/man/man1/sshyp.1
 pkg create -m output/freebsdtemp/ -r output/freebsdtemp/ -p output/freebsdtemp/plist -o output/
+mv output/sshyp-"$version".pkg output/FREEBSD-sshyp-"$version"-"$revision".pkg
 rm -rf output/freebsdtemp
 printf '\nFreeBSD packaging complete\n\n'
 } &&
