@@ -1,3 +1,25 @@
+sshyp v1.4.1
+
+the argumentative agronomist update - patch one
+
+this release improves sshyp's shell completions by adding zsh support and significantly optimizing and improving Bash support
+
+user-facing features:
+
+- zsh completion support
+	^ ensure modern completions are enabled in your ~/.zshrc
+
+fixes/optimizations:
+
+- Bash completions are now much faster due to the use of recursive globbing
+- Bash completions have been modified to be functionally similar to the new zsh completions
+
+other notable changes:
+
+- some official packages now use more space-efficient compression
+
+<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+
 sshyp v1.4.0
 
 the argumentative agronomist update

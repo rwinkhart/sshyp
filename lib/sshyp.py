@@ -329,7 +329,7 @@ def print_info():  # prints help text based on argument
               'randall winkhart\u001b[38;5;15;48;5;15m   \u001b[38;5;7;48;5;8m/\u001b[0m')
         print('\u001b[38;5;7;48;5;8m/\u001b[38;5;15;48;5;15m                                                      '
               '\u001b[38;5;7;48;5;8m/\u001b[0m')
-        print('\u001b[38;5;7;48;5;8m/\u001b[38;5;15;48;5;15m                    \u001b[38;5;15;48;5;8mversion 1.4.0'
+        print('\u001b[38;5;7;48;5;8m/\u001b[38;5;15;48;5;15m                    \u001b[38;5;15;48;5;8mversion 1.4.1'
               '\u001b[38;5;15;48;5;15m                     \u001b[38;5;7;48;5;8m/\u001b[0m')
         print('\u001b[38;5;7;48;5;8m/\u001b[38;5;15;48;5;15m         \u001b[38;5;15;48;5;8mthe argumentative '
               'agronomist update\u001b[38;5;15;48;5;15m          \u001b[38;5;7;48;5;8m/\u001b[0m')

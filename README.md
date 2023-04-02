@@ -34,8 +34,7 @@ What sshyp can do:
 - everything above on Haiku, FreeBSD, Linux, and Termux!
 
 # Installation
-**Important:** *Bash completions will NOT function until you install your distribution's "bash-completion" package or manually source the Bash completion script.*
-*A restart of your terminal is required after installing "bash-completion".*
+**Important:** *Shell completions (both Bash and ZSH) may require additional configuration on some distributions - please see [this page](https://github.com/rwinkhart/sshyp/wiki/Completions) of the wiki for support.*
 
 Please see the [installation guide](https://github.com/rwinkhart/sshyp/wiki/Installation) in the sshyp wiki for directions specific to your distribution/OS.
 

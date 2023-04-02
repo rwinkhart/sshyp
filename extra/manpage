@@ -1,4 +1,4 @@
-.TH sshyp 1 "04 March 2023" "v1.4.0" "sshyp man page"
+.TH sshyp 1 "02 April 2023" "v1.4.1" "sshyp man page"
 .SH NAME
 sshyp \- A very simple self-hosted, synchronized password manager for UNIX(-like) systems. Alternative to (and compatible with) pass/password-store.
 .SH SYNOPSIS
@@ -14,25 +14,25 @@ Setting up sshyp for the first time or altering its configuration (also recommen
 Viewing the entry database:
     sshyp
 
-Reading an existing entry saved as ~/.local/share/sshyp/development/github.gpg:
+Reading an existing entry saved as '~/.local/share/sshyp/development/github.gpg':
     sshyp /development/github
 
-Copying the password of an existing entry saved as ~/.local/share/sshyp/financial/bank.gpg:
+Copying the password of an existing entry saved as '~/.local/share/sshyp/financial/bank.gpg':
     sshyp /financial/bank copy -p
 
-Editing the username of an existing entry saved as ~/.local/share/sshyp/game.gpg:
+Editing the username of an existing entry saved as '~/.local/share/sshyp/game.gpg':
     sshyp /game edit -u
 
-Making a new entry saved as ~/.local/share/sshyp/school/university.gpg using the built-in password generator:
+Making a new entry saved as '~/.local/share/sshyp/school/university.gpg' using the built-in password generator:
     sshyp /school/university gen
 
-Creating a note-only entry saved as ~/.local/share/sshyp/notes/test note.gpg:
+Creating a note-only entry saved as '~/.local/share/sshyp/notes/test note.gpg':
     sshyp /notes/test\ note add -n
 
 Manually syncing entries with the server:
     sshyp sync
 
-Removing an existing folder saved as ~/.local/share/sshyp/social:
+Removing an existing folder saved as '~/.local/share/sshyp/social':
     sshyp /social/ shear
 .SH EXAMPLES (SERVER)
 Setting up the quick-unlock whitelist:
@@ -106,7 +106,7 @@ Client setup:
     Run "sshyp tweak" and follow the prompts
     Copy the generated public SSH key (located at ~/.ssh/sshyp.pub) to the server using preferred method (manually adding to authorized_keys, ssh-copy-id, etc.)
     If you already have entries on the server, sync them using "sshyp sync"
-    Optionally, Bash completions can be enabled by installing your distribution's "bash-completion" package and restarting your terminal
+    Optionally, shell completions (both Bash and ZSH) can be enabled with your shell's respective method
     Done!
 
 Please note that the server setup intentionally does not allow the reading of entries (it does not allow adding a gpg decryption key). For security purposes, only clients can read entries.
