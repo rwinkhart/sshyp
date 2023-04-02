@@ -5,6 +5,7 @@ full_paths=("$sshyp_path"/**/*.gpg)
 for scan_path in "${full_paths[@]}"; do
     trimmed_paths+=("${${scan_path#$sshyp_path}%????}")
 done
+[[ -v trimmed_paths ]] || trimmed_paths=(help)
 
 case ${words[-2]} in
   sshyp )

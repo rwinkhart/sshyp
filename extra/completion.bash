@@ -9,6 +9,7 @@ _path_gen() {
     for path in "${full_paths[@]}"; do
       trimmed_paths+=("${path:${#sshyp_path}:-4}")
     done
+    if [ "${trimmed_paths[0]}" == '/**/*' ]; then trimmed_paths[0]=help; fi
 } &&
 
 _sshyp_completions() {
