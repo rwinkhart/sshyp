@@ -2,10 +2,11 @@
 
 sshyp_path="$HOME/.local/share/sshyp"
 full_paths=("$sshyp_path"/**/*.gpg)
+trimmed_paths=()
 for scan_path in "${full_paths[@]}"; do
     trimmed_paths+=("${${scan_path#$sshyp_path}%????}")
 done
-[[ -v trimmed_paths ]] || trimmed_paths=(help)
+[[ -z $trimmed_paths ]] && trimmed_paths=(help)
 
 case ${words[-2]} in
   sshyp )

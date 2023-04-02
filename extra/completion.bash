@@ -6,8 +6,8 @@ _path_gen() {
     [ -z "${glob_status##*u*}" ] && shopt -s globstar  # if recursive globbing is disabled, enable it
     local full_paths=("$sshyp_path"/**/*.gpg)
     $glob_status  # set recursive globbing to user default
-    for path in "${full_paths[@]}"; do
-      trimmed_paths+=("${path:${#sshyp_path}:-4}")
+    for scan_path in "${full_paths[@]}"; do
+      trimmed_paths+=("${scan_path:${#sshyp_path}:-4}")
     done
     if [ "${trimmed_paths[0]}" == '/**/*' ]; then trimmed_paths[0]=help; fi
 } &&
