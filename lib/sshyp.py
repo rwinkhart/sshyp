@@ -206,7 +206,7 @@ def tweak():  # runs configuration wizard
     # config directory creation
     Path(f"{home}/.config/sshyp/devices").mkdir(mode=0o700, parents=True, exist_ok=True)
     if not exists(f"{home}/.config/sshyp/tmp"):
-        if uname()[0] in ('Haiku', 'FreeBSD'):
+        if uname()[0] in ('Haiku', 'FreeBSD', 'Darwin'):
             symlink('/tmp', f"{home}/.config/sshyp/tmp")
         elif exists('/data/data/com.termux'):
             symlink('/data/data/com.termux/files/usr/tmp', f"{home}/.config/sshyp/tmp")
@@ -706,6 +706,9 @@ def copy_data():  # copies a specified field of an entry to the clipboard
     elif uname()[0] == 'Haiku':  # Haiku clipboard detection
         run(['clipboard', '-c', _copy_line[_index].rstrip()])
         Popen('sleep 30; clipboard -r', shell=True)
+    elif uname()[0] == 'Darwin':  # MacOS clipboard detection
+        run(['pbcopy'], stdin=Popen(['printf', _copy_line[_index].rstrip()], stdout=PIPE).stdout)
+        Popen("sleep 30; printf '' | pbcopy", shell=True)
     elif exists("/data/data/com.termux"):  # Termux (Android) clipboard detection
         run(['termux-clipboard-set', _copy_line[_index].rstrip()])
         Popen("sleep 30; termux-clipboard-set ''", shell=True)
