@@ -707,13 +707,15 @@ def copy_data():  # copies a specified field of an entry to the clipboard
         run(['clipboard', '-c', _copy_line[_index].rstrip()])
         Popen('sleep 30; clipboard -r', shell=True)
     elif uname()[0] == 'Darwin':  # MacOS clipboard detection
-        run(['pbcopy'], stdin=Popen(['printf', _copy_line[_index].rstrip()], stdout=PIPE).stdout)
+        run(['pbcopy'], stdin=Popen(['printf', _copy_line[_index].rstrip().replace('\\', '\\\\').replace('%', '%%')],
+                                    stdout=PIPE).stdout)
         Popen("sleep 30; printf '' | pbcopy", shell=True)
     elif exists("/data/data/com.termux"):  # Termux (Android) clipboard detection
         run(['termux-clipboard-set', _copy_line[_index].rstrip()])
         Popen("sleep 30; termux-clipboard-set ''", shell=True)
     else:  # X11 clipboard detection
-        run(['xclip', '-sel', 'c'], stdin=Popen(['printf', _copy_line[_index].rstrip()], stdout=PIPE).stdout)
+        run(['xclip', '-sel', 'c'], stdin=Popen(['printf', _copy_line[_index].rstrip().replace('\\', '\\\\')
+                                                .replace('%', '%%')], stdout=PIPE).stdout)
         Popen("sleep 30; printf '' | xclip -sel c", shell=True)
     rmtree(f"{tmp_dir}{_shm_folder}")
 
