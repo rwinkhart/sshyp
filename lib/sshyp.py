@@ -697,7 +697,10 @@ def copy_data():  # copies a specified field of an entry to the clipboard
         _index = 2
     elif arguments[2] in ('note', '-n'):
         _index = 3
-    if 'WAYLAND_DISPLAY' in environ:  # Wayland clipboard detection
+    if 'WSL_DISTRO_NAME' in environ:  # WSL clipboard detection
+        run(['pwsh.exe', '-c', 'Set-Clipboard', _copy_line[_index].rstrip()])
+        Popen("sleep 30; pwsh.exe -c 'echo \"\" | Set-Clipboard'", shell=True)
+    elif 'WAYLAND_DISPLAY' in environ:  # Wayland clipboard detection
         run(['wl-copy', _copy_line[_index].rstrip()])
         Popen('sleep 30; wl-copy -c', shell=True)
     elif uname()[0] == 'Haiku':  # Haiku clipboard detection
