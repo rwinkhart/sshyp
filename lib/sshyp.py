@@ -710,8 +710,8 @@ def copy_data():  # copies a specified field of an entry to the clipboard
         run(['termux-clipboard-set', _copy_line[_index].rstrip()])
         Popen("sleep 30; termux-clipboard-set ''", shell=True)
     else:  # X11 clipboard detection
-        run(['xclip', '-sel', 'c'], stdin=Popen(['echo', '-n', _copy_line[_index].rstrip()], stdout=PIPE).stdout)
-        Popen("sleep 30; echo -n '' | xclip -sel c", shell=True)
+        run(['xclip', '-sel', 'c'], stdin=Popen(['printf', _copy_line[_index].rstrip()], stdout=PIPE).stdout)
+        Popen("sleep 30; printf '' | xclip -sel c", shell=True)
     rmtree(f"{tmp_dir}{_shm_folder}")
 
 
