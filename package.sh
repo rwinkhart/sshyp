@@ -7,8 +7,8 @@ else
     revision="$2"
 fi
 
-_create_generic() {
-    printf '\npackaging as generic...\n'
+_create_generic_all() {
+    printf '\npackaging as generic (multi-platform)...\n'
     mkdir -p output/generictemp/usr/bin \
          output/generictemp/usr/lib/sshyp/extensions \
          output/generictemp/usr/share/man/man1 \
@@ -21,15 +21,40 @@ _create_generic() {
     cp extra/completion.zsh output/generictemp/usr/share/zsh/functions/Completion/Unix/_sshyp
     cp extra/manpage output/generictemp/usr/share/man/man1/sshyp.1
     gzip output/generictemp/usr/share/man/man1/sshyp.1
-    XZ_OPT=-e6 tar -C output/generictemp -cvJf output/GENERIC-sshyp-"$version".tar.xz usr/
+    XZ_OPT=-e6 tar -C output/generictemp -cvJf output/GENERIC-ALL-sshyp-"$version".tar.xz usr/
     rm -rf output/generictemp
-    sha512="$(sha512sum output/GENERIC-sshyp-"$version".tar.xz | awk '{print $1;}')"
-    printf '\ngeneric packaging complete\n\n'
+    printf '\ngeneric (multi-platform) packaging complete\n\n'
+} &&
+
+_create_generic_linux() {
+    printf '\npackaging as generic (Linux)...\n'
+    mkdir -p output/linuxtemp/usr/bin \
+         output/linuxtemp/usr/lib/sshyp/extensions \
+         output/linuxtemp/usr/share/man/man1 \
+         output/linuxtemp/usr/share/bash-completion/completions \
+         output/linuxtemp/usr/share/zsh/functions/Completion/Unix
+    # START PORT
+	cp -r lib/. port-jobs/working/
+	cd port-jobs
+	./CLIPBOARD.py LINUX
+	cd ..
+    cp -r port-jobs/working/. output/linuxtemp/usr/lib/sshyp/
+    # END PORT
+    ln -s /usr/lib/sshyp/sshyp.py output/linuxtemp/usr/bin/sshyp
+    cp -r share output/linuxtemp/usr/
+    cp extra/completion.bash output/linuxtemp/usr/share/bash-completion/completions/sshyp
+    cp extra/completion.zsh output/linuxtemp/usr/share/zsh/functions/Completion/Unix/_sshyp
+    cp extra/manpage output/linuxtemp/usr/share/man/man1/sshyp.1
+    gzip output/linuxtemp/usr/share/man/man1/sshyp.1
+    XZ_OPT=-e6 tar -C output/linuxtemp -cvJf output/GENERIC-LINUX-sshyp-"$version".tar.xz usr/
+    rm -rf output/linuxtemp
+    sha512="$(sha512sum output/GENERIC-LINUX-sshyp-"$version".tar.xz | awk '{print $1;}')"
+    printf '\ngeneric (Linux) packaging complete\n\n'
 } &&
 
 _create_pkgbuild() {
-    local source='https://github.com/rwinkhart/sshyp/releases/download/v$pkgver/GENERIC-sshyp-$pkgver.tar.xz'
     printf '\ngenerating PKGBUILD...\n'
+    local source='https://github.com/rwinkhart/sshyp/releases/download/v$pkgver/GENERIC-LINUX-sshyp-$pkgver.tar.xz'
     printf "# Maintainer: Randall Winkhart <idgr at tutanota dot com>
 pkgname=sshyp
 pkgver="$version"
@@ -44,15 +69,15 @@ source=(\""$source"\")
 sha512sums=('"$sha512"')
 
 package() {
-    tar xf GENERIC-sshyp-"\"\$pkgver\"".tar.xz -C "\"\${pkgdir}\""
+    tar xf GENERIC-LINUX-sshyp-"\"\$pkgver\"".tar.xz -C "\"\${pkgdir}\""
 }
 " > output/PKGBUILD
     printf '\nPKGBUILD generated\n\n'
 } &&
 
 _create_apkbuild() {
-    local source='https://github.com/rwinkhart/sshyp/releases/download/v$pkgver/GENERIC-sshyp-$pkgver.tar.xz'
     printf '\ngenerating APKBUILD...\n'
+    local source='https://github.com/rwinkhart/sshyp/releases/download/v$pkgver/GENERIC-LINUX-sshyp-$pkgver.tar.xz'
     printf "# Maintainer: Randall Winkhart <idgr@tutanota.com>
 pkgname=sshyp
 pkgver="$version"
@@ -74,7 +99,7 @@ package() {
 }
 
 sha512sums=\"
-"$sha512'  'GENERIC-sshyp-\"\$pkgver\".tar.xz"
+"$sha512'  'GENERIC-LINUX-sshyp-\"\$pkgver\".tar.xz"
 \"
 " > output/APKBUILD
     printf '\nAPKBUILD generated\n\n'
@@ -114,7 +139,13 @@ urls {
 	\"https://github.com/rwinkhart/sshyp\"
 }
 " > output/haikutemp/.PackageInfo
-    cp -r lib/. output/haikutemp/lib/sshyp/
+    # START PORT
+	cp -r lib/. port-jobs/working/
+	cd port-jobs
+	./CLIPBOARD.py HAIKU
+	cd ..
+    cp -r port-jobs/working/. output/haikutemp/lib/sshyp/
+    # END PORT
     sed -i '1 s/.*/#!\/bin\/env\ python3.10/' output/haikutemp/lib/sshyp/sshync.py
     sed -i '1 s/.*/#!\/bin\/env\ python3.10/' output/haikutemp/lib/sshyp/sshyp.py
     ln -s /system/lib/sshyp/sshyp.py output/haikutemp/bin/sshyp
@@ -152,7 +183,13 @@ Suggests: bash-completion
 Priority: optional
 Installed-Size: 14584
 " > output/debiantemp/sshyp_"$version"-"$revision"_all/DEBIAN/control
-    cp -r lib/. output/debiantemp/sshyp_"$version"-"$revision"_all/usr/lib/sshyp/
+    # START PORT
+	cp -r lib/. port-jobs/working/
+	cd port-jobs
+	./CLIPBOARD.py LINUX
+	cd ..
+    cp -r port-jobs/working/. output/debiantemp/sshyp_"$version"-"$revision"_all/usr/lib/sshyp/
+    # END PORT
     ln -s /usr/lib/sshyp/sshyp.py output/debiantemp/sshyp_"$version"-"$revision"_all/usr/bin/sshyp
     cp -r share output/debiantemp/sshyp_"$version"-"$revision"_all/usr/
     cp extra/completion.bash output/debiantemp/sshyp_"$version"-"$revision"_all/usr/share/bash-completion/completions/sshyp
@@ -184,7 +221,13 @@ Suggests: bash-completion
 Priority: optional
 Installed-Size: 14584
 " > output/termuxtemp/sshyp_"$version"-"$revision"_all_termux/DEBIAN/control
-    cp -r lib/. output/termuxtemp/sshyp_"$version"-"$revision"_all_termux/data/data/com.termux/files/usr/lib/sshyp/
+    # START PORT
+	cp -r lib/. port-jobs/working/
+	cd port-jobs
+	./CLIPBOARD.py TERMUX
+	cd ..
+    cp -r port-jobs/working/. output/termuxtemp/sshyp_"$version"-"$revision"_all_termux/data/data/com.termux/files/usr/lib/sshyp/
+    # END PORT
     ln -s /data/data/com.termux/files/usr/lib/sshyp/sshyp.py output/termuxtemp/sshyp_"$version"-"$revision"_all_termux/data/data/com.termux/files/usr/bin/sshyp
     cp -r share output/termuxtemp/sshyp_"$version"-"$revision"_all_termux/data/data/com.termux/files/usr/
     cp extra/completion.bash output/termuxtemp/sshyp_"$version"-"$revision"_all_termux/data/data/com.termux/files/usr/share/bash-completion/completions/sshyp
@@ -201,7 +244,7 @@ _create_rpm() {
     printf '\npackaging for Fedora...\n'
     rm -rf ~/rpmbuild
     rpmdev-setuptree
-    cp output/GENERIC-sshyp-"$version".tar.xz ~/rpmbuild/SOURCES
+    cp output/GENERIC-LINUX-sshyp-"$version".tar.xz ~/rpmbuild/SOURCES
     printf "Name:           sshyp
 Version:        "$version"
 Release:        "$revision"
@@ -215,7 +258,7 @@ Recommends:     bash-completion
 %description
 sshyp is a password-store compatible CLI password manager available for UNIX(-like) systems - its primary goal is to make syncing passwords and notes across devices as easy as possible via CLI.
 %install
-tar xf %{_sourcedir}/GENERIC-sshyp-"$version".tar.xz -C %{_sourcedir}
+tar xf %{_sourcedir}/GENERIC-LINUX-sshyp-"$version".tar.xz -C %{_sourcedir}
 cp -r %{_sourcedir}/usr %{buildroot}
 %files
 /usr/bin/sshyp
@@ -275,17 +318,23 @@ printf "/usr/bin/sshyp
 /usr/share/licenses/sshyp/license
 /usr/share/man/man1/sshyp.1.gz
 " > output/freebsdtemp/plist
-cp -r lib/. output/freebsdtemp/usr/lib/sshyp/
-ln -s /usr/lib/sshyp/sshyp.py output/freebsdtemp/usr/bin/sshyp
-cp -r share output/freebsdtemp/usr/
-cp extra/completion.bash output/freebsdtemp/usr/local/share/bash-completion/completions/sshyp
-cp extra/completion.zsh output/freebsdtemp/usr/local/share/zsh/site-functions/_sshyp
-cp extra/manpage output/freebsdtemp/usr/share/man/man1/sshyp.1
-gzip output/freebsdtemp/usr/share/man/man1/sshyp.1
-pkg create -m output/freebsdtemp/ -r output/freebsdtemp/ -p output/freebsdtemp/plist -o output/
-mv output/sshyp-"$version".pkg output/FREEBSD-sshyp-"$version"-"$revision".pkg
-rm -rf output/freebsdtemp
-printf '\nFreeBSD packaging complete\n\n'
+    # START PORT
+	cp -r lib/. port-jobs/working/
+	cd port-jobs
+	./CLIPBOARD.py TERMUX
+	cd ..
+    cp -r port-jobs/working/. output/freebsdtemp/usr/lib/sshyp/
+    # END PORT
+    ln -s /usr/lib/sshyp/sshyp.py output/freebsdtemp/usr/bin/sshyp
+    cp -r share output/freebsdtemp/usr/
+    cp extra/completion.bash output/freebsdtemp/usr/local/share/bash-completion/completions/sshyp
+    cp extra/completion.zsh output/freebsdtemp/usr/local/share/zsh/site-functions/_sshyp
+    cp extra/manpage output/freebsdtemp/usr/share/man/man1/sshyp.1
+    gzip output/freebsdtemp/usr/share/man/man1/sshyp.1
+    pkg create -m output/freebsdtemp/ -r output/freebsdtemp/ -p output/freebsdtemp/plist -o output/
+    mv output/sshyp-"$version".pkg output/FREEBSD-sshyp-"$version"-"$revision".pkg
+    rm -rf output/freebsdtemp
+    printf '\nFreeBSD packaging complete\n\n'
 } &&
 
 case "$1" in
@@ -293,11 +342,11 @@ case "$1" in
         _create_generic
         ;;
     pkgbuild)
-        _create_generic
+        _create_generic_linux
         _create_pkgbuild
         ;;
     apkbuild)
-        _create_generic
+        _create_generic_linux
         _create_apkbuild
         ;;
     haiku)
@@ -310,16 +359,16 @@ case "$1" in
         _create_termux
         ;;
     fedora)
-        _create_generic
+        _create_generic_linux
         _create_rpm
         ;;
     freebsd)
         _create_freebsd_pkg
         ;;
     buildable-arch)
-        _create_generic
-        _create_pkgbuild
-        _create_apkbuild
+        _create_generic_linux
+        _create_arch
+        _create_alpine
         case "$(pacman -Q dpkg)" in
             dpkg*)
             _create_deb
@@ -333,6 +382,6 @@ case "$1" in
         esac
         ;;
     *)
-    printf '\nusage: package.sh [target] <revision>\n\ntargets:\n mainline: pkgbuild apkbuild haiku fedora debian\n experimental: freebsd termux\n other: buildable-arch\n\n'
+    printf '\nusage: package.sh [target] <revision>\n\ntargets:\n mainline: pkgbuild apkbuild fedora debian haiku freebsd\n experimental: termux\n groups: buildable-arch\n\n'
     ;;
 esac

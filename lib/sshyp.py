@@ -697,6 +697,7 @@ def copy_data():  # copies a specified field of an entry to the clipboard
         _index = 2
     elif arguments[2] in ('note', '-n'):
         _index = 3
+    # PORT START CLIPBOARD
     if 'WSL_DISTRO_NAME' in environ:  # WSL clipboard detection
         run(['pwsh.exe', '-c', 'Set-Clipboard', _copy_line[_index].rstrip()])
         Popen("sleep 30; pwsh.exe -c 'echo \"\" | Set-Clipboard'", shell=True)
@@ -717,6 +718,7 @@ def copy_data():  # copies a specified field of an entry to the clipboard
         run(['xclip', '-sel', 'c'], stdin=Popen(['printf', _copy_line[_index].rstrip().replace('\\', '\\\\')
                                                 .replace('%', '%%')], stdout=PIPE).stdout)
         Popen("sleep 30; printf '' | xclip -sel c", shell=True)
+    # PORT END CLIPBOARD
     rmtree(f"{tmp_dir}{_shm_folder}")
 
 
