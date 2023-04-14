@@ -8,7 +8,7 @@ else
 fi
 
 _create_generic_all() {
-    printf '\npackaging as generic (multi-platform)...\n'
+    printf '\npackaging as generic (multi-platform/archival, no port jobs)...\n'
     mkdir -p output/generictemp/usr/bin \
          output/generictemp/usr/lib/sshyp/extensions \
          output/generictemp/usr/share/man/man1 \
@@ -23,7 +23,7 @@ _create_generic_all() {
     gzip output/generictemp/usr/share/man/man1/sshyp.1
     XZ_OPT=-e6 tar -C output/generictemp -cvJf output/GENERIC-ALL-sshyp-"$version".tar.xz usr/
     rm -rf output/generictemp
-    printf '\ngeneric (multi-platform) packaging complete\n\n'
+    printf '\ngeneric (multi-platform/archival, no port jobs) packaging complete\n\n'
 } &&
 
 _create_generic_linux() {
@@ -37,6 +37,7 @@ _create_generic_linux() {
 	cp -r lib/. port-jobs/working/
 	cd port-jobs
 	./CLIPBOARD.py LINUX
+	./COMMENTS.py ALL
 	cd ..
     cp -r port-jobs/working/. output/linuxtemp/usr/lib/sshyp/
     # END PORT
@@ -143,6 +144,7 @@ urls {
 	cp -r lib/. port-jobs/working/
 	cd port-jobs
 	./CLIPBOARD.py HAIKU
+	./COMMENTS.py ALL
 	cd ..
     cp -r port-jobs/working/. output/haikutemp/lib/sshyp/
     # END PORT
@@ -187,6 +189,7 @@ Installed-Size: 14584
 	cp -r lib/. port-jobs/working/
 	cd port-jobs
 	./CLIPBOARD.py LINUX
+	./COMMENTS.py ALL
 	cd ..
     cp -r port-jobs/working/. output/debiantemp/sshyp_"$version"-"$revision"_all/usr/lib/sshyp/
     # END PORT
@@ -225,6 +228,7 @@ Installed-Size: 14584
 	cp -r lib/. port-jobs/working/
 	cd port-jobs
 	./CLIPBOARD.py TERMUX
+	./COMMENTS.py ALL
 	cd ..
     cp -r port-jobs/working/. output/termuxtemp/sshyp_"$version"-"$revision"_all_termux/data/data/com.termux/files/usr/lib/sshyp/
     # END PORT
@@ -322,6 +326,7 @@ printf "/usr/bin/sshyp
 	cp -r lib/. port-jobs/working/
 	cd port-jobs
 	./CLIPBOARD.py TERMUX
+	./COMMENTS.py ALL
 	cd ..
     cp -r port-jobs/working/. output/freebsdtemp/usr/lib/sshyp/
     # END PORT
