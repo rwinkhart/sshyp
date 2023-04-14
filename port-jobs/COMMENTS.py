@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from os import listdir
 import re
 from sys import argv
 
@@ -11,11 +12,12 @@ if len(arguments) > 0 and arguments[0] == 'ALL':
 else:
     regex = re.compile(r'^\s*# PORT.*$\n?', re.MULTILINE)
 
-# read input file
-text = open("working/sshyp.py", "r").read()
-
-# run the defined regular expression
-new_text = re.sub(regex, '', text)
-
-# write the updated text
-open("working/sshyp.py", "w").write(new_text)
+for filename in listdir('working'):
+    if filename.endswith('.py'):
+        filepath = 'working/' + filename
+        # read input file
+        text = open(filepath, 'r').read()
+        # run the defined regular expression
+        new_text = re.sub(regex, '', text)
+        # write updated text
+        open(filepath, 'w').write(new_text)

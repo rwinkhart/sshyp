@@ -36,15 +36,15 @@ else:
     s_exit()
 
 # define PORT target
-string1 = "# PORT START CLIPBOARD"
-string2 = "# PORT END CLIPBOARD"
+string1 = '# PORT START CLIPBOARD'
+string2 = '# PORT END CLIPBOARD'
 
 # read input file
-text = open("working/sshyp.py", "r").read()
+text = open('working/sshyp.py', 'r').read()
 
 # find and replace the defined PORT target
 regex = re.compile(f"{string1}.*?{string2}", re.DOTALL)
 new_text = re.sub(regex, replacement, text)
 
-# write the updated text
-open("working/sshyp.py", "w").write(new_text)
+# write updated text
+open('working/sshyp.py', 'w').write(new_text)
