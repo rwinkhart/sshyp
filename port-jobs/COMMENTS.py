@@ -6,7 +6,7 @@ from sys import argv
 arguments = argv[1:]
 
 # define regular expression depending on arguments
-if arguments[0] == 'ALL':
+if len(arguments) > 0 and arguments[0] == 'ALL':
     regex = re.compile(r'^\s*#.*$\n?', re.MULTILINE)
 else:
     regex = re.compile(r'^\s*# PORT.*$\n?', re.MULTILINE)
