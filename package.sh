@@ -34,12 +34,12 @@ _create_generic_linux() {
          output/linuxtemp/usr/share/bash-completion/completions \
          output/linuxtemp/usr/share/zsh/functions/Completion/Unix
     # START PORT
-	cp -r lib/. port-jobs/working/
-	cd port-jobs
-	./CLIPBOARD.py LINUX
-	./COMMENTS.py ALL
-	./TABS.sh TABS
-	cd ..
+    cp -r lib/. port-jobs/working/
+    cd port-jobs
+    ./CLIPBOARD.py LINUX
+    ./COMMENTS.py ALL
+    ./TABS.sh TABS
+    cd ..
     cp -r port-jobs/working/. output/linuxtemp/usr/lib/sshyp/
     # END PORT
     ln -s /usr/lib/sshyp/sshyp.py output/linuxtemp/usr/bin/sshyp
@@ -115,39 +115,39 @@ _create_hpkg() {
          output/haikutemp/documentation/man/man1 \
          output/haikutemp/data/bash-completion/completions \
          output/haikutemp/data/zsh/site-functions
-    printf "name			sshyp
-version			"$version"-"$revision"
-architecture		any
-summary			\"A light-weight, self-hosted, synchronized password manager\"
-description		\"sshyp is the only password-store compatible CLI password manager available for Haiku - it is also available on Linux/Android (via Termux) so that you can sync your entries across all of your devices.\"
-packager		\"Randall Winkhart <idgr at tutanota dot com>\"
-vendor			\"Randall Winkhart\"
+    printf "name            sshyp
+version         "$version"-"$revision"
+architecture        any
+summary         \"A light-weight, self-hosted, synchronized password manager\"
+description     \"sshyp is the only password-store compatible CLI password manager available for Haiku - it is also available on Linux/Android (via Termux) so that you can sync your entries across all of your devices.\"
+packager        \"Randall Winkhart <idgr at tutanota dot com>\"
+vendor          \"Randall Winkhart\"
 licenses {
-	\"GNU GPL v3\"
+    \"GNU GPL v3\"
 }
 copyrights {
-	\"2021-2023 Randall Winkhart\"
+    \"2021-2023 Randall Winkhart\"
 }
 provides {
-	sshyp = "$version"
-	cmd:sshyp
+    sshyp = "$version"
+    cmd:sshyp
 }
 requires {
-	gnupg
-	openssh
-	python310
+    gnupg
+    openssh
+    python310
 }
 urls {
-	\"https://github.com/rwinkhart/sshyp\"
+    \"https://github.com/rwinkhart/sshyp\"
 }
 " > output/haikutemp/.PackageInfo
     # START PORT
-	cp -r lib/. port-jobs/working/
-	cd port-jobs
-	./CLIPBOARD.py HAIKU
-	./COMMENTS.py ALL
-	./TABS.sh TABS
-	cd ..
+    cp -r lib/. port-jobs/working/
+    cd port-jobs
+    ./CLIPBOARD.py HAIKU
+    ./COMMENTS.py ALL
+    ./TABS.sh TABS
+    cd ..
     cp -r port-jobs/working/. output/haikutemp/lib/sshyp/
     # END PORT
     sed -i '1 s/.*/#!\/bin\/env\ python3.10/' output/haikutemp/lib/sshyp/sshync.py
@@ -188,12 +188,12 @@ Priority: optional
 Installed-Size: 14584
 " > output/debiantemp/sshyp_"$version"-"$revision"_all/DEBIAN/control
     # START PORT
-	cp -r lib/. port-jobs/working/
-	cd port-jobs
-	./CLIPBOARD.py LINUX
-	./COMMENTS.py ALL
-	./TABS.sh TABS
-	cd ..
+    cp -r lib/. port-jobs/working/
+    cd port-jobs
+    ./CLIPBOARD.py LINUX
+    ./COMMENTS.py ALL
+    ./TABS.sh TABS
+    cd ..
     cp -r port-jobs/working/. output/debiantemp/sshyp_"$version"-"$revision"_all/usr/lib/sshyp/
     # END PORT
     ln -s /usr/lib/sshyp/sshyp.py output/debiantemp/sshyp_"$version"-"$revision"_all/usr/bin/sshyp
@@ -228,12 +228,12 @@ Priority: optional
 Installed-Size: 14584
 " > output/termuxtemp/sshyp_"$version"-"$revision"_all_termux/DEBIAN/control
     # START PORT
-	cp -r lib/. port-jobs/working/
-	cd port-jobs
-	./CLIPBOARD.py TERMUX
-	./COMMENTS.py ALL
-	./TABS.sh TABS
-	cd ..
+    cp -r lib/. port-jobs/working/
+    cd port-jobs
+    ./CLIPBOARD.py TERMUX
+    ./COMMENTS.py ALL
+    ./TABS.sh TABS
+    cd ..
     cp -r port-jobs/working/. output/termuxtemp/sshyp_"$version"-"$revision"_all_termux/data/data/com.termux/files/usr/lib/sshyp/
     # END PORT
     ln -s /data/data/com.termux/files/usr/lib/sshyp/sshyp.py output/termuxtemp/sshyp_"$version"-"$revision"_all_termux/data/data/com.termux/files/usr/bin/sshyp
@@ -327,12 +327,12 @@ printf "/usr/bin/sshyp
 /usr/share/man/man1/sshyp.1.gz
 " > output/freebsdtemp/plist
     # START PORT
-	cp -r lib/. port-jobs/working/
-	cd port-jobs
-	./CLIPBOARD.py TERMUX
-	./COMMENTS.py ALL
-	./TABS.sh TABS
-	cd ..
+    cp -r lib/. port-jobs/working/
+    cd port-jobs
+    ./CLIPBOARD.py TERMUX
+    ./COMMENTS.py ALL
+    ./TABS.sh TABS
+    cd ..
     cp -r port-jobs/working/. output/freebsdtemp/usr/lib/sshyp/
     # END PORT
     ln -s /usr/lib/sshyp/sshyp.py output/freebsdtemp/usr/bin/sshyp

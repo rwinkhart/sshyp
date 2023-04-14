@@ -7,7 +7,7 @@ this release improves sshyp's shell completions by adding zsh support and signif
 user-facing features:
 
 - zsh completion support
-	^ ensure modern completions are enabled in your ~/.zshrc
+    ^ ensure modern completions are enabled in your ~/.zshrc
 
 fixes/optimizations:
 
