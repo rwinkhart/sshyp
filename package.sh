@@ -252,7 +252,11 @@ _create_rpm() {
     printf '\npackaging for Fedora...\n'
     rm -rf ~/rpmbuild
     rpmdev-setuptree
-    cp output/GENERIC-LINUX-sshyp-"$version".tar.xz ~/rpmbuild/SOURCES
+    mkdir -p output/fedoratemp/usr/bin \
+         output/fedoratemp/usr/lib/sshyp/extensions \
+         output/fedoratemp/usr/share/man/man1 \
+         output/fedoratemp/usr/share/bash-completion/completions \
+         output/fedoratemp/usr/share/zsh/site-functions
     printf "Name:           sshyp
 Version:        "$version"
 Release:        "$revision"
@@ -260,29 +264,46 @@ Summary:        A light-weight, self-hosted, synchronized password manager
 BuildArch:      noarch
 License:        GPL-3.0-only
 URL:            https://github.com/rwinkhart/sshyp
-Source0:        GENERIC-sshyp-"$version".tar.xz
+Source0:        GENERIC-FEDORA-sshyp-"$version".tar.xz
 Requires:       python gnupg openssh-clients wl-clipboard
 Recommends:     bash-completion
 %description
 sshyp is a password-store compatible CLI password manager available for UNIX(-like) systems - its primary goal is to make syncing passwords and notes across devices as easy as possible via CLI.
 %install
-tar xf %{_sourcedir}/GENERIC-LINUX-sshyp-"$version".tar.xz -C %{_sourcedir}
+tar xf %{_sourcedir}/GENERIC-FEDORA-sshyp-"$version".tar.xz -C %{_sourcedir}
 cp -r %{_sourcedir}/usr %{buildroot}
 %files
 /usr/bin/sshyp
 /usr/lib/sshyp/sshyp.py
 /usr/lib/sshyp/sshync.py
 /usr/share/bash-completion/completions/sshyp
-/usr/share/zsh/functions/Completion/Unix/_sshyp
+/usr/share/zsh/site-functions/_sshyp
 %license /usr/share/licenses/sshyp/license
 %doc
 /usr/share/doc/sshyp/changelog
 /usr/share/man/man1/sshyp.1.gz
 " > ~/rpmbuild/SPECS/sshyp.spec
-rpmbuild -bb ~/rpmbuild/SPECS/sshyp.spec
-mv ~/rpmbuild/RPMS/noarch/sshyp-"$version"-"$revision".noarch.rpm output/FEDORA-sshyp-"$version"-"$revision".noarch.rpm
-rm -rf ~/rpmbuild
-printf '\nFedora packaging complete\n\n'
+    # START PORT
+    cp -r lib/. port-jobs/working/
+    cd port-jobs
+    ./CLIPBOARD.py LINUX
+    ./COMMENTS.py ALL
+    ./TABS.sh TABS
+    cd ..
+    cp -r port-jobs/working/. output/fedoratemp/usr/lib/sshyp/
+    # END PORT
+    ln -s /usr/lib/sshyp/sshyp.py output/fedoratemp/usr/bin/sshyp
+    cp -r share output/fedoratemp/usr/
+    cp extra/completion.bash output/fedoratemp/usr/share/bash-completion/completions/sshyp
+    cp extra/completion.zsh output/fedoratemp/usr/share/zsh/site-functions/_sshyp
+    cp extra/manpage output/fedoratemp/usr/share/man/man1/sshyp.1
+    gzip output/fedoratemp/usr/share/man/man1/sshyp.1
+    XZ_OPT=-e6 tar -C output/fedoratemp -cvJf output/GENERIC-FEDORA-sshyp-"$version".tar.xz usr/
+    rm -rf output/fedoratemp
+    rpmbuild -bb ~/rpmbuild/SPECS/sshyp.spec
+    mv ~/rpmbuild/RPMS/noarch/sshyp-"$version"-"$revision".noarch.rpm output/FEDORA-sshyp-"$version"-"$revision".noarch.rpm
+    rm -rf ~/rpmbuild
+    printf '\nFedora packaging complete\n\n'
 } &&
 
 _create_freebsd_pkg() {
@@ -349,7 +370,7 @@ printf "/usr/bin/sshyp
 
 case "$1" in
     generic)
-        _create_generic
+        _create_generic_all
         ;;
     pkgbuild)
         _create_generic_linux
