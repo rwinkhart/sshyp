@@ -267,19 +267,19 @@ URL:            https://github.com/rwinkhart/sshyp
 Source0:        GENERIC-FEDORA-sshyp-"$version".tar.xz
 Requires:       python gnupg openssh-clients wl-clipboard
 Recommends:     bash-completion
-%description
+%%description
 sshyp is a password-store compatible CLI password manager available for UNIX(-like) systems - its primary goal is to make syncing passwords and notes across devices as easy as possible via CLI.
-%install
-tar xf %{_sourcedir}/GENERIC-FEDORA-sshyp-"$version".tar.xz -C %{_sourcedir}
-cp -r %{_sourcedir}/usr %{buildroot}
-%files
+%%install
+tar xf %%{_sourcedir}/GENERIC-FEDORA-sshyp-"$version".tar.xz -C %%{_sourcedir}
+cp -r %%{_sourcedir}/usr %%{buildroot}
+%%files
 /usr/bin/sshyp
 /usr/lib/sshyp/sshyp.py
 /usr/lib/sshyp/sshync.py
 /usr/share/bash-completion/completions/sshyp
 /usr/share/zsh/site-functions/_sshyp
-%license /usr/share/licenses/sshyp/license
-%doc
+%%license /usr/share/licenses/sshyp/license
+%%doc
 /usr/share/doc/sshyp/changelog
 /usr/share/man/man1/sshyp.1.gz
 " > ~/rpmbuild/SPECS/sshyp.spec
@@ -300,6 +300,7 @@ cp -r %{_sourcedir}/usr %{buildroot}
     gzip output/fedoratemp/usr/share/man/man1/sshyp.1
     XZ_OPT=-e6 tar -C output/fedoratemp -cvJf output/GENERIC-FEDORA-sshyp-"$version".tar.xz usr/
     rm -rf output/fedoratemp
+    cp output/GENERIC-FEDORA-sshyp-"$version".tar.xz ~/rpmbuild/SOURCES
     rpmbuild -bb ~/rpmbuild/SPECS/sshyp.spec
     mv ~/rpmbuild/RPMS/noarch/sshyp-"$version"-"$revision".noarch.rpm output/FEDORA-sshyp-"$version"-"$revision".noarch.rpm
     rm -rf ~/rpmbuild
@@ -390,7 +391,6 @@ case "$1" in
         _create_termux
         ;;
     fedora)
-        _create_generic_linux
         _create_rpm
         ;;
     freebsd)
