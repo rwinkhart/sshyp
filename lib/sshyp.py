@@ -11,7 +11,6 @@ home = expanduser("~")
 
 
 # UTILITY FUNCTIONS
-
 # generates and prints full entry list
 def entry_list_gen(_directory=f"{home}/.local/share/sshyp/"):
     from textwrap import fill
@@ -207,7 +206,6 @@ def copy_id_check(_port, _username_ssh, _ip, _client_device_id):
 
 
 # ARGUMENT-SPECIFIC FUNCTIONS
-
 # runs configuration wizard
 def tweak():
     from os import symlink

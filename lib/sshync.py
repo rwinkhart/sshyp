@@ -7,7 +7,6 @@ home = expanduser("~")
 
 
 # REMOTE
-
 # prints all necessary remote data to stdout
 def remote_list_gen(_client_device_name, _remote_dir):
     # deletions
@@ -31,7 +30,6 @@ def remote_list_gen(_client_device_name, _remote_dir):
 
 
 # HYBRID
-
 # deletes a file or folder and/or marks it for deletion upon syncing
 def delete(_file_path, _target_database):
     from shutil import rmtree
@@ -64,7 +62,6 @@ def get_local_data(_directory, _device):
 
 
 # LOCAL
-
 # captures and returns all necessary data from the remote server
 def remote_list_fetch(_user_data):
     try:
