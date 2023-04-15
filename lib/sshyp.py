@@ -12,7 +12,8 @@ home = expanduser("~")
 
 # UTILITY FUNCTIONS
 
-def entry_list_gen(_directory=f"{home}/.local/share/sshyp/"):  # generates and prints full entry list
+# generates and prints full entry list
+def entry_list_gen(_directory=f"{home}/.local/share/sshyp/"):
     from textwrap import fill
     _ran = False
     print("\nfor a list of usable commands, run 'sshyp help'\n\n\u001b[38;5;0;48;5;15msshyp entries:\u001b[0m\n")
@@ -38,7 +39,8 @@ def entry_list_gen(_directory=f"{home}/.local/share/sshyp/"):  # generates and p
         _ran = True
 
 
-def entry_reader(_decrypted_entry):  # displays the contents of an entry in a readable format
+# displays the contents of an entry in a readable format
+def entry_reader(_decrypted_entry):
     _entry_lines, _notes_flag = open(_decrypted_entry, 'r').readlines(), 0
     print()
     for _num in range(len(_entry_lines)):
@@ -64,7 +66,8 @@ def entry_reader(_decrypted_entry):  # displays the contents of an entry in a re
                 print(f"\u001b[38;5;15;48;5;238mpassword:\u001b[0m\n{_entry_lines[0]}\n")
 
 
-def string_gen(_complexity, _length):  # generates and returns a random string based on input
+# generates and returns a random string based on input
+def string_gen(_complexity, _length):
     from random import SystemRandom
     import string
     if _complexity == 's':
@@ -85,7 +88,8 @@ def string_gen(_complexity, _length):  # generates and returns a random string b
     return _gen
 
 
-def pass_gen():  # prompts the user for necessary information to generate a password and passes it to string_gen
+# prompts the user for necessary information to generate a password and passes it to string_gen
+def pass_gen():
     _length = 9
     while True:
         try:
@@ -104,22 +108,24 @@ def pass_gen():  # prompts the user for necessary information to generate a pass
     return _gen
 
 
-def shm_gen(_tmp_dir=f"{home}/.config/sshyp/tmp/"):  # creates a temporary directory for entry editing
+# creates a temporary directory for entry editing
+def shm_gen(_tmp_dir=f"{home}/.config/sshyp/tmp/"):
     _shm_folder_gen = string_gen('f', randint(12, 48))
     _shm_entry_gen = string_gen('f', randint(12, 48))
     Path(_tmp_dir + _shm_folder_gen).mkdir(mode=0o700)
     return _shm_folder_gen, _shm_entry_gen
 
 
+# encrypts an entry and cleans up the temporary files
 def encrypt(_entry_dir, _shm_folder, _shm_entry, _gpg_id, _tmp_dir=f"{home}/.config/sshyp/tmp/"):
-    # encrypts an entry and cleans up the temporary files
     run(['gpg', '-qr', str(_gpg_id), '-e', f"{_tmp_dir}{_shm_folder}/{_shm_entry}"])
     move(f"{_tmp_dir}{_shm_folder}/{_shm_entry}.gpg", f"{_entry_dir}.gpg")
     rmtree(f"{_tmp_dir}{_shm_folder}")
 
 
+# decrypts an entry to a temporary directory
 def decrypt(_entry_dir, _shm_folder, _shm_entry, _quick_pass,
-            _tmp_dir=f"{home}/.config/sshyp/tmp/"):  # decrypts an entry to a temporary directory
+            _tmp_dir=f"{home}/.config/sshyp/tmp/"):
     if not isinstance(_quick_pass, bool):
         _unlock_method = ['gpg', '--pinentry-mode', 'loopback', '--passphrase', _quick_pass, '-qd', '--output']
     else:
@@ -144,14 +150,16 @@ def decrypt(_entry_dir, _shm_folder, _shm_entry, _quick_pass,
             s_exit(4)
 
 
-def determine_decrypt(_entry_dir, _shm_folder, _shm_entry):  # call decrypt() based on quick-unlock status
+# call decrypt() based on quick-unlock status
+def determine_decrypt(_entry_dir, _shm_folder, _shm_entry):
     if quick_unlock_enabled == 'y':
         decrypt(_entry_dir, _shm_folder, _shm_entry, whitelist_verify(port, username_ssh, ip, client_device_id))
     else:
         decrypt(_entry_dir, _shm_folder, _shm_entry, False)
 
 
-def optimized_edit(_lines, _edit_data, _edit_line):  # ensures an edited entry is optimized for best compatibility
+# ensures an edited entry is optimized for best compatibility
+def optimized_edit(_lines, _edit_data, _edit_line):
     while len(_lines) < _edit_line + 1:
         _lines.append('\n')
     if _edit_data is not None:
@@ -170,7 +178,8 @@ def optimized_edit(_lines, _edit_data, _edit_line):  # ensures an edited entry i
     return _lines
 
 
-def edit_note(_shm_folder, _shm_entry, _lines):  # edits the note attached to an entry
+# edits the note attached to an entry
+def edit_note(_shm_folder, _shm_entry, _lines):
     _reg_lines = _lines[0:3]
     open(f"{tmp_dir}{_shm_folder}/{_shm_entry}-n", 'w').writelines(_lines[3:])
     run([editor, f"{tmp_dir}{_shm_folder}/{_shm_entry}-n"])
@@ -181,8 +190,8 @@ def edit_note(_shm_folder, _shm_entry, _lines):  # edits the note attached to an
     return _noted_lines
 
 
+# attempts to connect to the user's server via ssh to register the device for syncing
 def copy_id_check(_port, _username_ssh, _ip, _client_device_id):
-    # attempts to connect to the user's server via ssh to register the device for syncing
     try:
         run(['ssh', '-o', 'ConnectTimeout=3', '-i', f"{home}/.ssh/sshyp", '-p', _port, f"{_username_ssh}@{_ip}",
              f'python3 -c \'from pathlib import Path; Path("/home/{_username_ssh}/.config/sshyp/devices/'
@@ -199,7 +208,8 @@ def copy_id_check(_port, _username_ssh, _ip, _client_device_id):
 
 # ARGUMENT-SPECIFIC FUNCTIONS
 
-def tweak():  # runs configuration wizard
+# runs configuration wizard
+def tweak():
     from os import symlink
     _divider = f"\n{'=' * (get_terminal_size()[0] - int((.5 * get_terminal_size()[0])))}\n\n"
 
@@ -279,7 +289,8 @@ def tweak():  # runs configuration wizard
                          f"{home}/.ssh/sshyp", _iport[0], _iport[1], _username_ssh)
 
             # device id configuration
-            for _id in listdir(f"{home}/.config/sshyp/devices"):  # remove existing device id
+            # remove existing device id
+            for _id in listdir(f"{home}/.config/sshyp/devices"):
                 remove(f"{home}/.config/sshyp/devices/{_id}")
             print(f"{_divider}\u001b[4;1mimportant:\u001b[0m this id \u001b[4;1mmust\u001b[0m be unique amongst your "
                   f"client devices\n\nthis is used to keep track of database syncing and quick-unlock permissions\n")
@@ -315,7 +326,8 @@ def tweak():  # runs configuration wizard
     print(f"{_divider}configuration complete\n")
 
 
-def print_info():  # prints help text based on argument
+# prints help text based on argument
+def print_info():
     if arguments[0] in ('version', '-v'):
         print('\nsshyp is a simple, self-hosted, sftp-synchronized\npassword manager for unix(-like) systems\n')
         print("                ..       \u001b[38;5;9m♥♥ ♥♥\u001b[0m       ..\n         .''.''/()\\     \u001b[38;5;13m"
@@ -429,7 +441,8 @@ def print_info():  # prints help text based on argument
             print(' del                     remove a device id from the quick-unlock whitelist\n')
 
 
-def read_shortcut():  # shortcut to quickly read an entry
+# shortcut to quickly read an entry
+def read_shortcut():
     if not exists(f"{directory}{entry_name}.gpg"):
         if not entry_name:
             print(f"\n\u001b[38;5;9merror: missing entry name\u001b[0m\n")
@@ -444,7 +457,8 @@ def read_shortcut():  # shortcut to quickly read an entry
     rmtree(f"{tmp_dir}{_shm_folder}")
 
 
-def sync():  # calls sshync to sync changes to the user's server
+# calls sshync to sync changes to the user's server
+def sync():
     print('\nsyncing entries with the server device...\n')
     # set permissions before uploading
     for _root, _dirs, _files in walk(f"{home}/.local/share/sshyp"):
@@ -455,7 +469,8 @@ def sync():  # calls sshync to sync changes to the user's server
     run_profile(f"{home}/.config/sshyp/sshyp.sshync", silent_sync)
 
 
-def whitelist_setup():  # takes input from the user to set up quick-unlock password
+# takes input from the user to set up quick-unlock password
+def whitelist_setup():
     _gpg_password_temp = str(input('\nfull gpg passphrase: '))
     _half_length = int(len(_gpg_password_temp)/2)
     try:
@@ -489,8 +504,8 @@ def whitelist_setup():  # takes input from the user to set up quick-unlock passw
     print(f"\nyour quick-unlock passphrase: {_quick_unlock_password}")
 
 
+# checks the user's whitelist status and fetches the full gpg key password if possible
 def whitelist_verify(_port, _username_ssh, _ip, _client_device_id):
-    # checks the user's whitelist status and fetches the full gpg key password if possible
     try:
         run(['gpg', '--pinentry-mode', 'cancel', '-qd', '--output', '/dev/null',
              f"{home}/.config/sshyp/lock.gpg"], stderr=DEVNULL, check=True)
@@ -522,7 +537,8 @@ def whitelist_verify(_port, _username_ssh, _ip, _client_device_id):
     return _full_password
 
 
-def whitelist_list():  # shows the quick-unlock whitelist status of device ids
+# shows the quick-unlock whitelist status of device ids
+def whitelist_list():
     _whitelisted_ids = listdir(f"{home}/.config/sshyp/whitelist")
     _device_ids = listdir(f"{home}/.config/sshyp/devices")
     print('\n\u001b[1mquick-unlock whitelisted device ids:\u001b[0m')
@@ -535,7 +551,8 @@ def whitelist_list():  # shows the quick-unlock whitelist status of device ids
     print()
 
 
-def whitelist_manage():  # adds or removes quick-unlock whitelisted device ids
+# adds or removes quick-unlock whitelisted device ids
+def whitelist_manage():
     if arg_count == 2:
         whitelist_list()
         _device_id = input('device id: ')
@@ -555,17 +572,23 @@ def whitelist_manage():  # adds or removes quick-unlock whitelisted device ids
         whitelist_list()
 
 
-def add_entry():  # adds a new entry
-    _shm_folder, _shm_entry = None, None  # set to avoid PEP8 warnings
+# adds a new entry
+def add_entry():
+    # set to avoid PEP8 warnings
+    _shm_folder, _shm_entry = None, None
     if isfile(f"{directory}{entry_name}.gpg"):
         print(f"\n\u001b[38;5;9merror: entry (/{entry_name}) already exists\u001b[0m\n")
         s_exit(3)
-    if arguments[2] in ('note', '-n'):  # note entry
+
+    # note entry
+    if arguments[2] in ('note', '-n'):
         _shm_folder, _shm_entry = shm_gen()
         run([editor, f"{tmp_dir}{_shm_folder}/{_shm_entry}-n"])
         _notes = open(f"{tmp_dir}{_shm_folder}/{_shm_entry}-n", 'r').read()
         open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'w').writelines(optimized_edit(['', '', '', _notes], None, -1))
-    else:  # password entry
+    else:
+
+        # password entry
         _username = str(input('username: '))
         _password = str(input('password: '))
         _url = str(input('url: '))
@@ -583,7 +606,8 @@ def add_entry():  # adds a new entry
     encrypt(directory + entry_name, _shm_folder, _shm_entry, gpg_id)
 
 
-def add_folder():  # creates a new folder
+# creates a new folder
+def add_folder():
     Path(directory + entry_name).mkdir(mode=0o700, parents=True, exist_ok=True)
     if not ssh_error:
         run(['ssh', '-i', f"{home}/.ssh/sshyp", '-p', port, f"{username_ssh}@{ip}",
@@ -591,7 +615,8 @@ def add_folder():  # creates a new folder
              f'.mkdir(mode=0o700, parents=True, exist_ok=True)\''])
 
 
-def rename():  # renames an entry or folder
+# renames an entry or folder
+def rename():
     from shutil import copy
     _file = True
     if not exists(f"{directory}{entry_name}.gpg") and not exists(f"{directory}{entry_name}"):
@@ -600,16 +625,21 @@ def rename():  # renames an entry or folder
     elif not isfile(f"{directory}{entry_name}.gpg"):
         _file = False
     _new_name = str(input('new name: ')).strip('/')
-    if _file:  # if renaming a file
-        if isfile(f"{directory}{_new_name}.gpg"):  # check if the new file already exists
+
+    # if renaming a file
+    if _file:
+        # check if the new file already exists
+        if isfile(f"{directory}{_new_name}.gpg"):
             print(f"\n\u001b[38;5;9merror: (/{_new_name}) already exists\u001b[0m\n")
             s_exit(3)
         if not ssh_error:
             copy(f"{directory}{entry_name}.gpg", f"{directory}{_new_name}.gpg")
         else:
             move(f"{directory}{entry_name}.gpg", f"{directory}{_new_name}.gpg")
-    else:  # if renaming a folder
-        if isdir(f"{directory}{_new_name}"):  # check if the new folder already exists
+    else:
+
+        # if renaming a folder
+        if isdir(f"{directory}{_new_name}"):
             print(f"\n\u001b[38;5;9merror: (/{_new_name}/) already exists\u001b[0m\n")
             s_exit(3)
         if not ssh_error:
@@ -624,8 +654,10 @@ def rename():  # renames an entry or folder
              f'cd /lib/sshyp; python3 -c \'from sshync import delete; delete("{entry_name}", "remotely")\''])
 
 
-def edit():  # edits the contents of an entry
-    _shm_folder, _shm_entry, _detail, _edit_line = None, None, None, None  # set to avoid PEP8 warnings
+# edits the contents of an entry
+def edit():
+    # set to avoid PEP8 warnings
+    _shm_folder, _shm_entry, _detail, _edit_line = None, None, None, None
     if not isfile(f"{directory}{entry_name}.gpg"):
         print(f"\n\u001b[38;5;9merror: entry (/{entry_name}) does not exist\u001b[0m\n")
         s_exit(2)
@@ -650,10 +682,13 @@ def edit():  # edits the contents of an entry
     encrypt(directory + entry_name, _shm_folder, _shm_entry, gpg_id)
 
 
-def gen():  # generates a password for a new or an existing entry
-    _username, _url, _notes = None, None, None  # set to avoid PEP8 warnings
+# generates a password for a new or an existing entry
+def gen():
+    # set to avoid PEP8 warnings
+    _username, _url, _notes = None, None, None
     _shm_folder, _shm_entry = shm_gen()
-    if arg_count == 3 and arguments[2] in ('update', '-u'):  # gen update
+    # gen update
+    if arg_count == 3 and arguments[2] in ('update', '-u'):
         if not isfile(f"{directory}{entry_name}.gpg"):
             print(f"\n\u001b[38;5;9merror: entry (/{entry_name}) does not exist\u001b[0m\n")
             s_exit(2)
@@ -661,7 +696,8 @@ def gen():  # generates a password for a new or an existing entry
         _new_lines = optimized_edit(open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'r').readlines(), pass_gen(), 0)
         open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'w').writelines(_new_lines)
         remove(f"{directory}{entry_name}.gpg")
-    elif isfile(f"{directory}{entry_name}.gpg"):  # gen
+    # gen
+    elif isfile(f"{directory}{entry_name}.gpg"):
         print(f"\n\u001b[38;5;9merror: entry (/{entry_name}) already exists\u001b[0m\n")
         s_exit(3)
     else:
@@ -681,7 +717,8 @@ def gen():  # generates a password for a new or an existing entry
     encrypt(directory + entry_name, _shm_folder, _shm_entry, gpg_id)
 
 
-def copy_data():  # copies a specified field of an entry to the clipboard
+# copies a specified field of an entry to the clipboard
+def copy_data():
     from subprocess import Popen
     if not isfile(f"{directory}{entry_name}.gpg"):
         print(f"\n\u001b[38;5;9merror: entry (/{entry_name}) does not exist\u001b[0m\n")
@@ -698,23 +735,29 @@ def copy_data():  # copies a specified field of an entry to the clipboard
     elif arguments[2] in ('note', '-n'):
         _index = 3
     # PORT START CLIPBOARD
-    if 'WSL_DISTRO_NAME' in environ:  # WSL clipboard detection
+    # WSL clipboard detection
+    if 'WSL_DISTRO_NAME' in environ:
         run(['pwsh.exe', '-c', 'Set-Clipboard', _copy_line[_index].rstrip()])
         Popen("sleep 30; pwsh.exe -c 'echo \"\" | Set-Clipboard'", shell=True)
-    elif 'WAYLAND_DISPLAY' in environ:  # Wayland clipboard detection
+    # Wayland clipboard detection
+    elif 'WAYLAND_DISPLAY' in environ:
         run(['wl-copy', _copy_line[_index].rstrip()])
         Popen('sleep 30; wl-copy -c', shell=True)
-    elif uname()[0] == 'Haiku':  # Haiku clipboard detection
+    # Haiku clipboard detection
+    elif uname()[0] == 'Haiku':
         run(['clipboard', '-c', _copy_line[_index].rstrip()])
         Popen('sleep 30; clipboard -r', shell=True)
-    elif uname()[0] == 'Darwin':  # MacOS clipboard detection
+    # MacOS clipboard detection
+    elif uname()[0] == 'Darwin':
         run(['pbcopy'], stdin=Popen(['printf', _copy_line[_index].rstrip().replace('\\', '\\\\').replace('%', '%%')],
                                     stdout=PIPE).stdout)
         Popen("sleep 30; printf '' | pbcopy", shell=True)
-    elif exists("/data/data/com.termux"):  # Termux (Android) clipboard detection
+    # Termux (Android) clipboard detection
+    elif exists("/data/data/com.termux"):
         run(['termux-clipboard-set', _copy_line[_index].rstrip()])
         Popen("sleep 30; termux-clipboard-set ''", shell=True)
-    else:  # X11 clipboard detection
+    # X11 clipboard detection
+    else:
         run(['xclip', '-sel', 'c'], stdin=Popen(['printf', _copy_line[_index].rstrip().replace('\\', '\\\\')
                                                 .replace('%', '%%')], stdout=PIPE).stdout)
         Popen("sleep 30; printf '' | xclip -sel c", shell=True)
@@ -722,7 +765,8 @@ def copy_data():  # copies a specified field of an entry to the clipboard
     rmtree(f"{tmp_dir}{_shm_folder}")
 
 
-def remove_data():  # deletes an entry from the server and flags it for local deletion on sync
+# deletes an entry from the server and flags it for local deletion on sync
+def remove_data():
     determine_decrypt(f"{home}/.config/sshyp/lock.gpg", None, None)
     if not ssh_error:
         run(['ssh', '-i', f"{home}/.ssh/sshyp", '-p', port, f"{username_ssh}@{ip}",
@@ -731,7 +775,8 @@ def remove_data():  # deletes an entry from the server and flags it for local de
         offline_delete(entry_name, 'locally')
 
 
-def extension_runner():  # checks extension config files for matches to argument, runs extensions
+# checks extension config files for matches to argument, runs extensions
+def extension_runner():
     from configparser import ConfigParser
     _output_com, _extension_dir = None, realpath(__file__).rsplit('/', 1)[0] + '/extensions/'
     if isdir(_extension_dir):
@@ -755,7 +800,8 @@ def extension_runner():  # checks extension config files for matches to argument
 if __name__ == "__main__":
     try:
         ssh_error, success_flag, sync_flag, silent_sync = False, False, False, False
-        arg_start, device_type = None, None  # set to avoid PEP8 warnings
+        # set to avoid PEP8 warnings
+        arg_start, device_type = None, None
         # retrieve typed argument
         arguments = argv[1:]
         arg_count = len(arguments)
@@ -844,7 +890,8 @@ if __name__ == "__main__":
                 success_flag = True
                 read_shortcut()
 
-        else:  # server arguments
+        # server arguments
+        else:
             if arg_count < 1:
                 arguments.append('help')
                 print_info()
