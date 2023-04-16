@@ -26,12 +26,12 @@ if len(arguments) > 0:
     Popen("sleep 30; printf '' | xclip -sel c", shell=True)"""
     elif arguments[0] == 'LINUX':
         replacement = """if 'WAYLAND_DISPLAY' in environ:
-            run(['wl-copy', _copy_line[_index].rstrip()])
-            Popen('sleep 30; wl-copy -c', shell=True)
-        else:
-            run(['xclip', '-sel', 'c'], stdin=Popen(['printf', _copy_line[_index].rstrip().replace('\\\\\\', '\\\\\\\\\\\\\\')
-                                                    .replace('%', '%%')], stdout=PIPE).stdout)
-            Popen("sleep 30; printf '' | xclip -sel c", shell=True)"""
+        run(['wl-copy', _copy_line[_index].rstrip()])
+        Popen('sleep 30; wl-copy -c', shell=True)
+    else:
+        run(['xclip', '-sel', 'c'], stdin=Popen(['printf', _copy_line[_index].rstrip().replace('\\\\\\', '\\\\\\\\\\\\\\')
+                                                .replace('%', '%%')], stdout=PIPE).stdout)
+        Popen("sleep 30; printf '' | xclip -sel c", shell=True)"""
 else:
     s_exit()
 
