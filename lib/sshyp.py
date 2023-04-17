@@ -735,7 +735,7 @@ def copy_data():
     # PORT START CLIPBOARD
     # WSL clipboard detection
     if 'WSL_DISTRO_NAME' in environ:
-        run(['pwsh.exe', '-c', 'Set-Clipboard', _copy_line[_index].rstrip()])
+        run(['powershell.exe', '-c', "Set-Clipboard '" + _copy_line[_index].rstrip().replace("'", "''") + "'"])
         Popen("sleep 30; pwsh.exe -c 'echo \"\" | Set-Clipboard'", shell=True)
     # Wayland clipboard detection
     elif 'WAYLAND_DISPLAY' in environ:
