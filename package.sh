@@ -169,7 +169,7 @@ urls {
 } &&
 
 _create_deb() {
-    printf '\npackaging for Debian/Ubuntu...\n'
+    printf "\npackaging for $1...\n"
     mkdir -p output/debiantemp/sshyp_"$version"-"$revision"_all/DEBIAN \
          output/debiantemp/sshyp_"$version"-"$revision"_all/usr/lib/sshyp/extensions \
          output/debiantemp/sshyp_"$version"-"$revision"_all/usr/bin \
@@ -182,15 +182,28 @@ Section: utils
 Architecture: all
 Maintainer: Randall Winkhart <idgr at tutanota dot com>
 Description: A light-weight, self-hosted, synchronized password manager
-Depends: python3, gnupg, openssh-client, xclip, wl-clipboard
-Suggests: bash-completion
+" > output/debiantemp/sshyp_"$version"-"$revision"_all/DEBIAN/control
+    if [ "$1" = 'Debian' ]; then
+        printf "Depends: python3, gnupg, openssh-client, xclip, wl-clipboard
+" >> output/debiantemp/sshyp_"$version"-"$revision"_all/DEBIAN/control
+    else
+        printf "Depends: python3, gnupg, openssh-client
+" >> output/debiantemp/sshyp_"$version"-"$revision"_all/DEBIAN/control
+    fi
+    printf "Suggests: bash-completion
 Priority: optional
 Installed-Size: 14584
-" > output/debiantemp/sshyp_"$version"-"$revision"_all/DEBIAN/control
+" >> output/debiantemp/sshyp_"$version"-"$revision"_all/DEBIAN/control
     # START PORT
     cp -r lib/. port-jobs/working/
     cd port-jobs
-    ./CLIPBOARD.py LINUX
+    if [ "$1" = 'Debian' ]; then
+        ./CLIPBOARD.py LINUX
+        special=UBUNTU
+    else
+        ./CLIPBOARD.py WSL
+        special=WSL-ONLY-UBUNTU
+    fi
     ./COMMENTS.py ALL
     ./TABS.sh TABS
     cd ..
@@ -203,9 +216,9 @@ Installed-Size: 14584
     cp extra/manpage output/debiantemp/sshyp_"$version"-"$revision"_all/usr/share/man/man1/sshyp.1
     gzip output/debiantemp/sshyp_"$version"-"$revision"_all/usr/share/man/man1/sshyp.1
     dpkg-deb --build --root-owner-group output/debiantemp/sshyp_"$version"-"$revision"_all/
-    mv output/debiantemp/sshyp_"$version"-"$revision"_all.deb output/DEBIAN-sshyp_"$version"-"$revision"_all.deb
+    mv output/debiantemp/sshyp_"$version"-"$revision"_all.deb output/"$special"-sshyp_"$version"-"$revision"_all.deb
     rm -rf output/debiantemp
-    printf '\nDebian/Ubuntu packaging complete\n\n'
+    printf "\n$1 packaging complete\n\n"
 } &&
 
 _create_termux() {
@@ -385,7 +398,10 @@ case "$1" in
         _create_hpkg
         ;;
     debian)
-        _create_deb
+        _create_deb Debian
+        ;;
+    wsl)
+        _create_deb WSL
         ;;
     termux)
         _create_termux
@@ -402,7 +418,8 @@ case "$1" in
         _create_alpine
         case "$(pacman -Q dpkg)" in
             dpkg*)
-            _create_deb
+            _create_deb debian
+            _create_deb wsl
             _create_termux
             ;;
         esac
@@ -413,6 +430,6 @@ case "$1" in
         esac
         ;;
     *)
-    printf '\nusage: package.sh [target] <revision>\n\ntargets:\n mainline: pkgbuild apkbuild fedora debian haiku freebsd\n experimental: termux\n groups: buildable-arch\n\n'
+    printf '\nusage: package.sh [target] <revision>\n\ntargets:\n mainline: pkgbuild apkbuild fedora debian wsl haiku freebsd\n experimental: termux\n groups: buildable-arch\n\n'
     ;;
 esac
