@@ -40,7 +40,7 @@ _create_generic_linux() {
     ./COMMENTS.py ALL
     ./TABS.sh TABS
     cd ..
-    cp -r port-jobs/working/. output/linuxtemp/usr/lib/sshyp/
+    mv port-jobs/working/* output/linuxtemp/usr/lib/sshyp/
     # END PORT
     ln -s /usr/lib/sshyp/sshyp.py output/linuxtemp/usr/bin/sshyp
     cp -r share output/linuxtemp/usr/
@@ -148,7 +148,7 @@ urls {
     ./COMMENTS.py ALL
     ./TABS.sh TABS
     cd ..
-    cp -r port-jobs/working/. output/haikutemp/lib/sshyp/
+    mv port-jobs/working/* output/haikutemp/lib/sshyp/
     # END PORT
     sed -i '1 s/.*/#!\/bin\/env\ python3.10/' output/haikutemp/lib/sshyp/sshync.py
     sed -i '1 s/.*/#!\/bin\/env\ python3.10/' output/haikutemp/lib/sshyp/sshyp.py
@@ -194,7 +194,7 @@ Installed-Size: 14584
     ./COMMENTS.py ALL
     ./TABS.sh TABS
     cd ..
-    cp -r port-jobs/working/. output/debiantemp/sshyp_"$version"-"$revision"_all/usr/lib/sshyp/
+    mv port-jobs/working/* output/debiantemp/sshyp_"$version"-"$revision"_all/usr/lib/sshyp/
     # END PORT
     ln -s /usr/lib/sshyp/sshyp.py output/debiantemp/sshyp_"$version"-"$revision"_all/usr/bin/sshyp
     cp -r share output/debiantemp/sshyp_"$version"-"$revision"_all/usr/
@@ -234,7 +234,7 @@ Installed-Size: 14584
     ./COMMENTS.py ALL
     ./TABS.sh TABS
     cd ..
-    cp -r port-jobs/working/. output/termuxtemp/sshyp_"$version"-"$revision"_all_termux/data/data/com.termux/files/usr/lib/sshyp/
+    mv port-jobs/working/* output/termuxtemp/sshyp_"$version"-"$revision"_all_termux/data/data/com.termux/files/usr/lib/sshyp/
     # END PORT
     ln -s /data/data/com.termux/files/usr/lib/sshyp/sshyp.py output/termuxtemp/sshyp_"$version"-"$revision"_all_termux/data/data/com.termux/files/usr/bin/sshyp
     cp -r share output/termuxtemp/sshyp_"$version"-"$revision"_all_termux/data/data/com.termux/files/usr/
@@ -290,7 +290,7 @@ cp -r %%{_sourcedir}/usr %%{buildroot}
     ./COMMENTS.py ALL
     ./TABS.sh TABS
     cd ..
-    cp -r port-jobs/working/. output/fedoratemp/usr/lib/sshyp/
+    mv port-jobs/working/* output/fedoratemp/usr/lib/sshyp/
     # END PORT
     ln -s /usr/lib/sshyp/sshyp.py output/fedoratemp/usr/bin/sshyp
     cp -r share output/fedoratemp/usr/
@@ -355,7 +355,7 @@ printf "/usr/bin/sshyp
     ./COMMENTS.py ALL
     ./TABS.sh TABS
     cd ..
-    cp -r port-jobs/working/. output/freebsdtemp/usr/lib/sshyp/
+    mv port-jobs/working/* output/freebsdtemp/usr/lib/sshyp/
     # END PORT
     ln -s /usr/lib/sshyp/sshyp.py output/freebsdtemp/usr/bin/sshyp
     cp -r share output/freebsdtemp/usr/
