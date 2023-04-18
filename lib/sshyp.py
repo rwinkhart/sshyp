@@ -221,6 +221,7 @@ def tweak():
         else:
             symlink('/dev/shm', f"{home}/.config/sshyp/tmp")
 
+    # PORT START TWEAK-DEVTYPE
     # device type configuration
     _device_type = input('\nclient or server installation? (C/s) ')
     if _device_type.lower() == 's':
@@ -231,6 +232,7 @@ def tweak():
     else:
         _sshyp_data = ['client']
         Path(f"{home}/.local/share/sshyp").mkdir(mode=0o700, parents=True, exist_ok=True)
+    # PORT END TWEAK-DEVTYPE
 
         # gpg configuration
         _gpg_gen = input(f"{_divider}sshyp requires the use of a unique gpg key - use an (e)xisting key or (g)enerate a"
