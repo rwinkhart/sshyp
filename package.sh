@@ -116,11 +116,11 @@ _create_hpkg() {
          output/haikutemp/documentation/man/man1 \
          output/haikutemp/data/bash-completion/completions \
          output/haikutemp/data/zsh/site-functions
-    printf "name            sshyp
+    printf "name            sshyp-client
 version         "$version"-"$revision"
 architecture        any
-summary         \"A light-weight, self-hosted, synchronized password manager\"
-description     \"sshyp is the only password-store compatible CLI password manager available for Haiku - it is also available on Linux/Android (via Termux) so that you can sync your entries across all of your devices.\"
+summary         \"A light-weight, self-hosted, synchronized password manager (client only)\"
+description     \"The fully-featured client for the sshyp password manager ported for Haiku. This is just a client: server hosting functionality is only available on Linux/BSD.\"
 packager        \"Randall Winkhart <idgr at tutanota dot com>\"
 vendor          \"Randall Winkhart\"
 licenses {
@@ -130,7 +130,7 @@ copyrights {
     \"2021-2023 Randall Winkhart\"
 }
 provides {
-    sshyp = "$version"
+    sshyp-client = "$version"
     cmd:sshyp
 }
 requires {
@@ -145,6 +145,7 @@ urls {
     # START PORT
     cp -r lib/. port-jobs/working/
     cd port-jobs
+    ./RMSERVER.py
     ./CLIPBOARD.py HAIKU
     ./COMMENTS.py ALL
     ./BLANKS.py
@@ -162,10 +163,10 @@ urls {
     cp extra/manpage output/haikutemp/documentation/man/man1/sshyp.1
     gzip output/haikutemp/documentation/man/man1/sshyp.1
     cd output/haikutemp
-    package create -b HAIKU-sshyp-"$version"-"$revision"_all.hpkg
-    package add HAIKU-sshyp-"$version"-"$revision"_all.hpkg bin lib documentation data
+    package create -b HAIKU-sshyp-client-"$version"-"$revision"_all.hpkg
+    package add HAIKU-sshyp-client-"$version"-"$revision"_all.hpkg bin lib documentation data
     cd ../..
-    mv output/haikutemp/HAIKU-sshyp-"$version"-"$revision"_all.hpkg output/
+    mv output/haikutemp/HAIKU-sshyp-client-"$version"-"$revision"_all.hpkg output/
     rm -rf output/haikutemp
     printf '\nHaiku packaging complete\n\n'
 } &&
