@@ -38,6 +38,7 @@ _create_generic_linux() {
     cd port-jobs
     ./CLIPBOARD.py LINUX
     ./COMMENTS.py ALL
+    ./BLANKS.py
     ./TABS.sh TABS
     cd ..
     mv port-jobs/working/* output/linuxtemp/usr/lib/sshyp/
@@ -146,6 +147,7 @@ urls {
     cd port-jobs
     ./CLIPBOARD.py HAIKU
     ./COMMENTS.py ALL
+    ./BLANKS.py
     ./TABS.sh TABS
     cd ..
     mv port-jobs/working/* output/haikutemp/lib/sshyp/
@@ -205,6 +207,7 @@ Installed-Size: 71680
         special=WSL-ONLY-UBUNTU
     fi
     ./COMMENTS.py ALL
+    ./BLANKS.py
     ./TABS.sh TABS
     cd ..
     mv port-jobs/working/* output/debiantemp/sshyp_"$version"-"$revision"_all/usr/lib/sshyp/
@@ -245,6 +248,7 @@ Installed-Size: 71680
     cd port-jobs
     ./CLIPBOARD.py TERMUX
     ./COMMENTS.py ALL
+    ./BLANKS.py
     ./TABS.sh TABS
     cd ..
     mv port-jobs/working/* output/termuxtemp/sshyp_"$version"-"$revision"_all_termux/data/data/com.termux/files/usr/lib/sshyp/
@@ -301,6 +305,7 @@ cp -r %%{_sourcedir}/usr %%{buildroot}
     cd port-jobs
     ./CLIPBOARD.py LINUX
     ./COMMENTS.py ALL
+    ./BLANKS.py
     ./TABS.sh TABS
     cd ..
     mv port-jobs/working/* output/fedoratemp/usr/lib/sshyp/
@@ -366,6 +371,7 @@ printf "/usr/bin/sshyp
     cd port-jobs
     ./CLIPBOARD.py TERMUX
     ./COMMENTS.py ALL
+    ./BLANKS.py
     ./TABS.sh TABS
     cd ..
     mv port-jobs/working/* output/freebsdtemp/usr/lib/sshyp/
