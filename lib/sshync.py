@@ -6,6 +6,7 @@ from sys import exit as s_exit
 home = expanduser("~")
 
 
+# PORT START SSHYNC-REMOTE
 # REMOTE
 # prints all necessary remote data to stdout
 def remote_list_gen(_client_device_name, _remote_dir):
@@ -27,6 +28,7 @@ def remote_list_gen(_client_device_name, _remote_dir):
     print('\x1d')
     # titles and mod times
     get_local_data(_remote_dir, 'server')
+# PORT END SSHYNC-REMOTE
 
 
 # HYBRID
