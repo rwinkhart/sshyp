@@ -892,6 +892,7 @@ if __name__ == "__main__":
                 success_flag = True
                 read_shortcut()
 
+        # PORT START ARGS-SERVER
         # server arguments
         else:
             if arg_count < 1:
@@ -907,6 +908,7 @@ if __name__ == "__main__":
                 elif arguments[1] == 'setup':
                     success_flag = True
                     whitelist_setup()
+        # PORT END ARGS-SERVER
 
         if arg_count > 0 and success_flag == 0 and arguments[0] != 'sync':
             if device_type == 'client' and arguments[0] not in ('help', '-h', 'version', '-v', 'license'):

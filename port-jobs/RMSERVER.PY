@@ -51,3 +51,18 @@ new_text = re.sub(regex, replacement, text)
 
 # write updated text
 open('working/sshyp.py', 'w').write(new_text)
+
+# ARGS-SERVER
+# define PORT target
+string1 = '# PORT START ARGS-SERVER'
+string2 = '# PORT END ARGS-SERVER'
+
+# read input file
+text = open('working/sshyp.py', 'r').read()
+
+# find and replace the defined PORT target
+regex = re.compile(f"{string1}.*?{string2}\n\n        ", re.DOTALL)
+new_text = re.sub(regex, '', text)
+
+# write updated text
+open('working/sshyp.py', 'w').write(new_text)
