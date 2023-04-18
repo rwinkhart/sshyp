@@ -467,6 +467,7 @@ def sync():
     run_profile(f"{home}/.config/sshyp/sshyp.sshync", silent_sync)
 
 
+# PORT START WHITELIST-SERVER
 # takes input from the user to set up quick-unlock password
 def whitelist_setup():
     _gpg_password_temp = str(input('\nfull gpg passphrase: '))
@@ -502,39 +503,6 @@ def whitelist_setup():
     print(f"\nyour quick-unlock passphrase: {_quick_unlock_password}")
 
 
-# checks the user's whitelist status and fetches the full gpg key password if possible
-def whitelist_verify(_port, _username_ssh, _ip, _client_device_id):
-    try:
-        run(['gpg', '--pinentry-mode', 'cancel', '-qd', '--output', '/dev/null',
-             f"{home}/.config/sshyp/lock.gpg"], stderr=DEVNULL, check=True)
-        return False
-    except CalledProcessError:
-        _i, _full_password = 0, ''
-        _server_whitelist = run(['ssh', '-i', f"{home}/.ssh/sshyp", '-p', _port, f"{_username_ssh}@{_ip}",
-                                 f'python3 -c \'from os import listdir; print(*listdir("/home/{_username_ssh}'
-                                 f'/.config/sshyp/whitelist"))\''], stdout=PIPE, text=True).stdout.rstrip().split()
-        for _device_id in _server_whitelist:
-            if _device_id == _client_device_id:
-                from getpass import getpass
-                _quick_unlock_password = getpass(prompt='\nquick-unlock passphrase: ')
-                _quick_unlock_password_excluded = \
-                    run(['ssh', '-i', f"{home}/.ssh/sshyp", '-p',  _port, f"{_username_ssh}@{_ip}",
-                         f"gpg --pinentry-mode loopback --passphrase '{_quick_unlock_password}' "
-                         f"-qd ~/.config/sshyp/excluded.gpg"], stdout=PIPE, text=True).stdout.rstrip()
-                while _i < len(_quick_unlock_password_excluded):
-                    try:
-                        _full_password += _quick_unlock_password_excluded[_i]
-                    except IndexError:
-                        pass
-                    try:
-                        _full_password += _quick_unlock_password[_i]
-                    except IndexError:
-                        pass
-                    _i += 1
-                break
-    return _full_password
-
-
 # shows the quick-unlock whitelist status of device ids
 def whitelist_list():
     _whitelisted_ids = listdir(f"{home}/.config/sshyp/whitelist")
@@ -568,6 +536,40 @@ def whitelist_manage():
     elif isfile(f"{home}/.config/sshyp/whitelist/{_device_id}"):
         remove(f"{home}/.config/sshyp/whitelist/{_device_id}")
         whitelist_list()
+# PORT END WHITELIST-SERVER
+
+
+# checks the user's whitelist status and fetches the full gpg key password if possible
+def whitelist_verify(_port, _username_ssh, _ip, _client_device_id):
+    try:
+        run(['gpg', '--pinentry-mode', 'cancel', '-qd', '--output', '/dev/null',
+             f"{home}/.config/sshyp/lock.gpg"], stderr=DEVNULL, check=True)
+        return False
+    except CalledProcessError:
+        _i, _full_password = 0, ''
+        _server_whitelist = run(['ssh', '-i', f"{home}/.ssh/sshyp", '-p', _port, f"{_username_ssh}@{_ip}",
+                                 f'python3 -c \'from os import listdir; print(*listdir("/home/{_username_ssh}'
+                                 f'/.config/sshyp/whitelist"))\''], stdout=PIPE, text=True).stdout.rstrip().split()
+        for _device_id in _server_whitelist:
+            if _device_id == _client_device_id:
+                from getpass import getpass
+                _quick_unlock_password = getpass(prompt='\nquick-unlock passphrase: ')
+                _quick_unlock_password_excluded = \
+                    run(['ssh', '-i', f"{home}/.ssh/sshyp", '-p',  _port, f"{_username_ssh}@{_ip}",
+                         f"gpg --pinentry-mode loopback --passphrase '{_quick_unlock_password}' "
+                         f"-qd ~/.config/sshyp/excluded.gpg"], stdout=PIPE, text=True).stdout.rstrip()
+                while _i < len(_quick_unlock_password_excluded):
+                    try:
+                        _full_password += _quick_unlock_password_excluded[_i]
+                    except IndexError:
+                        pass
+                    try:
+                        _full_password += _quick_unlock_password[_i]
+                    except IndexError:
+                        pass
+                    _i += 1
+                break
+    return _full_password
 
 
 # adds a new entry

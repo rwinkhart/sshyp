@@ -2,6 +2,7 @@
 import re
 from sys import argv, exit as s_exit
 
+# SSHYNC-REMOTE
 # define PORT target
 string1 = '# PORT START SSHYNC-REMOTE'
 string2 = '# PORT END SSHYNC-REMOTE'
@@ -15,3 +16,18 @@ new_text = re.sub(regex, '', text)
 
 # write updated text
 open('working/sshync.py', 'w').write(new_text)
+
+# WHITELIST-SERVER
+# define PORT target
+string1 = '# PORT START WHITELIST-SERVER'
+string2 = '# PORT END WHITELIST-SERVER'
+
+# read input file
+text = open('working/sshyp.py', 'r').read()
+
+# find and replace the defined PORT target
+regex = re.compile(f"\n{string1}.*?{string2}\n\n", re.DOTALL)
+new_text = re.sub(regex, '', text)
+
+# write updated text
+open('working/sshyp.py', 'w').write(new_text)
