@@ -116,7 +116,7 @@ _create_hpkg() {
          output/haikutemp/documentation/man/man1 \
          output/haikutemp/data/bash-completion/completions \
          output/haikutemp/data/zsh/site-functions
-    printf "name            sshyp-client
+    printf "name            sshyp_client
 version         "$version"-"$revision"
 architecture        any
 summary         \"A light-weight, self-hosted, synchronized password manager (client only)\"
@@ -130,7 +130,7 @@ copyrights {
     \"2021-2023 Randall Winkhart\"
 }
 provides {
-    sshyp-client = "$version"
+    sshyp_client = "$version"
     cmd:sshyp
 }
 requires {
