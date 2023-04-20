@@ -66,3 +66,18 @@ new_text = re.sub(regex, '', text)
 
 # write updated text
 open('working/sshyp.py', 'w').write(new_text)
+
+# HELP-SERVER
+# define PORT target
+string1 = '# PORT START HELP-SERVER'
+string2 = '# PORT END HELP-SERVER'
+
+# read input file
+text = open('working/sshyp.py', 'r').read()
+
+# find and replace the defined PORT target
+regex = re.compile(f"{string1}.*?{string2}\n", re.DOTALL)
+new_text = re.sub(regex, '', text)
+
+# write updated text
+open('working/sshyp.py', 'w').write(new_text)

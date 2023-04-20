@@ -426,6 +426,7 @@ def print_info():
             print(' update/-u               generate a password for an existing entry')
             print("\n\u001b[1mtip 1:\u001b[0m you can quickly read an entry with 'sshyp </entry name>'")
             print("\u001b[1mtip 2:\u001b[0m type 'sshyp' to view a list of saved entries\n")
+        # PORT START HELP-SERVER
         else:
             print('\n\u001b[1musage:\u001b[0m sshyp <option> [flag] [<device id>]\n')
             print('\u001b[1moptions:\u001b[0m')
@@ -439,6 +440,7 @@ def print_info():
             print(' list/-l                 view all registered device ids and their quick-unlock whitelist status')
             print(' add                     whitelist a device id for quick-unlock')
             print(' del                     remove a device id from the quick-unlock whitelist\n')
+        # PORT END HELP-SERVER
 
 
 # shortcut to quickly read an entry
