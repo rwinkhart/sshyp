@@ -334,25 +334,22 @@ def tweak():
 # prints help text based on argument
 def print_info():
     if arguments[0] in ('version', '-v'):
+        _blank = '\u001b[38;5;7;48;5;8m/\u001b[38;5;15;48;5;15m' + 54*' ' + '\u001b[38;5;7;48;5;8m/\u001b[0m'
+        _border = '\u001b[38;5;7;48;5;8m' + 28*'<>' + '\u001b[0m\n'
         print('\nsshyp is a simple, self-hosted, sftp-synchronized\npassword manager for unix(-like) systems\n')
-        print("                ..       \u001b[38;5;9m♥♥ ♥♥\u001b[0m       ..\n         .''.''/()\\     \u001b[38;5;13m"
-              "♥♥♥♥♥♥♥\u001b[0m     /()\\''.''.\n        *       :        \u001b[38;5;9m♥♥♥♥♥\u001b[0m        :       *"
-              "\n         `..'..'          \u001b[38;5;13m♥♥♥\u001b[0m          `..'..'\n         //   \\\\           "
-              "\u001b[38;5;9m♥\u001b[0m           //   \\\\")
-        print('\u001b[38;5;7;48;5;8m<><><><><><><><><><><><><><><><><><><><><><><><><><><><>\u001b[0m')
-        print('\u001b[38;5;7;48;5;8m/\u001b[38;5;15;48;5;15m                                                      '
-              '\u001b[38;5;7;48;5;8m/\u001b[0m')
-        print('\u001b[38;5;7;48;5;8m/\u001b[38;5;15;48;5;15m   \u001b[38;5;15;48;5;8msshyp  copyright (c) 2021-2023  '
-              'randall winkhart\u001b[38;5;15;48;5;15m   \u001b[38;5;7;48;5;8m/\u001b[0m')
-        print('\u001b[38;5;7;48;5;8m/\u001b[38;5;15;48;5;15m                                                      '
-              '\u001b[38;5;7;48;5;8m/\u001b[0m')
-        print('\u001b[38;5;7;48;5;8m/\u001b[38;5;15;48;5;15m                    \u001b[38;5;15;48;5;8mversion 1.4.1'
-              '\u001b[38;5;15;48;5;15m                     \u001b[38;5;7;48;5;8m/\u001b[0m')
-        print('\u001b[38;5;7;48;5;8m/\u001b[38;5;15;48;5;15m         \u001b[38;5;15;48;5;8mthe argumentative '
-              'agronomist update\u001b[38;5;15;48;5;15m          \u001b[38;5;7;48;5;8m/\u001b[0m')
-        print('\u001b[38;5;7;48;5;8m/\u001b[38;5;15;48;5;15m                                                      '
-              '\u001b[38;5;7;48;5;8m/\u001b[0m')
-        print('\u001b[38;5;7;48;5;8m<><><><><><><><><><><><><><><><><><><><><><><><><><><><>\u001b[0m\n')
+        print(16*' ' + '..' + 7*' ' + '\u001b[38;5;9m♥♥ ♥♥\u001b[0m' + 7*' ' + '..')
+        print(9*' ' + ".''.''/()\\" + 5*' ' + '\u001b[38;5;13m♥♥♥♥♥♥♥\u001b[0m' + 5*' ' + "/()\\''.''.")
+        print(8*' ' + '*' + 7*' ' + ':' + 8*' ' + '\u001b[38;5;9m♥♥♥♥♥\u001b[0m' + 8*' ' + ':' + 7*' ' + '*')
+        print(9*' ' + "`..'..'" + 10*' ' + '\u001b[38;5;13m♥♥♥\u001b[0m' + 10*' ' + "`..'..'")
+        print(9*' ' + '//' + 3*' ' + '\\\\' + 11*' ' + '\u001b[38;5;9m♥\u001b[0m' + 11*' ' + '//' + 3*' ' + '\\\\')
+        print(_border + _blank)
+        print('\u001b[38;5;7;48;5;8m/\u001b[38;5;15;48;5;15m' + 3*' ' + '\u001b[38;5;15;48;5;8msshyp  copyright (c) 2021-2023  '
+              'randall winkhart\u001b[38;5;15;48;5;15m' + 3*' ' + '\u001b[38;5;7;48;5;8m/\u001b[0m\n' + _blank)
+        print('\u001b[38;5;7;48;5;8m/\u001b[38;5;15;48;5;15m' + 20*' ' + '\u001b[38;5;15;48;5;8mversion 1.4.1'
+              '\u001b[38;5;15;48;5;15m' + 21*' ' + '\u001b[38;5;7;48;5;8m/\u001b[0m')
+        print('\u001b[38;5;7;48;5;8m/\u001b[38;5;15;48;5;15m' + 9*' ' + '\u001b[38;5;15;48;5;8mthe argumentative '
+              'agronomist update\u001b[38;5;15;48;5;15m' + 10*' ' + '\u001b[38;5;7;48;5;8m/\u001b[0m')
+        print(_blank + '\n' + _border)
         print('see https://github.com/rwinkhart/sshyp for more information\n')
     elif arguments[0] == 'license':
         print('\nThis program is free software: you can redistribute it and/or modify it under the terms\nof version 3 '
