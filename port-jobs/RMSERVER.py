@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 import re
-from sys import argv, exit as s_exit
 
 # SSHYNC-REMOTE
 # define PORT target
