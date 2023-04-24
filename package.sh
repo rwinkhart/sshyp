@@ -145,6 +145,7 @@ urls {
     # START PORT
     cp -r lib/. port-jobs/working/
     cd port-jobs
+    ./SHEBANG.sh
     ./RMSERVER.py
     ./CLIPBOARD.py HAIKU
     ./COMMENTS.py ALL
@@ -153,8 +154,6 @@ urls {
     cd ..
     mv port-jobs/working/* output/haikutemp/lib/sshyp/
     # END PORT
-    sed -i '1 s/.*/#!\/bin\/env\ python3.10/' output/haikutemp/lib/sshyp/sshync.py
-    sed -i '1 s/.*/#!\/bin\/env\ python3.10/' output/haikutemp/lib/sshyp/sshyp.py
     ln -s /system/lib/sshyp/sshyp.py output/haikutemp/bin/sshyp
     cp -r share/doc/sshyp/. output/haikutemp/documentation/packages/sshyp/
     cp -r share/licenses/sshyp/. output/haikutemp/documentation/packages/sshyp/
