@@ -381,6 +381,11 @@ def print_info():
         print('  password/-p\t\tcopy the password of an entry to your clipboard')
         print('  url/-l\t\tcopy the url of an entry to your clipboard')
         print('  note/-n\t\tcopy the note of an entry to your clipboard\n')
+    elif arguments[0] == 'gen' and device_type == 'client':
+        print('\n\u001b[1musage:\u001b[0m sshyp </entry name> gen [flag]\u001b[0m\n')
+        print('\u001b[1mflags:\u001b[0m')
+        print(' gen:')
+        print('  update/-u\t\tgenerate a password for an existing entry\n')
     elif arguments[0] == 'whitelist':
         if device_type == 'server':
             print('\n\u001b[1musage:\u001b[0m sshyp whitelist <flag> [device id]\u001b[0m\n')
