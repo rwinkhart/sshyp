@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from os import chmod, environ, listdir, remove, uname, walk
+from os import chmod, environ, listdir, remove, walk
 from os.path import exists, expanduser, isdir, isfile, realpath
 from pathlib import Path
 from random import randint
@@ -7,6 +7,9 @@ from shutil import get_terminal_size, move, rmtree
 from sshync import delete as offline_delete, run_profile, make_profile, get_profile
 from subprocess import CalledProcessError, DEVNULL, PIPE, run
 from sys import argv, exit as s_exit
+# PORT START UNAME-IMPORT
+from os import uname
+# PORT END UNAME-IMPORT
 home = expanduser("~")
 
 
@@ -208,18 +211,20 @@ def copy_id_check(_port, _username_ssh, _ip, _client_device_id):
 # ARGUMENT-SPECIFIC FUNCTIONS
 # runs configuration wizard
 def tweak():
-    from os import symlink
     _divider = f"\n{'=' * (get_terminal_size()[0] - int((.5 * get_terminal_size()[0])))}\n\n"
 
     # config directory creation
     Path(f"{home}/.config/sshyp/devices").mkdir(mode=0o700, parents=True, exist_ok=True)
     if not exists(f"{home}/.config/sshyp/tmp"):
+        from os import symlink
+        # PORT START UNAME-TMP
         if uname()[0] in ('Haiku', 'FreeBSD', 'Darwin'):
             symlink('/tmp', f"{home}/.config/sshyp/tmp")
         elif exists('/data/data/com.termux'):
             symlink('/data/data/com.termux/files/usr/tmp', f"{home}/.config/sshyp/tmp")
         else:
             symlink('/dev/shm', f"{home}/.config/sshyp/tmp")
+        # PORT END UNAME-TMP
 
     # PORT START TWEAK-DEVTYPE
     # device type configuration

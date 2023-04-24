@@ -37,6 +37,7 @@ _create_generic_linux() {
     cp -r lib/. port-jobs/working/
     cd port-jobs
     ./CLIPBOARD.py LINUX
+    ./UNAME.py LINUX
     ./COMMENTS.py ALL
     ./BLANKS.py
     ./TABS.sh TABS
@@ -149,6 +150,7 @@ urls {
     ./RMSERVER.py
     ./CLIPBOARD.py HAIKU
     ./COMMENTS.py ALL
+    ./UNAME.py TMP
     ./BLANKS.py
     ./TABS.sh TABS
     cd ..
@@ -206,6 +208,7 @@ Installed-Size: 71680
         ./CLIPBOARD.py WSL
         special=WSL-ONLY-UBUNTU
     fi
+    ./UNAME.py LINUX
     ./COMMENTS.py ALL
     ./BLANKS.py
     ./TABS.sh TABS
@@ -247,6 +250,7 @@ Installed-Size: 71680
     cp -r lib/. port-jobs/working/
     cd port-jobs
     ./CLIPBOARD.py TERMUX
+    ./UNAME.py TERMUX
     ./COMMENTS.py ALL
     ./BLANKS.py
     ./TABS.sh TABS
@@ -304,6 +308,7 @@ cp -r %%{_sourcedir}/usr %%{buildroot}
     cp -r lib/. port-jobs/working/
     cd port-jobs
     ./CLIPBOARD.py LINUX
+    ./UNAME.py LINUX
     ./COMMENTS.py ALL
     ./BLANKS.py
     ./TABS.sh TABS
@@ -370,6 +375,7 @@ printf "/usr/bin/sshyp
     cp -r lib/. port-jobs/working/
     cd port-jobs
     ./CLIPBOARD.py TERMUX
+    ./UNAME.py TMP
     ./COMMENTS.py ALL
     ./BLANKS.py
     ./TABS.sh TABS
