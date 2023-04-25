@@ -342,9 +342,9 @@ def print_info():
 {8*' '}*{7*' '}:{8*' '}\u001b[38;5;9m♥♥♥♥♥\u001b[0m{8*' '}:{7*' '}*
 {9*' '}`..'..'{10*' '}\u001b[38;5;13m♥♥♥\u001b[0m{10*' '}`..'..'
 {9*' '}//{3*' '}\\\\{11*' '}\u001b[38;5;9m♥\u001b[0m{11*' '}//{3*' '}\\\\""")
-        print(_border + _blank)
-        print(f"\u001b[38;5;7;48;5;8m/\u001b[38;5;15;48;5;15m{3*' '}\u001b[38;5;15;48;5;8msshyp  copyright (c) "
-              f"2021-2023  randall winkhart\u001b[38;5;15;48;5;15m{3*' '}\u001b[38;5;7;48;5;8m/\u001b[0m\n{_blank}")
+        print(f"{_border}{_blank}\n\u001b[38;5;7;48;5;8m/\u001b[38;5;15;48;5;15m{3*' '}\u001b[38;5;15;48;5;8m"
+              f"sshyp ", f"copyright (c) 2021-2023 ", f"randall winkhart\u001b[38;5;15;48;5;15m{3*' '}"
+              f"\u001b[38;5;7;48;5;8m/\u001b[0m\n{_blank}")
         print(f"\u001b[38;5;7;48;5;8m/\u001b[38;5;15;48;5;15m{20*' '}\u001b[38;5;15;48;5;8mversion 1.4.1"
               f"\u001b[38;5;15;48;5;15m{21*' '}\u001b[38;5;7;48;5;8m/\u001b[0m")
         print(f"\u001b[38;5;7;48;5;8m/\u001b[38;5;15;48;5;15m{9*' '}\u001b[38;5;15;48;5;8mthe argumentative "
@@ -397,7 +397,7 @@ def print_info():
         else:
             print('\n\u001b[38;5;9merror: argument (whitelist) only available on server\u001b[0m\n')
     else:
-        print("""\n\u001b[1msshyp  copyright (c) 2021-2023  randall winkhart\u001b[0m
+        print("\n\u001b[1msshyp ", "copyright (c) 2021-2023 ", """randall winkhart\u001b[0m
 this is free software, and you are welcome to redistribute it under certain conditions;
 this program comes with absolutely no warranty; type 'sshyp license' for details""")
         if device_type == 'client':
