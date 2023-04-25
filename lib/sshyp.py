@@ -358,95 +358,95 @@ def print_info():
               'warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\nSee the GNU General Public License for'
               ' more details.\n\nhttps://opensource.org/licenses/GPL-3.0\n')
     elif arguments[0] == 'add' and device_type == 'client':
-        print('\n\u001b[1musage:\u001b[0m sshyp </entry name> add <flag>\u001b[0m\n')
-        print('\u001b[1mflags:\u001b[0m')
-        print(' add:')
-        print('  password/-p\t\tadd a password entry')
-        print('  note/-n\t\tadd a note entry')
-        print('  folder/-f\t\tadd a new folder for entries\n')
+        print(f"""\n\u001b[1musage:\u001b[0m sshyp </entry name> add <flag>\u001b[0m\n
+\u001b[1mflags:\u001b[0m
+ add:
+  password/-p{12*' '}add a password entry
+  note/-n{16*' '}add a note entry
+  folder/-f{14*' '}add a new folder for entries\n""")
     elif arguments[0] == 'edit' and device_type == 'client':
-        print('\n\u001b[1musage:\u001b[0m sshyp </entry name> edit <flag>\u001b[0m\n')
-        print('\u001b[1mflags:\u001b[0m')
-        print(' edit:')
-        print('  rename/relocate/-r\trename or relocate an entry')
-        print('  username/-u\t\tchange the username of an entry')
-        print('  password/-p\t\tchange the password of an entry')
-        print('  url/-l\t\tchange the url attached to an entry')
-        print('  note/-n\t\tchange the note attached to an entry\n')
+        print(f"""\n\u001b[1musage:\u001b[0m sshyp </entry name> edit <flag>\u001b[0m\n
+\u001b[1mflags:\u001b[0m
+ edit:
+  rename/relocate/-r{5*' '}rename or relocate an entry
+  username/-u{12*' '}change the username of an entry
+  password/-p{12*' '}change the password of an entry
+  url/-l{17*' '}change the url attached to an entry
+  note/-n{16*' '}change the note attached to an entry\n""")
     elif arguments[0] == 'copy' and device_type == 'client':
-        print('\n\u001b[1musage:\u001b[0m sshyp </entry name> copy <flag>\u001b[0m\n')
-        print('\u001b[1mflags:\u001b[0m')
-        print(' copy:')
-        print('  username/-u\t\tcopy the username of an entry to your clipboard')
-        print('  password/-p\t\tcopy the password of an entry to your clipboard')
-        print('  url/-l\t\tcopy the url of an entry to your clipboard')
-        print('  note/-n\t\tcopy the note of an entry to your clipboard\n')
+        print(f"""\n\u001b[1musage:\u001b[0m sshyp </entry name> copy <flag>\u001b[0m\n
+\u001b[1mflags:\u001b[0m
+ copy:
+  username/-u{12*' '}copy the username of an entry to your clipboard
+  password/-p{12*' '}copy the password of an entry to your clipboard
+  url/-l{17*' '}copy the url of an entry to your clipboard
+  note/-n{16*' '}copy the note of an entry to your clipboard\n""")
     elif arguments[0] == 'gen' and device_type == 'client':
-        print('\n\u001b[1musage:\u001b[0m sshyp </entry name> gen [flag]\u001b[0m\n')
-        print('\u001b[1mflags:\u001b[0m')
-        print(' gen:')
-        print('  update/-u\t\tgenerate a password for an existing entry\n')
+        print(f"""\n\u001b[1musage:\u001b[0m sshyp </entry name> gen [flag]\u001b[0m\n
+\u001b[1mflags:\u001b[0m
+ gen:
+  update/-u{14*' '}generate a password for an existing entry\n""")
     elif arguments[0] == 'whitelist':
         if device_type == 'server':
-            print('\n\u001b[1musage:\u001b[0m sshyp whitelist <flag> [device id]\u001b[0m\n')
-            print('\u001b[1mflags:\u001b[0m')
-            print(' whitelist:')
-            print('  setup\t\t\tset up the quick-unlock whitelist')
-            print('  list/-l\t\tview all registered device ids and their quick-unlock whitelist status')
-            print('  add\t\t\twhitelist a device id for quick-unlock')
-            print('  del\t\t\tremove a device id from the quick-unlock whitelist\n')
+            print(f"""\n\u001b[1musage:\u001b[0m sshyp whitelist <flag> [device id]\u001b[0m\n
+\u001b[1mflags:\u001b[0m
+ whitelist:
+  setup{18*' '}set up the quick-unlock whitelist
+  list/-l{16*' '}view all registered device ids and their quick-unlock whitelist status
+  add{20*' '}whitelist a device id for quick-unlock
+  del{20*' '}remove a device id from the quick-unlock whitelist\n""")
         else:
             print('\n\u001b[38;5;9merror: argument (whitelist) only available on server\u001b[0m\n')
     else:
-        print('\n\u001b[1msshyp  copyright (c) 2021-2023  randall winkhart\u001b[0m\n')
-        print("this is free software, and you are welcome to redistribute it under certain conditions;\nthis program "
-              "comes with absolutely no warranty;\ntype 'sshyp license' for details")
+        print("""\n\u001b[1msshyp  copyright (c) 2021-2023  randall winkhart\u001b[0m
+this is free software, and you are welcome to redistribute it under certain conditions;
+this program comes with absolutely no warranty; type 'sshyp license' for details""")
         if device_type == 'client':
-            print('\n\u001b[1musage:\u001b[0m sshyp [</entry name> [option] [flag]] [option]\n')
-            print('\u001b[1moptions:\u001b[0m')
-            print(' help/-h\t\tbring up this menu')
-            print(' version/-v\t\tdisplay sshyp version info')
-            print(' tweak\t\t\tconfigure sshyp')
-            print(' add\t\t\tadd an entry')
-            print(' gen\t\t\tgenerate a new password')
-            print(' edit\t\t\tedit an existing entry')
-            print(' copy\t\t\tcopy details of an entry to your clipboard')
-            print(' shear\t\t\tdelete an existing entry')
-            print(' sync\t\t\tmanually sync the entry directory via sshync')
-            print('\n\u001b[1mflags:\u001b[0m')
-            print(' add:')
-            print('  password/-p\t\tadd a password entry')
-            print('  note/-n\t\tadd a note entry')
-            print('  folder/-f\t\tadd a new folder for entries')
-            print(' edit:')
-            print('  rename/relocate/-r\trename or relocate an entry')
-            print('  username/-u\t\tchange the username of an entry')
-            print('  password/-p\t\tchange the password of an entry')
-            print('  url/-l\t\tchange the url attached to an entry')
-            print('  note/-n\t\tchange the note attached to an entry')
-            print(' copy:')
-            print('  username/-u\t\tcopy the username of an entry to your clipboard')
-            print('  password/-p\t\tcopy the password of an entry to your clipboard')
-            print('  url/-l\t\tcopy the url of an entry to your clipboard')
-            print('  note/-n\t\tcopy the note of an entry to your clipboard')
-            print(' gen:')
-            print('  update/-u\t\tgenerate a password for an existing entry')
-            print("\n\u001b[1mtip 1:\u001b[0m you can quickly read an entry with 'sshyp </entry name>'")
-            print("\u001b[1mtip 2:\u001b[0m type 'sshyp' to view a list of saved entries\n")
+            print(f"""\n\u001b[1musage:\u001b[0m sshyp [</entry name> [option] [flag]] [option]\n
+\u001b[1moptions:\u001b[0m
+ help/-h{17*' '}bring up this menu
+ version/-v{14*' '}display sshyp version info
+ tweak{19*' '}configure sshyp
+ add{21*' '}add an entry
+ gen{21*' '}generate a new password
+ edit{20*' '}edit an existing entry
+ copy{20*' '}copy details of an entry to your clipboard
+ shear{19*' '}delete an existing entry
+ sync{20*' '}manually sync the entry directory via sshync
+\n\u001b[1mflags:\u001b[0m
+ add:
+  password/-p{12*' '}add a password entry
+  note/-n{16*' '}add a note entry
+  folder/-f{14*' '}add a new folder for entries
+ edit:
+  rename/relocate/-r{5*' '}rename or relocate an entry
+  username/-u{12*' '}change the username of an entry
+  password/-p{12*' '}change the password of an entry
+  url/-l{17*' '}change the url attached to an entry
+  note/-n{16*' '}change the note attached to an entry
+ copy:
+  username/-u{12*' '}copy the username of an entry to your clipboard
+  password/-p{12*' '}copy the password of an entry to your clipboard
+  url/-l{17*' '}copy the url of an entry to your clipboard
+  note/-n{16*' '}copy the note of an entry to your clipboard
+ gen:
+  update/-u{14*' '}generate a password for an existing entry
+\n\u001b[1mtip 1:\u001b[0m you can quickly read an entry with 'sshyp </entry name>'
+\u001b[1mtip 2:\u001b[0m type 'sshyp' to view a list of saved entries\n""")
         # PORT START HELP-SERVER
         else:
-            print('\n\u001b[1musage:\u001b[0m sshyp <option> [flag] [<device id>]\n')
-            print('\u001b[1moptions:\u001b[0m')
-            print(' help/-h\t\tbring up this menu')
-            print(' version/-v\t\tdisplay sshyp version info')
-            print(' tweak\t\t\tconfigure sshyp')
-            print(' whitelist\t\tmanage the quick-unlock whitelist')
-            print('\n\u001b[1mflags:\u001b[0m')
-            print(' whitelist:')
-            print('  setup\t\t\tset up the quick-unlock whitelist')
-            print('  list/-l\t\tview all registered device ids and their quick-unlock whitelist status')
-            print('  add\t\t\twhitelist a device id for quick-unlock')
-            print('  del\t\t\tremove a device id from the quick-unlock whitelist\n')
+            print(f"""\n\u001b[1musage:\u001b[0m sshyp <option> [flag] [<device id>]\n
+\u001b[1moptions:\u001b[0m
+ help/-h{17*' '}bring up this menu
+ version/-v{14*' '}display sshyp version info
+ tweak{19*' '}configure sshyp
+ whitelist{15*' '}manage the quick-unlock whitelist
+\n\u001b[1mflags:\u001b[0m
+ whitelist:
+  setup{18*' '}set up the quick-unlock whitelist
+  list/-l{16*' '}view all registered device ids and their quick-unlock whitelist status
+  add{20*' '}whitelist a device id for quick-unlock
+  del{20*' '}remove a device id from the quick-unlock whitelist\n""")
         # PORT END HELP-SERVER
 
 
