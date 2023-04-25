@@ -387,6 +387,9 @@ def print_info():
   update/-u{14*' '}generate a password for an existing entry\n""")
     elif arguments[0] == 'whitelist':
         if device_type == 'server':
+            if arg_count > 1 and arguments[1] in ('add', 'del'):
+                print("\nwhen adding or deleting devices from the whitelist,\nthe device ID must be specified as an"
+                      " argument\n\nexample: sshyp whitelist add 'this-is-a-quoted-device-id'")
             print(f"""\n\u001b[1musage:\u001b[0m sshyp whitelist <flag> [device id]\u001b[0m\n
 \u001b[1mflags:\u001b[0m
  whitelist:
@@ -529,12 +532,7 @@ def whitelist_list():
 
 # adds or removes quick-unlock whitelisted device ids
 def whitelist_manage():
-    if arg_count == 2:
-        whitelist_list()
-        _device_id = input('device id: ')
-    else:
-        _device_id = arguments[2]
-
+    _device_id = arguments[2]
     if arguments[1] == 'add':
         if _device_id in listdir(f"{home}/.config/sshyp/devices"):
             open(f"{home}/.config/sshyp/whitelist/{_device_id}", 'w').write('')
@@ -542,7 +540,6 @@ def whitelist_manage():
         else:
             print(f"\n\u001b[38;5;9merror: device id ({_device_id}) is not registered\u001b[0m\n")
             s_exit(1)
-
     elif isfile(f"{home}/.config/sshyp/whitelist/{_device_id}"):
         remove(f"{home}/.config/sshyp/whitelist/{_device_id}")
         whitelist_list()
@@ -906,16 +903,16 @@ if __name__ == "__main__":
             if arg_count < 1:
                 arguments.append('help')
                 print_info()
-            elif arg_count > 1 and arguments[0] == 'whitelist':
+            elif arg_count == 2 and arguments[0] == 'whitelist':
                 if arguments[1] in ('list', '-l'):
                     success_flag = True
                     whitelist_list()
-                elif arguments[1] in ('add', 'del'):
-                    success_flag = True
-                    whitelist_manage()
                 elif arguments[1] == 'setup':
                     success_flag = True
                     whitelist_setup()
+            elif arg_count > 2 and arguments[1] in ('add', 'del'):
+                    success_flag = True
+                    whitelist_manage()
         # PORT END ARGS-SERVER
 
         if arg_count > 0 and success_flag == 0 and arguments[0] != 'sync':
