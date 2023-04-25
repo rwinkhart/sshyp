@@ -1,22 +1,32 @@
-sshyp v1.4.1
+sshyp v1.4.2 - 04/25/2023 (draft)
 
-the argumentative agronomist update - patch one
+the argumentative agronomist update - patch two
 
-this release improves sshyp's shell completions by adding zsh support and significantly optimizing and improving Bash support
+this release makes use of a new ports framework to make sshyp even smaller and faster than before
 
 user-facing features:
 
-- zsh completion support
-    ^ ensure modern completions are enabled in your ~/.zshrc
+- full WSL (Windows Subsystem for Linux) support
+- partial MacOS support
+    ^ fully functional; packaging support has not yet been added
+- dedicated help screen for 'gen'
+    ^ this was previously not included due to 'sshyp gen' being a valid command prior to v1.4.0
+- removed interactive input for whitelist management
+    ^ this is to be consistent with the removal of interactive input on clients in v1.4.0
 
 fixes/optimizations:
 
-- Bash completions are now much faster due to the use of recursive globbing
-- Bash completions have been modified to be functionally similar to the new zsh completions
-
-other notable changes:
-
-- some official packages now use more space-efficient compression
+- properly display an error when trying to remove a device from the whitelist that is not whitelisted
+- ports framework to remove unneeded code for each platform
+    ^ BLANKS.py removes all blank lines
+    ^ CLIPBOARD.py removes non-platform-critical clipboard code
+    ^ COMMENTS.py removes all comments
+    ^ RMSERVER.py removes server-only code for creating client-only packages
+        ^ the Haiku package, which was already unsupported as a server, now only includes client code
+    ^ SHEBANG.sh sets the shebang to what is required by the platform
+    ^ TABS.sh converts all groups of spaces to tabs for space efficiency
+    ^ UNAME.py removes all instances of platform detection and leaves only the platform-required code
+    ^ THESE SCRIPTS ARE ONLY USED FOR PACKAGING AND DO NOT AFFECT THE SOURCE FILES IN THE GIT REPO
 
 <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 
