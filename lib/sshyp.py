@@ -531,8 +531,7 @@ def whitelist_list():
 
 
 # adds or removes quick-unlock whitelisted device ids
-def whitelist_manage():
-    _device_id = arguments[2]
+def whitelist_manage(_device_id):
     if arguments[1] == 'add':
         if _device_id in listdir(f"{home}/.config/sshyp/devices"):
             open(f"{home}/.config/sshyp/whitelist/{_device_id}", 'w').write('')
@@ -543,6 +542,9 @@ def whitelist_manage():
     elif isfile(f"{home}/.config/sshyp/whitelist/{_device_id}"):
         remove(f"{home}/.config/sshyp/whitelist/{_device_id}")
         whitelist_list()
+    else:
+        print(f"\n\u001b[38;5;9merror: device id ({_device_id}) is not whitelisted\u001b[0m\n")
+        s_exit(1)
 # PORT END WHITELIST-SERVER
 
 
@@ -912,7 +914,7 @@ if __name__ == "__main__":
                     whitelist_setup()
             elif arg_count > 2 and arguments[1] in ('add', 'del'):
                     success_flag = True
-                    whitelist_manage()
+                    whitelist_manage(arguments[2])
         # PORT END ARGS-SERVER
 
         if arg_count > 0 and success_flag == 0 and arguments[0] != 'sync':
