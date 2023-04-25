@@ -1,6 +1,11 @@
-sshyp v1.4.2 - 04/25/2023 (draft)
+sshyp v1.4.2
+04/25/2023 (draft)
 
 the argumentative agronomist update - patch two
+
+IMPORTANT: the next major release of sshyp, v1.5.0, will make breaking changes that will require
+running through 'sshyp tweak' again - also starting with v1.5.0, a copy of the changelog will no
+longer be packaged with sshyp (it will still be available on GitHub)
 
 this release makes use of a new ports framework to make sshyp even smaller and faster than before
 
