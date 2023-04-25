@@ -426,8 +426,8 @@ case "$1" in
         ;;
     buildable-arch)
         _create_generic_linux
-        _create_arch
-        _create_alpine
+        _create_pkgbuild
+        _create_apkbuild
         case "$(pacman -Q dpkg)" in
             dpkg*)
             _create_deb debian
