@@ -913,8 +913,8 @@ if __name__ == "__main__":
                     success_flag = True
                     whitelist_setup()
             elif arg_count > 2 and arguments[1] in ('add', 'del'):
-                    success_flag = True
-                    whitelist_manage(arguments[2])
+                success_flag = True
+                whitelist_manage(arguments[2])
         # PORT END ARGS-SERVER
 
         if arg_count > 0 and success_flag == 0 and arguments[0] != 'sync':
