@@ -1,10 +1,10 @@
-.TH sshyp 1 "02 April 2023" "v1.4.1" "sshyp man page"
+.TH sshyp 1 "25 April 2023" "v1.4.2" "sshyp man page"
 .SH NAME
-sshyp \- A very simple self-hosted, synchronized password manager for UNIX(-like) systems. Alternative to (and compatible with) pass/password-store.
+\fBsshyp\fR - Simple, self-hosted, synchronized password management for UNIX(-like) systems. Alternative to (and compatible with) pass/password-store.
 .SH SYNOPSIS
 Client Usage: sshyp [</entry name> [option] [flag]] [option]
 
-Server Usage: sshyp <option> [flag] [<device id>]
+Server Usage: sshyp <option> [flag] [device id]
 .SH DESCRIPTION
 sshyp is a lightweight password and note management program written in Python. sshyp is used via CLI and is self-hosted with a client-server model. sshyp expects that you have access to a personal server with a properly configured ssh server, ideally accepting remote connections.
 .SH EXAMPLES (CLIENT)
@@ -91,7 +91,7 @@ whitelist:
 .SH SETUP
 sshyp operates on a client-server model, and thus requires you to have access to your own server (whether it be a physical home server or a cloud rental) with remote access via SSH.
 
-The sshyp package includes modes for operating on both client and server devices, so only one package is necessary.
+The sshyp package (on fully supported platforms) includes modes for operating on both client and server devices, so only one package is necessary.
 
 Server setup:
     Configure an OpenSSH server (if sshyp was installed from the Debian package, openssh-server and openssh-sftp-server must be installed manually - if sshyp was installed from the Fedora package, openssh-server must be installed manually)

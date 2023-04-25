@@ -437,7 +437,7 @@ this program comes with absolutely no warranty; type 'sshyp license' for details
 \u001b[1mtip 2:\u001b[0m type 'sshyp' to view a list of saved entries\n""")
         # PORT START HELP-SERVER
         else:
-            print(f"""\n\u001b[1musage:\u001b[0m sshyp <option> [flag] [<device id>]\n
+            print(f"""\n\u001b[1musage:\u001b[0m sshyp <option> [flag] [device id]\n
 \u001b[1moptions:\u001b[0m
  help/-h{17*' '}bring up this menu
  version/-v{14*' '}display sshyp version info
