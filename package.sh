@@ -58,7 +58,13 @@ _create_generic_linux() {
 
 _create_pkgbuild() {
     printf '\ngenerating PKGBUILD...\n'
-    local source='https://github.com/rwinkhart/sshyp/releases/download/v$pkgver/GENERIC-LINUX-sshyp-$pkgver.tar.xz'
+    if [ "$1" = 'Deb' ]; then
+        local source='https://github.com/rwinkhart/sshyp/releases/download/v"$pkgver"/UBUNTU-sshyp_"$pkgver"-"$pkgrel"_all.deb'
+        local decomp_target='data.tar.xz'
+    else
+        local source='https://github.com/rwinkhart/sshyp/releases/download/v"$pkgver"/GENERIC-LINUX-sshyp-"$pkgver".tar.xz'
+        local decomp_target='GENERIC-LINUX-sshyp-"$pkgver".tar.xz'
+    fi
     printf "# Maintainer: Randall Winkhart <idgr at tutanota dot com>
 pkgname=sshyp
 pkgver="$version"
@@ -73,7 +79,7 @@ source=(\""$source"\")
 sha512sums=('"$sha512"')
 
 package() {
-    tar xf GENERIC-LINUX-sshyp-"\"\$pkgver\"".tar.xz -C "\"\${pkgdir}\""
+    tar xf $decomp_target -C "\"\${pkgdir}\""
 }
 " > output/PKGBUILD
     printf '\nPKGBUILD generated\n\n'
@@ -81,7 +87,21 @@ package() {
 
 _create_apkbuild() {
     printf '\ngenerating APKBUILD...\n'
-    local source='https://github.com/rwinkhart/sshyp/releases/download/v$pkgver/GENERIC-LINUX-sshyp-$pkgver.tar.xz'
+    if [ "$1" = 'Deb' ]; then
+        local source='https://github.com/rwinkhart/sshyp/releases/download/v"$pkgver"/UBUNTU-sshyp_"$pkgver"-"$pkgrel"_all.deb'
+        local processing='mkdir -p "$pkgdir"
+    tar xf data.tar.xz -C "$pkgdir"
+    mkdir -p "$pkgdir/usr/share/zsh/site-functions"
+    mv "$pkgdir/usr/share/zsh/functions/Completion/Unix/_sshyp" "$pkgdir/usr/share/zsh/site-functions/_sshyp"
+    rm -rf "$pkgdir/usr/share/zsh/functions"'
+    else
+        local source='https://github.com/rwinkhart/sshyp/releases/download/v"$pkgver"/GENERIC-LINUX-sshyp-"$pkgver".tar.xz'
+        local processing='mkdir -p "$pkgdir"
+    mkdir -p "$srcdir/usr/share/zsh/site-functions"
+    mv "$srcdir/usr/share/zsh/functions/Completion/Unix/_sshyp" "$srcdir/usr/share/zsh/site-functions/_sshyp"
+    rm -rf "$srcdir/usr/share/zsh/functions"
+    cp -r "$srcdir/usr/" "$pkgdir"'
+    fi
     printf "# Maintainer: Randall Winkhart <idgr@tutanota.com>
 pkgname=sshyp
 pkgver="$version"
@@ -95,15 +115,11 @@ depends='python3 gnupg openssh xclip wl-clipboard'
 source=\""$source"\"
 
 package() {
-    mkdir -p "\"\$pkgdir\""
-    mkdir -p "\"\$srcdir/usr/share/zsh/site-functions"\"
-    mv "\"\$srcdir/usr/share/zsh/functions/Completion/Unix/_sshyp"\" "\"\$srcdir/usr/share/zsh/site-functions/_sshyp"\"
-    rm -rf "\"\$srcdir/usr/share/zsh/functions"\"
-    cp -r "\"\$srcdir/usr/"\" "\"\$pkgdir\""
+    $processing
 }
 
 sha512sums=\"
-"$sha512'  'GENERIC-LINUX-sshyp-\"\$pkgver\".tar.xz"
+"$sha512'  'UBUNTU-sshyp_\"\$pkgver\"-\"\$pkgrel\"_all.deb"
 \"
 " > output/APKBUILD
     printf '\nAPKBUILD generated\n\n'
@@ -224,6 +240,7 @@ Installed-Size: 71680
     dpkg-deb --build --root-owner-group -z6 -Sextreme -Zxz output/debiantemp/sshyp_"$version"-"$revision"_all/
     mv output/debiantemp/sshyp_"$version"-"$revision"_all.deb output/"$special"-sshyp_"$version"-"$revision"_all.deb
     rm -rf output/debiantemp
+    sha512="$(sha512sum output/"$special"-sshyp_"$version"-"$revision"_all.deb | awk '{print $1;}')"
     printf "\n$1 packaging complete\n\n"
 } &&
 
@@ -400,11 +417,19 @@ case "$1" in
         ;;
     pkgbuild)
         _create_generic_linux
-        _create_pkgbuild
+        _create_pkgbuild Generic
+        ;;
+    pkgbuild-deb)
+        _create_deb Debian
+        _create_pkgbuild Deb
         ;;
     apkbuild)
         _create_generic_linux
-        _create_apkbuild
+        _create_apkbuild Generic
+        ;;
+    apkbuild-deb)
+        _create_deb Debian
+        _create_apkbuild Deb
         ;;
     haiku)
         _create_hpkg
@@ -426,8 +451,8 @@ case "$1" in
         ;;
     buildable-arch)
         _create_generic_linux
-        _create_pkgbuild
-        _create_apkbuild
+        _create_pkgbuild Generic
+        _create_apkbuild Generic
         case "$(pacman -Q dpkg)" in
             dpkg*)
             _create_deb debian
@@ -441,7 +466,19 @@ case "$1" in
             ;;
         esac
         ;;
+    buildable-arch-deb)
+        _create_deb wsl
+        _create_termux
+        _create_deb debian
+        _create_pkgbuild Deb
+        _create_apkbuild Deb
+        case "$(pacman -Q freebsd-pkg)" in
+            freebsd-pkg*)
+            _create_freebsd_pkg
+            ;;
+        esac
+        ;;
     *)
-    printf '\nusage: package.sh [target] <revision>\n\ntargets:\n mainline: pkgbuild apkbuild fedora debian wsl haiku freebsd\n experimental: termux\n groups: buildable-arch\n\n'
+    printf '\nusage: package.sh [target] <revision>\n\ntargets:\n mainline: pkgbuild pkgbuild-deb apkbuild apkbuild-deb fedora debian wsl haiku freebsd\n experimental: termux\n groups: buildable-arch buildable-arch-deb\n\n'
     ;;
 esac
