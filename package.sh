@@ -7,25 +7,6 @@ else
     revision="$2"
 fi
 
-_create_generic_all() {
-    printf '\npackaging as generic (multi-platform/archival, no port jobs)...\n'
-    mkdir -p output/generictemp/usr/bin \
-         output/generictemp/usr/lib/sshyp/extensions \
-         output/generictemp/usr/share/man/man1 \
-         output/generictemp/usr/share/bash-completion/completions \
-         output/generictemp/usr/share/zsh/functions/Completion/Unix
-    cp -r lib/. output/generictemp/usr/lib/sshyp/
-    ln -s /usr/lib/sshyp/sshyp.py output/generictemp/usr/bin/sshyp
-    cp -r share output/generictemp/usr/
-    cp extra/completion.bash output/generictemp/usr/share/bash-completion/completions/sshyp
-    cp extra/completion.zsh output/generictemp/usr/share/zsh/functions/Completion/Unix/_sshyp
-    cp extra/manpage output/generictemp/usr/share/man/man1/sshyp.1
-    gzip output/generictemp/usr/share/man/man1/sshyp.1
-    XZ_OPT=-e6 tar -C output/generictemp -cvJf output/GENERIC-ALL-sshyp-"$version".tar.xz usr/
-    rm -rf output/generictemp
-    printf '\ngeneric (multi-platform/archival, no port jobs) packaging complete\n\n'
-} &&
-
 _create_generic_linux() {
     printf '\npackaging as generic (Linux)...\n'
     mkdir -p output/linuxtemp/usr/bin \
@@ -412,9 +393,6 @@ printf "/usr/bin/sshyp
 } &&
 
 case "$1" in
-    generic)
-        _create_generic_all
-        ;;
     pkgbuild)
         _create_generic_linux
         _create_pkgbuild Generic
