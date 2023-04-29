@@ -60,7 +60,7 @@ source=(\""$source"\")
 sha512sums=('"$sha512"')
 
 package() {
-    tar xf $decomp_target -C "\"\${pkgdir}\""
+    tar -xf $decomp_target -C "\"\${pkgdir}\""
 }
 " > output/PKGBUILD
     printf '\nPKGBUILD generated\n\n'
@@ -72,7 +72,8 @@ _create_apkbuild() {
         local source="https://github.com/rwinkhart/sshyp/releases/download/v\"\$pkgver\"/UBUNTU-sshyp_\"\$pkgver\"-"$revision"_all.deb"
         local sumsname="UBUNTU-sshyp_\"\$pkgver\"-"$revision"_all.deb"
         local processing='mkdir -p "$pkgdir"
-    tar xf data.tar.xz -C "$pkgdir"
+    7z x "$srcdir"/* -o"$srcdir"
+    tar -xf "$srcdir"/data.tar -C "$pkgdir"
     mkdir -p "$pkgdir/usr/share/zsh/site-functions"
     mv "$pkgdir/usr/share/zsh/functions/Completion/Unix/_sshyp" "$pkgdir/usr/share/zsh/site-functions/_sshyp"
     rm -rf "$pkgdir/usr/share/zsh/functions"'
