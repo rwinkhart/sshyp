@@ -69,7 +69,7 @@ package() {
 _create_apkbuild() {
     printf '\ngenerating APKBUILD...\n'
     if [ "$1" = 'Deb' ]; then
-        local source='https://github.com/rwinkhart/sshyp/releases/download/v"$pkgver"/UBUNTU-sshyp_"$pkgver"-"$pkgrel"_all.deb'
+        local source="https://github.com/rwinkhart/sshyp/releases/download/v\"\$pkgver\"/UBUNTU-sshyp_\"\$pkgver\"-"$revision"_all.deb"
         local processing='mkdir -p "$pkgdir"
     tar xf data.tar.xz -C "$pkgdir"
     mkdir -p "$pkgdir/usr/share/zsh/site-functions"
@@ -100,7 +100,7 @@ package() {
 }
 
 sha512sums=\"
-"$sha512'  'UBUNTU-sshyp_\"\$pkgver\"-\"\$pkgrel\"_all.deb"
+"$sha512'  'UBUNTU-sshyp_\"\$pkgver\"-"$revision"_all.deb"
 \"
 " > output/APKBUILD
     printf '\nAPKBUILD generated\n\n'
