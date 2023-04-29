@@ -433,9 +433,9 @@ case "$1" in
         _create_apkbuild Generic
         case "$(pacman -Q dpkg)" in
             dpkg*)
-            _create_deb debian
-            _create_deb wsl
             _create_termux
+            _create_deb WSL
+            _create_deb Debian
             ;;
         esac
         case "$(pacman -Q freebsd-pkg)" in
@@ -445,9 +445,9 @@ case "$1" in
         esac
         ;;
     buildable-arch-deb)
-        _create_deb wsl
         _create_termux
-        _create_deb debian
+        _create_deb WSL
+        _create_deb Debian
         _create_pkgbuild Deb
         _create_apkbuild Deb
         case "$(pacman -Q freebsd-pkg)" in
