@@ -1,4 +1,4 @@
-.TH sshyp 1 "25 April 2023" "v1.4.2" "sshyp man page"
+.TH sshyp 1 "30 April 2023" "v1.4.2" "sshyp man page"
 .SH NAME
 \fBsshyp\fR - Simple, self-hosted, synchronized password management for UNIX(-like) systems. Alternative to (and compatible with) pass/password-store.
 .SH SYNOPSIS
