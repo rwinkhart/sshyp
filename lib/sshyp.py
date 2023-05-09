@@ -654,13 +654,13 @@ def rename():
         if not ssh_error:
             Path(f"{directory}{_new_name}").mkdir(mode=0o700, parents=True, exist_ok=True)
             run(['ssh', '-i', f"{home}/.ssh/sshyp", '-p', port, f"{username_ssh}@{ip}",
-                 f'python3 -c \'from pathlib import Path; Path("{directory_ssh}{_new_name}")'
-                 f'.mkdir(mode=0o700, parents=True, exist_ok=True)\''])
+                 f'python3 -c \'from pathlib import Path; Path("{directory_ssh}{entry_name}")'
+                 f'.rename(Path("{directory_ssh}{_new_name}"))\''])                 
         else:
             move(f"{directory}{entry_name}", f"{directory}{_new_name}")
     if not ssh_error:
         run(['ssh', '-i', f"{home}/.ssh/sshyp", '-p', port, f"{username_ssh}@{ip}",
-             f'cd /lib/sshyp; python3 -c \'from sshync import delete; delete("{entry_name}", "remotely")\''])
+             f'cd /lib/sshyp; python3 -c \'from sshync import delete; delete("{entry_name}", "remotely", True)\''])
 
 
 # edits the contents of an entry
@@ -779,9 +779,9 @@ def remove_data():
     determine_decrypt(f"{home}/.config/sshyp/lock.gpg", None, None)
     if not ssh_error:
         run(['ssh', '-i', f"{home}/.ssh/sshyp", '-p', port, f"{username_ssh}@{ip}",
-             f'cd /lib/sshyp; python3 -c \'from sshync import delete; delete("{entry_name}", "remotely")\''])
+             f'cd /lib/sshyp; python3 -c \'from sshync import delete; delete("{entry_name}", "remotely", False)\''])
     else:
-        offline_delete(entry_name, 'locally')
+        offline_delete(entry_name, 'locally', silent_sync)
 
 
 # checks extension config files for matches to argument, runs extensions

@@ -33,7 +33,7 @@ def remote_list_gen(_client_device_name, _remote_dir):
 
 # HYBRID
 # deletes a file or folder and/or marks it for deletion upon syncing
-def delete(_file_path, _target_database):
+def delete(_file_path, _target_database, _silent):
     from shutil import rmtree
     _directory = f"{home}/.local/share/sshyp/"
     try:
@@ -42,7 +42,8 @@ def delete(_file_path, _target_database):
         else:
             remove(f"{_directory}{_file_path}.gpg")
     except FileNotFoundError:
-        print(f"location does not exist {_target_database}")
+        if not _silent:
+            print(f"location does not exist {_target_database}")
     if _target_database == 'remotely':
         for _device_name in listdir(f"{home}/.config/sshyp/devices"):
             open(f"{home}/.config/sshyp/deleted/" + _file_path.replace('/', '\x1e') + '\x1f' + _device_name, 'w')
@@ -88,7 +89,7 @@ def deletion_sync(_deletion_database, _silent):
         if _file != '':
             if not _silent:
                 print(f"\u001b[38;5;208m{_file}\u001b[0m has been sheared, removing...")
-            delete(_file, 'locally')
+            delete(_file, 'locally', False)
 
 
 # creates matches of remote folders on the local client
