@@ -89,7 +89,7 @@ def deletion_sync(_deletion_database, _silent):
         if _file != '':
             if not _silent:
                 print(f"\u001b[38;5;208m{_file}\u001b[0m has been sheared, removing...")
-            delete(_file, 'locally', False)
+            delete(_file, 'locally', _silent)
 
 
 # creates matches of remote folders on the local client
