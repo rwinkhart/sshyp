@@ -54,8 +54,12 @@ pkgdesc='A light-weight, self-hosted, synchronized password manager'
 url='https://github.com/rwinkhart/sshyp'
 arch=('any')
 license=('GPL-3.0-only')
-depends=(python gnupg openssh xclip wl-clipboard)
-optdepends=('bash-completion: bash completion support')
+depends=(python gnupg openssh)
+optdepends=(
+    'wl-clipboard: wayland clipboard support'
+    'xclip: x11 clipboard support'
+    'bash-completion: bash completion support'
+)
 source=(\""$source"\")
 sha512sums=('"$sha512"')
 
@@ -95,7 +99,7 @@ options=!check
 url='https://github.com/rwinkhart/sshyp'
 arch='noarch'
 license='GPL-3.0-only'
-depends='python3 gnupg openssh xclip wl-clipboard'
+depends='python3 gnupg openssh'
 source=\""$source"\"
 
 package() {
@@ -185,18 +189,11 @@ Section: utils
 Architecture: all
 Maintainer: Randall Winkhart <idgr at tutanota dot com>
 Description: A light-weight, self-hosted, synchronized password manager
-" > output/debiantemp/sshyp_"$version"-"$revision"_all/DEBIAN/control
-    if [ "$1" = 'Debian' ]; then
-        printf "Depends: python3, gnupg, openssh-client, xclip, wl-clipboard
-" >> output/debiantemp/sshyp_"$version"-"$revision"_all/DEBIAN/control
-    else
-        printf "Depends: python3, gnupg, openssh-client
-" >> output/debiantemp/sshyp_"$version"-"$revision"_all/DEBIAN/control
-    fi
-    printf "Suggests: bash-completion
+Depends: python3, gnupg, openssh-client
+Suggests: wl-clipboard, xclip, bash-completion
 Priority: optional
 Installed-Size: 71680
-" >> output/debiantemp/sshyp_"$version"-"$revision"_all/DEBIAN/control
+" > output/debiantemp/sshyp_"$version"-"$revision"_all/DEBIAN/control
     # START PORT
     cp -r lib/. port-jobs/working/
     cd port-jobs
@@ -286,8 +283,8 @@ BuildArch:      noarch
 License:        GPL-3.0-only
 URL:            https://github.com/rwinkhart/sshyp
 Source0:        GENERIC-FEDORA-sshyp-"$version".tar.xz
-Requires:       python gnupg openssh-clients wl-clipboard
-Recommends:     bash-completion
+Requires:       python gnupg openssh-clients
+Recommends:     wl-clipboard xclip bash-completion
 %%description
 sshyp is a password-store compatible CLI password manager available for UNIX(-like) systems - its primary goal is to make syncing passwords and notes across devices as easy as possible via CLI.
 %%install
@@ -352,12 +349,6 @@ prefix: /
                    },
                    \"gnupg\" : {
                       \"origin\" : \"security/gnupg\"
-                   },
-                   \"xclip\" : {
-                      \"origin\" : \"x11/xclip\"
-                   },
-                   \"wl-clipboard\" : {
-                      \"origin\" : \"x11/wl-clipboard\"
                    },
                 },
 " > output/freebsdtemp/+MANIFEST
