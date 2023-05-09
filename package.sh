@@ -157,7 +157,6 @@ urls {
     mv port-jobs/working/* output/haikutemp/lib/sshyp/
     # END PORT
     ln -s /system/lib/sshyp/sshyp.py output/haikutemp/bin/sshyp
-    cp -r share/doc/sshyp/. output/haikutemp/documentation/packages/sshyp/
     cp -r share/licenses/sshyp/. output/haikutemp/documentation/packages/sshyp/
     cp extra/completion.bash output/haikutemp/data/bash-completion/completions/sshyp
     cp extra/completion.zsh output/haikutemp/data/zsh/site-functions/_sshyp
@@ -302,7 +301,6 @@ cp -r %%{_sourcedir}/usr %%{buildroot}
 /usr/share/zsh/site-functions/_sshyp
 %%license /usr/share/licenses/sshyp/license
 %%doc
-/usr/share/doc/sshyp/changelog
 /usr/share/man/man1/sshyp.1.gz
 " > ~/rpmbuild/SPECS/sshyp.spec
     # START PORT
@@ -368,7 +366,6 @@ printf "/usr/bin/sshyp
 /usr/lib/sshyp/sshyp.py
 /usr/local/share/bash-completion/completions/sshyp
 /usr/local/share/zsh/site-functions/_sshyp
-/usr/share/doc/sshyp/changelog
 /usr/share/licenses/sshyp/license
 /usr/share/man/man1/sshyp.1.gz
 " > output/freebsdtemp/plist
