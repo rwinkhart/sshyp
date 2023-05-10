@@ -1,6 +1,6 @@
 #!/bin/sh
 
-version=$(sed -n '1{p;q}' share/doc/sshyp/changelog | cut -c8-)
+version=$(sed -n '1{p;q}' extra/changelog-archive/2023 | cut -c8-)
 if [ -z "$2" ]; then
     revision=1
 else
