@@ -44,19 +44,19 @@ def entry_list_gen(_directory=f"{home}/.local/share/sshyp/"):
 # displays the contents of an entry in a readable format
 def entry_reader(_decrypted_entry):
     _entry_lines, _notes_flag = open(_decrypted_entry, 'r').readlines(), 0
+    if pass_show:
+        _entry_password = f'\u001b[38;5;10m{_entry_lines[0]}\u001b[0m'
+    else:
+        _entry_password = f'\u001b[38;5;3mend command in "--show" or "-s" to view\u001b[0m\n'
     print()
     for _num in range(len(_entry_lines)):
         try:
             if _num == 0 and _entry_lines[1] != '\n':
-                print(f"\u001b[38;5;15;48;5;238musername:\u001b[0m\n{_entry_lines[1]}\n")
+                print(f"\u001b[38;5;15;48;5;238musername:\u001b[0m\n{_entry_lines[1]}")
             elif _num == 1 and _entry_lines[0] != '\n':
-                if pass_show:
-                    print(f"\u001b[38;5;15;48;5;238mpassword:\u001b[0m\n\u001b[38;5;10m{_entry_lines[0]}\u001b[0m\n")
-                else:
-                    print('\u001b[38;5;15;48;5;238mpassword:\u001b[0m\n\u001b[38;5;3mend command in "--show" or "-s" '
-                          'to view\u001b[0m\n')
+                print(f"\u001b[38;5;15;48;5;238mpassword:\u001b[0m\n{_entry_password}")
             elif _num == 2 and _entry_lines[2] != '\n':
-                print(f"\u001b[38;5;15;48;5;238murl:\u001b[0m\n{_entry_lines[_num]}\n")
+                print(f"\u001b[38;5;15;48;5;238murl:\u001b[0m\n{_entry_lines[_num]}")
             elif _num >= 3 and _entry_lines[_num] != '\n' and _notes_flag != 1:
                 _notes_flag = 1
                 print('\u001b[38;5;15;48;5;238mnotes:\u001b[0m\n' + _entry_lines[_num].strip('\n'))
@@ -69,7 +69,9 @@ def entry_reader(_decrypted_entry):
                     print()
         except IndexError:
             if _num == 0:
-                print(f"\u001b[38;5;15;48;5;238mpassword:\u001b[0m\n{_entry_lines[0]}\n")
+                print(f"\u001b[38;5;15;48;5;238mpassword:\u001b[0m\n{_entry_password}")
+                if pass_show:
+                    print()
 
 
 # generates and returns a random string based on input
