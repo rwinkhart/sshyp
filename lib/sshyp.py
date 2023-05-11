@@ -50,7 +50,11 @@ def entry_reader(_decrypted_entry):
             if _num == 0 and _entry_lines[1] != '\n':
                 print(f"\u001b[38;5;15;48;5;238musername:\u001b[0m\n{_entry_lines[1]}\n")
             elif _num == 1 and _entry_lines[0] != '\n':
-                print(f"\u001b[38;5;15;48;5;238mpassword:\u001b[0m\n{_entry_lines[0]}\n")
+                if pass_show:
+                    print(f"\u001b[38;5;15;48;5;238mpassword:\u001b[0m\n\u001b[38;5;10m{_entry_lines[0]}\u001b[0m\n")
+                else:
+                    print('\u001b[38;5;15;48;5;238mpassword:\u001b[0m\n\u001b[38;5;3mend command in "--show" or "-s" '
+                          'to view\u001b[0m\n')
             elif _num == 2 and _entry_lines[2] != '\n':
                 print(f"\u001b[38;5;15;48;5;238murl:\u001b[0m\n{_entry_lines[_num]}\n")
             elif _num >= 3 and _entry_lines[_num] != '\n' and _notes_flag != 1:
@@ -821,17 +825,26 @@ def extension_runner():
 
 if __name__ == "__main__":
     try:
-        ssh_error, success_flag, sync_flag, silent_sync = False, False, False, False
+        # set default states
+        ssh_error, success_flag, sync_flag, silent_sync, pass_show = False, False, False, False, False
+        
         # set to avoid PEP8 warnings
         arg_start, device_type = None, None
+        
         # retrieve typed argument
         arguments = argv[1:]
         arg_count = len(arguments)
 
+        # check if an entry name is correctly supplied
         if arg_count < 1 or (arg_count > 0 and arguments[0] != 'tweak'):
             if arg_count > 0 and arguments[0].startswith('/'):
                 arg_start = 1
                 entry_name = arguments[0].strip('/')
+                # determine whether to show passwords in entry previews
+                if arg_count > 1 and arguments[arg_count-1] in ('--show', '-s'):
+                    arguments.pop()
+                    arg_count -= 1
+                    pass_show = True
             else:
                 arg_start = 0
 
