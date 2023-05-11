@@ -329,6 +329,19 @@ def tweak():
             _lines += 1
             _config_file.write('n')
     print(f"{_divider}configuration complete\n")
+    
+    # PORT START CLIPTOOL
+    # check for clipboard tool and display warning if missing
+    if uname()[0] in ('Linux', 'FreeBSD'):
+        if 'WAYLAND_DISPLAY' in environ:
+            _display_server, _clipboard_tool = 'Wayland', 'wl-clipboard'
+        else:
+            _display_server, _clipboard_tool = 'X11', 'xclip'
+        from shutil import which
+        if which(_clipboard_tool) is None:
+            print(f'\u001b[38;5;9mwarning: you are using {_display_server} and "{_clipboard_tool}" is not present -'
+                  f'\ncopying entry fields will not function until "{_clipboard_tool}" is installed\u001b[0m\n')
+    # PORT END CLIPTOOL
 
 
 # prints help text based on argument

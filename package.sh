@@ -17,6 +17,7 @@ _create_generic_linux() {
     # START PORT
     cp -r lib/. port-jobs/working/
     cd port-jobs
+    ./CLIPTOOL.py LINUX
     ./CLIPBOARD.py LINUX
     ./UNAME.py LINUX
     ./COMMENTS.py ALL
@@ -152,6 +153,7 @@ urls {
     cd port-jobs
     ./SHEBANG.sh
     ./RMSERVER.py
+    ./CLIPTOOL.py
     ./CLIPBOARD.py HAIKU
     ./COMMENTS.py ALL
     ./UNAME.py TMP
@@ -198,9 +200,11 @@ Installed-Size: 71680
     cp -r lib/. port-jobs/working/
     cd port-jobs
     if [ "$1" = 'Debian' ]; then
+        ./CLIPTOOL.py LINUX
         ./CLIPBOARD.py LINUX
         special=UBUNTU
     else
+        ./CLIPTOOL.py
         ./CLIPBOARD.py WSL
         special=WSL-ONLY-UBUNTU
     fi
@@ -246,6 +250,7 @@ Installed-Size: 71680
     # START PORT
     cp -r lib/. port-jobs/working/
     cd port-jobs
+    ./CLIPTOOL.py
     ./CLIPBOARD.py TERMUX
     ./UNAME.py TERMUX
     ./COMMENTS.py ALL
@@ -303,6 +308,7 @@ cp -r %%{_sourcedir}/usr %%{buildroot}
     # START PORT
     cp -r lib/. port-jobs/working/
     cd port-jobs
+    ./CLIPTOOL.py LINUX
     ./CLIPBOARD.py LINUX
     ./UNAME.py LINUX
     ./COMMENTS.py ALL
@@ -363,6 +369,7 @@ printf "/usr/bin/sshyp
     # START PORT
     cp -r lib/. port-jobs/working/
     cd port-jobs
+    ./CLIPTOOL.py BSD
     ./CLIPBOARD.py TERMUX
     ./UNAME.py TMP
     ./COMMENTS.py ALL
