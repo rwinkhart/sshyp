@@ -369,8 +369,8 @@ printf "/usr/bin/sshyp
     # START PORT
     cp -r lib/. port-jobs/working/
     cd port-jobs
-    ./CLIPTOOL.py BSD
-    ./CLIPBOARD.py TERMUX
+    ./CLIPTOOL.py LINUX
+    ./CLIPBOARD.py LINUX
     ./UNAME.py TMP
     ./COMMENTS.py ALL
     ./BLANKS.py
