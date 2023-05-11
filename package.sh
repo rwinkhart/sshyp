@@ -350,8 +350,8 @@ maintainer: <idgr at tutanota dot com>
 www: https://github.com/rwinkhart/sshyp
 prefix: /
 \"deps\" : {
-                   \"python\" : {
-                      \"origin\" : \"lang/python\"
+                   \"python3\" : {
+                      \"origin\" : \"lang/python3\"
                    },
                    \"gnupg\" : {
                       \"origin\" : \"security/gnupg\"
