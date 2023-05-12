@@ -267,6 +267,8 @@ def settings_terminate(_stdscr):
 # ARGUMENT-SPECIFIC FUNCTIONS
 # runs configuration wizard
 def settings():
+    # set to avoid PEP8 warnings
+    _sshyp_data = None
     # config directory creation
     Path(f"{home}/.config/sshyp/devices").mkdir(mode=0o700, parents=True, exist_ok=True)
 
@@ -293,7 +295,7 @@ def settings():
         # device+sync type selection
         # PORT START TWEAK-DEVTYPE
         _install_type = settings_radio(_stdscr, ('server', 'client (ssh-synchronized)', 'client (offline)'),
-                                                 'device + sync type configuration')
+                                       'device + sync type configuration')
         if _install_type == 0:                 
             _sshyp_data = ['server']
             Path(f"{home}/.config/sshyp/deleted").mkdir(mode=0o700, exist_ok=True)
@@ -309,8 +311,8 @@ def settings():
         # PORT END TWEAK-DEVTYPE
 
             # gpg key selection
-            _uid_list = [_item for _item in run(['gpg', '-k', '--with-colons'], stdout=PIPE, text=True)
-                        .stdout.splitlines() if _item.startswith('uid')]
+            _uid_list = [_item for _item in run(['gpg', '-k', '--with-colons'],
+                                                stdout=PIPE, text=True).stdout.splitlines() if _item.startswith('uid')]
             _clean_uid_list = []
             for _uid in _uid_list:
                 _clean_uid_list.append(sub(r':+', ':', _uid).split(':')[4])
@@ -322,7 +324,8 @@ def settings():
                 if not isfile(f"{home}/.config/sshyp/gpg-gen"):
                     open(f"{home}/.config/sshyp/gpg-gen", 'w').writelines([
                         'Key-Type: 1\n', 'Key-Length: 4096\n', 'Key-Usage: sign encrypt\n', 'Name-Real: sshyp\n',
-                        'Name-Comment: gpg-sshyp\n', 'Name-Email: https://github.com/rwinkhart/sshyp\n', 'Expire-Date: 0'])
+                        'Name-Comment: gpg-sshyp\n', 'Name-Email: https://github.com/rwinkhart/sshyp\n',
+                        'Expire-Date: 0'])
                 run(['gpg', '--batch', '--generate-key', f"{home}/.config/sshyp/gpg-gen"])
                 remove(f"{home}/.config/sshyp/gpg-gen")
                 _sshyp_data.append(run(['gpg', '-k'], stdout=PIPE, text=True).stdout.splitlines()[-3].strip())
@@ -342,9 +345,9 @@ def settings():
             # ssh configuration
             if not _offline_mode:
                 _uiport = settings_text(_stdscr, 'enter the username, ip, and ssh port of your sshyp server:\n\n\n\n\n('
-                                                 'ctrl+g/enter to confirm)\n\nexample inputs:\n\n ipv4: user@10.10.10.10:'
-                                                 '22\n ipv6: user@[2000:2000:2000:2000:2000:2000:2000:2000]:22\n domain: '
-                                                 'user@mydomain.com:22').lstrip('[').replace(']', '')
+                                                 'ctrl+g/enter to confirm)\n\nexample inputs:\n\n ipv4: user@10.10.10.'
+                                                 '10:22\n ipv6: user@[2000:2000:2000:2000:2000:2000:2000:2000]:22\n '
+                                                 'domain: user@mydomain.com:22').lstrip('[').replace(']', '')
                 _uiport_split = _uiport.split('@')
                 _username_ssh = _uiport_split[0]
                 _iport = _uiport_split[1].rsplit(':', 1)
@@ -359,9 +362,9 @@ def settings():
                 for _id in listdir(f"{home}/.config/sshyp/devices"):
                     remove(f"{home}/.config/sshyp/devices/{_id}")
                 _device_id_prefix = settings_text(_stdscr, 'name this device:\n\n\n\n\n(ctrl+g/enter to confirm)\n\n'
-                                                           'important:\u001b[0m this id \u001b[4;1mmust\u001b[0m be unique'
-                                                           'amongst your client devices\n\nthis is used to keep track of '
-                                                           'database syncing and quick-unlock permissions\n')
+                                                           'important:\u001b[0m this id \u001b[4;1mmust\u001b[0m be '
+                                                           'unique amongst your client devices\n\nthis is used to keep '
+                                                           'track of database syncing and quick-unlock permissions\n')
                 _device_id_suffix = string_gen('f', randint(24, 48))
                 _device_id = _device_id_prefix + '-' + _device_id_suffix
                 open(f"{home}/.config/sshyp/devices/{_device_id}", 'w')
@@ -375,15 +378,28 @@ def settings():
 
                 settings_terminate(_stdscr)
 
-                print(_iport[1], _username_ssh, _iport[0], _device_id)
-                
                 # test server connection and attempt to register device id
                 copy_id_check(_iport[1], _username_ssh, _iport[0], _device_id)
 
-            elif isfile(f"{home}/.config/sshyp/sshyp.sshync"):
-                remove(f"{home}/.config/sshyp/sshyp.sshync")
+            else:
+                if isfile(f"{home}/.config/sshyp/sshyp.sshync"):
+                    remove(f"{home}/.config/sshyp/sshyp.sshync")
                 settings_terminate(_stdscr)
-            
+
+            # PORT START CLIPTOOL
+            # check for clipboard tool and display warning if missing
+            if uname()[0] in ('Linux', 'FreeBSD'):
+                if 'WAYLAND_DISPLAY' in environ:
+                    _display_server, _clipboard_tool, _clipboard_package = 'Wayland', 'wl-copy', 'wl-clipboard'
+                else:
+                    _display_server, _clipboard_tool, _clipboard_package = 'X11', 'xclip', 'xclip'
+                from shutil import which
+                if which(_clipboard_tool) is None:
+                    print(f'\n\u001b[38;5;9mwarning: you are using {_display_server} and "{_clipboard_tool}" is not '
+                          f'present - \ncopying entry fields will not function until '
+                          f'"{_clipboard_package}" is installed\u001b[0m')
+            # PORT END CLIPTOOL
+
     except KeyboardInterrupt:
         settings_terminate(_stdscr)
         
@@ -397,19 +413,6 @@ def settings():
             _lines += 1
             _config_file.write('n')
     print('\nconfiguration complete\n')
-    
-    # PORT START CLIPTOOL
-    # check for clipboard tool and display warning if missing
-    if uname()[0] in ('Linux', 'FreeBSD'):
-        if 'WAYLAND_DISPLAY' in environ:
-            _display_server, _clipboard_tool = 'Wayland', 'wl-clipboard'
-        else:
-            _display_server, _clipboard_tool = 'X11', 'xclip'
-        from shutil import which
-        if which(_clipboard_tool) is None:
-            print(f'\u001b[38;5;9mwarning: you are using {_display_server} and "{_clipboard_tool}" is not present -'
-                  f'\ncopying entry fields will not function until "{_clipboard_tool}" is installed\u001b[0m\n')
-    # PORT END CLIPTOOL
 
 
 # prints help text based on argument
