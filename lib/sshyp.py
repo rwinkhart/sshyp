@@ -160,7 +160,7 @@ def decrypt(_entry_dir, _shm_folder, _shm_entry, _quick_pass,
 
 # call decrypt() based on quick-unlock status
 def determine_decrypt(_entry_dir, _shm_folder, _shm_entry):
-    if quick_unlock_enabled == 'y':
+    if quick_unlock_enabled == 'yes':
         decrypt(_entry_dir, _shm_folder, _shm_entry, whitelist_verify(port, username_ssh, ip, client_device_id))
     else:
         decrypt(_entry_dir, _shm_folder, _shm_entry, False)
@@ -214,13 +214,63 @@ def copy_id_check(_port, _username_ssh, _ip, _client_device_id):
     return False
 
 
+# creates a radio selection between the provided options
+def settings_radio(_stdscr, _options, _pretext):
+    curses.curs_set(0)
+    _selected = 0
+    while True:
+        _stdscr.clear()
+        _stdscr.addstr(0, 0, _pretext, curses.A_BOLD)
+        for _i, _option in enumerate(_options):
+            _y = _i + 2
+            if _i == _selected:
+                _stdscr.addstr(_y, 0, "[*] " + _option, curses.A_REVERSE)
+            else:
+                _stdscr.addstr(_y, 0, "[ ] " + _option)
+        _stdscr.refresh()
+        _key = _stdscr.getch()
+        # update _selected based on user input
+        if _key == curses.KEY_UP:
+            _selected = (_selected - 1) % len(_options)
+        elif _key == curses.KEY_DOWN:
+            _selected = (_selected + 1) % len(_options)
+        elif _key == ord('\n'):
+            break
+        _stdscr.refresh()
+    curses.curs_set(1)
+    return _selected
+
+
+# creates a text-box input
+def settings_text(_stdscr, _pretext):
+    _stdscr.clear()
+    _stdscr.addstr(0, 0, _pretext)
+    _term_columns = get_terminal_size()[0]
+    _editwin = curses.newwin(1, _term_columns-2, 3, 1)
+    rectangle(_stdscr, 2, 0, 4, _term_columns-1)
+    _stdscr.refresh()
+    _box = Textbox(_editwin)
+    # let the user edit until ctrl+g/enter is struck
+    _box.edit()
+    # return resulting contents
+    return _box.gather().strip()
+
+
+# cleanly terminates curses
+def settings_terminate(_stdscr):
+    curses.nocbreak()
+    _stdscr.keypad(False)  # TODO Needed??
+    curses.echo()
+    curses.endwin()
+
+
 # ARGUMENT-SPECIFIC FUNCTIONS
 # runs configuration wizard
-def tweak():
-    _divider = f"\n{'=' * (get_terminal_size()[0] - int((.5 * get_terminal_size()[0])))}\n\n"
-
+def settings():
     # config directory creation
     Path(f"{home}/.config/sshyp/devices").mkdir(mode=0o700, parents=True, exist_ok=True)
+
+    # temporary file symlink creation
     if not exists(f"{home}/.config/sshyp/tmp"):
         from os import symlink
         # PORT START UNAME-TMP
@@ -232,109 +282,121 @@ def tweak():
             symlink('/dev/shm', f"{home}/.config/sshyp/tmp")
         # PORT END UNAME-TMP
 
-    # PORT START TWEAK-DEVTYPE
-    # device type configuration
-    _device_type = input('\nclient or server installation? (C/s) ')
-    if _device_type.lower() == 's':
-        _sshyp_data = ['server']
-        Path(f"{home}/.config/sshyp/deleted").mkdir(mode=0o700, exist_ok=True)
-        Path(f"{home}/.config/sshyp/whitelist").mkdir(mode=0o700, exist_ok=True)
-        print(f"\n\u001b[4;1mmake sure the ssh service is running and properly configured\u001b[0m")
-    else:
-        _sshyp_data = ['client']
-        Path(f"{home}/.local/share/sshyp").mkdir(mode=0o700, parents=True, exist_ok=True)
-    # PORT END TWEAK-DEVTYPE
+    # curses initialization
+    _stdscr = curses.initscr()
+    curses.noecho()
+    curses.cbreak()
+    _stdscr.keypad(True)
 
-        # gpg configuration
-        _gpg_gen = input(f"{_divider}sshyp requires the use of a unique gpg key - use an (e)xisting key or (g)enerate a"
-                         f" new one? (E/g) ")
-        if _gpg_gen.lower() != 'g':
-            run(['gpg', '-k'])
-            _sshyp_data.append(str(input('gpg key id: ')))
+    # curses menu tree
+    try:
+        # device+sync type selection
+        # PORT START TWEAK-DEVTYPE
+        _install_type = settings_radio(_stdscr, ('server', 'client (ssh-synchronized)', 'client (offline)'),
+                                                 'device + sync type configuration')
+        if _install_type == 0:                 
+            _sshyp_data = ['server']
+            Path(f"{home}/.config/sshyp/deleted").mkdir(mode=0o700, exist_ok=True)
+            Path(f"{home}/.config/sshyp/whitelist").mkdir(mode=0o700, exist_ok=True)
+            settings_terminate(_stdscr)
+            print(f"\nmake sure the ssh service is running and properly configured")
         else:
-            print('\na unique gpg key is being generated for you...')
-            if not isfile(f"{home}/.config/sshyp/gpg-gen"):
-                open(f"{home}/.config/sshyp/gpg-gen", 'w').writelines([
-                    'Key-Type: 1\n', 'Key-Length: 4096\n', 'Key-Usage: sign encrypt\n', 'Name-Real: sshyp\n',
-                    'Name-Comment: gpg-sshyp\n', 'Name-Email: https://github.com/rwinkhart/sshyp\n', 'Expire-Date: 0'])
-            run(['gpg', '--batch', '--generate-key', f"{home}/.config/sshyp/gpg-gen"])
-            remove(f"{home}/.config/sshyp/gpg-gen")
-            _sshyp_data.append(run(['gpg', '-k'], stdout=PIPE, text=True).stdout.splitlines()[-3].strip())
+            _offline_mode = False
+            if _install_type == 2:
+                _offline_mode = True
+            _sshyp_data = ['client']
+            Path(f"{home}/.local/share/sshyp").mkdir(mode=0o700, parents=True, exist_ok=True)
+        # PORT END TWEAK-DEVTYPE
 
-        # text editor configuration
-        _sshyp_data.append(input(f"{_divider}example input: vim\n\npreferred text editor: "))
+            # gpg key selection
+            _uid_list = [_item for _item in run(['gpg', '-k', '--with-colons'], stdout=PIPE, text=True)
+                        .stdout.splitlines() if _item.startswith('uid')]
+            _clean_uid_list = []
+            for _uid in _uid_list:
+                _clean_uid_list.append(sub(r':+', ':', _uid).split(':')[4])
+            _clean_uid_list.append('auto-generate')
+            _gpg_id_sel = settings_radio(_stdscr, _clean_uid_list, 'gpg key selection')
+            _gpg_id = _clean_uid_list[_gpg_id_sel]
+            if _gpg_id == 'auto-generate':
+                print('\na unique gpg key is being generated for you...')
+                if not isfile(f"{home}/.config/sshyp/gpg-gen"):
+                    open(f"{home}/.config/sshyp/gpg-gen", 'w').writelines([
+                        'Key-Type: 1\n', 'Key-Length: 4096\n', 'Key-Usage: sign encrypt\n', 'Name-Real: sshyp\n',
+                        'Name-Comment: gpg-sshyp\n', 'Name-Email: https://github.com/rwinkhart/sshyp\n', 'Expire-Date: 0'])
+                run(['gpg', '--batch', '--generate-key', f"{home}/.config/sshyp/gpg-gen"])
+                remove(f"{home}/.config/sshyp/gpg-gen")
+                _sshyp_data.append(run(['gpg', '-k'], stdout=PIPE, text=True).stdout.splitlines()[-3].strip())
+            else:
+                _sshyp_data.append(_gpg_id)
 
-        # lock file generation
-        if isfile(f"{home}/.config/sshyp/lock.gpg"):
-            remove(f"{home}/.config/sshyp/lock.gpg")
-        open(f"{home}/.config/sshyp/lock", 'w')
-        run(['gpg', '-qr', str(_sshyp_data[1]), '-e', f"{home}/.config/sshyp/lock"])
-        remove(f"{home}/.config/sshyp/lock")
+            # text editor configuration
+            _sshyp_data.append(settings_text(_stdscr, 'enter the name of your preferred text editor:\n\n\n\n\n'
+                                                      '(ctrl+g/enter to confirm)\n\nexample input: vim'))
+            # lock file generation
+            if isfile(f"{home}/.config/sshyp/lock.gpg"):
+                remove(f"{home}/.config/sshyp/lock.gpg")
+                open(f"{home}/.config/sshyp/lock", 'w')
+                run(['gpg', '-qr', str(_sshyp_data[1]), '-e', f"{home}/.config/sshyp/lock"])
+                remove(f"{home}/.config/sshyp/lock")
+            
+            # ssh configuration
+            if not _offline_mode:
+                _uiport = settings_text(_stdscr, 'enter the username, ip, and ssh port of your sshyp server:\n\n\n\n\n('
+                                                 'ctrl+g/enter to confirm)\n\nexample inputs:\n\n ipv4: user@10.10.10.10:'
+                                                 '22\n ipv6: user@[2000:2000:2000:2000:2000:2000:2000:2000]:22\n domain: '
+                                                 'user@mydomain.com:22').lstrip('[').replace(']', '')
+                _uiport_split = _uiport.split('@')
+                _username_ssh = _uiport_split[0]
+                _iport = _uiport_split[1].rsplit(':', 1)
 
-        # ssh key configuration
-        _offline_mode = False
-        _ssh_gen = (input(f"{_divider}make sure the ssh service on the remote server is running and properly "
-                          f"configured\n\nsync support requires a unique ssh key - would you like to have this "
-                          f"automatically generated? (Y/n/o(ffline)) "))
-        if _ssh_gen.lower() not in ('n', 'o', 'offline'):
-            Path(f"{home}/.ssh").mkdir(mode=0o700, exist_ok=True)
-            run(['ssh-keygen', '-t', 'ed25519', '-f', f"{home}/.ssh/sshyp"])
-        elif _ssh_gen.lower() == 'n':
-            print(f"\n\u001b[4;1mensure that the key file you are using is located at {home}/.ssh/sshyp\u001b[0m")
-        elif _ssh_gen.lower() in ('o', 'offline'):
-            _offline_mode = True
-            print('\nsshyp has been set to offline mode - to enable syncing, run "sshyp tweak" again')
+                # sshync profile generation
+                make_profile(f"{home}/.config/sshyp/sshyp.sshync",
+                             f"{home}/.local/share/sshyp/", f"/home/{_username_ssh}/.local/share/sshyp/",
+                             f"{home}/.ssh/sshyp", _iport[0], _iport[1], _username_ssh)
 
-        if not _offline_mode:
-            # ssh ip+port configuration
-            _iport = str(input(f"{_divider}example inputs:\n\n ipv4: 10.10.10.10:22\n ipv6: [2000:2000:2000:2000:"
-                               f"2000:2000:2000:2000]:22\n domain: mydomain.com:22\n\nip and ssh port of sshyp server: "
-                               )).lstrip('[').replace(']', '').rsplit(':', 1)
+                # device id configuration
+                # remove existing device id
+                for _id in listdir(f"{home}/.config/sshyp/devices"):
+                    remove(f"{home}/.config/sshyp/devices/{_id}")
+                _device_id_prefix = settings_text(_stdscr, 'name this device:\n\n\n\n\n(ctrl+g/enter to confirm)\n\n'
+                                                           'important:\u001b[0m this id \u001b[4;1mmust\u001b[0m be unique'
+                                                           'amongst your client devices\n\nthis is used to keep track of '
+                                                           'database syncing and quick-unlock permissions\n')
+                _device_id_suffix = string_gen('f', randint(24, 48))
+                _device_id = _device_id_prefix + '-' + _device_id_suffix
+                open(f"{home}/.config/sshyp/devices/{_device_id}", 'w')
 
-            # ssh user configuration
-            _username_ssh = str(input('\nusername of the remote server: '))
+                # quick-unlock configuration
+                _quick_unlock_sel = settings_radio(_stdscr, ('yes', 'no'), 'enable quick-unlock?')
+                if _quick_unlock_sel == 0:
+                    _sshyp_data.append('yes')
+                else:
+                    _sshyp_data.append('no')
 
-            # sshync profile generation
-            make_profile(f"{home}/.config/sshyp/sshyp.sshync",
-                         f"{home}/.local/share/sshyp/", f"/home/{_username_ssh}/.local/share/sshyp/",
-                         f"{home}/.ssh/sshyp", _iport[0], _iport[1], _username_ssh)
+                settings_terminate(_stdscr)
 
-            # device id configuration
-            # remove existing device id
-            for _id in listdir(f"{home}/.config/sshyp/devices"):
-                remove(f"{home}/.config/sshyp/devices/{_id}")
-            print(f"{_divider}\u001b[4;1mimportant:\u001b[0m this id \u001b[4;1mmust\u001b[0m be unique amongst your "
-                  f"client devices\n\nthis is used to keep track of database syncing and quick-unlock permissions\n")
-            _device_id_prefix = str(input('device id: ')) + '-'
-            _device_id_suffix = string_gen('f', randint(24, 48))
-            _device_id = _device_id_prefix + _device_id_suffix
-            open(f"{home}/.config/sshyp/devices/{_device_id}", 'w')
+                print(_iport[1], _username_ssh, _iport[0], _device_id)
+                
+                # test server connection and attempt to register device id
+                copy_id_check(_iport[1], _username_ssh, _iport[0], _device_id)
 
-            # quick-unlock configuration
-            print(f"{_divider}this allows you to use a shorter version of your gpg key password and\n"
-                  f"requires a constant connection to your sshyp server to authenticate")
-            _sshyp_data.append(input('\nenable quick-unlock? (y/N) ').lower())
-            if _sshyp_data[3] == 'y':
-                print(f"\nquick-unlock has been enabled client-side - in order for this device to be able to read "
-                      f"entries,\nyou must first login to the sshyp server and run:\n\nsshyp whitelist setup "
-                      f"(if not already done)\nsshyp whitelist add '{_device_id}'")
-
-            # test server connection and attempt to register device id
-            copy_id_check(_iport[1], _username_ssh, _iport[0], _device_id)
-
-        elif isfile(f"{home}/.config/sshyp/sshyp.sshync"):
-            remove(f"{home}/.config/sshyp/sshyp.sshync")
-
+            elif isfile(f"{home}/.config/sshyp/sshyp.sshync"):
+                remove(f"{home}/.config/sshyp/sshyp.sshync")
+                settings_terminate(_stdscr)
+            
+    except KeyboardInterrupt:
+        settings_terminate(_stdscr)
+        
     # write main config file (sshyp-data)
     with open(f"{home}/.config/sshyp/sshyp-data", 'w') as _config_file:
         _lines = 0
         for _item in _sshyp_data:
             _lines += 1
-            _config_file.write(_item + '\n')
+            _config_file.write(str(_item) + '\n')
         while _lines < 4:
             _lines += 1
             _config_file.write('n')
-    print(f"{_divider}configuration complete\n")
+    print('\nconfiguration complete\n')
     
     # PORT START CLIPTOOL
     # check for clipboard tool and display warning if missing
@@ -427,7 +489,7 @@ this program comes with absolutely no warranty; type 'sshyp license' for details
 \u001b[1moptions:\u001b[0m
  help/-h{17*' '}bring up this menu
  version/-v{14*' '}display sshyp version info
- tweak{19*' '}configure sshyp
+ settings{19*' '}configure sshyp
  add{21*' '}add an entry
  gen{21*' '}generate a new password
  edit{20*' '}edit an existing entry
@@ -460,7 +522,7 @@ this program comes with absolutely no warranty; type 'sshyp license' for details
 \u001b[1moptions:\u001b[0m
  help/-h{17*' '}bring up this menu
  version/-v{14*' '}display sshyp version info
- tweak{19*' '}configure sshyp
+ settings{19*' '}configure sshyp
  whitelist{15*' '}manage the quick-unlock whitelist
 \n\u001b[1mflags:\u001b[0m
  whitelist:
@@ -838,7 +900,7 @@ if __name__ == "__main__":
         arg_count = len(arguments)
 
         # check if an entry name is correctly supplied
-        if arg_count < 1 or (arg_count > 0 and arguments[0] != 'tweak'):
+        if arg_count < 1 or (arg_count > 0 and arguments[0] not in ('tweak', 'settings')):
             if arg_count > 0 and arguments[0].startswith('/'):
                 arg_start = 1
                 entry_name = arguments[0].strip('/')
@@ -876,11 +938,14 @@ if __name__ == "__main__":
                         ssh_error = True
             except (FileNotFoundError, IndexError):
                 print('\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
-                print("not all necessary configuration files are present - please run 'sshyp tweak'")
+                print("not all necessary configurations have been made - please run 'sshyp settings'")
                 print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n')
                 s_exit(1)
         else:
-            tweak()
+            import curses
+            from curses.textpad import Textbox, rectangle
+            from re import sub
+            settings()
             s_exit()
 
         # run function based on arguments
