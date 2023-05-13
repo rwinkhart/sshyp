@@ -802,6 +802,7 @@ if __name__ == "__main__":
                     success_flag = True
                     read_shortcut()
                 elif arguments[0] == 'tweak':
+                    success_flag = True
                     from stweak import global_menu
                     global_menu(False)
 
@@ -819,6 +820,7 @@ if __name__ == "__main__":
                     success_flag = True
                     whitelist_setup()
             elif arg_count == 1 and arguments[0] == 'tweak':
+                success_flag = True
                 from stweak import global_menu
                 global_menu(False)
             elif arg_count > 2 and arguments[1] in ('add', 'del'):

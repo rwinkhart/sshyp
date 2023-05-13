@@ -88,7 +88,7 @@ def install_type():
         _dev_type = 'server'
         Path(f"{home}/.config/sshyp/deleted").mkdir(mode=0o700, exist_ok=True)
         Path(f"{home}/.config/sshyp/whitelist").mkdir(mode=0o700, exist_ok=True)
-        curses_terminate('\nmake sure the ssh service is running and properly configured')
+        curses_terminate('\nmake sure the ssh service is running and properly configured\n')
     else:
         _dev_type = 'client'
         if _install_type == 2:
