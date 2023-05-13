@@ -748,8 +748,8 @@ if __name__ == "__main__":
                 print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n')
                 s_exit(1)
         else:
-            import stweak
-            stweak.settings()
+            from stweak import initial_setup
+            initial_setup()
             s_exit()
 
         # run function based on arguments
