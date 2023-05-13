@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
+from configparser import ConfigParser, NoSectionError
 from os import chmod, environ, listdir, remove, walk
 from os.path import exists, expanduser, isdir, isfile, realpath
 from pathlib import Path
 from random import randint
 from shutil import move, rmtree
-from sshync import delete as offline_delete, run_profile, get_profile
+from sshync import delete as offline_delete, run_profile
 from subprocess import CalledProcessError, DEVNULL, PIPE, run
 from sys import argv, exit as s_exit
 # PORT START UNAME-IMPORT
@@ -162,7 +163,7 @@ def decrypt(_entry_dir, _shm_folder, _shm_entry, _quick_pass,
 
 # call decrypt() based on quick-unlock status
 def determine_decrypt(_entry_dir, _shm_folder, _shm_entry):
-    if quick_unlock_enabled == 'yes':
+    if quick_unlock_enabled == 'true':
         decrypt(_entry_dir, _shm_folder, _shm_entry, whitelist_verify(port, username_ssh, ip, client_device_id))
     else:
         decrypt(_entry_dir, _shm_folder, _shm_entry, False)
@@ -201,7 +202,10 @@ def edit_note(_shm_folder, _shm_entry, _lines):
 
 
 # attempts to connect to the user's server via ssh to register the device for syncing
-def copy_id_check(_port, _username_ssh, _ip, _client_device_id):
+def copy_id_check(_port, _username_ssh, _ip, _client_device_id, _sshyp_data):
+    from stweak import write_config
+    if not _sshyp_data.has_section('CLIENT-ONLINE'):
+        _sshyp_data.add_section('CLIENT-ONLINE')
     try:
         run(['ssh', '-o', 'ConnectTimeout=3', '-i', f"{home}/.ssh/sshyp", '-p', _port, f"{_username_ssh}@{_ip}",
              f'python3 -c \'from pathlib import Path; Path("/home/{_username_ssh}/.config/sshyp/devices/'
@@ -210,9 +214,11 @@ def copy_id_check(_port, _username_ssh, _ip, _client_device_id):
         print('\n\u001b[38;5;9mwarning: ssh connection could not be made - ensure the public key (~/.ssh/sshyp.pub) is '
               'registered on the remote server and that the entered ip, port, and username are correct\n\nsyncing '
               'functionality will be disabled until this is addressed\u001b[0m\n')
-        open(f"{home}/.config/sshyp/ssh-error", 'w').write('1')
+        _sshyp_data.set('CLIENT-ONLINE', 'ssh_error', '1')
+        write_config(_sshyp_data)
         return True
-    open(f"{home}/.config/sshyp/ssh-error", 'w').write('0')
+    _sshyp_data.set('CLIENT-ONLINE', 'ssh_error', '0')
+    write_config(_sshyp_data)
     return False
 
 
@@ -365,7 +371,7 @@ def sync():
             chmod(_path, 0o700)
         for _file in _files:
             chmod(_root + '/' + _file, 0o600)
-    run_profile(f"{home}/.config/sshyp/sshyp.sshync", silent_sync)
+    run_profile(f"{home}/.config/sshyp/sshyp.ini", silent_sync)
 
 
 # PORT START WHITELIST-SERVER
@@ -674,7 +680,6 @@ def remove_data():
 
 # checks extension config files for matches to argument, runs extensions
 def extension_runner():
-    from configparser import ConfigParser
     _output_com, _extension_dir = None, realpath(__file__).rsplit('/', 1)[0] + '/extensions/'
     if isdir(_extension_dir):
         for _extension in listdir(_extension_dir):
@@ -722,31 +727,30 @@ if __name__ == "__main__":
             # import saved userdata
             tmp_dir = f"{home}/.config/sshyp/tmp/"
             try:
-                sshyp_data = open(f"{home}/.config/sshyp/sshyp-data").readlines()
-                device_type = sshyp_data[0].rstrip()
+                sshyp_data = ConfigParser()
+                sshyp_data.read(f"{home}/.config/sshyp/sshyp.ini")
+                device_type = sshyp_data.get('GENERAL', 'device_type')
                 if device_type == 'client':
                     directory = f"{home}/.local/share/sshyp/"
-                    gpg_id = sshyp_data[1].rstrip()
-                    editor = sshyp_data[2].rstrip()
-                    quick_unlock_enabled = sshyp_data[3].rstrip()
-                    if isfile(f"{home}/.config/sshyp/sshyp.sshync"):
-                        ssh_info = get_profile(f"{home}/.config/sshyp/sshyp.sshync")
-                        username_ssh = ssh_info[0].rstrip()
-                        ip = ssh_info[1].rstrip()
-                        port = ssh_info[2].rstrip()
-                        directory_ssh = str(ssh_info[4].rstrip())
-                        client_device_id = listdir(f"{home}/.config/sshyp/devices")[0].rstrip()
-                        ssh_error = int(open(f"{home}/.config/sshyp/ssh-error").read().rstrip())
-                        if ssh_error == 1:
-                            ssh_error = copy_id_check(port, username_ssh, ip, client_device_id)
-                        else:
-                            ssh_error = False
-                    else:
+                    gpg_id = sshyp_data.get('CLIENT-GENERAL', 'gpg_id')
+                    editor = sshyp_data.get('CLIENT-GENERAL', 'text_editor')
+                    offline_mode_enabled = sshyp_data.get('CLIENT-GENERAL', 'offline_mode_enabled')
+                    if offline_mode_enabled == 'true':
                         ssh_error = True
-            except (FileNotFoundError, IndexError):
-                print('\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
+                    else:
+                        quick_unlock_enabled = sshyp_data.get('CLIENT-ONLINE', 'quick_unlock_enabled')
+                        username_ssh = sshyp_data.get('SSHYNC', 'user')
+                        ip = sshyp_data.get('SSHYNC', 'ip')
+                        port = sshyp_data.get('SSHYNC', 'port')
+                        directory_ssh = sshyp_data.get('SSHYNC', 'remote_dir')
+                        client_device_id = listdir(f"{home}/.config/sshyp/devices")[0]
+                        ssh_error = int(sshyp_data.get('CLIENT-ONLINE', 'ssh_error'))
+                        if ssh_error == 1:
+                            ssh_error = copy_id_check(port, username_ssh, ip, client_device_id, sshyp_data)
+            except (FileNotFoundError, NoSectionError):
+                print(f"\n{73*'!'}")
                 print("not all necessary configurations have been made - please run 'sshyp init'")
-                print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n')
+                print(f"{73*'!'}\n")
                 s_exit(1)
         else:
             from stweak import initial_setup
@@ -814,6 +818,9 @@ if __name__ == "__main__":
                 elif arguments[1] == 'setup':
                     success_flag = True
                     whitelist_setup()
+            elif arg_count == 1 and arguments[0] == 'tweak':
+                from stweak import global_menu
+                global_menu(False)
             elif arg_count > 2 and arguments[1] in ('add', 'del'):
                 success_flag = True
                 whitelist_manage(arguments[2])

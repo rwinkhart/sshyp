@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-from curses import A_REVERSE, KEY_DOWN, KEY_UP, cbreak, curs_set, endwin, initscr, newwin, noecho, nocbreak
+from configparser import ConfigParser
+from curses import A_REVERSE, echo, KEY_DOWN, KEY_UP, cbreak, curs_set, endwin, initscr, newwin, noecho, nocbreak
 from curses.textpad import rectangle, Textbox
 from os import environ, listdir, remove, symlink
 from os.path import exists, expanduser, isfile
@@ -7,13 +8,23 @@ from pathlib import Path
 from random import randint
 from re import sub
 from shutil import get_terminal_size, which
-from sshync import make_profile
 from sshyp import copy_id_check, string_gen
 from subprocess import PIPE, run
 # PORT START UNAME-IMPORT
 from os import uname
 # PORT END UNAME-IMPORT
-home, stdscr, sshyp_data = expanduser("~"), initscr(), []
+home, stdscr, sshyp_data = expanduser("~"), initscr(), ConfigParser()
+if isfile(f"{home}/.config/sshyp/sshyp.ini"):
+    _exists_flag = True
+    sshyp_data.read(f"{home}/.config/sshyp/sshyp.ini")
+else:
+    _exists_flag = False
+
+
+# writes data stored in ConfigParser to the correct config file
+def write_config(_sshyp_data=sshyp_data):
+    with open(f"{home}/.config/sshyp/sshyp.ini", 'w') as configfile:
+        _sshyp_data.write(configfile)
 
 
 # creates a radio selection between the provided options
@@ -58,15 +69,18 @@ def curses_text(_pretext):
     return _box.gather().strip()
 
 
-# cleanly exit curses
-def curses_terminate():
+# cleanly exit curses and optionally prints an exit message
+def curses_terminate(_term_message):
     nocbreak()
+    echo()
     endwin()
+    if _term_message:
+        print(_term_message)
 
 
 # device+sync type selection
 def install_type():
-    _offline_mode = False
+    _offline_mode = 'false'
     # PORT START TWEAK-DEVTYPE
     _install_type = curses_radio(('server', 'client (ssh-synchronized)', 'client (offline)'),
                                  'device + sync type configuration')
@@ -74,15 +88,18 @@ def install_type():
         _dev_type = 'server'
         Path(f"{home}/.config/sshyp/deleted").mkdir(mode=0o700, exist_ok=True)
         Path(f"{home}/.config/sshyp/whitelist").mkdir(mode=0o700, exist_ok=True)
-        curses_terminate()
-        print(f"\nmake sure the ssh service is running and properly configured")
+        curses_terminate('\nmake sure the ssh service is running and properly configured')
     else:
         _dev_type = 'client'
         if _install_type == 2:
-            _offline_mode = True
-            if isfile(f"{home}/.config/sshyp/sshyp.sshync"):
-                remove(f"{home}/.config/sshyp/sshyp.sshync")
-        Path(f"{home}/.local/share/sshyp").mkdir(mode=0o700, parents=True, exist_ok=True)
+            _offline_mode = 'true'
+        if not sshyp_data.has_section('CLIENT-GENERAL'):
+            sshyp_data.add_section('CLIENT-GENERAL')
+        sshyp_data.set('CLIENT-GENERAL', 'offline_mode_enabled', _offline_mode)
+    if not sshyp_data.has_section('GENERAL'):
+        sshyp_data.add_section('GENERAL')
+    sshyp_data.set('GENERAL', 'device_type', _dev_type)
+    write_config()
     # PORT END TWEAK-DEVTYPE
     return _dev_type, _offline_mode
 
@@ -108,14 +125,35 @@ def gpg_config():
         run(['gpg', '--batch', '--generate-key', f"{home}/.config/sshyp/gpg-gen"])
         remove(f"{home}/.config/sshyp/gpg-gen")
         _gpg_id = run(['gpg', '-k'], stdout=PIPE, text=True).stdout.splitlines()[-3].strip()
-    return _gpg_id
+
+        # lock file generation
+        if isfile(f"{home}/.config/sshyp/lock.gpg"):
+            remove(f"{home}/.config/sshyp/lock.gpg")
+            open(f"{home}/.config/sshyp/lock", 'w')
+            run(['gpg', '-qr', _gpg_id, '-e', f"{home}/.config/sshyp/lock"])
+            remove(f"{home}/.config/sshyp/lock")
+
+    if not sshyp_data.has_section('CLIENT-GENERAL'):
+        sshyp_data.add_section('CLIENT-GENERAL')
+    sshyp_data.set('CLIENT-GENERAL', 'gpg_id', _gpg_id)
+    write_config()
 
 
 # text editor configuration
-def editor_config():
-    _editor = curses_text('enter the name of your preferred text editor:\n\n\n\n\n'
-                          '(ctrl+g/enter to confirm)\n\nexample input: vim')
-    return _editor
+def editor_config(_env_mode):
+    if _env_mode:
+        # set default text editor to value of EDITOR environment variable, otherwise default to nano
+        if 'EDITOR' in environ:
+            _editor = environ['EDITOR']
+        else:
+            _editor = 'nano'
+    else:
+        _editor = curses_text('enter the name of your preferred text editor:\n\n\n\n\n'
+                              '(ctrl+g/enter to confirm)\n\nexample input: vim')
+    if not sshyp_data.has_section('CLIENT-GENERAL'):
+        sshyp_data.add_section('CLIENT-GENERAL')
+    sshyp_data.set('CLIENT-GENERAL', 'text_editor', _editor)
+    write_config()
 
 
 # ssh+sshync configuration
@@ -129,10 +167,15 @@ def ssh_config():
     _username_ssh = _uiport_split[0]
     _iport = _uiport_split[1].rsplit(':', 1)
 
-    # sshync profile generation
-    make_profile(f"{home}/.config/sshyp/sshyp.sshync",
-                 f"{home}/.local/share/sshyp/", f"/home/{_username_ssh}/.local/share/sshyp/",
-                 f"{home}/.ssh/sshyp", _iport[0], _iport[1], _username_ssh)
+    if not sshyp_data.has_section('SSHYNC'):
+        sshyp_data.add_section('SSHYNC')
+    sshyp_data.set('SSHYNC', 'user', _username_ssh)
+    sshyp_data.set('SSHYNC', 'ip', _iport[0])
+    sshyp_data.set('SSHYNC', 'port', _iport[1])
+    sshyp_data.set('SSHYNC', 'local_dir', f"{home}/.local/share/sshyp/")
+    sshyp_data.set('SSHYNC', 'remote_dir', f"/home/{_username_ssh}/.local/share/sshyp/")
+    sshyp_data.set('SSHYNC', 'identity_file', f"{home}/.ssh/sshyp")
+    write_config()
     return _iport[1], _username_ssh, _iport[0]
 
 
@@ -148,31 +191,36 @@ def dev_id_config(_ip, _username_ssh, _port):
     _device_id = _device_id_prefix + '-' + _device_id_suffix
     open(f"{home}/.config/sshyp/devices/{_device_id}", 'w')
     # test server connection and attempt to register device id
-    copy_id_check(_ip, _username_ssh, _port, _device_id)
-    return _device_id
+    copy_id_check(_ip, _username_ssh, _port, _device_id, sshyp_data)
 
 
 # quick-unlock configuration
-def quick_unlock_config():
-    _quick_unlock_sel = curses_radio(('yes', 'no'), 'enable quick-unlock?')
-    if _quick_unlock_sel == 0:
-        _enabled = 'yes'
+def quick_unlock_config(_default):
+    if _default:
+        _enabled = 'false'
     else:
-        _enabled = 'no'
-    return _enabled
+        _quick_unlock_sel = curses_radio(('yes', 'no'), 'enable quick-unlock?')
+        if _quick_unlock_sel == 0:
+            _enabled = 'true'
+        else:
+            _enabled = 'false'
+    if not sshyp_data.has_section('CLIENT-ONLINE'):
+        sshyp_data.add_section('CLIENT-ONLINE')
+    sshyp_data.set('CLIENT-ONLINE', 'quick_unlock_enabled', _enabled)
+    write_config()
 
 
-# runs secondary configuration menu - clients only
+# runs secondary configuration menu
 def global_menu(_post_setup):
     # curses initialization
     noecho()
     cbreak()
     stdscr.keypad(True)
-    _options, _choice = [], 4
 
+    _options, _choice, _term_message = [], 4, False
     try:
         if not _post_setup:
-            _options.extend(['change device/synchronization types', 'change gpg key', 're-configure ssh',
+            _options.extend(['change device/synchronization types', 'change gpg key', 're-configure ssh(ync)',
                              'change device name'])
             _message, _choice = 'all configuration options:', 0
         _options.extend(['[OPTIONAL, RECOMMENDED] set custom text editor',
@@ -183,28 +231,40 @@ def global_menu(_post_setup):
         _choice += curses_radio(_options, _message)
 
         if _choice == 0:
-            install_type()
+            _dev_sync_types = install_type()
+            # if not running in server or offline mode and a sshync config has not been made
+            if _dev_sync_types[0] != 'server' and _dev_sync_types[1] != 'true' and not sshyp_data.has_section('SSHYNC'):
+                _ip, _username_ssh, _port = ssh_config()
+                # if no device id is set
+                if not listdir(f"{home}/.config/sshyp/devices"):
+                    dev_id_config(_ip, _username_ssh, _port)
         elif _choice == 1:
             gpg_config()
         elif _choice == 2:
             ssh_config()
         elif _choice == 3:
-            dev_id_config()
+            dev_id_config(sshyp_data.get('SSHYNC', 'ip'), sshyp_data.get('SSHYNC', 'user'),
+                          sshyp_data.get('SSHYNC', 'port'))
         elif _choice == 4:
-            editor_config()
+            editor_config(False)
         elif _choice == 5:
-            quick_unlock_config()
+            quick_unlock_config(False)
         else:
             pass
-        curses_terminate()
+        curses_terminate(_term_message)
     except KeyboardInterrupt:
-        curses_terminate()
+        curses_terminate(False)
 
 
 # runs initial configuration wizard
 def initial_setup():
-    # config directory creation
+    # required directory creation
     Path(f"{home}/.config/sshyp/devices").mkdir(mode=0o700, parents=True, exist_ok=True)
+    Path(f"{home}/.local/share/sshyp").mkdir(mode=0o700, parents=True, exist_ok=True)
+
+    # removal of old config files
+    if _exists_flag:
+        sshyp_data.clear()
 
     # temporary file symlink creation
     if not exists(f"{home}/.config/sshyp/tmp"):
@@ -218,6 +278,7 @@ def initial_setup():
         # PORT END UNAME-TMP
 
     # curses initialization
+    noecho()
     cbreak()
     stdscr.keypad(True)
 
@@ -225,41 +286,33 @@ def initial_setup():
     try:
         # device+sync type selection
         _dev_sync_types = install_type()
-        sshyp_data.append(_dev_sync_types[0])
 
         if _dev_sync_types[0] == 'client':
 
             # gpg configuration
-            sshyp_data.append(gpg_config())
+            gpg_config()
 
-            # lock file generation (requires gpg configuration)
-            if isfile(f"{home}/.config/sshyp/lock.gpg"):
-                remove(f"{home}/.config/sshyp/lock.gpg")
-                open(f"{home}/.config/sshyp/lock", 'w')
-                run(['gpg', '-qr', str(sshyp_data[1]), '-e', f"{home}/.config/sshyp/lock"])
-                remove(f"{home}/.config/sshyp/lock")
+            # text editor configuration (automated)
+            editor_config(True)
 
-            # set default text editor to value of EDITOR environment variable, otherwise default to nano
-            if 'EDITOR' in environ:
-                sshyp_data.append(environ['EDITOR'])
-            else:
-                sshyp_data.append('nano')
+            # quick-unlock configuration (disabled by default)
+            quick_unlock_config(True)
 
             # online (synchronized mode) configuration
-            if not _dev_sync_types[1]:
+            if _dev_sync_types[1] != 'true':
 
                 # ssh+sshync configuration
                 _ip, _username_ssh, _port = ssh_config()
 
                 # device id configuration
-                _device_id = dev_id_config(_ip, _username_ssh, _port)
+                dev_id_config(_ip, _username_ssh, _port)
 
                 # cleanly exit curses
-                curses_terminate()
+                curses_terminate(False)
 
             else:
                 # cleanly exit curses
-                curses_terminate()
+                curses_terminate(False)
 
             # PORT START CLIPTOOL
             # check for clipboard tool and display warning if missing
@@ -274,18 +327,8 @@ def initial_setup():
                           f'"{_clipboard_package}" is installed\u001b[0m')
             # PORT END CLIPTOOL
 
-        # write main config file (sshyp-data)
-        with open(f"{home}/.config/sshyp/sshyp-data", 'w') as _config_file:
-            _lines = 0
-            for _item in sshyp_data:
-                _lines += 1
-                _config_file.write(str(_item) + '\n')
-            while _lines < 4:
-                _lines += 1
-                _config_file.write('n')
-
         global_menu(True)
 
     except KeyboardInterrupt:
         # cleanly exit curses
-        curses_terminate()
+        curses_terminate(False)

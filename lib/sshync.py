@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from os import listdir, remove, walk
-from os.path import expanduser, isdir, getmtime, join
+from os.path import expanduser, isdir, isfile, getmtime, join
 from subprocess import CalledProcessError, PIPE, run
 from sys import exit as s_exit
 home = expanduser("~")
@@ -118,25 +118,21 @@ def sort_titles_mods(_list_1, _list_2):
     return _title_list_2_sorted, _mod_list_2_sorted
 
 
-# creates a sshync job profile
-def make_profile(_profile_dir, _local_dir, _remote_dir, _identity, _ip, _port, _user):
-    open(_profile_dir, 'w').write(f"{_user}\n{_ip}\n{_port}\n{_local_dir}\n{_remote_dir}\n{_identity}\n")
-
-
 # returns a list of data read from a sshync job profile
 def get_profile(_profile_dir):
-    try:
-        _profile_data = open(_profile_dir).readlines()
-    except (FileNotFoundError, IndexError):
+    from configparser import ConfigParser
+    _profile_data = ConfigParser()
+    if isfile(_profile_dir):
+        _profile_data.read(_profile_dir)
+    else:
         print('\n\u001b[38;5;9merror: the profile does not exist or is corrupted\u001b[0m\n')
-        _profile_data = None
         s_exit(2)
-    _user = _profile_data[0].rstrip()
-    _ip = _profile_data[1].rstrip()
-    _port = _profile_data[2].rstrip()
-    _local_dir = _profile_data[3].rstrip()
-    _remote_dir = _profile_data[4].rstrip()
-    _identity = _profile_data[5].rstrip()
+    _user = _profile_data.get('SSHYNC', 'user')
+    _ip = _profile_data.get('SSHYNC', 'ip')
+    _port = _profile_data.get('SSHYNC', 'port')
+    _local_dir = _profile_data.get('SSHYNC', 'local_dir')
+    _remote_dir = _profile_data.get('SSHYNC', 'remote_dir')
+    _identity = _profile_data.get('SSHYNC', 'identity_file')
     _client_device_id = listdir(f"{home}/.config/sshyp/devices")[0].rstrip()
     return _user, _ip, _port, _local_dir, _remote_dir, _identity, _client_device_id
 
