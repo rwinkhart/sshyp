@@ -161,8 +161,7 @@ def quick_unlock_config(_stdscr):
     return _enabled
 
 
-# ARGUMENT-SPECIFIC FUNCTIONS
-# runs configuration wizard
+# runs initial configuration wizard
 def initial_setup():
     # config directory creation
     Path(f"{home}/.config/sshyp/devices").mkdir(mode=0o700, parents=True, exist_ok=True)
@@ -256,3 +255,25 @@ def initial_setup():
             _lines += 1
             _config_file.write('n')
     print('\nconfiguration complete\n')
+
+
+# runs secondary configuration menu
+def global_menu(_post_setup):
+    # curses initialization
+    _stdscr = initscr()
+    noecho()
+    cbreak()
+    _stdscr.keypad(True)
+
+    # a client device is assumed, the server should never show this menu
+    _options = []
+    if not _post_setup:
+        _options = ['change device/synchronization types', 'change gpg key', 're-configure ssh', 'change device name']
+        _message = 'all configuration options'
+    _options.extend(['[OPTIONAL, RECOMMENDED] set custom text editor',
+                     '[OPTIONAL, RECOMMENDED] enable/disable quick-unlock',
+                     '[OPTIONAL, NOT IMPLEMENTED] su security mode',
+                     '[OPTIONAL, NOT IMPLEMENTED] extensions and updates', 'exit'])
+    _message = 'additional configuration options'
+
+    _choice = settings_radio(_stdscr, _options, _message)

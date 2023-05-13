@@ -295,7 +295,8 @@ this program comes with absolutely no warranty; type 'sshyp license' for details
 \u001b[1moptions:\u001b[0m
  help/-h{17*' '}bring up this menu
  version/-v{14*' '}display sshyp version info
- settings{19*' '}configure sshyp
+ init{20*' '}set up sshyp
+ tweak{19*' '}change configuration options/manage extensions and updates
  add{21*' '}add an entry
  gen{21*' '}generate a new password
  edit{20*' '}edit an existing entry
@@ -328,7 +329,7 @@ this program comes with absolutely no warranty; type 'sshyp license' for details
 \u001b[1moptions:\u001b[0m
  help/-h{17*' '}bring up this menu
  version/-v{14*' '}display sshyp version info
- settings{19*' '}configure sshyp
+ init{20*' '}set up sshyp
  whitelist{15*' '}manage the quick-unlock whitelist
 \n\u001b[1mflags:\u001b[0m
  whitelist:
@@ -706,7 +707,7 @@ if __name__ == "__main__":
         arg_count = len(arguments)
 
         # check if an entry name is correctly supplied
-        if arg_count < 1 or (arg_count > 0 and arguments[0] not in ('tweak', 'settings')):
+        if arg_count < 1 or (arg_count > 0 and arguments[0] != 'init'):
             if arg_count > 0 and arguments[0].startswith('/'):
                 arg_start = 1
                 entry_name = arguments[0].strip('/')
@@ -743,9 +744,9 @@ if __name__ == "__main__":
                     else:
                         ssh_error = True
             except (FileNotFoundError, IndexError):
-                print('\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
-                print("not all necessary configurations have been made - please run 'sshyp settings'")
-                print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n')
+                print('\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
+                print("not all necessary configurations have been made - please run 'sshyp init'")
+                print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n')
                 s_exit(1)
         else:
             from stweak import initial_setup
@@ -792,9 +793,13 @@ if __name__ == "__main__":
                     success_flag, sync_flag = True, True
                     remove_data()
 
-            elif arg_count == 1 and arg_start == 1:
-                success_flag = True
-                read_shortcut()
+            elif arg_count == 1:
+                if arg_start == 1:
+                    success_flag = True
+                    read_shortcut()
+                elif arguments[0] == 'tweak':
+                    from stweak import global_menu
+                    global_menu(False)
 
         # PORT START ARGS-SERVER
         # server arguments
