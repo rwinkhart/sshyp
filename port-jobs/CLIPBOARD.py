@@ -8,11 +8,12 @@ arguments = argv[1:]
 # define replacement text depending on arguments
 if len(arguments) > 0:
     if arguments[0] == 'WSL':
-        replacement = """run(['powershell.exe', '-c', "Set-Clipboard '" + _copy_line[_index].rstrip().replace("'", "''") + "'"])
+        replacement = """run(['powershell.exe', '-c', "Set-Clipboard '" + _copy_line[_index].rstrip()\
+        .replace("'", "''") + "'"])
     Popen("sleep 30; pwsh.exe -c 'echo \\"\\" | Set-Clipboard'", shell=True)"""
     elif arguments[0] == 'MAC':
-        replacement = """run(['pbcopy'], stdin=Popen(['printf', _copy_line[_index].rstrip().replace('\\\\\\', '\\\\\\\\\\\\\\').replace('%', '%%')],
-                                    stdout=PIPE).stdout)
+        replacement = """run(['pbcopy'], stdin=Popen(['printf', _copy_line[_index].rstrip()\
+        .replace('\\\\\\', '\\\\\\\\\\\\\\').replace('%', '%%')],stdout=PIPE).stdout)
     Popen("sleep 30; printf '' | pbcopy", shell=True)"""
     elif arguments[0] == 'HAIKU':
         replacement = """run(['clipboard', '-c', _copy_line[_index].rstrip()])
@@ -25,8 +26,8 @@ if len(arguments) > 0:
         run(['wl-copy', _copy_line[_index].rstrip()])
         Popen('sleep 30; wl-copy -c', shell=True)
     else:
-        run(['xclip', '-sel', 'c'], stdin=Popen(['printf', _copy_line[_index].rstrip().replace('\\\\\\', '\\\\\\\\\\\\\\')
-                                                .replace('%', '%%')], stdout=PIPE).stdout)
+        run(['xclip', '-sel', 'c'], stdin=Popen(['printf', _copy_line[_index].rstrip()\
+        .replace('\\\\\\', '\\\\\\\\\\\\\\').replace('%', '%%')], stdout=PIPE).stdout)
         Popen("sleep 30; printf '' | xclip -sel c", shell=True)"""
 else:
     s_exit()

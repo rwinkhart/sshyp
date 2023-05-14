@@ -8,9 +8,9 @@ from shutil import move, rmtree
 from sshync import delete as offline_delete, run_profile
 from subprocess import CalledProcessError, DEVNULL, PIPE, run
 from sys import argv, exit as s_exit
-# PORT START UNAME-IMPORT
+# PORT START UNAME-IMPORT-SSHYP
 from os import uname
-# PORT END UNAME-IMPORT
+# PORT END UNAME-IMPORT-SSHYP
 home = expanduser("~")
 
 
@@ -238,8 +238,8 @@ def print_info():
         print(f"{_border}{_blank}\n\u001b[38;5;7;48;5;8m/\u001b[38;5;15;48;5;15m{3*' '}\u001b[38;5;15;48;5;8m"
               f"sshyp ", f"copyright (c) 2021-2023 ", f"randall winkhart\u001b[38;5;15;48;5;15m{3*' '}"
               f"\u001b[38;5;7;48;5;8m/\u001b[0m\n{_blank}")
-        print(f"\u001b[38;5;7;48;5;8m/\u001b[38;5;15;48;5;15m{20*' '}\u001b[38;5;15;48;5;8mversion 1.4.2"
-              f"\u001b[38;5;15;48;5;15m{21*' '}\u001b[38;5;7;48;5;8m/\u001b[0m")
+        print(f"\u001b[38;5;7;48;5;8m/\u001b[38;5;15;48;5;15m{20*' '}\u001b[38;5;15;48;5;8mversion 1.4.99"
+              f"\u001b[38;5;15;48;5;15m{20*' '}\u001b[38;5;7;48;5;8m/\u001b[0m")
         print(f"\u001b[38;5;7;48;5;8m/\u001b[38;5;15;48;5;15m{9*' '}\u001b[38;5;15;48;5;8mthe argumentative "
               f"agronomist update\u001b[38;5;15;48;5;15m{10*' '}\u001b[38;5;7;48;5;8m/\u001b[0m")
         print(f"{_blank}\n{_border}\nsee https://github.com/rwinkhart/sshyp for more information\n")
@@ -737,6 +737,7 @@ if __name__ == "__main__":
                     offline_mode_enabled = sshyp_data.get('CLIENT-GENERAL', 'offline_mode_enabled')
                     if offline_mode_enabled == 'true':
                         ssh_error = True
+                        quick_unlock_enabled = 'false'
                     else:
                         quick_unlock_enabled = sshyp_data.get('CLIENT-ONLINE', 'quick_unlock_enabled')
                         username_ssh = sshyp_data.get('SSHYNC', 'user')

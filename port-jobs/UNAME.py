@@ -16,10 +16,10 @@ if len(arguments) > 0:
 else:
     s_exit()
 
-# UNAME-IMPORT
+# UNAME-IMPORT-SSHYP
 # define PORT target
-string1 = '# PORT START UNAME-IMPORT'
-string2 = '# PORT END UNAME-IMPORT'
+string1 = '# PORT START UNAME-IMPORT-SSHYP'
+string2 = '# PORT END UNAME-IMPORT-SSHYP'
 
 # read input file
 text = open('working/sshyp.py', 'r').read()
@@ -31,17 +31,32 @@ new_text = re.sub(regex, '', text)
 # write updated text
 open('working/sshyp.py', 'w').write(new_text)
 
+# UNAME-IMPORT-STWEAK
+# define PORT target
+string1 = '# PORT START UNAME-IMPORT-STWEAK'
+string2 = '# PORT END UNAME-IMPORT-STWEAK'
+
+# read input file
+text = open('working/stweak.py', 'r').read()
+
+# find and replace the defined PORT target
+regex = re.compile(f"{string1}.*?{string2}\n", re.DOTALL)
+new_text = re.sub(regex, '', text)
+
+# write updated text
+open('working/stweak.py', 'w').write(new_text)
+
 # UNAME-TMP
 # define PORT target
 string1 = '# PORT START UNAME-TMP'
 string2 = '# PORT END UNAME-TMP'
 
 # read input file
-text = open('working/sshyp.py', 'r').read()
+text = open('working/stweak.py', 'r').read()
 
 # find and replace the defined PORT target
 regex = re.compile(f"{string1}.*?{string2}", re.DOTALL)
 new_text = re.sub(regex, replacement, text)
 
 # write updated text
-open('working/sshyp.py', 'w').write(new_text)
+open('working/stweak.py', 'w').write(new_text)

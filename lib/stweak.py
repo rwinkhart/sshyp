@@ -10,9 +10,9 @@ from re import sub
 from shutil import get_terminal_size, which
 from sshyp import copy_id_check, string_gen
 from subprocess import PIPE, run
-# PORT START UNAME-IMPORT
+# PORT START UNAME-IMPORT-STWEAK
 from os import uname
-# PORT END UNAME-IMPORT
+# PORT END UNAME-IMPORT-STWEAK
 home, stdscr, sshyp_data = expanduser("~"), initscr(), ConfigParser()
 if isfile(f"{home}/.config/sshyp/sshyp.ini"):
     _exists_flag = True

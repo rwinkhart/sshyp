@@ -7,6 +7,8 @@ else
     revision="$2"
 fi
 
+mkdir -p port-jobs/working
+
 _create_generic_linux() {
     printf '\npackaging as generic (Linux)...\n'
     mkdir -p output/linuxtemp/usr/bin \
@@ -15,7 +17,7 @@ _create_generic_linux() {
          output/linuxtemp/usr/share/bash-completion/completions \
          output/linuxtemp/usr/share/zsh/functions/Completion/Unix
     # START PORT
-    cp -r lib/. port-jobs/working/
+    cp lib/* port-jobs/working/
     cd port-jobs
     ./CLIPTOOL.py LINUX
     ./CLIPBOARD.py LINUX
@@ -149,7 +151,7 @@ urls {
 }
 " > output/haikutemp/.PackageInfo
     # START PORT
-    cp -r lib/. port-jobs/working/
+    cp lib/* port-jobs/working/
     cd port-jobs
     ./SHEBANG.sh
     ./RMSERVER.py
@@ -197,7 +199,7 @@ Priority: optional
 Installed-Size: 71680
 " > output/debiantemp/sshyp_"$version"-"$revision"_all/DEBIAN/control
     # START PORT
-    cp -r lib/. port-jobs/working/
+    cp lib/* port-jobs/working/
     cd port-jobs
     if [ "$1" = 'Debian' ]; then
         ./CLIPTOOL.py LINUX
@@ -248,7 +250,7 @@ Priority: optional
 Installed-Size: 71680
 " > output/termuxtemp/sshyp_"$version"-"$revision"_all_termux/DEBIAN/control
     # START PORT
-    cp -r lib/. port-jobs/working/
+    cp lib/* port-jobs/working/
     cd port-jobs
     ./CLIPTOOL.py
     ./CLIPBOARD.py TERMUX
@@ -306,7 +308,7 @@ cp -r %%{_sourcedir}/usr %%{buildroot}
 /usr/share/man/man1/sshyp.1.gz
 " > ~/rpmbuild/SPECS/sshyp.spec
     # START PORT
-    cp -r lib/. port-jobs/working/
+    cp lib/* port-jobs/working/
     cd port-jobs
     ./CLIPTOOL.py LINUX
     ./CLIPBOARD.py LINUX
@@ -367,7 +369,7 @@ printf "/usr/bin/sshyp
 /usr/share/man/man1/sshyp.1.gz
 " > output/freebsdtemp/plist
     # START PORT
-    cp -r lib/. port-jobs/working/
+    cp lib/* port-jobs/working/
     cd port-jobs
     ./CLIPTOOL.py LINUX
     ./CLIPBOARD.py LINUX

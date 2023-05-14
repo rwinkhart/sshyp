@@ -31,25 +31,25 @@ new_text = re.sub(regex, '', text)
 # write updated text
 open('working/sshyp.py', 'w').write(new_text)
 
-# TWEAK-DEVTYPE
+# TWEAK-DEVTYPE TODO Disabled due to new config menu changes, needs re-written so that device type cannot be set to server on RMSERVER devices
 # define PORT target
-string1 = '# PORT START TWEAK-DEVTYPE'
-string2 = '# PORT END TWEAK-DEVTYPE'
+#string1 = '# PORT START TWEAK-DEVTYPE'
+#string2 = '# PORT END TWEAK-DEVTYPE'
 
 # set replacement text
-replacement = """if True:
-        _sshyp_data = ['client']
-        Path(f"{home}/.local/share/sshyp").mkdir(mode=0o700, parents=True, exist_ok=True)"""
+#replacement = """if True:
+#        _sshyp_data = ['client']
+#        Path(f"{home}/.local/share/sshyp").mkdir(mode=0o700, parents=True, exist_ok=True)"""
 
-# read input file
-text = open('working/sshyp.py', 'r').read()
+## read input file
+#text = open('working/stweak.py', 'r').read()
 
 # find and replace the defined PORT target
-regex = re.compile(f"{string1}.*?{string2}", re.DOTALL)
-new_text = re.sub(regex, replacement, text)
+#regex = re.compile(f"{string1}.*?{string2}", re.DOTALL)
+#new_text = re.sub(regex, replacement, text)
 
 # write updated text
-open('working/sshyp.py', 'w').write(new_text)
+#open('working/stweak.py', 'w').write(new_text)
 
 # ARGS-SERVER
 # define PORT target
