@@ -126,12 +126,12 @@ def gpg_config():
         remove(f"{home}/.config/sshyp/gpg-gen")
         _gpg_id = run(['gpg', '-k'], stdout=PIPE, text=True).stdout.splitlines()[-3].strip()
 
-        # lock file generation
-        if isfile(f"{home}/.config/sshyp/lock.gpg"):
-            remove(f"{home}/.config/sshyp/lock.gpg")
-            open(f"{home}/.config/sshyp/lock", 'w')
-            run(['gpg', '-qr', _gpg_id, '-e', f"{home}/.config/sshyp/lock"])
-            remove(f"{home}/.config/sshyp/lock")
+    # lock file generation
+    if isfile(f"{home}/.config/sshyp/lock.gpg"):
+        remove(f"{home}/.config/sshyp/lock.gpg")
+    open(f"{home}/.config/sshyp/lock", 'w')
+    run(['gpg', '-qr', _gpg_id, '-e', f"{home}/.config/sshyp/lock"])
+    remove(f"{home}/.config/sshyp/lock")
 
     if not sshyp_data.has_section('CLIENT-GENERAL'):
         sshyp_data.add_section('CLIENT-GENERAL')
