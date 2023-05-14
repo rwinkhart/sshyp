@@ -243,6 +243,8 @@ def global_menu(_post_setup):
         elif _choice == 2:
             ssh_config()
         elif _choice == 3:
+            if not sshyp_data.has_section('SSHYNC'):
+                ssh_config()
             dev_id_config(sshyp_data.get('SSHYNC', 'ip'), sshyp_data.get('SSHYNC', 'user'),
                           sshyp_data.get('SSHYNC', 'port'))
         elif _choice == 4:
