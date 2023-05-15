@@ -46,7 +46,7 @@ def entry_list_gen(_directory=f"{home}/.local/share/sshyp/"):
 
 # displays the contents of an entry in a readable format
 def entry_reader(_decrypted_entry):
-    _entry_lines, _notes_flag = [line.strip() for line in open(_decrypted_entry, 'r').readlines()], 0
+    _entry_lines, _notes_flag = [_line.strip() for _line in open(_decrypted_entry, 'r').readlines()], 0
     if pass_show:
         _entry_password = f'\u001b[38;5;10m{_entry_lines[0]}\u001b[0m'
     else:
@@ -627,7 +627,7 @@ def copy_data():
         s_exit(2)
     _shm_folder, _shm_entry = shm_gen()
     determine_decrypt(directory + entry_name, _shm_folder, _shm_entry)
-    _copy_line, _index = open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'r').readlines(), 0
+    _copy_line, _index = [_line.strip() for _line in open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'r').readlines()], 0
     if arguments[2] in ('username', '-u'):
         _index = 1
     elif arguments[2] in ('password', '-p'):
@@ -639,28 +639,28 @@ def copy_data():
     # PORT START CLIPBOARD
     # WSL clipboard detection
     if 'WSL_DISTRO_NAME' in environ:
-        run(('powershell.exe', '-c', "Set-Clipboard '" + _copy_line[_index].rstrip().replace("'", "''") + "'"))
+        run(('powershell.exe', '-c', "Set-Clipboard '" + _copy_line[_index].replace("'", "''") + "'"))
         Popen("sleep 30; pwsh.exe -c 'echo \"\" | Set-Clipboard'", shell=True)
     # Wayland clipboard detection
     elif 'WAYLAND_DISPLAY' in environ:
-        run(('wl-copy', _copy_line[_index].rstrip()))
+        run(('wl-copy', _copy_line[_index]))
         Popen('sleep 30; wl-copy -c', shell=True)
     # Haiku clipboard detection
     elif uname()[0] == 'Haiku':
-        run(('clipboard', '-c', _copy_line[_index].rstrip()))
+        run(('clipboard', '-c', _copy_line[_index]))
         Popen('sleep 30; clipboard -r', shell=True)
     # MacOS clipboard detection
     elif uname()[0] == 'Darwin':
-        run(('pbcopy'), stdin=Popen(('printf', _copy_line[_index].rstrip().replace('\\', '\\\\').replace('%', '%%')),
+        run(('pbcopy'), stdin=Popen(('printf', _copy_line[_index].replace('\\', '\\\\').replace('%', '%%')),
                                     stdout=PIPE).stdout)
         Popen("sleep 30; printf '' | pbcopy", shell=True)
     # Termux (Android) clipboard detection
     elif exists("/data/data/com.termux"):
-        run(('termux-clipboard-set', _copy_line[_index].rstrip()))
+        run(('termux-clipboard-set', _copy_line[_index]))
         Popen("sleep 30; termux-clipboard-set ''", shell=True)
     # X11 clipboard detection
     else:
-        run(('xclip', '-sel', 'c'), stdin=Popen(('printf', _copy_line[_index].rstrip().replace('\\', '\\\\')
+        run(('xclip', '-sel', 'c'), stdin=Popen(('printf', _copy_line[_index].replace('\\', '\\\\')
                                                 .replace('%', '%%')), stdout=PIPE).stdout)
         Popen("sleep 30; printf '' | xclip -sel c", shell=True)
     # PORT END CLIPBOARD
