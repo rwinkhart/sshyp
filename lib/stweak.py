@@ -158,11 +158,24 @@ def editor_config(_env_mode):
 
 # ssh+sshync configuration
 def ssh_config():
+    # private key selection
+    _keys = []
+    for _file in listdir(f"{home}/.ssh"):
+        if not _file.startswith('.') and _file not in ('known_hosts', 'authorized_keys') and not _file.endswith('.pub') \
+           and isfile(f"{home}/.ssh/{_file}"):
+            _keys.append(f"{home}/.ssh/{_file}")
+    _keys.append('other (type the location)')
+    _key_selected_num = curses_radio(_keys, 'which private ssh key would you like to use for sshyp?')
+    if _key_selected_num == len(_keys)-1:
+        _ssh_key = expanduser(curses_text('enter the location of your private ssh key:\n\n\n\n\n(ctrl+g/enter to '
+                                          'confirm)\n\nexample input:\n\n~/unorthodox_ssh_dir/privkey)'))
+    else:
+        _ssh_key = _keys[_key_selected_num]
+    
     # ssh+sshync configuration
-    _uiport = curses_text('enter the username, ip, and ssh port of your sshyp server:\n\n\n\n\n('
-                          'ctrl+g/enter to confirm)\n\nexample inputs:\n\n ipv4: user@10.10.10.'
-                          '10:22\n ipv6: user@[2000:2000:2000:2000:2000:2000:2000:2000]:22\n '
-                          'domain: user@mydomain.com:22').lstrip('[').replace(']', '')
+    _uiport = curses_text('enter the username, ip, and ssh port of your sshyp server:\n\n\n\n\n(ctrl+g/enter to '
+                          'confirm)\n\nexample inputs:\n\n ipv4: user@10.10.10.10:22\n ipv6: user@[2000:2000:2000:2000'
+                          ':2000:2000:2000:2000]:22\n domain: user@mydomain.com:22').lstrip('[').replace(']', '')
     _uiport_split = _uiport.split('@')
     _username_ssh = _uiport_split[0]
     _iport = _uiport_split[1].rsplit(':', 1)
@@ -174,7 +187,7 @@ def ssh_config():
     sshyp_data.set('SSHYNC', 'port', _iport[1])
     sshyp_data.set('SSHYNC', 'local_dir', f"{home}/.local/share/sshyp/")
     sshyp_data.set('SSHYNC', 'remote_dir', f"/home/{_username_ssh}/.local/share/sshyp/")
-    sshyp_data.set('SSHYNC', 'identity_file', f"{home}/.ssh/sshyp")
+    sshyp_data.set('SSHYNC', 'identity_file', _ssh_key)
     write_config()
     return _iport[1], _username_ssh, _iport[0]
 
