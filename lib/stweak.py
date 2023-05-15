@@ -9,7 +9,7 @@ from random import randint
 from re import sub
 from shutil import get_terminal_size, which
 from sshyp import copy_id_check, string_gen
-from subprocess import DEVNULL, PIPE, run
+from subprocess import PIPE, run
 # PORT START UNAME-IMPORT-STWEAK
 from os import uname
 # PORT END UNAME-IMPORT-STWEAK
@@ -122,9 +122,9 @@ def gpg_config():
                 'Key-Type: 1\n', 'Key-Length: 4096\n', 'Key-Usage: sign encrypt\n', 'Name-Real: sshyp\n',
                 'Name-Comment: gpg-sshyp\n', 'Name-Email: github.com/rwinkhart/sshyp\n',
                 'Expire-Date: 0'])
-        run(('gpg', '--batch', '--generate-key', f"{home}/.config/sshyp/gpg-gen"), stdout=DEVNULL, stderr=DEVNULL)
+        run(('gpg', '-q', '--batch', '--generate-key', f"{home}/.config/sshyp/gpg-gen"))
         remove(f"{home}/.config/sshyp/gpg-gen")
-        _gpg_id = run(('gpg', '-k'), stdout=PIPE, text=True).stdout.splitlines()[-3].strip()
+        _gpg_id = run(('gpg', '-qk'), stdout=PIPE, text=True).stdout.splitlines()[-3].strip()
 
     # lock file generation
     if isfile(f"{home}/.config/sshyp/lock.gpg"):
@@ -169,11 +169,11 @@ def ssh_config():
     _gen_index = len(_keys)-2
     if _key_selected_num >= _gen_index:
         _ssh_key = expanduser(curses_text('enter the location for your private ssh key:\n\n\n\n\n(ctrl+g/enter to '
-                                          'confirm)\n\nexample input:\n\n~/.ssh/privkey)'))
+                                          'confirm)\n\nexample input:\n\n~/.ssh/privkey'))
         if _key_selected_num == _gen_index:
             _passphrase = curses_text('enter your desired ssh keyfile passphrase:\n\n\n\n\n(ctrl+g/enter to confirm)\n\n'
                                       'tip: you can leave this blank to use the keyfile without a passphrase')
-            run(('ssh-keygen', '-t', 'ed25519', '-N', _passphrase, '-f', _ssh_key), stdout=DEVNULL, stderr=DEVNULL)
+            run(('ssh-keygen', '-q', '-t', 'ed25519', '-N', _passphrase, '-f', _ssh_key))
     else:
         _ssh_key = _keys[_key_selected_num]
     
