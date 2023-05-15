@@ -199,7 +199,9 @@ def quick_unlock_config(_default):
     if _default:
         _enabled = 'false'
     else:
-        _quick_unlock_sel = curses_radio(('yes', 'no'), 'enable quick-unlock?')
+        _quick_unlock_sel = curses_radio(('yes', 'no'), 'enable quick-unlock?\n\n\n\n\nquick-unlock allows you to use '
+                                                        'a shorter version of your gpg key passphrase and\nrequires a '
+                                                        'constant connection to your sshyp server to authenticate')
         if _quick_unlock_sel == 0:
             _enabled = 'true'
         else:
@@ -208,6 +210,7 @@ def quick_unlock_config(_default):
         sshyp_data.add_section('CLIENT-ONLINE')
     sshyp_data.set('CLIENT-ONLINE', 'quick_unlock_enabled', _enabled)
     write_config()
+    return _enabled
 
 
 # runs secondary configuration menu
@@ -250,7 +253,12 @@ def global_menu(_post_setup):
         elif _choice == 4:
             editor_config(False)
         elif _choice == 5:
-            quick_unlock_config(False)
+            _enabled = quick_unlock_config(False)
+            if _enabled == 'true':
+                _term_message = ("\nquick-unlock has been enabled client-side - in order for this feature to function,"
+                                "\nyou must first log in to the sshyp server and run:\n\nsshyp whitelist setup (if not" 
+                                " already done)\nsshyp whitelist add "
+                                f"'{listdir(f'{home}/.config/sshyp/devices')[0].rstrip()}'\n")
         else:
             pass
         curses_terminate(_term_message)
