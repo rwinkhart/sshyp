@@ -46,7 +46,7 @@ def entry_list_gen(_directory=f"{home}/.local/share/sshyp/"):
 
 # displays the contents of an entry in a readable format
 def entry_reader(_decrypted_entry):
-    _entry_lines, _notes_flag = [_line.strip() for _line in open(_decrypted_entry, 'r').readlines()], 0
+    _entry_lines, _notes_flag = [_line.rstrip() for _line in open(_decrypted_entry, 'r').readlines()], 0
     if pass_show:
         _entry_password = f'\u001b[38;5;10m{_entry_lines[0]}\u001b[0m'
     else:
@@ -627,7 +627,7 @@ def copy_data():
         s_exit(2)
     _shm_folder, _shm_entry = shm_gen()
     determine_decrypt(directory + entry_name, _shm_folder, _shm_entry)
-    _copy_line, _index = [_line.strip() for _line in open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'r').readlines()], 0
+    _copy_line, _index = [_line.rstrip() for _line in open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'r').readlines()], 0
     if arguments[2] in ('username', '-u'):
         _index = 1
     elif arguments[2] in ('password', '-p'):
