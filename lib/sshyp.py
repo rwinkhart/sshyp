@@ -127,7 +127,7 @@ def shm_gen(_tmp_dir=f"{home}/.config/sshyp/tmp/"):
 
 # encrypts an entry and cleans up the temporary files
 def encrypt(_entry_dir, _shm_folder, _shm_entry, _gpg_id, _tmp_dir=f"{home}/.config/sshyp/tmp/"):
-    run(['gpg', '-qr', str(_gpg_id), '-e', f"{_tmp_dir}{_shm_folder}/{_shm_entry}"])
+    run(('gpg', '-qr', str(_gpg_id), '-e', f"{_tmp_dir}{_shm_folder}/{_shm_entry}"))
     move(f"{_tmp_dir}{_shm_folder}/{_shm_entry}.gpg", f"{_entry_dir}.gpg")
     rmtree(f"{_tmp_dir}{_shm_folder}")
 
@@ -150,7 +150,7 @@ def decrypt(_entry_dir, _shm_folder, _shm_entry, _quick_pass,
             print('\n\u001b[38;5;9merror: quick-unlock failed as a result of an incorrect passphrase, an unreachable '
                   'sshyp server, or an invalid configuration\n\nfalling back to standard unlock\u001b[0m\n')
             try:
-                run(['gpg', '-qd', '--output'] + _output_target, stderr=DEVNULL, check=True)
+                run(('gpg', '-qd', '--output') + _output_target, stderr=DEVNULL, check=True)
             except CalledProcessError:
                 print('\n\u001b[38;5;9merror: could not decrypt - ensure the correct gpg key is present\u001b[0m\n')
                 s_exit(4)
@@ -191,7 +191,7 @@ def optimized_edit(_lines, _edit_data, _edit_line):
 def edit_note(_shm_folder, _shm_entry, _lines):
     _reg_lines = _lines[0:3]
     open(f"{tmp_dir}{_shm_folder}/{_shm_entry}-n", 'w').writelines(_lines[3:])
-    run([editor, f"{tmp_dir}{_shm_folder}/{_shm_entry}-n"])
+    run((editor, f"{tmp_dir}{_shm_folder}/{_shm_entry}-n"))
     _new_notes = open(f"{tmp_dir}{_shm_folder}/{_shm_entry}-n").readlines()
     while len(_reg_lines) < 3:
         _reg_lines.append('\n')
@@ -205,9 +205,9 @@ def copy_id_check(_port, _username_ssh, _ip, _client_device_id, _sshyp_data):
     if not _sshyp_data.has_section('CLIENT-ONLINE'):
         _sshyp_data.add_section('CLIENT-ONLINE')
     try:
-        run(['ssh', '-o', 'ConnectTimeout=3', '-i', f"{home}/.ssh/sshyp", '-p', _port, f"{_username_ssh}@{_ip}",
+        run(('ssh', '-o', 'ConnectTimeout=3', '-i', f"{home}/.ssh/sshyp", '-p', _port, f"{_username_ssh}@{_ip}",
              f'python3 -c \'from pathlib import Path; Path("/home/{_username_ssh}/.config/sshyp/devices/'
-             f'{_client_device_id}").touch(mode=0o400, exist_ok=True)\''], stderr=DEVNULL, check=True)
+             f'{_client_device_id}").touch(mode=0o400, exist_ok=True)\''), stderr=DEVNULL, check=True)
     except CalledProcessError:
         print('\n\u001b[38;5;9mwarning: ssh connection could not be made - ensure the public key (~/.ssh/sshyp.pub) is '
               'registered on the remote server and that the entered ip, port, and username are correct\n\nsyncing '
@@ -396,10 +396,10 @@ def whitelist_setup():
     open(f"{home}/.config/sshyp/gpg-gen", 'w').writelines([
         'Key-Type: 1\n', 'Key-Length: 4096\n', 'Key-Usage: sign encrypt\n', 'Name-Real: sshyp\n',
         'Name-Comment: gpg-sshyp-whitelist\n', 'Name-Email: https://github.com/rwinkhart/sshyp\n', 'Expire-Date: 0'])
-    run(['gpg', '-q', '--pinentry-mode', 'loopback', '--batch', '--generate-key', '--passphrase',
-         _quick_unlock_password, f"{home}/.config/sshyp/gpg-gen"])
+    run(('gpg', '-q', '--pinentry-mode', 'loopback', '--batch', '--generate-key', '--passphrase',
+         _quick_unlock_password, f"{home}/.config/sshyp/gpg-gen"))
     remove(f"{home}/.config/sshyp/gpg-gen")
-    _gpg_id = run(['gpg', '-k'], stdout=PIPE, text=True).stdout.splitlines()[-3].strip()
+    _gpg_id = run(('gpg', '-k'), stdout=PIPE, text=True).stdout.splitlines()[-3].strip()
 
     # encrypt excluded with the assembly key
     _shm_folder, _shm_entry = shm_gen()
@@ -443,22 +443,22 @@ def whitelist_manage(_device_id):
 # checks the user's whitelist status and fetches the full gpg key password if possible
 def whitelist_verify(_port, _username_ssh, _ip, _client_device_id):
     try:
-        run(['gpg', '--pinentry-mode', 'cancel', '-qd', '--output', '/dev/null',
-             f"{home}/.config/sshyp/lock.gpg"], stderr=DEVNULL, check=True)
+        run(('gpg', '--pinentry-mode', 'cancel', '-qd', '--output', '/dev/null',
+             f"{home}/.config/sshyp/lock.gpg"), stderr=DEVNULL, check=True)
         return False
     except CalledProcessError:
         _i, _full_password = 0, ''
-        _server_whitelist = run(['ssh', '-i', f"{home}/.ssh/sshyp", '-p', _port, f"{_username_ssh}@{_ip}",
+        _server_whitelist = run(('ssh', '-i', f"{home}/.ssh/sshyp", '-p', _port, f"{_username_ssh}@{_ip}",
                                  f'python3 -c \'from os import listdir; print(*listdir("/home/{_username_ssh}'
-                                 f'/.config/sshyp/whitelist"))\''], stdout=PIPE, text=True).stdout.rstrip().split()
+                                 f'/.config/sshyp/whitelist"))\''), stdout=PIPE, text=True).stdout.rstrip().split()
         for _device_id in _server_whitelist:
             if _device_id == _client_device_id:
                 from getpass import getpass
                 _quick_unlock_password = getpass(prompt='\nquick-unlock passphrase: ')
                 _quick_unlock_password_excluded = \
-                    run(['ssh', '-i', f"{home}/.ssh/sshyp", '-p',  _port, f"{_username_ssh}@{_ip}",
+                    run(('ssh', '-i', f"{home}/.ssh/sshyp", '-p',  _port, f"{_username_ssh}@{_ip}",
                          f"gpg --pinentry-mode loopback --passphrase '{_quick_unlock_password}' "
-                         f"-qd ~/.config/sshyp/excluded.gpg"], stdout=PIPE, text=True).stdout.rstrip()
+                         f"-qd ~/.config/sshyp/excluded.gpg"), stdout=PIPE, text=True).stdout.rstrip()
                 while _i < len(_quick_unlock_password_excluded):
                     try:
                         _full_password += _quick_unlock_password_excluded[_i]
@@ -484,7 +484,7 @@ def add_entry():
     # note entry
     if arguments[2] in ('note', '-n'):
         _shm_folder, _shm_entry = shm_gen()
-        run([editor, f"{tmp_dir}{_shm_folder}/{_shm_entry}-n"])
+        run((editor, f"{tmp_dir}{_shm_folder}/{_shm_entry}-n"))
         _notes = open(f"{tmp_dir}{_shm_folder}/{_shm_entry}-n", 'r').read()
         open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'w').writelines(optimized_edit(['', '', '', _notes], None, -1))
     else:
@@ -496,7 +496,7 @@ def add_entry():
         _add_note = input('add a note to this entry? (y/N) ')
         _shm_folder, _shm_entry = shm_gen()
         if _add_note.lower() == 'y':
-            run([editor, f"{tmp_dir}{_shm_folder}/{_shm_entry}-n"])
+            run((editor, f"{tmp_dir}{_shm_folder}/{_shm_entry}-n"))
             _notes = open(f"{tmp_dir}{_shm_folder}/{_shm_entry}-n", 'r').read()
         else:
             _notes = ''
@@ -511,9 +511,9 @@ def add_entry():
 def add_folder():
     Path(directory + entry_name).mkdir(mode=0o700, parents=True, exist_ok=True)
     if not ssh_error:
-        run(['ssh', '-i', f"{home}/.ssh/sshyp", '-p', port, f"{username_ssh}@{ip}",
+        run(('ssh', '-i', f"{home}/.ssh/sshyp", '-p', port, f"{username_ssh}@{ip}",
              f'python3 -c \'from pathlib import Path; Path("{directory_ssh}{entry_name}")'
-             f'.mkdir(mode=0o700, parents=True, exist_ok=True)\''])
+             f'.mkdir(mode=0o700, parents=True, exist_ok=True)\''))
 
 
 # renames an entry or folder
@@ -545,14 +545,14 @@ def rename():
             s_exit(3)
         if not ssh_error:
             Path(f"{directory}{_new_name}").mkdir(mode=0o700, parents=True, exist_ok=True)
-            run(['ssh', '-i', f"{home}/.ssh/sshyp", '-p', port, f"{username_ssh}@{ip}",
+            run(('ssh', '-i', f"{home}/.ssh/sshyp", '-p', port, f"{username_ssh}@{ip}",
                  f'python3 -c \'from pathlib import Path; Path("{directory_ssh}{entry_name}")'
-                 f'.rename(Path("{directory_ssh}{_new_name}"))\''])                 
+                 f'.rename(Path("{directory_ssh}{_new_name}"))\''))                 
         else:
             move(f"{directory}{entry_name}", f"{directory}{_new_name}")
     if not ssh_error:
-        run(['ssh', '-i', f"{home}/.ssh/sshyp", '-p', port, f"{username_ssh}@{ip}",
-             f'cd /lib/sshyp; python3 -c \'from sshync import delete; delete("{entry_name}", "remotely", True)\''])
+        run(('ssh', '-i', f"{home}/.ssh/sshyp", '-p', port, f"{username_ssh}@{ip}",
+             f'cd /lib/sshyp; python3 -c \'from sshync import delete; delete("{entry_name}", "remotely", True)\''))
 
 
 # edits the contents of an entry
@@ -607,7 +607,7 @@ def gen():
         _url = str(input('url: '))
         _add_note = input('add a note to this entry? (y/N) ')
         if _add_note.lower() == 'y':
-            run([editor, f"{tmp_dir}{_shm_folder}/{_shm_entry}-n"])
+            run((editor, f"{tmp_dir}{_shm_folder}/{_shm_entry}-n"))
             _notes = open(f"{tmp_dir}{_shm_folder}/{_shm_entry}-n", 'r').read()
         else:
             _notes = ''
@@ -638,29 +638,29 @@ def copy_data():
     # PORT START CLIPBOARD
     # WSL clipboard detection
     if 'WSL_DISTRO_NAME' in environ:
-        run(['powershell.exe', '-c', "Set-Clipboard '" + _copy_line[_index].rstrip().replace("'", "''") + "'"])
+        run(('powershell.exe', '-c', "Set-Clipboard '" + _copy_line[_index].rstrip().replace("'", "''") + "'"))
         Popen("sleep 30; pwsh.exe -c 'echo \"\" | Set-Clipboard'", shell=True)
     # Wayland clipboard detection
     elif 'WAYLAND_DISPLAY' in environ:
-        run(['wl-copy', _copy_line[_index].rstrip()])
+        run(('wl-copy', _copy_line[_index].rstrip()))
         Popen('sleep 30; wl-copy -c', shell=True)
     # Haiku clipboard detection
     elif uname()[0] == 'Haiku':
-        run(['clipboard', '-c', _copy_line[_index].rstrip()])
+        run(('clipboard', '-c', _copy_line[_index].rstrip()))
         Popen('sleep 30; clipboard -r', shell=True)
     # MacOS clipboard detection
     elif uname()[0] == 'Darwin':
-        run(['pbcopy'], stdin=Popen(['printf', _copy_line[_index].rstrip().replace('\\', '\\\\').replace('%', '%%')],
+        run(('pbcopy'), stdin=Popen(('printf', _copy_line[_index].rstrip().replace('\\', '\\\\').replace('%', '%%')),
                                     stdout=PIPE).stdout)
         Popen("sleep 30; printf '' | pbcopy", shell=True)
     # Termux (Android) clipboard detection
     elif exists("/data/data/com.termux"):
-        run(['termux-clipboard-set', _copy_line[_index].rstrip()])
+        run(('termux-clipboard-set', _copy_line[_index].rstrip()))
         Popen("sleep 30; termux-clipboard-set ''", shell=True)
     # X11 clipboard detection
     else:
-        run(['xclip', '-sel', 'c'], stdin=Popen(['printf', _copy_line[_index].rstrip().replace('\\', '\\\\')
-                                                .replace('%', '%%')], stdout=PIPE).stdout)
+        run(('xclip', '-sel', 'c'), stdin=Popen(('printf', _copy_line[_index].rstrip().replace('\\', '\\\\')
+                                                .replace('%', '%%')), stdout=PIPE).stdout)
         Popen("sleep 30; printf '' | xclip -sel c", shell=True)
     # PORT END CLIPBOARD
     rmtree(f"{tmp_dir}{_shm_folder}")
@@ -670,8 +670,8 @@ def copy_data():
 def remove_data():
     determine_decrypt(f"{home}/.config/sshyp/lock.gpg", None, None)
     if not ssh_error:
-        run(['ssh', '-i', f"{home}/.ssh/sshyp", '-p', port, f"{username_ssh}@{ip}",
-             f'cd /lib/sshyp; python3 -c \'from sshync import delete; delete("{entry_name}", "remotely", False)\''])
+        run(('ssh', '-i', f"{home}/.ssh/sshyp", '-p', port, f"{username_ssh}@{ip}",
+             f'cd /lib/sshyp; python3 -c \'from sshync import delete; delete("{entry_name}", "remotely", False)\''))
     else:
         offline_delete(entry_name, 'locally', silent_sync)
 

@@ -68,9 +68,9 @@ def get_local_data(_directory, _device):
 # captures and returns all necessary data from the remote server
 def remote_list_fetch(_user_data):
     try:
-        _remote_data = run(['ssh', '-i', _user_data[5], '-p', _user_data[2], f"{_user_data[0]}@{_user_data[1]}",
+        _remote_data = run(('ssh', '-i', _user_data[5], '-p', _user_data[2], f"{_user_data[0]}@{_user_data[1]}",
                             f'cd /lib/sshyp; python3 -c \'from sshync import remote_list_gen; remote_list_gen'
-                            f'("{_user_data[6]}", "{_user_data[4]}")\''], stdout=PIPE, text=True, check=True
+                            f'("{_user_data[6]}", "{_user_data[4]}")\''), stdout=PIPE, text=True, check=True
                            ).stdout.split('\x1d')
     except CalledProcessError:
         print('\n\u001b[38;5;9merror: failed to connect to the remote server\u001b[0m\n')
@@ -158,20 +158,20 @@ def run_profile(_profile_dir, _silent):
             # compare mod times and sync
             if int(_index_local[1][_i]) > int(_index_remote[1][_i]):
                 print(f"\u001b[38;5;4m{_title[:-4]}\u001b[0m is newer locally, uploading...")
-                run(['scp', '-pqs', '-P', _user_data[2], '-i', _user_data[5], _user_data[3] + _title,
-                     f"{_user_data[0]}@{_user_data[1]}:{_user_data[4]}{'/'.join(_title.split('/')[:-1]) + '/'}"])
+                run(('scp', '-pqs', '-P', _user_data[2], '-i', _user_data[5], _user_data[3] + _title,
+                     f"{_user_data[0]}@{_user_data[1]}:{_user_data[4]}{'/'.join(_title.split('/')[:-1]) + '/'}"))
             elif int(_index_local[1][_i]) < int(_index_remote[1][_i]):
                 print(f"\u001b[38;5;2m{_title[:-4]}\u001b[0m is newer remotely, downloading...")
-                run(['scp', '-pqs', '-P', _user_data[2], '-i', _user_data[5],
+                run(('scp', '-pqs', '-P', _user_data[2], '-i', _user_data[5],
                      f"{_user_data[0]}@{_user_data[1]}:{_user_data[4]}{_title}",
-                     f"{_user_data[3]}{'/'.join(_title.split('/')[:-1]) + '/'}"])
+                     f"{_user_data[3]}{'/'.join(_title.split('/')[:-1]) + '/'}"))
         else:
             print(f"\u001b[38;5;4m{_title[:-4]}\u001b[0m is not on remote server, uploading...")
-            run(['scp', '-pqs', '-P', _user_data[2], '-i', _user_data[5], _user_data[3] + _title,
-                 f"{_user_data[0]}@{_user_data[1]}:{_user_data[4]}{'/'.join(_title.split('/')[:-1]) + '/'}"])
+            run(('scp', '-pqs', '-P', _user_data[2], '-i', _user_data[5], _user_data[3] + _title,
+                 f"{_user_data[0]}@{_user_data[1]}:{_user_data[4]}{'/'.join(_title.split('/')[:-1]) + '/'}"))
     for _title in _index_remote[0]:
         if _title not in _index_local[0]:
             print(f"\u001b[38;5;2m{_title[:-4]}\u001b[0m is not in local directory, downloading...")
-            run(['scp', '-pqs', '-P', _user_data[2], '-i', _user_data[5],
+            run(('scp', '-pqs', '-P', _user_data[2], '-i', _user_data[5],
                  f"{_user_data[0]}@{_user_data[1]}:{_user_data[4]}{_title}",
-                 f"{_user_data[3]}{'/'.join(_title.split('/')[:-1]) + '/'}"])
+                 f"{_user_data[3]}{'/'.join(_title.split('/')[:-1]) + '/'}"))

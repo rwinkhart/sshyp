@@ -107,7 +107,7 @@ def install_type():
 # gpg configuration
 def gpg_config():
     # gpg key selection
-    _uid_list = [_item for _item in run(['gpg', '-k', '--with-colons'],
+    _uid_list = [_item for _item in run(('gpg', '-k', '--with-colons'),
                                         stdout=PIPE, text=True).stdout.splitlines() if _item.startswith('uid')]
     _clean_uid_list = []
     for _uid in _uid_list:
@@ -122,15 +122,15 @@ def gpg_config():
                 'Key-Type: 1\n', 'Key-Length: 4096\n', 'Key-Usage: sign encrypt\n', 'Name-Real: sshyp\n',
                 'Name-Comment: gpg-sshyp\n', 'Name-Email: github.com/rwinkhart/sshyp\n',
                 'Expire-Date: 0'])
-        run(['gpg', '--batch', '--generate-key', f"{home}/.config/sshyp/gpg-gen"], stdout=DEVNULL, stderr=DEVNULL)
+        run(('gpg', '--batch', '--generate-key', f"{home}/.config/sshyp/gpg-gen"), stdout=DEVNULL, stderr=DEVNULL)
         remove(f"{home}/.config/sshyp/gpg-gen")
-        _gpg_id = run(['gpg', '-k'], stdout=PIPE, text=True).stdout.splitlines()[-3].strip()
+        _gpg_id = run(('gpg', '-k'), stdout=PIPE, text=True).stdout.splitlines()[-3].strip()
 
     # lock file generation
     if isfile(f"{home}/.config/sshyp/lock.gpg"):
         remove(f"{home}/.config/sshyp/lock.gpg")
     open(f"{home}/.config/sshyp/lock", 'w')
-    run(['gpg', '-qr', _gpg_id, '-e', f"{home}/.config/sshyp/lock"])
+    run(('gpg', '-qr', _gpg_id, '-e', f"{home}/.config/sshyp/lock"))
     remove(f"{home}/.config/sshyp/lock")
 
     if not sshyp_data.has_section('CLIENT-GENERAL'):
