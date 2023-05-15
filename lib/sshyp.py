@@ -248,15 +248,15 @@ def print_info():
               'warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\nSee the GNU General Public License for'
               ' more details.\n\nhttps://opensource.org/licenses/GPL-3.0\n')
     elif arguments[0] == 'add' and device_type == 'client':
-        print(f"""\n\u001b[1musage:\u001b[0m sshyp </entry name> add <flag>\u001b[0m\n
-\u001b[1mflags:\u001b[0m
+        print(f"""\n\u001b[1musage:\u001b[0m sshyp </entry name> add <option>\u001b[0m\n
+\u001b[1moptions:\u001b[0m
  add:
   password/-p{12*' '}add a password entry
   note/-n{16*' '}add a note entry
   folder/-f{14*' '}add a new folder for entries\n""")
     elif arguments[0] == 'edit' and device_type == 'client':
-        print(f"""\n\u001b[1musage:\u001b[0m sshyp </entry name> edit <flag>\u001b[0m\n
-\u001b[1mflags:\u001b[0m
+        print(f"""\n\u001b[1musage:\u001b[0m sshyp </entry name> edit <option>\u001b[0m\n
+\u001b[1moptions:\u001b[0m
  edit:
   rename/relocate/-r{5*' '}rename or relocate an entry
   username/-u{12*' '}change the username of an entry
@@ -264,16 +264,16 @@ def print_info():
   url/-l{17*' '}change the url attached to an entry
   note/-n{16*' '}change the note attached to an entry\n""")
     elif arguments[0] == 'copy' and device_type == 'client':
-        print(f"""\n\u001b[1musage:\u001b[0m sshyp </entry name> copy <flag>\u001b[0m\n
-\u001b[1mflags:\u001b[0m
+        print(f"""\n\u001b[1musage:\u001b[0m sshyp </entry name> copy <option>\u001b[0m\n
+\u001b[1moptions:\u001b[0m
  copy:
   username/-u{12*' '}copy the username of an entry to your clipboard
   password/-p{12*' '}copy the password of an entry to your clipboard
   url/-l{17*' '}copy the url of an entry to your clipboard
   note/-n{16*' '}copy the note of an entry to your clipboard\n""")
     elif arguments[0] == 'gen' and device_type == 'client':
-        print(f"""\n\u001b[1musage:\u001b[0m sshyp </entry name> gen [flag]\u001b[0m\n
-\u001b[1mflags:\u001b[0m
+        print(f"""\n\u001b[1musage:\u001b[0m sshyp </entry name> gen [option]\u001b[0m\n
+\u001b[1moptions:\u001b[0m
  gen:
   update/-u{14*' '}generate a password for an existing entry\n""")
     elif arguments[0] == 'whitelist':
@@ -281,8 +281,8 @@ def print_info():
             if arg_count > 1 and arguments[1] in ('add', 'del'):
                 print("\nwhen adding or deleting devices from the whitelist,\nthe device ID must be specified as an"
                       " argument\n\nexample: sshyp whitelist add 'this-is-a-quoted-device-id'")
-            print(f"""\n\u001b[1musage:\u001b[0m sshyp whitelist <flag> [device id]\u001b[0m\n
-\u001b[1mflags:\u001b[0m
+            print(f"""\n\u001b[1musage:\u001b[0m sshyp whitelist <option> [device id]\u001b[0m\n
+\u001b[1moptions:\u001b[0m
  whitelist:
   setup{18*' '}set up the quick-unlock whitelist
   list/-l{16*' '}view all registered device ids and their quick-unlock whitelist status
@@ -295,8 +295,8 @@ def print_info():
 this is free software, and you are welcome to redistribute it under certain conditions;
 this program comes with absolutely no warranty; type 'sshyp license' for details""")
         if device_type == 'client':
-            print(f"""\n\u001b[1musage:\u001b[0m sshyp [</entry name> [option] [flag]] [option]\n
-\u001b[1moptions:\u001b[0m
+            print(f"""\n\u001b[1musage:\u001b[0m sshyp [</entry name> [argument] [option]] | [argument]\n
+\u001b[1marguments:\u001b[0m
  help/-h{17*' '}bring up this menu
  version/-v{14*' '}display sshyp version info
  init{20*' '}set up sshyp
@@ -307,7 +307,7 @@ this program comes with absolutely no warranty; type 'sshyp license' for details
  copy{20*' '}copy details of an entry to your clipboard
  shear{19*' '}delete an existing entry
  sync{20*' '}manually sync the entry directory via sshync
-\n\u001b[1mflags:\u001b[0m
+\n\u001b[1moptions:\u001b[0m
  add:
   password/-p{12*' '}add a password entry
   note/-n{16*' '}add a note entry
@@ -329,13 +329,14 @@ this program comes with absolutely no warranty; type 'sshyp license' for details
 \u001b[1mtip 2:\u001b[0m type 'sshyp' to view a list of saved entries\n""")
         # PORT START HELP-SERVER
         else:
-            print(f"""\n\u001b[1musage:\u001b[0m sshyp <option> [flag] [device id]\n
-\u001b[1moptions:\u001b[0m
+            print(f"""\n\u001b[1musage:\u001b[0m sshyp <argument> [option] [device id]\n
+\u001b[1marguments:\u001b[0m
  help/-h{17*' '}bring up this menu
  version/-v{14*' '}display sshyp version info
  init{20*' '}set up sshyp
+ tweak{19*' '}change configuration options/manage extensions and updates
  whitelist{15*' '}manage the quick-unlock whitelist
-\n\u001b[1mflags:\u001b[0m
+\n\u001b[1moptions:\u001b[0m
  whitelist:
   setup{18*' '}set up the quick-unlock whitelist
   list/-l{16*' '}view all registered device ids and their quick-unlock whitelist status
