@@ -120,7 +120,7 @@ def gpg_config():
         if not isfile(f"{home}/.config/sshyp/gpg-gen"):
             open(f"{home}/.config/sshyp/gpg-gen", 'w').writelines([
                 'Key-Type: 1\n', 'Key-Length: 4096\n', 'Key-Usage: sign encrypt\n', 'Name-Real: sshyp\n',
-                'Name-Comment: gpg-sshyp\n', 'Name-Email: https://github.com/rwinkhart/sshyp\n',
+                'Name-Comment: gpg-sshyp\n', 'Name-Email: github.com/rwinkhart/sshyp\n',
                 'Expire-Date: 0'])
         run(['gpg', '--batch', '--generate-key', f"{home}/.config/sshyp/gpg-gen"])
         remove(f"{home}/.config/sshyp/gpg-gen")
