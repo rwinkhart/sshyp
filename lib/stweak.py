@@ -194,14 +194,15 @@ def ssh_config():
 
 # device id configuration
 def dev_id_config(_ip, _username_ssh, _port):
-    for _id in listdir(f"{home}/.config/sshyp/devices"):
-        remove(f"{home}/.config/sshyp/devices/{_id}")
     _device_id_prefix = curses_text('name this device:\n\n\n\n\n(ctrl+g/enter to confirm)\n\n'
                                     'important:\u001b[0m this id \u001b[4;1mmust\u001b[0m be '
                                     'unique amongst your client devices\n\nthis is used to keep '
                                     'track of database syncing and quick-unlock permissions\n')
     _device_id_suffix = string_gen('f', randint(24, 48))
     _device_id = _device_id_prefix + '-' + _device_id_suffix
+    # remove existing device ids
+    for _id in listdir(f"{home}/.config/sshyp/devices"):
+        remove(f"{home}/.config/sshyp/devices/{_id}")
     open(f"{home}/.config/sshyp/devices/{_device_id}", 'w')
     # test server connection and attempt to register device id
     copy_id_check(_ip, _username_ssh, _port, _device_id, sshyp_data)
