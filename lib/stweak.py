@@ -158,17 +158,22 @@ def editor_config(_env_mode):
 
 # ssh+sshync configuration
 def ssh_config():
-    # private key selection
+    # private key selection/generation
     _keys = []
     for _file in listdir(f"{home}/.ssh"):
         if not _file.startswith('.') and _file not in ('known_hosts', 'authorized_keys') and not _file.endswith('.pub') \
            and isfile(f"{home}/.ssh/{_file}"):
             _keys.append(f"{home}/.ssh/{_file}")
-    _keys.append('other (type the location)')
+    _keys.extend(['auto-generate', 'other (type the location)'])
     _key_selected_num = curses_radio(_keys, 'which private ssh key would you like to use for sshyp?')
-    if _key_selected_num == len(_keys)-1:
-        _ssh_key = expanduser(curses_text('enter the location of your private ssh key:\n\n\n\n\n(ctrl+g/enter to '
-                                          'confirm)\n\nexample input:\n\n~/unorthodox_ssh_dir/privkey)'))
+    _gen_index = len(_keys)-2
+    if _key_selected_num >= _gen_index:
+        _ssh_key = expanduser(curses_text('enter the location for your private ssh key:\n\n\n\n\n(ctrl+g/enter to '
+                                          'confirm)\n\nexample input:\n\n~/.ssh/privkey)'))
+        if _key_selected_num == _gen_index:
+            _passphrase = curses_text('enter your desired ssh keyfile passphrase:\n\n\n\n\n(ctrl+g/enter to confirm)\n\n'
+                                      'tip: you can leave this blank to use the keyfile without a passphrase')
+            run(('ssh-keygen', '-t', 'ed25519', '-N', _passphrase, '-f', _ssh_key), stdout=DEVNULL, stderr=DEVNULL)
     else:
         _ssh_key = _keys[_key_selected_num]
     
