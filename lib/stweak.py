@@ -6,7 +6,6 @@ from os import environ, listdir, remove, symlink
 from os.path import exists, expanduser, isfile
 from pathlib import Path
 from random import randint
-from re import sub
 from shutil import get_terminal_size, which
 from sshyp import copy_id_check, string_gen
 from subprocess import PIPE, run
@@ -109,14 +108,12 @@ def gpg_config():
     # gpg key selection
     _uid_list = [_item for _item in run(('gpg', '-k', '--with-colons'),
                                         stdout=PIPE, text=True).stdout.splitlines() if _item.startswith('uid')]
-    _clean_uid_list = []
+    _named_uid_list = []
     for _uid in _uid_list:
-        _clean_uid_list.append(sub(r':+', ':', _uid).split(':')[4])
-    _clean_uid_list.append('auto-generate')
-    _gpg_id_sel = curses_radio(_clean_uid_list, 'gpg key selection')
-    _gpg_id = _clean_uid_list[_gpg_id_sel]
-    if _gpg_id == 'auto-generate':
-        print('\na unique gpg key is being generated for you...')
+        _named_uid_list.append(_uid.split(':')[9])
+    _named_uid_list.append('auto-generate')
+    _gpg_id_sel = curses_radio(_named_uid_list, 'gpg key selection')
+    if _gpg_id_sel == len(_named_uid_list) - 1:
         if not isfile(f"{home}/.config/sshyp/gpg-gen"):
             open(f"{home}/.config/sshyp/gpg-gen", 'w').writelines([
                 'Key-Type: 1\n', 'Key-Length: 4096\n', 'Key-Usage: sign encrypt\n', 'Name-Real: sshyp\n',
@@ -124,7 +121,9 @@ def gpg_config():
                 'Expire-Date: 0'])
         run(('gpg', '-q', '--batch', '--generate-key', f"{home}/.config/sshyp/gpg-gen"))
         remove(f"{home}/.config/sshyp/gpg-gen")
-        _gpg_id = run(('gpg', '-qk'), stdout=PIPE, text=True).stdout.splitlines()[-3].strip()
+        _gpg_id = run(('gpg', '-k', '--with-colons'), stdout=PIPE, text=True).stdout.splitlines()[-1].split(':')[9]
+    else:
+        _gpg_id = _named_uid_list[_gpg_id_sel]
 
     # lock file generation
     if isfile(f"{home}/.config/sshyp/lock.gpg"):
@@ -161,8 +160,8 @@ def ssh_config():
     # private key selection/generation
     _keys = []
     for _file in listdir(f"{home}/.ssh"):
-        if not _file.startswith('.') and _file not in ('known_hosts', 'authorized_keys') and not _file.endswith('.pub') \
-           and isfile(f"{home}/.ssh/{_file}"):
+        if not _file.startswith('.') and _file not in ('known_hosts', 'authorized_keys') \
+                and not _file.endswith('.pub') and isfile(f"{home}/.ssh/{_file}"):
             _keys.append(f"{home}/.ssh/{_file}")
     _keys.extend(['auto-generate', 'other (type the location)'])
     _key_selected_num = curses_radio(_keys, 'which private ssh key would you like to use for sshyp?')
@@ -171,8 +170,8 @@ def ssh_config():
         _ssh_key = expanduser(curses_text('enter the location for your private ssh key:\n\n\n\n\n(ctrl+g/enter to '
                                           'confirm)\n\nexample input:\n\n~/.ssh/privkey'))
         if _key_selected_num == _gen_index:
-            _passphrase = curses_text('enter your desired ssh keyfile passphrase:\n\n\n\n\n(ctrl+g/enter to confirm)\n\n'
-                                      'tip: you can leave this blank to use the keyfile without a passphrase')
+            _passphrase = curses_text('enter your desired ssh keyfile passphrase:\n\n\n\n\n(ctrl+g/enter to confirm)'
+                                      '\n\ntip: you can leave this blank to use the keyfile without a passphrase')
             run(('ssh-keygen', '-q', '-t', 'ed25519', '-N', _passphrase, '-f', _ssh_key))
     else:
         _ssh_key = _keys[_key_selected_num]
@@ -275,9 +274,9 @@ def global_menu(_post_setup):
             _enabled = quick_unlock_config(False)
             if _enabled == 'true':
                 _term_message = ("\nquick-unlock has been enabled client-side - in order for this feature to function,"
-                                "\nyou must first log in to the sshyp server and run:\n\nsshyp whitelist setup (if not" 
-                                " already done)\nsshyp whitelist add "
-                                f"'{listdir(f'{home}/.config/sshyp/devices')[0].rstrip()}'\n")
+                                 "\nyou must first log in to the sshyp server and run:\n\nsshyp whitelist setup (if not"
+                                 " already done)\nsshyp whitelist add "
+                                 f"'{listdir(f'{home}/.config/sshyp/devices')[0].rstrip()}'\n")
         else:
             pass
         curses_terminate(_term_message)
