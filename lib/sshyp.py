@@ -655,7 +655,7 @@ def copy_data():
                                     stdout=PIPE).stdout)
         Popen("sleep 30; printf '' | pbcopy", shell=True)
     # Termux (Android) clipboard detection
-    elif exists("/data/data/com.termux"):
+    elif isdir("/data/data/com.termux"):
         run(('termux-clipboard-set', _copy_line[_index]))
         Popen("sleep 30; termux-clipboard-set ''", shell=True)
     # X11 clipboard detection
