@@ -159,6 +159,39 @@ def decrypt(_entry_dir, _shm_folder, _shm_entry, _quick_pass,
             s_exit(4)
 
 
+# returns True if expected and reality align, otherwise error
+def target_exists_check(_target_name, _expected_presence):
+    if isfile(f"{directory}{_target_name}.gpg") or isdir(f"{directory}{_target_name}"):
+        if _expected_presence:
+            return True
+        else:
+            print(f"\n\u001b[38;5;9merror: (/{_target_name}) already exists\u001b[0m\n")
+            s_exit(3)
+    else:
+        if not _expected_presence:
+            return True
+        else:
+            print(f"\n\u001b[38;5;9merror: (/{_target_name}) does not exist\u001b[0m\n")
+            s_exit(2)
+        
+
+# returns target type (entry == True, folder == False, null == None), optional errors
+def target_type_check(_target_name, _expected_type=True, _error=False):
+    if isfile(f"{directory}{_target_name}.gpg"):
+        if _error and not _expected_type:
+            print(f"\n\u001b[38;5;9merror: (/{_target_name}) is an entry\u001b[0m\n")
+            s_exit(2)
+        return True
+    elif isdir(f"{directory}{_target_name}"):
+        if _error and _expected_type:
+            print(f"\n\u001b[38;5;9merror: (/{_target_name}) is a folder\u001b[0m\n")
+            s_exit(2)
+        return False
+    else:
+        print(f"\n\u001b[38;5;9merror: (/{_target_name}) does not exist\u001b[0m\n")
+        s_exit(2)
+
+
 # call decrypt() based on quick-unlock status
 def determine_decrypt(_entry_dir, _shm_folder, _shm_entry):
     if quick_unlock_enabled == 'true':
@@ -345,22 +378,6 @@ this program comes with absolutely no warranty; type 'sshyp license' for details
         # PORT END HELP-SERVER
 
 
-# shortcut to quickly read an entry
-def read_shortcut():
-    if not exists(f"{directory}{entry_name}.gpg"):
-        if not entry_name:
-            print(f"\n\u001b[38;5;9merror: missing entry name\u001b[0m\n")
-        elif isdir(f"{directory}{entry_name}"):
-            print(f"\n\u001b[38;5;9merror: entry ({arguments[0]}) is a directory\u001b[0m\n")
-        else:
-            print(f"\n\u001b[38;5;9merror: entry ({arguments[0]}) does not exist\u001b[0m\n")
-        s_exit(2)
-    _shm_folder, _shm_entry = shm_gen()
-    determine_decrypt(directory + entry_name, _shm_folder, _shm_entry)
-    entry_reader(f"{tmp_dir}{_shm_folder}/{_shm_entry}")
-    rmtree(f"{tmp_dir}{_shm_folder}")
-
-
 # calls sshync to sync changes to the user's server
 def sync():
     print('\nsyncing entries with the server device...\n')
@@ -478,9 +495,9 @@ def whitelist_verify(_port, _username_ssh, _ip, _client_device_id):
 def add_entry():
     # set to avoid PEP8 warnings
     _shm_folder, _shm_entry = None, None
-    if isfile(f"{directory}{entry_name}.gpg"):
-        print(f"\n\u001b[38;5;9merror: entry (/{entry_name}) already exists\u001b[0m\n")
-        s_exit(3)
+
+    # make sure the add target does not already exist
+    target_exists_check(entry_name, False)
 
     # note entry
     if arguments[2] in ('note', '-n'):
@@ -520,13 +537,15 @@ def add_folder():
 # renames an entry or folder
 def rename():
     from shutil import copy
-    _file = True
-    if not exists(f"{directory}{entry_name}.gpg") and not exists(f"{directory}{entry_name}"):
-        print(f"\n\u001b[38;5;9merror: (/{entry_name}) does not exist\u001b[0m\n")
-        s_exit(2)
-    elif not isfile(f"{directory}{entry_name}.gpg"):
-        _file = False
+
+    # check if the renaming target is an entry (file) or a folder
+    _file =  target_type_check(entry_name)
+
+    # collect the new name for the target from user input
     _new_name = str(input('new name: ')).strip('/')
+
+    # check if the new name already exists
+    target_exists_check(_new_name, False)
 
     # if renaming a file
     if _file:
@@ -560,9 +579,10 @@ def rename():
 def edit():
     # set to avoid PEP8 warnings
     _shm_folder, _shm_entry, _detail, _edit_line = None, None, None, None
-    if not isfile(f"{directory}{entry_name}.gpg"):
-        print(f"\n\u001b[38;5;9merror: entry (/{entry_name}) does not exist\u001b[0m\n")
-        s_exit(2)
+    
+    # ensure the edit target is an entry
+    target_type_check(entry_name, True, True)
+    
     _shm_folder, _shm_entry = shm_gen()
     determine_decrypt(directory + entry_name, _shm_folder, _shm_entry)
     if arguments[2] in ('username', '-u'):
@@ -591,18 +611,16 @@ def gen():
     _shm_folder, _shm_entry = shm_gen()
     # gen update
     if arg_count == 3 and arguments[2] in ('update', '-u'):
-        if not isfile(f"{directory}{entry_name}.gpg"):
-            print(f"\n\u001b[38;5;9merror: entry (/{entry_name}) does not exist\u001b[0m\n")
-            s_exit(2)
+        # ensure the gen update target is an entry        
+        target_type_check(entry_name, True, True)
         determine_decrypt(directory + entry_name, _shm_folder, _shm_entry)
         _new_lines = optimized_edit(open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'r').readlines(), pass_gen(), 0)
         open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'w').writelines(_new_lines)
         remove(f"{directory}{entry_name}.gpg")
     # gen
-    elif isfile(f"{directory}{entry_name}.gpg"):
-        print(f"\n\u001b[38;5;9merror: entry (/{entry_name}) already exists\u001b[0m\n")
-        s_exit(3)
     else:
+        # make sure the gen target does not already exist
+        target_exists_check(entry_name, False)
         _username = str(input('username: '))
         _password = pass_gen()
         _url = str(input('url: '))
@@ -622,9 +640,8 @@ def gen():
 # copies a specified field of an entry to the clipboard
 def copy_data():
     from subprocess import Popen
-    if not isfile(f"{directory}{entry_name}.gpg"):
-        print(f"\n\u001b[38;5;9merror: entry (/{entry_name}) does not exist\u001b[0m\n")
-        s_exit(2)
+    # ensure the copy target is an entry
+    target_type_check(entry_name, True, True)
     _shm_folder, _shm_entry = shm_gen()
     determine_decrypt(directory + entry_name, _shm_folder, _shm_entry)
     _copy_line, _index = [_line.rstrip() for _line in open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'r').readlines()], 0
@@ -799,8 +816,13 @@ if __name__ == "__main__":
 
             elif arg_count == 1:
                 if arg_start == 1:
+                    # read shortcut
                     success_flag = True
-                    read_shortcut()
+                    target_type_check(entry_name, True, True)
+                    _shm_folder, _shm_entry = shm_gen()
+                    determine_decrypt(directory + entry_name, _shm_folder, _shm_entry)
+                    entry_reader(f"{tmp_dir}{_shm_folder}/{_shm_entry}")
+                    rmtree(f"{tmp_dir}{_shm_folder}")
                 elif arguments[0] == 'tweak':
                     success_flag = True
                     from stweak import global_menu
