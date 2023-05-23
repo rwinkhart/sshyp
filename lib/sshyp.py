@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 from configparser import ConfigParser, NoSectionError
 from os import chmod, environ, listdir, remove, walk
-from os.path import exists, expanduser, isdir, isfile, realpath
+from os.path import expanduser, isdir, isfile, realpath
 from pathlib import Path
 from random import randint
 from shutil import move, rmtree
@@ -549,10 +549,6 @@ def rename():
 
     # if renaming a file
     if _file:
-        # check if the new file already exists
-        if isfile(f"{directory}{_new_name}.gpg"):
-            print(f"\n\u001b[38;5;9merror: (/{_new_name}) already exists\u001b[0m\n")
-            s_exit(3)
         if not ssh_error:
             copy(f"{directory}{entry_name}.gpg", f"{directory}{_new_name}.gpg")
         else:
@@ -560,9 +556,6 @@ def rename():
     else:
 
         # if renaming a folder
-        if isdir(f"{directory}{_new_name}"):
-            print(f"\n\u001b[38;5;9merror: (/{_new_name}/) already exists\u001b[0m\n")
-            s_exit(3)
         if not ssh_error:
             Path(f"{directory}{_new_name}").mkdir(mode=0o700, parents=True, exist_ok=True)
             run(('ssh', '-i', f"{home}/.ssh/sshyp", '-p', port, f"{username_ssh}@{ip}",
