@@ -653,28 +653,28 @@ def copy_data():
     # PORT START CLIPBOARD
     # WSL clipboard detection
     if 'WSL_DISTRO_NAME' in environ:
-        run(('powershell.exe', '-c', "Set-Clipboard '" + _copy_line[_index].replace("'", "''") + "'"))
+        run(('powershell.exe', '-c', "Set-Clipboard '" + _copy_subject.replace("'", "''") + "'"))
         Popen("sleep 30; powershell.exe -c Set-Clipboard ''", shell=True, stdout=DEVNULL, stderr=DEVNULL)
     # Wayland clipboard detection
     elif 'WAYLAND_DISPLAY' in environ:
-        run(('wl-copy', _copy_line[_index]))
+        run(('wl-copy', _copy_subject))
         Popen('sleep 30; wl-copy -c', shell=True)
     # Haiku clipboard detection
     elif uname()[0] == 'Haiku':
-        run(('clipboard', '-c', _copy_line[_index]))
+        run(('clipboard', '-c', _copy_subject))
         Popen('sleep 30; clipboard -r', shell=True)
     # MacOS clipboard detection
     elif uname()[0] == 'Darwin':
-        run(('pbcopy'), stdin=Popen(('printf', _copy_line[_index].replace('\\', '\\\\').replace('%', '%%')),
+        run(('pbcopy'), stdin=Popen(('printf', _copy_subject.replace('\\', '\\\\').replace('%', '%%')),
                                     stdout=PIPE).stdout)
         Popen("sleep 30; printf '' | pbcopy", shell=True)
     # Termux (Android) clipboard detection
     elif isdir("/data/data/com.termux"):
-        run(('termux-clipboard-set', _copy_line[_index]))
+        run(('termux-clipboard-set', _copy_subject))
         Popen("sleep 30; termux-clipboard-set ''", shell=True)
     # X11 clipboard detection
     elif 'DISPLAY' in environ:
-        run(('xclip', '-sel', 'c'), stdin=Popen(('printf', _copy_line[_index].replace('\\', '\\\\')
+        run(('xclip', '-sel', 'c'), stdin=Popen(('printf', _copy_subject.replace('\\', '\\\\')
                                                 .replace('%', '%%')), stdout=PIPE).stdout)
         Popen("sleep 30; printf '' | xclip -sel c", shell=True)
     else:
