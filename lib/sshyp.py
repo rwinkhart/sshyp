@@ -650,7 +650,7 @@ def copy_data():
     # WSL clipboard detection
     if 'WSL_DISTRO_NAME' in environ:
         run(('powershell.exe', '-c', "Set-Clipboard '" + _copy_line[_index].replace("'", "''") + "'"))
-        Popen("sleep 30; powershell.exe -c 'echo \"\" | Set-Clipboard'", shell=True)
+        Popen("sleep 30; powershell.exe -c Set-Clipboard ''", shell=True, stdout=DEVNULL, stderr=DEVNULL)
     # Wayland clipboard detection
     elif 'WAYLAND_DISPLAY' in environ:
         run(('wl-copy', _copy_line[_index]))
