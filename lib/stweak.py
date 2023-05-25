@@ -353,7 +353,8 @@ def initial_setup():
 
             # PORT START CLIPTOOL
             # check for clipboard tool and display warning if missing
-            if uname()[0] in ('Linux', 'FreeBSD'):
+            if uname()[0] in ('Linux', 'FreeBSD') and not 'WSL_DISTRO_NAME' in environ \
+                and not exists("/data/data/com.termux"):
                 _display_server = None
                 if 'WAYLAND_DISPLAY' in environ:
                     _display_server, _clipboard_tool, _clipboard_package = 'Wayland', 'wl-copy', 'wl-clipboard'
