@@ -21,6 +21,8 @@ It is your responsibility to assess the security and stability of "sshyp" before
 I am not responsible for any data loss or breaches of your information resulting from the use of "sshyp".
 "sshyp" is a new project that is constantly being updated, and though safety and security are priorities, they cannot be guaranteed.
 
+Always check the [known bugs](https://github.com/rwinkhart/sshyp/wiki/Known-Bugs) list before updating or installing sshyp.
+
 # Mission Statement
 sshyp aims to make it as simple as possible to manage passwords and notes via CLI across multiple devices in a secure, self-hosted fashion.
 
