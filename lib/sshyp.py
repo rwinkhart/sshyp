@@ -646,6 +646,10 @@ def copy_data():
         _index = 2
     elif arguments[2] in ('note', '-n'):
         _index = 3
+    _copy_subject = _copy_line[_index]
+    # ensure field is not blank
+    if _copy_subject == '':
+        raise IndexError
     # PORT START CLIPBOARD
     # WSL clipboard detection
     if 'WSL_DISTRO_NAME' in environ:
