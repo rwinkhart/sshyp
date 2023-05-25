@@ -10,7 +10,7 @@ if len(arguments) > 0:
     if arguments[0] == 'WSL':
         replacement = """run(['powershell.exe', '-c', "Set-Clipboard '" + _copy_line[_index].rstrip()\
         .replace("'", "''") + "'"])
-    Popen("sleep 30; pwsh.exe -c 'echo \\"\\" | Set-Clipboard'", shell=True)"""
+    Popen("sleep 30; powershell.exe -c 'echo \\"\\" | Set-Clipboard'", shell=True)"""
     elif arguments[0] == 'MAC':
         replacement = """run(['pbcopy'], stdin=Popen(['printf', _copy_line[_index].rstrip()\
         .replace('\\\\\\', '\\\\\\\\\\\\\\').replace('%', '%%')],stdout=PIPE).stdout)
