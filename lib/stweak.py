@@ -231,6 +231,16 @@ def quick_unlock_config(_default):
     return _enabled
 
 
+# continually shows the tweak menu after each change until the user manually exits
+def menu_repeat(_post_setup):
+    try:
+        while True:
+            if global_menu(_post_setup):
+                break
+    except KeyboardInterrup:
+        s_exit(0)
+
+
 # runs secondary configuration menu
 def global_menu(_post_setup):
     # curses initialization
@@ -238,7 +248,7 @@ def global_menu(_post_setup):
     cbreak()
     stdscr.keypad(True)
 
-    _options, _choice, _term_message = [], 4, False
+    _options, _choice, _term_message, _return_val = [], 4, False, False
     try:
         if not _post_setup:
             _options.extend(['change device/synchronization types', 'change gpg key', 're-configure ssh(ync)',
@@ -277,11 +287,12 @@ def global_menu(_post_setup):
                                  "\nyou must first log in to the sshyp server and run:\n\nsshyp whitelist setup (if not"
                                  " already done)\nsshyp whitelist add "
                                  f"'{listdir(f'{home}/.config/sshyp/devices')[0].rstrip()}'\n")
-        else:
-            pass
+        elif _choice == 8:
+            _return_val = True
         curses_terminate(_term_message)
     except KeyboardInterrupt:
         curses_terminate(False)
+    return _return_val
 
 
 # runs initial configuration wizard
@@ -356,7 +367,7 @@ def initial_setup():
                           f'"{_clipboard_package}" is installed\u001b[0m')
             # PORT END CLIPTOOL
 
-        global_menu(True)
+        menu_repeat(True)
 
     except KeyboardInterrupt:
         # cleanly exit curses

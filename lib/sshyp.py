@@ -825,8 +825,8 @@ if __name__ == "__main__":
                     rmtree(f"{tmp_dir}{_shm_folder}")
                 elif arguments[0] == 'tweak':
                     success_flag = True
-                    from stweak import global_menu
-                    global_menu(False)
+                    from stweak import menu_repeat
+                    menu_repeat(False)
 
         # PORT START ARGS-SERVER
         # server arguments
