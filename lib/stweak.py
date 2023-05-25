@@ -233,12 +233,9 @@ def quick_unlock_config(_default):
 
 # continually shows the tweak menu after each change until the user manually exits
 def menu_repeat(_post_setup):
-    try:
-        while True:
-            if global_menu(_post_setup):
-                break
-    except KeyboardInterrup:
-        s_exit(0)
+    while True:
+        if global_menu(_post_setup):
+            break
 
 
 # runs secondary configuration menu
@@ -292,6 +289,7 @@ def global_menu(_post_setup):
         curses_terminate(_term_message)
     except KeyboardInterrupt:
         curses_terminate(False)
+        _return_val = True
     return _return_val
 
 
