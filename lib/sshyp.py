@@ -136,13 +136,13 @@ def encrypt(_entry_dir, _shm_folder, _shm_entry, _gpg_id, _tmp_dir=f"{home}/.con
 def decrypt(_entry_dir, _shm_folder, _shm_entry, _quick_pass,
             _tmp_dir=f"{home}/.config/sshyp/tmp/"):
     if not isinstance(_quick_pass, bool):
-        _unlock_method = ['gpg', '--pinentry-mode', 'loopback', '--passphrase', _quick_pass, '-qd', '--output']
+        _unlock_method = ('gpg', '--pinentry-mode', 'loopback', '--passphrase', _quick_pass, '-qd', '--output')
     else:
-        _unlock_method = ['gpg', '-qd', '--output']
+        _unlock_method = ('gpg', '-qd', '--output')
     if _shm_folder is None and _shm_entry is None:
-        _output_target = ['/dev/null', f"{home}/.config/sshyp/lock.gpg"]
+        _output_target = ('/dev/null', f"{home}/.config/sshyp/lock.gpg")
     else:
-        _output_target = [f"{_tmp_dir}{_shm_folder}/{_shm_entry}", f"{_entry_dir}.gpg"]
+        _output_target = (f"{_tmp_dir}{_shm_folder}/{_shm_entry}", f"{_entry_dir}.gpg")
     try:
         run(_unlock_method + _output_target, stderr=DEVNULL, check=True)
     except CalledProcessError:
