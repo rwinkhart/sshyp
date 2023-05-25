@@ -345,11 +345,12 @@ def initial_setup():
             # PORT START CLIPTOOL
             # check for clipboard tool and display warning if missing
             if uname()[0] in ('Linux', 'FreeBSD'):
+                _display_server = None
                 if 'WAYLAND_DISPLAY' in environ:
                     _display_server, _clipboard_tool, _clipboard_package = 'Wayland', 'wl-copy', 'wl-clipboard'
-                else:
+                elif 'DISPLAY' in environ:
                     _display_server, _clipboard_tool, _clipboard_package = 'X11', 'xclip', 'xclip'
-                if which(_clipboard_tool) is None:
+                if _display_server is not None and which(_clipboard_tool) is None:
                     print(f'\n\u001b[38;5;9mwarning: you are using {_display_server} and "{_clipboard_tool}" is not '
                           f'present - \ncopying entry fields will not function until '
                           f'"{_clipboard_package}" is installed\u001b[0m')

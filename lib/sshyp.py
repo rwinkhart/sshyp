@@ -669,10 +669,13 @@ def copy_data():
         run(('termux-clipboard-set', _copy_line[_index]))
         Popen("sleep 30; termux-clipboard-set ''", shell=True)
     # X11 clipboard detection
-    else:
+    elif 'DISPLAY' in environ:
         run(('xclip', '-sel', 'c'), stdin=Popen(('printf', _copy_line[_index].replace('\\', '\\\\')
                                                 .replace('%', '%%')), stdout=PIPE).stdout)
         Popen("sleep 30; printf '' | xclip -sel c", shell=True)
+    else:
+        print('\n\u001b[38;5;9merror: clipboard tool could not be determined\n\nnote that the clipboard does not '
+            'function in a raw tty\u001b[0m\n')    
     # PORT END CLIPBOARD
     rmtree(f"{tmp_dir}{_shm_folder}")
 
@@ -779,7 +782,7 @@ if __name__ == "__main__":
                             success_flag = 1
                             copy_data()
                         except IndexError:
-                            print(f"\n\u001b[38;5;9merror: field does not exist in entry\u001b[0m\n")
+                            print('\n\u001b[38;5;9merror: field does not exist in entry\u001b[0m\n')
                             s_exit(2)
                 elif arguments[1] == 'add':
                     if arguments[2] in ('note', '-n', 'password', '-p'):
