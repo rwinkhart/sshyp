@@ -378,6 +378,15 @@ this program comes with absolutely no warranty; type 'sshyp license' for details
         # PORT END HELP-SERVER
 
 
+# shortcut to quickly read an entry
+def read_shortcut():
+    target_type_check(entry_name, True, True)
+    _shm_folder, _shm_entry = shm_gen()
+    determine_decrypt(directory + entry_name, _shm_folder, _shm_entry)
+    entry_reader(f"{tmp_dir}{_shm_folder}/{_shm_entry}")
+    rmtree(f"{tmp_dir}{_shm_folder}")
+
+
 # calls sshync to sync changes to the user's server
 def sync():
     print('\nsyncing entries with the server device...\n')
@@ -539,7 +548,7 @@ def rename():
     from shutil import copy
 
     # check if the renaming target is an entry (file) or a folder
-    _file =  target_type_check(entry_name)
+    _file = target_type_check(entry_name)
 
     # collect the new name for the target from user input
     _new_name = str(input('new name: ')).strip('/')
@@ -665,8 +674,8 @@ def copy_data():
         Popen('sleep 30; clipboard -r', shell=True)
     # MacOS clipboard detection
     elif uname()[0] == 'Darwin':
-        run(('pbcopy'), stdin=Popen(('printf', _copy_subject.replace('\\', '\\\\').replace('%', '%%')),
-                                    stdout=PIPE).stdout)
+        run('pbcopy', stdin=Popen(('printf', _copy_subject.replace('\\', '\\\\').replace('%', '%%')), stdout=PIPE)
+            .stdout)
         Popen("sleep 30; printf '' | pbcopy", shell=True)
     # Termux (Android) clipboard detection
     elif isdir("/data/data/com.termux"):
@@ -679,7 +688,7 @@ def copy_data():
         Popen("sleep 30; printf '' | xclip -sel c", shell=True)
     else:
         print('\n\u001b[38;5;9merror: clipboard tool could not be determined\n\nnote that the clipboard does not '
-            'function in a raw tty\u001b[0m\n')    
+              'function in a raw tty\u001b[0m\n')
     # PORT END CLIPBOARD
     rmtree(f"{tmp_dir}{_shm_folder}")
 
@@ -816,13 +825,8 @@ if __name__ == "__main__":
 
             elif arg_count == 1:
                 if arg_start == 1:
-                    # read shortcut
                     success_flag = True
-                    target_type_check(entry_name, True, True)
-                    _shm_folder, _shm_entry = shm_gen()
-                    determine_decrypt(directory + entry_name, _shm_folder, _shm_entry)
-                    entry_reader(f"{tmp_dir}{_shm_folder}/{_shm_entry}")
-                    rmtree(f"{tmp_dir}{_shm_folder}")
+                    read_shortcut()
                 elif arguments[0] == 'tweak':
                     success_flag = True
                     from stweak import menu_repeat

@@ -13,7 +13,7 @@ string2 = '# PORT END CLIPTOOL'
 if len(arguments) > 0:
     regex = re.compile(f"{string1}.*?{string2}", re.DOTALL)
     replacement = """# check for clipboard tool and display warning if missing
-            _display_server = None
+            _display_server, _clipboard_tool, _clipboard_package = None, None, None
             if 'WAYLAND_DISPLAY' in environ:
                 _display_server, _clipboard_tool, _clipboard_package = 'Wayland', 'wl-copy', 'wl-clipboard'
             elif 'DISPLAY' in environ:

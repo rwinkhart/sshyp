@@ -8,26 +8,25 @@ arguments = argv[1:]
 # define replacement text depending on arguments
 if len(arguments) > 0:
     if arguments[0] == 'WSL':
-        replacement = """run(['powershell.exe', '-c', "Set-Clipboard '" + _copy_subject.rstrip()\
-        .replace("'", "''") + "'"])
+        replacement = """run(('powershell.exe', '-c', "Set-Clipboard '" + _copy_subject.replace("'", "''") + "'"))
     Popen("sleep 30; powershell.exe -c Set-Clipboard ''", shell=True, stdout=DEVNULL, stderr=DEVNULL)"""
     elif arguments[0] == 'MAC':
-        replacement = """run(['pbcopy'], stdin=Popen(['printf', _copy_subject.rstrip()\
-        .replace('\\\\\\', '\\\\\\\\\\\\\\').replace('%', '%%')],stdout=PIPE).stdout)
+        replacement = """run('pbcopy', stdin=Popen(('printf', _copy_subject.replace('\\\\\\', '\\\\\\\\\\\\\\')
+        .replace('%', '%%')), stdout=PIPE).stdout)
     Popen("sleep 30; printf '' | pbcopy", shell=True)"""
     elif arguments[0] == 'HAIKU':
-        replacement = """run(['clipboard', '-c', _copy_subject.rstrip()])
+        replacement = """run(('clipboard', '-c', _copy_subject))
     Popen('sleep 30; clipboard -r', shell=True)"""
     elif arguments[0] == 'TERMUX':
-        replacement = """run(['termux-clipboard-set', _copy_subject.rstrip()])
+        replacement = """run(('termux-clipboard-set', _copy_subject))
     Popen("sleep 30; termux-clipboard-set ''", shell=True)"""
     elif arguments[0] == 'LINUX':
         replacement = """if 'WAYLAND_DISPLAY' in environ:
-        run(['wl-copy', _copy_subject.rstrip()])
+        run(('wl-copy', _copy_subject))
         Popen('sleep 30; wl-copy -c', shell=True)
     else:
-        run(['xclip', '-sel', 'c'], stdin=Popen(['printf', _copy_subject.rstrip()\
-        .replace('\\\\\\', '\\\\\\\\\\\\\\').replace('%', '%%')], stdout=PIPE).stdout)
+        run(('xclip', '-sel', 'c'), stdin=Popen(('printf', _copy_subject
+        .replace('\\\\\\', '\\\\\\\\\\\\\\').replace('%', '%%')), stdout=PIPE).stdout)
         Popen("sleep 30; printf '' | xclip -sel c", shell=True)"""
 else:
     s_exit()
