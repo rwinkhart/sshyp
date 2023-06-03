@@ -179,10 +179,10 @@ def ssh_config():
     # ssh+sshync configuration
     _uiport = curses_text('enter the username, ip, and ssh port of your sshyp server:\n\n\n\n\n(ctrl+g/enter to '
                           'confirm)\n\nexample inputs:\n\n ipv4: user@10.10.10.10:22\n ipv6: user@[2000:2000:2000:2000'
-                          ':2000:2000:2000:2000]:22\n domain: user@mydomain.com:22').lstrip('[').replace(']', '')
+                          ':2000:2000:2000:2000]:22\n domain: user@mydomain.com:22')
     _uiport_split = _uiport.split('@')
     _username_ssh = _uiport_split[0]
-    _iport = _uiport_split[1].rsplit(':', 1)
+    _iport = _uiport_split[1].lstrip('[').replace(']', '').rsplit(':', 1)
 
     if not sshyp_data.has_section('SSHYNC'):
         sshyp_data.add_section('SSHYNC')
