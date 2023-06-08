@@ -653,7 +653,7 @@ def rename():
         _folder_disabler = True
     if not ssh_error and not _folder_disabler:
         run(['ssh', '-i', f"{home}/.ssh/sshyp", '-p', port, f"{username_ssh}@{ip}",
-             f'cd /lib/sshyp; python3 -c \'from sshync import delete; delete("{entry_name}", "remotely")\''])
+             f'cd /usr/lib/sshyp; python3 -c \'from sshync import delete; delete("{entry_name}", "remotely")\''])
 
 
 # edits the contents of an entry
@@ -772,7 +772,7 @@ def remove_data():
     determine_decrypt(f"{home}/.config/sshyp/lock.gpg", None, None)
     if not ssh_error:
         run(['ssh', '-i', f"{home}/.ssh/sshyp", '-p', port, f"{username_ssh}@{ip}",
-             f'cd /lib/sshyp; python3 -c \'from sshync import delete; delete("{entry_name}", "remotely")\''])
+             f'cd /usr/lib/sshyp; python3 -c \'from sshync import delete; delete("{entry_name}", "remotely")\''])
     else:
         offline_delete(entry_name, 'locally')
 

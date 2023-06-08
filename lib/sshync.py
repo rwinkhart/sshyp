@@ -68,7 +68,7 @@ def get_local_data(_directory, _device):
 def remote_list_fetch(_user_data):
     try:
         _remote_data = run(['ssh', '-i', _user_data[5], '-p', _user_data[2], f"{_user_data[0]}@{_user_data[1]}",
-                            f'cd /lib/sshyp; python3 -c \'from sshync import remote_list_gen; remote_list_gen'
+                            f'cd /usr/lib/sshyp; python3 -c \'from sshync import remote_list_gen; remote_list_gen'
                             f'("{_user_data[6]}", "{_user_data[4]}")\''], stdout=PIPE, text=True, check=True
                            ).stdout.split('\x1d')
     except CalledProcessError:

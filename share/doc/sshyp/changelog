@@ -19,6 +19,7 @@ fixes:
     for the time being
 - backported fix for syncing over IPv6
 - backported fix for multiple versions of Powershell being called under WSL
+- backported fix for checking /lib/sshyp instead of /usr/lib/sshyp
 
 <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 
