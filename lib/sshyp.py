@@ -830,7 +830,7 @@ if __name__ == "__main__":
                 elif arguments[0] == 'tweak':
                     success_flag = True
                     from stweak import global_menu
-                    global_menu(device_type, 'configuration options:')
+                    global_menu('client', 'configuration options:')
 
         # server arguments
         else:
@@ -847,7 +847,7 @@ if __name__ == "__main__":
             elif arg_count == 1 and arguments[0] == 'tweak':
                 success_flag = True
                 from stweak import global_menu
-                global_menu(device_type, 'configuration options:')
+                global_menu('server', 'configuration options:')
             elif arg_count > 2 and arguments[1] in ('add', 'del'):
                 success_flag = True
                 whitelist_manage(arguments[2])
