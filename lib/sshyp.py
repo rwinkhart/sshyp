@@ -627,7 +627,7 @@ def add_folder():
 # renames an entry or folder
 def rename():
     from shutil import copy
-    _file = True
+    _file, _folder_disabler = True, False
     if not exists(f"{directory}{entry_name}.gpg") and not exists(f"{directory}{entry_name}"):
         print(f"\n\u001b[38;5;9merror: (/{entry_name}) does not exist\u001b[0m\n")
         s_exit(2)
@@ -648,17 +648,10 @@ def rename():
     else:
 
         # if renaming a folder
-        if isdir(f"{directory}{_new_name}"):
-            print(f"\n\u001b[38;5;9merror: (/{_new_name}/) already exists\u001b[0m\n")
-            s_exit(3)
-        if not ssh_error:
-            Path(f"{directory}{_new_name}").mkdir(mode=0o700, parents=True, exist_ok=True)
-            run(['ssh', '-i', f"{home}/.ssh/sshyp", '-p', port, f"{username_ssh}@{ip}",
-                 f'python3 -c \'from pathlib import Path; Path("{directory_ssh}{_new_name}")'
-                 f'.mkdir(mode=0o700, parents=True, exist_ok=True)\''])
-        else:
-            move(f"{directory}{entry_name}", f"{directory}{_new_name}")
-    if not ssh_error:
+        print(f"\n\u001b[38;5;9merror: folder renaming disabled due to a bug causing severe data loss 
+                - fixed in future release v1.5.0\u001b[0m\n")
+        _folder_disabler = True
+    if not ssh_error and not _folder_disabler:
         run(['ssh', '-i', f"{home}/.ssh/sshyp", '-p', port, f"{username_ssh}@{ip}",
              f'cd /lib/sshyp; python3 -c \'from sshync import delete; delete("{entry_name}", "remotely")\''])
 
