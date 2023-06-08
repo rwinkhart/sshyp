@@ -241,10 +241,11 @@ def global_menu(_device_type, _top_message):
         _options, _choice, _term_message, _exit_signal = ['change device/synchronization types'], 0, False, False
         try:
             if _device_type == 'client':
-                _options.extend(['change gpg key', 're-configure ssh(ync)', 'change device name', 
-                    '[OPTIONAL, RECOMMENDED] set custom text editor', 
-                    '[OPTIONAL, RECOMMENDED] enable/disable quick-unlock', '[OPTIONAL, NOT IMPLEMENTED] su security mode',
-                    '[OPTIONAL, NOT IMPLEMENTED] extensions and updates'])
+                _options.extend(['change gpg key', 're-configure ssh(ync)', 'change device name',
+                                 '[OPTIONAL, RECOMMENDED] set custom text editor',
+                                 '[OPTIONAL, RECOMMENDED] enable/disable quick-unlock',
+                                 '[OPTIONAL, NOT IMPLEMENTED] su security mode',
+                                 '[OPTIONAL, NOT IMPLEMENTED] extensions and updates'])
             else:
                 _options.extend(['manage quick-unlock'])
             _options.extend(['exit/done'])
@@ -253,7 +254,8 @@ def global_menu(_device_type, _top_message):
             if _choice == 0:
                 _dev_sync_types = install_type()
                 # if not running in server or offline mode and a sshync config has not been made
-                if _dev_sync_types[0] != 'server' and _dev_sync_types[1] != 'true' and not sshyp_data.has_section('SSHYNC'):
+                if _dev_sync_types[0] != 'server' and _dev_sync_types[1] != 'true' \
+                        and not sshyp_data.has_section('SSHYNC'):
                     _ip, _username_ssh, _port = ssh_config()
                     # if no device id is set
                     if not listdir(f"{home}/.config/sshyp/devices"):
@@ -280,9 +282,9 @@ def global_menu(_device_type, _top_message):
                 _enabled = quick_unlock_config(False)
                 if _enabled == 'true':
                     # TODO update for future menu-based quick-unlock management
-                    _term_message = ("\nquick-unlock has been enabled client-side - in order for this feature to function,"
-                                     "\nyou must first log in to the sshyp server and run:\n\nsshyp whitelist setup (if not"
-                                     " already done)\nsshyp whitelist add "
+                    _term_message = ("\nquick-unlock has been enabled client-side - in order for this feature to "
+                                     "function,\nyou must first log in to the sshyp server and run:\n\nsshyp whitelist "
+                                     "setup (if not already done)\nsshyp whitelist add "
                                      f"'{listdir(f'{home}/.config/sshyp/devices')[0].rstrip()}'\n")
             elif _choice == 8:
                 _exit_signal = True
