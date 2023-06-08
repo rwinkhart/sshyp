@@ -230,66 +230,68 @@ def quick_unlock_config(_default):
     return _enabled
 
 
-# continually shows the tweak menu after each change until the user manually exits
-def menu_repeat(_post_setup):
-    while True:
-        if global_menu(_post_setup):
-            break
-
-
 # runs secondary configuration menu
-def global_menu(_post_setup):
-    # curses initialization
-    noecho()
-    cbreak()
-    stdscr.keypad(True)
+def global_menu(_device_type, _top_message):
+    while True:
+        # curses initialization
+        noecho()
+        cbreak()
+        stdscr.keypad(True)
 
-    _options, _choice, _term_message, _return_val = [], 4, False, False
-    try:
-        if not _post_setup:
-            _options.extend(['change device/synchronization types', 'change gpg key', 're-configure ssh(ync)',
-                             'change device name'])
-            _message, _choice = 'all configuration options:', 0
-        _options.extend(['[OPTIONAL, RECOMMENDED] set custom text editor',
-                         '[OPTIONAL, RECOMMENDED] enable/disable quick-unlock',
-                         '[OPTIONAL, NOT IMPLEMENTED] su security mode',
-                         '[OPTIONAL, NOT IMPLEMENTED] extensions and updates', 'exit/done'])
-        _message = 'required configuration complete - additional configuration options:'
-        _choice += curses_radio(_options, _message)
+        _options, _choice, _term_message, _exit_signal = ['change device/synchronization types'], 0, False, False
+        try:
+            if _device_type == 'client':
+                _options.extend(['change gpg key', 're-configure ssh(ync)', 'change device name', 
+                    '[OPTIONAL, RECOMMENDED] set custom text editor', 
+                    '[OPTIONAL, RECOMMENDED] enable/disable quick-unlock', '[OPTIONAL, NOT IMPLEMENTED] su security mode',
+                    '[OPTIONAL, NOT IMPLEMENTED] extensions and updates'])
+            else:
+                _options.extend(['manage quick-unlock'])
+            _options.extend(['exit/done'])
+            _choice += curses_radio(_options, _top_message)
 
-        if _choice == 0:
-            _dev_sync_types = install_type()
-            # if not running in server or offline mode and a sshync config has not been made
-            if _dev_sync_types[0] != 'server' and _dev_sync_types[1] != 'true' and not sshyp_data.has_section('SSHYNC'):
-                _ip, _username_ssh, _port = ssh_config()
-                # if no device id is set
-                if not listdir(f"{home}/.config/sshyp/devices"):
-                    dev_id_config(_ip, _username_ssh, _port)
-        elif _choice == 1:
-            gpg_config()
-        elif _choice == 2:
-            ssh_config()
-        elif _choice == 3:
-            if not sshyp_data.has_section('SSHYNC'):
-                ssh_config()
-            dev_id_config(sshyp_data.get('SSHYNC', 'ip'), sshyp_data.get('SSHYNC', 'user'),
-                          sshyp_data.get('SSHYNC', 'port'))
-        elif _choice == 4:
-            editor_config(False)
-        elif _choice == 5:
-            _enabled = quick_unlock_config(False)
-            if _enabled == 'true':
-                _term_message = ("\nquick-unlock has been enabled client-side - in order for this feature to function,"
-                                 "\nyou must first log in to the sshyp server and run:\n\nsshyp whitelist setup (if not"
-                                 " already done)\nsshyp whitelist add "
-                                 f"'{listdir(f'{home}/.config/sshyp/devices')[0].rstrip()}'\n")
-        elif _choice == 8:
-            _return_val = True
-        curses_terminate(_term_message)
-    except KeyboardInterrupt:
-        curses_terminate(False)
-        _return_val = True
-    return _return_val
+            if _choice == 0:
+                _dev_sync_types = install_type()
+                # if not running in server or offline mode and a sshync config has not been made
+                if _dev_sync_types[0] != 'server' and _dev_sync_types[1] != 'true' and not sshyp_data.has_section('SSHYNC'):
+                    _ip, _username_ssh, _port = ssh_config()
+                    # if no device id is set
+                    if not listdir(f"{home}/.config/sshyp/devices"):
+                        dev_id_config(_ip, _username_ssh, _port)
+                _device_type = _dev_sync_types[0]
+            elif _choice == 1:
+                if _device_type == 'client':
+                    gpg_config()
+                else:
+                    pass  # TODO implement quick-unlock management
+            elif _choice == 2:
+                if _device_type == 'client':
+                    ssh_config()
+                else:
+                    _exit_signal = True
+            elif _choice == 3:
+                if not sshyp_data.has_section('SSHYNC'):
+                    ssh_config()
+                dev_id_config(sshyp_data.get('SSHYNC', 'ip'), sshyp_data.get('SSHYNC', 'user'),
+                              sshyp_data.get('SSHYNC', 'port'))
+            elif _choice == 4:
+                editor_config(False)
+            elif _choice == 5:
+                _enabled = quick_unlock_config(False)
+                if _enabled == 'true':
+                    # TODO update for future menu-based quick-unlock management
+                    _term_message = ("\nquick-unlock has been enabled client-side - in order for this feature to function,"
+                                     "\nyou must first log in to the sshyp server and run:\n\nsshyp whitelist setup (if not"
+                                     " already done)\nsshyp whitelist add "
+                                     f"'{listdir(f'{home}/.config/sshyp/devices')[0].rstrip()}'\n")
+            elif _choice == 8:
+                _exit_signal = True
+            curses_terminate(_term_message)
+        except KeyboardInterrupt:
+            curses_terminate(False)
+            _exit_signal = True
+        if _exit_signal:
+            break
 
 
 # runs initial configuration wizard
@@ -365,7 +367,7 @@ def initial_setup():
                           f'"{_clipboard_package}" is installed\u001b[0m')
             # PORT END CLIPTOOL
 
-        menu_repeat(True)
+        global_menu(_dev_sync_types[0], 'additional configuration options:')
 
     except KeyboardInterrupt:
         # cleanly exit curses
