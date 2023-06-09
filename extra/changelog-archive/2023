@@ -1,7 +1,32 @@
 sshyp v1.4.99
-05/13/2023
+06/08/2023
 
 this is an in-progress update
+
+<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+
+sshyp v1.4.3
+06/08/2023
+
+the argumentative agronomist update - patch three
+
+IMPORTANT: the next major release of sshyp, v1.5.0, will make breaking changes that will require
+running through 'sshyp tweak' again - also starting with v1.5.0, a copy of the changelog will no
+longer be packaged with sshyp (it will still be available on GitHub) and clipboard tools
+(x-clip and wl-clipboard) will be set to optional dependencies ('sshyp tweak' will warn of this)
+
+this is a highly unconventional release featuring backports to fix critical bugs found during the
+development of the upcoming v1.5.0
+
+fixes:
+
+- folder renaming has been disabled to prevent a severe data loss bug from occuring
+    ^ this has been properly fixed for v1.5.0, but the fix requires all clients and servers
+    to be updated - to avoid breaking compatibility with 1.4.X, folder renaming was simply disabled
+    for the time being
+- backported fix for syncing over IPv6
+- backported fix for multiple versions of Powershell being called under WSL
+- backported fix for checking /lib/sshyp instead of /usr/lib/sshyp
 
 <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 
