@@ -10,53 +10,23 @@ if len(arguments) > 0:
     if arguments[0] == 'TMP':
         replacement = 'symlink("/tmp", f"{home}/.config/sshyp/tmp")'
     elif arguments[0] == 'TERMUX':
-        replacement = 'symlink("/data/data/com.termux/files/usr/tmp", f"{home}/.config/sshyp/tmp")'
+        replacement = 'symlink("/data/data/com.termux/files/usr/tmp", f"{home}/.config/sshyp/tmp")\n'
     elif arguments[0] == 'LINUX':
         replacement = 'symlink("/dev/shm", f"{home}/.config/sshyp/tmp")'
 else:
     s_exit()
 
-# UNAME-IMPORT-SSHYP
-# define PORT target
-string1 = '# PORT START UNAME-IMPORT-SSHYP'
-string2 = '# PORT END UNAME-IMPORT-SSHYP'
+targets = (('UNAME-IMPORT-SSHYP', 'sshyp.py', ''), ('UNAME-IMPORT-STWEAK', 'stweak.py', ''),
+           ('UNAME-TMP', 'stweak.py', replacement))
 
-# read input file
-text = open('working/sshyp.py', 'r').read()
-
-# find and replace the defined PORT target
-regex = re.compile(f"{string1}.*?{string2}\n", re.DOTALL)
-new_text = re.sub(regex, '', text)
-
-# write updated text
-open('working/sshyp.py', 'w').write(new_text)
-
-# UNAME-IMPORT-STWEAK
-# define PORT target
-string1 = '# PORT START UNAME-IMPORT-STWEAK'
-string2 = '# PORT END UNAME-IMPORT-STWEAK'
-
-# read input file
-text = open('working/stweak.py', 'r').read()
-
-# find and replace the defined PORT target
-regex = re.compile(f"{string1}.*?{string2}\n", re.DOTALL)
-new_text = re.sub(regex, '', text)
-
-# write updated text
-open('working/stweak.py', 'w').write(new_text)
-
-# UNAME-TMP
-# define PORT target
-string1 = '# PORT START UNAME-TMP'
-string2 = '# PORT END UNAME-TMP'
-
-# read input file
-text = open('working/stweak.py', 'r').read()
-
-# find and replace the defined PORT target
-regex = re.compile(f"{string1}.*?{string2}", re.DOTALL)
-new_text = re.sub(regex, replacement, text)
-
-# write updated text
-open('working/stweak.py', 'w').write(new_text)
+for target in targets:
+    # read text from target file
+    text, special = open(f"working/{target[1]}", 'r').read(), ''
+    # determine text to end regex with
+    if target[2] == '':
+        regend = '\n'
+    # compile regex and modify text
+    regex = re.compile(f"# PORT START {target[0]}.*?# PORT END {target[0]}{regend}", re.DOTALL)
+    new_text = re.sub(regex, target[2], text)
+    # write updated text to target file
+    open(f"working/{target[1]}", 'w').write(new_text)
