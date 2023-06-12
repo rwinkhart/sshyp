@@ -831,7 +831,8 @@ if __name__ == "__main__":
                     success_flag = True
                     from stweak import global_menu
                     global_menu('client', 'configuration options:')
-
+       
+        # PORT START ARGS-SERVER
         # server arguments
         else:
             if arg_count < 1:
@@ -851,6 +852,7 @@ if __name__ == "__main__":
             elif arg_count > 2 and arguments[1] in ('add', 'del'):
                 success_flag = True
                 whitelist_manage(arguments[2])
+        # PORT END ARGS-SERVER
 
         if arg_count > 0 and success_flag == 0 and arguments[0] != 'sync':
             if device_type == 'client' and arguments[0] not in ('help', '-h', 'version', '-v', 'license'):
