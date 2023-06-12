@@ -83,6 +83,7 @@ def install_type():
     # PORT START TWEAK-DEVTYPE
     _install_type = curses_radio(('client (ssh-synchronized)', 'client (offline)', 'server'),
                                  'device + sync type configuration')
+    # PORT END TWEAK-DEVTYPE
     if _install_type == 2:
         _dev_type = 'server'
         Path(f"{home}/.config/sshyp/deleted").mkdir(mode=0o700, exist_ok=True)
@@ -99,7 +100,6 @@ def install_type():
         sshyp_data.add_section('GENERAL')
     sshyp_data.set('GENERAL', 'device_type', _dev_type)
     write_config()
-    # PORT END TWEAK-DEVTYPE
     return _dev_type, _offline_mode
 
 
