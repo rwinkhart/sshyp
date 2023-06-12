@@ -81,16 +81,16 @@ def curses_terminate(_term_message):
 def install_type():
     _offline_mode = 'false'
     # PORT START TWEAK-DEVTYPE
-    _install_type = curses_radio(('server', 'client (ssh-synchronized)', 'client (offline)'),
+    _install_type = curses_radio(('client (ssh-synchronized)', 'client (offline)', 'server'),
                                  'device + sync type configuration')
-    if _install_type == 0:
+    if _install_type == 2:
         _dev_type = 'server'
         Path(f"{home}/.config/sshyp/deleted").mkdir(mode=0o700, exist_ok=True)
         Path(f"{home}/.config/sshyp/whitelist").mkdir(mode=0o700, exist_ok=True)
         curses_terminate('\nmake sure the ssh service is running and properly configured\n')
     else:
         _dev_type = 'client'
-        if _install_type == 2:
+        if _install_type == 1:
             _offline_mode = 'true'
         if not sshyp_data.has_section('CLIENT-GENERAL'):
             sshyp_data.add_section('CLIENT-GENERAL')
