@@ -230,6 +230,52 @@ def quick_unlock_config(_default):
     return _enabled
 
 
+# re-encrypt/optimize all entries
+def refresh_encryption():
+    _directory, _tmp_dir = sshyp_data.get('SSHYNC', 'local_dir').rstrip('/'), f"{home}/.config/sshyp/tmp/"
+
+    # warn the user of potential data loss and prompt to continue
+    _proceed = curses_radio(('yes', 'no'), "are you sure you wish to re-encrypt all entries with this key?"
+                                           "\n\n\n\n\nWARNING: proceeding with this action will remove/overwrite"
+                                           " any directories matching the following:" 
+                                          f"\n\n{home}/.local/share/sshyp.old\n{home}/.local/share/sshyp.new\n\n")
+    if _proceed != 0:
+        return 3    
+
+    # set new gpg key
+    gpg_config()
+
+    from os import walk
+    from os.path import isdir
+    from shutil import move, rmtree
+    from sshyp import decrypt, encrypt, optimized_edit, shm_gen
+
+    # remove existing conflicts
+    for _extension in ('.new', '.old'):
+        if exists(f"{_directory}{_extension}"):
+            rmtree(f"{_directory}{_extension}")
+    
+    # decrypt, optimize, and re-encrypt each entry with the newly selected key
+    if isdir(_directory):
+        curses_terminate('\noptimizing and re-encrypting entries... please wait - do not terminate this process')
+        for _root, _dirs, _files in sorted(walk(_directory, topdown=True)):
+            for _filename in _files:
+                Path(_root.replace(_directory, _directory + '.new', 1)).mkdir(0o700, parents=True, exist_ok=True)
+                _shm_folder, _shm_entry = shm_gen()
+                decrypt(f"{_root}/{_filename[:-4]}", _shm_folder, _shm_entry, False)
+                _new_lines = optimized_edit(open(f"{_tmp_dir}{_shm_folder}/{_shm_entry}", 'r').readlines(), None, -1)
+                open(f"{_tmp_dir}{_shm_folder}/{_shm_entry}", 'w').writelines(_new_lines)
+                encrypt(f"{_root.replace(_directory, _directory + '.new', 1)}/{_filename[:-4]}", _shm_folder,
+                        _shm_entry, sshyp_data.get('CLIENT-GENERAL', 'gpg_id'))
+
+        # create a backup of the original version and activate the new version        
+        move(_directory, _directory + '.old')
+        move(_directory + '.new', _directory)
+        return 1
+    else:
+        return 2
+    
+
 # runs secondary configuration menu
 def global_menu(_device_type, _top_message):
     while True:
@@ -245,6 +291,7 @@ def global_menu(_device_type, _top_message):
                                  '[OPTIONAL, RECOMMENDED] set custom text editor',
                                  '[OPTIONAL, RECOMMENDED] enable/disable quick-unlock',
                                  '[OPTIONAL, NOT IMPLEMENTED] su security mode',
+                                 '[OPTIONAL] re-encrypt/optimize entries',
                                  '[OPTIONAL, NOT IMPLEMENTED] extensions and updates'])
             else:
                 _options.extend(['manage quick-unlock'])
@@ -286,7 +333,15 @@ def global_menu(_device_type, _top_message):
                                      "function,\nyou must first log in to the sshyp server and run:\n\nsshyp whitelist "
                                      "setup (if not already done)\nsshyp whitelist add "
                                      f"'{listdir(f'{home}/.config/sshyp/devices')[0].rstrip()}'\n")
-            elif _choice == 8:
+            elif _choice == 7:
+                _success = refresh_encryption()
+                if _success == 1:
+                    _term_message = "\na backup of your previous entry directory has been created:\n\n" \
+                                    f"{home}/.local/share/sshyp.old\n"
+                elif _success == 2:
+                    _term_message = '\n\u001b[38;5;9merror: re-encryption failed: ' \
+                                    'entry directory not found\u001b[0m\n'
+            elif _choice > 5 and _choice != 7:  # TODO update once displayed options are all implemented
                 _exit_signal = True
             curses_terminate(_term_message)
         except KeyboardInterrupt:
