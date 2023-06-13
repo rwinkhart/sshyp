@@ -859,7 +859,7 @@ if __name__ == "__main__":
                 extension_runner()
             else:
                 print_info()
-        elif (not ssh_error and sync_flag) or (arg_count > 0 and arguments[0] == 'sync'):
+        elif not ssh_error and (sync_flag or (arg_count > 0 and arguments[0] == 'sync')):
             sync()
 
     except KeyboardInterrupt:
