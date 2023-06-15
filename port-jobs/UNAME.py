@@ -3,7 +3,7 @@ import re
 from sys import argv, exit as s_exit
 
 # read arguments
-arguments = argv[1:]
+arguments, replacement = argv[1:], None
 
 # define replacement text depending on arguments
 if len(arguments) > 0:
@@ -25,6 +25,8 @@ for target in targets:
     # determine text to end regex with
     if target[2] == '':
         regend = '\n'
+    else:
+        regend = ''
     # compile regex and modify text
     regex = re.compile(f"# PORT START {target[0]}.*?# PORT END {target[0]}{regend}", re.DOTALL)
     new_text = re.sub(regex, target[2], text)

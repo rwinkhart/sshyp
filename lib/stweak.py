@@ -238,7 +238,7 @@ def refresh_encryption():
     _proceed = curses_radio(('yes', 'no'), "are you sure you wish to re-encrypt all entries with this key?"
                                            "\n\n\n\n\nWARNING: proceeding with this action will remove/overwrite"
                                            " any directories matching the following:" 
-                                          f"\n\n{home}/.local/share/sshyp.old\n{home}/.local/share/sshyp.new\n\n")
+                                           f"\n\n{home}/.local/share/sshyp.old\n{home}/.local/share/sshyp.new\n\n")
     if _proceed != 0:
         return 3    
 

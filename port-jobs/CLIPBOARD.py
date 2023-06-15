@@ -3,7 +3,7 @@ import re
 from sys import argv, exit as s_exit
 
 # read arguments
-arguments = argv[1:]
+arguments, replacement = argv[1:], None
 
 # define replacement text depending on arguments
 if len(arguments) > 0:
