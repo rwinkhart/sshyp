@@ -422,11 +422,11 @@ def whitelist_setup():
     # create assembly key
     open(f"{home}/.config/sshyp/gpg-gen", 'w').writelines([
         'Key-Type: 1\n', 'Key-Length: 4096\n', 'Key-Usage: sign encrypt\n', 'Name-Real: sshyp\n',
-        'Name-Comment: gpg-sshyp-whitelist\n', 'Name-Email: https://github.com/rwinkhart/sshyp\n', 'Expire-Date: 0'])
+        'Name-Comment: gpg-sshyp-whitelist\n', 'Name-Email: github.com/rwinkhart/sshyp\n', 'Expire-Date: 0'])
     run(('gpg', '-q', '--pinentry-mode', 'loopback', '--batch', '--generate-key', '--passphrase',
          _quick_unlock_password, f"{home}/.config/sshyp/gpg-gen"))
     remove(f"{home}/.config/sshyp/gpg-gen")
-    _gpg_id = run(('gpg', '-k'), stdout=PIPE, text=True).stdout.splitlines()[-3].strip()
+    _gpg_id = run(('gpg', '-k', '--with-colons'), stdout=PIPE, text=True).stdout.splitlines()[-1].split(':')[9]
 
     # encrypt excluded with the assembly key
     _shm_folder, _shm_entry = shm_gen()
