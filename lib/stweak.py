@@ -415,7 +415,7 @@ def global_menu(_device_type, _top_message):
                     _term_message = ('\nquick-unlock has been enabled client-side - in order for this feature to '
                                      'function,\nyou must first log in to the sshyp server and run:\n\nsshyp tweak\n\n'
                                      'from there you can create a quick-unlock pin and add this device to the '
-                                     'whitelist')
+                                     'whitelist\n')
             elif _choice == 7:
                 _success = refresh_encryption()
                 if _success == 1:
