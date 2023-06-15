@@ -1,10 +1,10 @@
-.TH sshyp 1 "15 May 2023" "v1.5.0" "sshyp man page"
+.TH sshyp 1 "15 June 2023" "v1.5.0" "sshyp man page"
 .SH NAME
 \fBsshyp\fR - Simple, self-hosted, synchronized password management for UNIX(-like) systems. Alternative to (and compatible with) pass/password-store.
 .SH SYNOPSIS
 Client Usage: sshyp [</entry name> [argument] [option]] | [argument]
 
-Server Usage: sshyp <argument> [option] [device id]
+Server Usage: sshyp <argument>
 .SH DESCRIPTION
 sshyp is a lightweight password and note management program written in Python. sshyp is used via CLI and is self-hosted with a client-server model. sshyp expects that you have access to a personal server with a properly configured ssh server, ideally accepting remote connections.
 .SH EXAMPLES (CLIENT)
@@ -19,6 +19,9 @@ Viewing the entry database:
 
 Reading an existing entry saved as '~/.local/share/sshyp/development/github.gpg':
     sshyp /development/github
+
+Removing an existing folder saved as '~/.local/share/sshyp/social':
+    sshyp /social shear
 
 Reading the same entry without hiding the password:
     sshyp /development/github --show
@@ -37,21 +40,6 @@ Creating a note-only entry saved as '~/.local/share/sshyp/notes/test note.gpg':
 
 Manually syncing entries with the server:
     sshyp sync
-
-Removing an existing folder saved as '~/.local/share/sshyp/social':
-    sshyp /social/ shear
-.SH EXAMPLES (SERVER)
-Setting up the quick-unlock whitelist:
-    sshyp whitelist setup
-
-Checking the quick-unlock whitelist status of all registered client devices:
-    sshyp whitelist list
-
-Adding a device with the id 'laptop-im|lAoa;&;r&o:ez((g/Dz;EVb.nO_' to the quick-unlock whitelist:
-    sshyp whitelist add 'laptop-im|lAoa;&;r&o:ez((g/Dz;EVb.nO_'
-
-Removing a device with the id 'laptop-im|lAoa;&;r&o:ez((g/Dz;EVb.nO_' from the quick-unlock whitelist:
-    sshyp whitelist del 'laptop-im|lAoa;&;r&o:ez((g/Dz;EVb.nO_'
 .SH ARGUMENTS (CLIENT)
  help/-h                 bring up the help menu
  version/-v              display sshyp version info
@@ -89,13 +77,6 @@ gen:
  version/-v              display sshyp version info
  init                    set up sshyp
  tweak                   change configuration options/manage extensions and updates
- whitelist               manage the quick-unlock whitelist
-.SH OPTIONS (SERVER)
-whitelist:
- setup                   set up the quick-unlock whitelist
- list/-l                 view all registered device ids and their quick-unlock whitelist status
- add                     whitelist a device id for quick-unlock
- del                     remove a device id from the quick-unlock whitelist
 .SH SETUP
 sshyp operates on a client-server model, and thus requires you to have access to your own server (whether it be a physical home server or a cloud rental) with remote access via SSH.
 
@@ -106,7 +87,7 @@ Server setup:
     Allow remote access to the SSH server w/public key authentication (disabling password-only authentication recommended)
     Install sshyp
     Run "sshyp init" and set the device type as server
-    Optionally, run "sshyp whitelist setup" and configure quick-unlock
+    Optionally, configure a quick-unlock pin from the tweak menu
     Done!
 
 Client setup:

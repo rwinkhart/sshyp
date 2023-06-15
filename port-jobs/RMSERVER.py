@@ -4,7 +4,7 @@ import re
 devtype_replacement = """_install_type = curses_radio(('client (ssh-synchronized)', 'client (offline)'),
                                  'device + sync type configuration')"""
 
-targets = (('SSHYNC-REMOTE', 'sshync.py', '\n', '\n\n', ''), ('WHITELIST-SERVER', 'sshyp.py', '\n', '\n\n', ''),
+targets = (('SSHYNC-REMOTE', 'sshync.py', '\n', '\n\n', ''), ('WHITELIST-SERVER', 'stweak.py', '\n', '\n\n', ''),
            ('TWEAK-DEVTYPE', 'stweak.py', '', '', devtype_replacement),
            ('ARGS-SERVER', 'sshyp.py', '', '\n\n        ', ''), ('HELP-SERVER', 'sshyp.py', '', '\n', ''))
 

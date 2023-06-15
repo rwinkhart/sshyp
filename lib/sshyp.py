@@ -309,20 +309,6 @@ def print_info():
 \u001b[1moptions:\u001b[0m
  gen:
   update/-u{14*' '}generate a password for an existing entry\n""")
-    elif arguments[0] == 'whitelist':
-        if device_type == 'server':
-            if arg_count > 1 and arguments[1] in ('add', 'del'):
-                print("\nwhen adding or deleting devices from the whitelist,\nthe device ID must be specified as an"
-                      " argument\n\nexample: sshyp whitelist add 'this-is-a-quoted-device-id'")
-            print(f"""\n\u001b[1musage:\u001b[0m sshyp whitelist <option> [device id]\u001b[0m\n
-\u001b[1moptions:\u001b[0m
- whitelist:
-  setup{18*' '}set up the quick-unlock whitelist
-  list/-l{16*' '}view all registered device ids and their quick-unlock whitelist status
-  add{20*' '}whitelist a device id for quick-unlock
-  del{20*' '}remove a device id from the quick-unlock whitelist\n""")
-        else:
-            print('\n\u001b[38;5;9merror: argument (whitelist) only available on server\u001b[0m\n')
     else:
         print("\n\u001b[1msshyp ", "copyright (c) 2021-2023 ", """randall winkhart\u001b[0m
 this is free software, and you are welcome to redistribute it under certain conditions;
@@ -362,19 +348,12 @@ this program comes with absolutely no warranty; type 'sshyp license' for details
 \u001b[1mtip 2:\u001b[0m type 'sshyp' to view a list of saved entries\n""")
         # PORT START HELP-SERVER
         else:
-            print(f"""\n\u001b[1musage:\u001b[0m sshyp <argument> [option] [device id]\n
+            print(f"""\n\u001b[1musage:\u001b[0m sshyp <argument>\n
 \u001b[1marguments:\u001b[0m
  help/-h{17*' '}bring up this menu
  version/-v{14*' '}display sshyp version info
  init{20*' '}set up sshyp
- tweak{19*' '}change configuration options/manage extensions and updates
- whitelist{15*' '}manage the quick-unlock whitelist
-\n\u001b[1moptions:\u001b[0m
- whitelist:
-  setup{18*' '}set up the quick-unlock whitelist
-  list/-l{16*' '}view all registered device ids and their quick-unlock whitelist status
-  add{20*' '}whitelist a device id for quick-unlock
-  del{20*' '}remove a device id from the quick-unlock whitelist\n""")
+ tweak{19*' '}change configuration options/manage extensions and updates\n""")
         # PORT END HELP-SERVER
 
 
@@ -397,75 +376,6 @@ def sync():
         for _file in _files:
             chmod(_root + '/' + _file, 0o600)
     run_profile(f"{home}/.config/sshyp/sshyp.ini", silent_sync)
-
-
-# PORT START WHITELIST-SERVER
-# takes input from the user to set up quick-unlock password
-def whitelist_setup():
-    from getpass import getpass
-    _gpg_password_temp = str(getpass(prompt='\nfull gpg passphrase: '))
-    _half_length = int(len(_gpg_password_temp)/2)
-    try:
-        _short_password_length = int(input("\nquick unlock pin length (must be half the length "
-                                           f"of the gpg passphrase or less) ({_half_length}): "))
-        if not 0 <= _short_password_length <= _half_length:
-            _short_password_length = _half_length
-    except ValueError:
-        _short_password_length = _half_length
-    _i, _quick_unlock_password, _quick_unlock_password_excluded = 0, '', ''
-    for _char in _gpg_password_temp:
-        if _i % 2 == 1 and _i < _short_password_length*2:
-            _quick_unlock_password += _char
-        else:
-            _quick_unlock_password_excluded += _char
-        _i += 1
-
-    # create assembly key
-    open(f"{home}/.config/sshyp/gpg-gen", 'w').writelines([
-        'Key-Type: 1\n', 'Key-Length: 4096\n', 'Key-Usage: sign encrypt\n', 'Name-Real: sshyp\n',
-        'Name-Comment: gpg-sshyp-whitelist\n', 'Name-Email: github.com/rwinkhart/sshyp\n', 'Expire-Date: 0'])
-    run(('gpg', '-q', '--pinentry-mode', 'loopback', '--batch', '--generate-key', '--passphrase',
-         _quick_unlock_password, f"{home}/.config/sshyp/gpg-gen"))
-    remove(f"{home}/.config/sshyp/gpg-gen")
-    _gpg_id = run(('gpg', '-k', '--with-colons'), stdout=PIPE, text=True).stdout.splitlines()[-1].split(':')[9]
-
-    # encrypt excluded with the assembly key
-    _shm_folder, _shm_entry = shm_gen()
-    open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'w').write(_quick_unlock_password_excluded)
-    encrypt(f"{home}/.config/sshyp/excluded", _shm_folder, _shm_entry, _gpg_id)
-    print(f"\nyour quick-unlock pin: {_quick_unlock_password}")
-
-
-# shows the quick-unlock whitelist status of device ids
-def whitelist_list():
-    _whitelisted_ids = listdir(f"{home}/.config/sshyp/whitelist")
-    _device_ids = listdir(f"{home}/.config/sshyp/devices")
-    print('\n\u001b[1mquick-unlock whitelisted device ids:\u001b[0m')
-    for _id in _whitelisted_ids:
-        print(_id)
-    print('\n\u001b[1mother registered device ids:\u001b[0m')
-    for _id in _device_ids:
-        if _id not in _whitelisted_ids:
-            print(_id)
-    print()
-
-
-# adds or removes quick-unlock whitelisted device ids
-def whitelist_manage(_device_id):
-    if arguments[1] == 'add':
-        if _device_id in listdir(f"{home}/.config/sshyp/devices"):
-            open(f"{home}/.config/sshyp/whitelist/{_device_id}", 'w').write('')
-            whitelist_list()
-        else:
-            print(f"\n\u001b[38;5;9merror: device id ({_device_id}) is not registered\u001b[0m\n")
-            s_exit(1)
-    elif isfile(f"{home}/.config/sshyp/whitelist/{_device_id}"):
-        remove(f"{home}/.config/sshyp/whitelist/{_device_id}")
-        whitelist_list()
-    else:
-        print(f"\n\u001b[38;5;9merror: device id ({_device_id}) is not whitelisted\u001b[0m\n")
-        s_exit(1)
-# PORT END WHITELIST-SERVER
 
 
 # checks the user's whitelist status and fetches the full gpg key password if possible
@@ -839,20 +749,10 @@ if __name__ == "__main__":
             if arg_count < 1:
                 arguments.append('help')
                 print_info()
-            elif arg_count == 2 and arguments[0] == 'whitelist':
-                if arguments[1] in ('list', '-l'):
-                    success_flag = True
-                    whitelist_list()
-                elif arguments[1] == 'setup':
-                    success_flag = True
-                    whitelist_setup()
             elif arg_count == 1 and arguments[0] == 'tweak':
                 success_flag = True
                 from stweak import global_menu
                 global_menu('server', 'configuration options:')
-            elif arg_count > 2 and arguments[1] in ('add', 'del'):
-                success_flag = True
-                whitelist_manage(arguments[2])
         # PORT END ARGS-SERVER
 
         if arg_count > 0 and success_flag == 0 and arguments[0] != 'sync':

@@ -276,6 +276,90 @@ def refresh_encryption():
         return 2
     
 
+# PORT START WHITELIST-SERVER
+# takes input from the user to set up quick-unlock pin
+def whitelist_setup():
+    _gpg_password_temp = str(curses_text('full gpg passphrase:\n\n\n\n\n(ctrl+g/enter to confirm)'))
+    _half_length = int(len(_gpg_password_temp)/2)
+    try:
+        _short_password_length = int(curses_text(f"quick unlock pin length ({_half_length}):\n\n\n\n\n(ctrl+g/enter "
+                                                 "to confirm)\n\npin must be half the length of the gpg passphrase "
+                                                 "or less\n\ncannot be a negative number"))
+        if not 0 <= _short_password_length <= _half_length:
+            _short_password_length = _half_length
+    except ValueError:
+        _short_password_length = _half_length
+    _i, _quick_unlock_password, _quick_unlock_password_excluded = 0, '', ''
+    for _char in _gpg_password_temp:
+        if _i % 2 == 1 and _i < _short_password_length*2:
+            _quick_unlock_password += _char
+        else:
+            _quick_unlock_password_excluded += _char
+        _i += 1
+
+    # create assembly key
+    open(f"{home}/.config/sshyp/gpg-gen", 'w').writelines([
+        'Key-Type: 1\n', 'Key-Length: 4096\n', 'Key-Usage: sign encrypt\n', 'Name-Real: sshyp\n',
+        'Name-Comment: gpg-sshyp-whitelist\n', 'Name-Email: github.com/rwinkhart/sshyp\n', 'Expire-Date: 0'])
+    run(('gpg', '-q', '--pinentry-mode', 'loopback', '--batch', '--generate-key', '--passphrase',
+         _quick_unlock_password, f"{home}/.config/sshyp/gpg-gen"))
+    remove(f"{home}/.config/sshyp/gpg-gen")
+    _gpg_id = run(('gpg', '-k', '--with-colons'), stdout=PIPE, text=True).stdout.splitlines()[-1].split(':')[9]
+
+    # encrypt excluded with the assembly key
+    from sshyp import encrypt, shm_gen
+    _shm_folder, _shm_entry = shm_gen()
+    open(f"{home}/.config/sshyp/tmp/{_shm_folder}/{_shm_entry}", 'w').write(_quick_unlock_password_excluded)
+    encrypt(f"{home}/.config/sshyp/excluded", _shm_folder, _shm_entry, _gpg_id)
+    curses_radio(['okay, I have it memorized'], f"your quick-unlock pin: {_quick_unlock_password}")
+
+
+# adds or removes quick-unlock whitelisted device ids
+def whitelist_manage(_action):
+    _whitelisted_ids = listdir(f"{home}/.config/sshyp/whitelist")
+    _device_ids = listdir(f"{home}/.config/sshyp/devices")
+
+    # a value of True indicates adding
+    if _action:
+        _unwhitelisted_ids = []    
+        for _id in _device_ids:
+            if _id not in _whitelisted_ids:
+                _unwhitelisted_ids.append(_id)
+        _unwhitelisted_ids.append('cancel')
+        _add_id = curses_radio(_unwhitelisted_ids, 'id to add to whitelist:')
+        if _add_id == len(_unwhitelisted_ids)-1:
+            return
+        open(f"{home}/.config/sshyp/whitelist/{_unwhitelisted_ids[_add_id]}", 'w').write('')
+    else:
+        _whitelisted_choices = _whitelisted_ids + ['cancel']
+        _del_id = curses_radio(_whitelisted_choices, 'id to remove from whitelist:')
+        if _del_id == len(_whitelisted_choices)-1:
+            return
+        remove(f"{home}/.config/sshyp/whitelist/{_whitelisted_ids[_del_id]}")
+
+    # prune deleted device ids from whitelist
+    for _id in _whitelisted_ids:
+        if _id not in _device_ids:
+            remove(f"{home}/.config/sshyp/whitelist/{_id}")
+
+
+# runs quick-unlock configuration menu
+def whitelist_menu():
+    while True:
+        _choice = curses_radio(('setup/create pin', 'add to whitelist', 'remove from whitelist', 
+                                'exit/done'), 'quick-unlock/whitelist management')
+
+        if _choice == 0:
+            whitelist_setup()
+        elif _choice == 1:
+            whitelist_manage(True)
+        elif _choice == 2:
+            whitelist_manage(False)
+        else:
+            break
+# PORT END WHITELIST-SERVER
+
+
 # runs secondary configuration menu
 def global_menu(_device_type, _top_message):
     while True:
@@ -294,7 +378,7 @@ def global_menu(_device_type, _top_message):
                                  '[OPTIONAL] re-encrypt/optimize entries',
                                  '[OPTIONAL, NOT IMPLEMENTED] extensions and updates'])
             else:
-                _options.extend(['manage quick-unlock'])
+                _options.extend(['manage quick-unlock/whitelist'])
             _options.extend(['exit/done'])
             _choice += curses_radio(_options, _top_message)
 
@@ -312,7 +396,7 @@ def global_menu(_device_type, _top_message):
                 if _device_type == 'client':
                     gpg_config()
                 else:
-                    pass  # TODO implement quick-unlock management
+                    whitelist_menu()
             elif _choice == 2:
                 if _device_type == 'client':
                     ssh_config()
@@ -328,11 +412,10 @@ def global_menu(_device_type, _top_message):
             elif _choice == 5:
                 _enabled = quick_unlock_config(False)
                 if _enabled == 'true':
-                    # TODO update for future menu-based quick-unlock management
-                    _term_message = ("\nquick-unlock has been enabled client-side - in order for this feature to "
-                                     "function,\nyou must first log in to the sshyp server and run:\n\nsshyp whitelist "
-                                     "setup (if not already done)\nsshyp whitelist add "
-                                     f"'{listdir(f'{home}/.config/sshyp/devices')[0].rstrip()}'\n")
+                    _term_message = ('\nquick-unlock has been enabled client-side - in order for this feature to '
+                                     'function,\nyou must first log in to the sshyp server and run:\n\nsshyp tweak\n\n'
+                                     'from there you can create a quick-unlock pin and add this device to the '
+                                     'whitelist')
             elif _choice == 7:
                 _success = refresh_encryption()
                 if _success == 1:
