@@ -402,7 +402,8 @@ def sync():
 # PORT START WHITELIST-SERVER
 # takes input from the user to set up quick-unlock password
 def whitelist_setup():
-    _gpg_password_temp = str(input('\nfull gpg passphrase: '))
+    from getpass import getpass
+    _gpg_password_temp = str(getpass(prompt='\nfull gpg passphrase: '))
     _half_length = int(len(_gpg_password_temp)/2)
     try:
         _short_password_length = int(input(f"\nquick unlock pin length (must be half the length of gpg password or "
