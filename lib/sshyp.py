@@ -406,9 +406,9 @@ def whitelist_setup():
     _gpg_password_temp = str(getpass(prompt='\nfull gpg passphrase: '))
     _half_length = int(len(_gpg_password_temp)/2)
     try:
-        _short_password_length = int(input(f"\nquick unlock pin length (must be half the length of gpg password or "
-                                           f"less) ({_half_length}): "))
-        if _short_password_length > _half_length:
+        _short_password_length = int(input("\nquick unlock pin length (must be half the length "
+                                           f"of the gpg passphrase or less) ({_half_length}): "))
+        if not 0 <= _short_password_length <= _half_length:
             _short_password_length = _half_length
     except ValueError:
         _short_password_length = _half_length
@@ -433,7 +433,7 @@ def whitelist_setup():
     _shm_folder, _shm_entry = shm_gen()
     open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'w').write(_quick_unlock_password_excluded)
     encrypt(f"{home}/.config/sshyp/excluded", _shm_folder, _shm_entry, _gpg_id)
-    print(f"\nyour quick-unlock passphrase: {_quick_unlock_password}")
+    print(f"\nyour quick-unlock pin: {_quick_unlock_password}")
 
 
 # shows the quick-unlock whitelist status of device ids
@@ -482,7 +482,7 @@ def whitelist_verify(_port, _username_ssh, _ip, _client_device_id):
         for _device_id in _server_whitelist:
             if _device_id == _client_device_id:
                 from getpass import getpass
-                _quick_unlock_password = getpass(prompt='\nquick-unlock passphrase: ')
+                _quick_unlock_password = getpass(prompt='\nquick-unlock pin: ')
                 _quick_unlock_password_excluded = \
                     run(('ssh', '-i', f"{home}/.ssh/sshyp", '-p',  _port, f"{_username_ssh}@{_ip}",
                          f"gpg --pinentry-mode loopback --passphrase '{_quick_unlock_password}' "
