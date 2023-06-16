@@ -133,7 +133,7 @@ def encrypt(_entry_dir, _shm_folder, _shm_entry, _gpg_id, _tmp_dir=f"{home}/.con
 
 
 # decrypts an entry to a temporary directory
-def decrypt(_entry_dir, _shm_folder, _shm_entry, _quick_verify, _quick_pass=None,
+def decrypt(_entry_dir, _shm_folder, _shm_entry, _quick_verify=None, _quick_pass=None,
             _tmp_dir=f"{home}/.config/sshyp/tmp/"):
     # check quick-unlock status, fetch passphrase
     if _quick_verify == 'true':
@@ -166,6 +166,39 @@ def decrypt(_entry_dir, _shm_folder, _shm_entry, _quick_verify, _quick_pass=None
         else:
             print('\n\u001b[38;5;9merror: could not decrypt - ensure the correct gpg key is present\u001b[0m\n')
             s_exit(4)
+
+
+# checks the user's whitelist status and fetches the full gpg key password if possible
+def whitelist_verify(_port, _username_ssh, _ip, _client_device_id):
+    try:
+        run(('gpg', '--pinentry-mode', 'cancel', '-qd', '--output', '/dev/null',
+             f"{home}/.config/sshyp/lock.gpg"), stderr=DEVNULL, check=True)
+        return False
+    except CalledProcessError:
+        _i, _full_password = 0, ''
+        _server_whitelist = run(('ssh', '-i', f"{home}/.ssh/sshyp", '-p', _port, f"{_username_ssh}@{_ip}",
+                                 f'python3 -c \'from os import listdir; print(*listdir("/home/{_username_ssh}'
+                                 f'/.config/sshyp/whitelist"))\''), stdout=PIPE, text=True).stdout.rstrip().split()
+        for _device_id in _server_whitelist:
+            if _device_id == _client_device_id:
+                from getpass import getpass
+                _quick_unlock_password = getpass(prompt='\nquick-unlock pin: ')
+                _quick_unlock_password_excluded = \
+                    run(('ssh', '-i', f"{home}/.ssh/sshyp", '-p',  _port, f"{_username_ssh}@{_ip}",
+                         f"gpg --pinentry-mode loopback --passphrase '{_quick_unlock_password}' "
+                         f"-qd ~/.config/sshyp/excluded.gpg"), stdout=PIPE, text=True).stdout.rstrip()
+                while _i < len(_quick_unlock_password_excluded):
+                    try:
+                        _full_password += _quick_unlock_password_excluded[_i]
+                    except IndexError:
+                        pass
+                    try:
+                        _full_password += _quick_unlock_password[_i]
+                    except IndexError:
+                        pass
+                    _i += 1
+                break
+    return _full_password
 
 
 # returns True if expected and reality align, otherwise error
@@ -362,7 +395,7 @@ this program comes with absolutely no warranty; type 'sshyp license' for details
 def read_shortcut():
     target_type_check(entry_name, True, True)
     _shm_folder, _shm_entry = shm_gen()
-    decrypt(directory + entry_name, _shm_folder, _shm_entry, quick_unlock_enabled)
+    decrypt(directory + entry_name, _shm_folder, _shm_entry, _quick_verify=quick_unlock_enabled)
     entry_reader(f"{tmp_dir}{_shm_folder}/{_shm_entry}")
     rmtree(f"{tmp_dir}{_shm_folder}")
 
@@ -377,39 +410,6 @@ def sync():
         for _file in _files:
             chmod(_root + '/' + _file, 0o600)
     run_profile(f"{home}/.config/sshyp/sshyp.ini", silent_sync)
-
-
-# checks the user's whitelist status and fetches the full gpg key password if possible
-def whitelist_verify(_port, _username_ssh, _ip, _client_device_id):
-    try:
-        run(('gpg', '--pinentry-mode', 'cancel', '-qd', '--output', '/dev/null',
-             f"{home}/.config/sshyp/lock.gpg"), stderr=DEVNULL, check=True)
-        return False
-    except CalledProcessError:
-        _i, _full_password = 0, ''
-        _server_whitelist = run(('ssh', '-i', f"{home}/.ssh/sshyp", '-p', _port, f"{_username_ssh}@{_ip}",
-                                 f'python3 -c \'from os import listdir; print(*listdir("/home/{_username_ssh}'
-                                 f'/.config/sshyp/whitelist"))\''), stdout=PIPE, text=True).stdout.rstrip().split()
-        for _device_id in _server_whitelist:
-            if _device_id == _client_device_id:
-                from getpass import getpass
-                _quick_unlock_password = getpass(prompt='\nquick-unlock pin: ')
-                _quick_unlock_password_excluded = \
-                    run(('ssh', '-i', f"{home}/.ssh/sshyp", '-p',  _port, f"{_username_ssh}@{_ip}",
-                         f"gpg --pinentry-mode loopback --passphrase '{_quick_unlock_password}' "
-                         f"-qd ~/.config/sshyp/excluded.gpg"), stdout=PIPE, text=True).stdout.rstrip()
-                while _i < len(_quick_unlock_password_excluded):
-                    try:
-                        _full_password += _quick_unlock_password_excluded[_i]
-                    except IndexError:
-                        pass
-                    try:
-                        _full_password += _quick_unlock_password[_i]
-                    except IndexError:
-                        pass
-                    _i += 1
-                break
-    return _full_password
 
 
 # adds a new entry
@@ -498,7 +498,7 @@ def edit():
     target_type_check(entry_name, True, True)
     
     _shm_folder, _shm_entry = shm_gen()
-    decrypt(directory + entry_name, _shm_folder, _shm_entry, quick_unlock_enabled)
+    decrypt(directory + entry_name, _shm_folder, _shm_entry, _quick_verify=quick_unlock_enabled)
     if arguments[2] in ('username', '-u'):
         _detail, _edit_line = str(input('username: ')), 1
     elif arguments[2] in ('password', '-p'):
@@ -527,7 +527,7 @@ def gen():
     if arg_count == 3 and arguments[2] in ('update', '-u'):
         # ensure the gen update target is an entry        
         target_type_check(entry_name, True, True)
-        decrypt(directory + entry_name, _shm_folder, _shm_entry, quick_unlock_enabled)
+        decrypt(directory + entry_name, _shm_folder, _shm_entry, _quick_verify=quick_unlock_enabled)
         _new_lines = optimized_edit(open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'r').readlines(), pass_gen(), 0)
         open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'w').writelines(_new_lines)
         remove(f"{directory}{entry_name}.gpg")
@@ -557,7 +557,7 @@ def copy_data():
     # ensure the copy target is an entry
     target_type_check(entry_name, True, True)
     _shm_folder, _shm_entry = shm_gen()
-    decrypt(directory + entry_name, _shm_folder, _shm_entry, quick_unlock_enabled)
+    decrypt(directory + entry_name, _shm_folder, _shm_entry, _quick_verify=quick_unlock_enabled)
     _copy_line, _index = [_line.rstrip() for _line in open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'r').readlines()], 0
     if arguments[2] in ('username', '-u'):
         _index = 1
@@ -607,7 +607,7 @@ def copy_data():
 
 # deletes an entry from the server and flags it for local deletion on sync
 def remove_data():
-    decrypt(f"{home}/.config/sshyp/lock.gpg", None, None, quick_unlock_enabled)
+    decrypt(f"{home}/.config/sshyp/lock.gpg", None, None, _quick_verify=quick_unlock_enabled)
     if not ssh_error:
         run(('ssh', '-i', f"{home}/.ssh/sshyp", '-p', port, f"{username_ssh}@{ip}",
              f'cd /usr/lib/sshyp; python3 -c \'from sshync import delete; delete("{entry_name}", "remotely", False)\''))

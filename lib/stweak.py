@@ -262,7 +262,7 @@ def refresh_encryption():
             for _filename in _files:
                 Path(_root.replace(_directory, _directory + '.new', 1)).mkdir(0o700, parents=True, exist_ok=True)
                 _shm_folder, _shm_entry = shm_gen()
-                decrypt(f"{_root}/{_filename[:-4]}", _shm_folder, _shm_entry, False)
+                decrypt(f"{_root}/{_filename[:-4]}", _shm_folder, _shm_entry)
                 _new_lines = optimized_edit(open(f"{_tmp_dir}{_shm_folder}/{_shm_entry}", 'r').readlines(), None, -1)
                 open(f"{_tmp_dir}{_shm_folder}/{_shm_entry}", 'w').writelines(_new_lines)
                 encrypt(f"{_root.replace(_directory, _directory + '.new', 1)}/{_filename[:-4]}", _shm_folder,
