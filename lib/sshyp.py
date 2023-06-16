@@ -133,9 +133,9 @@ def encrypt(_entry_dir, _shm_folder, _shm_entry, _gpg_id, _tmp_dir=f"{home}/.con
 
 
 # decrypts an entry to a temporary directory
-def decrypt(_entry_dir, _shm_folder, _shm_entry, _tmp_dir=f"{home}/.config/sshyp/tmp/"):
+def decrypt(_entry_dir, _shm_folder, _shm_entry, _quick_unlock_enabled, _tmp_dir=f"{home}/.config/sshyp/tmp/"):
     # check quick-unlock status, fetch passphrase
-    if sshyp_data.get('CLIENT-ONLINE', 'quick_unlock_enabled') == 'true':
+    if _quick_unlock_enabled == 'true':
         _quick_pass = whitelist_verify(port, username_ssh, ip, client_device_id)
     else:
         _quick_pass = False
@@ -360,7 +360,7 @@ this program comes with absolutely no warranty; type 'sshyp license' for details
 def read_shortcut():
     target_type_check(entry_name, True, True)
     _shm_folder, _shm_entry = shm_gen()
-    decrypt(directory + entry_name, _shm_folder, _shm_entry)
+    decrypt(directory + entry_name, _shm_folder, _shm_entry, quick_unlock_enabled)
     entry_reader(f"{tmp_dir}{_shm_folder}/{_shm_entry}")
     rmtree(f"{tmp_dir}{_shm_folder}")
 
@@ -496,7 +496,7 @@ def edit():
     target_type_check(entry_name, True, True)
     
     _shm_folder, _shm_entry = shm_gen()
-    decrypt(directory + entry_name, _shm_folder, _shm_entry)
+    decrypt(directory + entry_name, _shm_folder, _shm_entry, quick_unlock_enabled)
     if arguments[2] in ('username', '-u'):
         _detail, _edit_line = str(input('username: ')), 1
     elif arguments[2] in ('password', '-p'):
@@ -525,7 +525,7 @@ def gen():
     if arg_count == 3 and arguments[2] in ('update', '-u'):
         # ensure the gen update target is an entry        
         target_type_check(entry_name, True, True)
-        decrypt(directory + entry_name, _shm_folder, _shm_entry)
+        decrypt(directory + entry_name, _shm_folder, _shm_entry, quick_unlock_enabled)
         _new_lines = optimized_edit(open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'r').readlines(), pass_gen(), 0)
         open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'w').writelines(_new_lines)
         remove(f"{directory}{entry_name}.gpg")
@@ -555,7 +555,7 @@ def copy_data():
     # ensure the copy target is an entry
     target_type_check(entry_name, True, True)
     _shm_folder, _shm_entry = shm_gen()
-    decrypt(directory + entry_name, _shm_folder, _shm_entry)
+    decrypt(directory + entry_name, _shm_folder, _shm_entry, quick_unlock_enabled)
     _copy_line, _index = [_line.rstrip() for _line in open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'r').readlines()], 0
     if arguments[2] in ('username', '-u'):
         _index = 1
@@ -605,7 +605,7 @@ def copy_data():
 
 # deletes an entry from the server and flags it for local deletion on sync
 def remove_data():
-    decrypt(f"{home}/.config/sshyp/lock.gpg", None, None)
+    decrypt(f"{home}/.config/sshyp/lock.gpg", None, None, quick_unlock_enabled)
     if not ssh_error:
         run(('ssh', '-i', f"{home}/.ssh/sshyp", '-p', port, f"{username_ssh}@{ip}",
              f'cd /usr/lib/sshyp; python3 -c \'from sshync import delete; delete("{entry_name}", "remotely", False)\''))
@@ -672,7 +672,9 @@ if __name__ == "__main__":
                     offline_mode_enabled = sshyp_data.get('CLIENT-GENERAL', 'offline_mode_enabled')
                     if offline_mode_enabled == 'true':
                         ssh_error = True
+                        quick_unlock_enabled = 'false'
                     else:
+                        quick_unlock_enabled = sshyp_data.get('CLIENT-ONLINE', 'quick_unlock_enabled')
                         username_ssh = sshyp_data.get('SSHYNC', 'user')
                         ip = sshyp_data.get('SSHYNC', 'ip')
                         port = sshyp_data.get('SSHYNC', 'port')
