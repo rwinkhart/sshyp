@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 from configparser import ConfigParser
 from curses import A_REVERSE, echo, KEY_DOWN, KEY_UP, cbreak, curs_set, endwin, initscr, newwin, noecho, nocbreak
 from curses.textpad import rectangle, Textbox

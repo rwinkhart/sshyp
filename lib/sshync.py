@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 from os import listdir, remove, walk
 from os.path import expanduser, isdir, isfile, getmtime, join
 from subprocess import CalledProcessError, PIPE, run
