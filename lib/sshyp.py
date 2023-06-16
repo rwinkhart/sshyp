@@ -133,12 +133,14 @@ def encrypt(_entry_dir, _shm_folder, _shm_entry, _gpg_id, _tmp_dir=f"{home}/.con
 
 
 # decrypts an entry to a temporary directory
-def decrypt(_entry_dir, _shm_folder, _shm_entry, _quick_unlock_enabled, _tmp_dir=f"{home}/.config/sshyp/tmp/"):
+def decrypt(_entry_dir, _shm_folder, _shm_entry, _quick_verify, _quick_pass=None,
+            _tmp_dir=f"{home}/.config/sshyp/tmp/"):
     # check quick-unlock status, fetch passphrase
-    if _quick_unlock_enabled == 'true':
+    if _quick_verify == 'true':
         _quick_pass = whitelist_verify(port, username_ssh, ip, client_device_id)
     else:
-        _quick_pass = False
+        if _quick_pass is None:
+            _quick_pass = False
 
     # if a quick-unlock password is available
     if not isinstance(_quick_pass, bool):
