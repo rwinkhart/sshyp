@@ -372,7 +372,6 @@ def global_menu(_device_type, _top_message):
                 _options.extend(['change gpg key', 're-configure ssh(ync)', 'change device name',
                                  '[OPTIONAL, RECOMMENDED] set custom text editor',
                                  '[OPTIONAL] enable/disable quick-unlock',
-                                 '[OPTIONAL, NOT IMPLEMENTED] su security mode',
                                  '[OPTIONAL] re-encrypt/optimize entries',
                                  '[OPTIONAL, NOT IMPLEMENTED] extensions and updates'])
             else:
@@ -414,7 +413,7 @@ def global_menu(_device_type, _top_message):
                                      'function,\nyou must first log in to the sshyp server and run:\n\nsshyp tweak\n\n'
                                      'from there you can create a quick-unlock pin and add this device to the '
                                      'whitelist\n')
-            elif _choice == 7:
+            elif _choice == 6:
                 _success = refresh_encryption()
                 if _success == 1:
                     _term_message = "\na backup of your previous entry directory has been created:\n\n" \
@@ -422,7 +421,7 @@ def global_menu(_device_type, _top_message):
                 elif _success == 2:
                     _term_message = '\n\u001b[38;5;9merror: re-encryption failed: ' \
                                     'entry directory not found\u001b[0m\n'
-            elif _choice > 5 and _choice != 7:  # TODO update once displayed options are all implemented
+            elif _choice > 6:  # TODO update once displayed options are all implemented
                 _exit_signal = True
             curses_terminate(_term_message)
         except KeyboardInterrupt:
