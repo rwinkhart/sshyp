@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from configparser import ConfigParser, NoSectionError
-from os import chmod, environ, listdir, remove, walk
+from os import chmod, environ, listdir, walk
 from os.path import expanduser, isdir, isfile, realpath
 from pathlib import Path
 from random import randint
@@ -46,28 +46,28 @@ def entry_list_gen(_directory=f"{home}/.local/share/sshyp/"):
 
 # displays the contents of an entry in a readable format
 def entry_reader(_decrypted_entry):
-    _entry_lines, _notes_flag = [_line.rstrip() for _line in open(_decrypted_entry, 'r').readlines()], 0
+    _notes_flag = 0
     if pass_show:
-        _entry_password = f'\u001b[38;5;10m{_entry_lines[0]}\u001b[0m'
+        _entry_password = f'\u001b[38;5;10m{_decrypted_entry[0]}\u001b[0m'
     else:
         _entry_password = f'\u001b[38;5;3mend command in "--show" or "-s" to view\u001b[0m'
     print()
-    for _num in range(len(_entry_lines)):
+    for _num in range(len(_decrypted_entry)):
         try:
-            if _num == 0 and _entry_lines[1] != '':
-                print(f"\u001b[38;5;15;48;5;238musername:\u001b[0m\n{_entry_lines[1]}\n")
-            elif _num == 1 and _entry_lines[0] != '':
+            if _num == 0 and _decrypted_entry[1] != '':
+                print(f"\u001b[38;5;15;48;5;238musername:\u001b[0m\n{_decrypted_entry[1]}\n")
+            elif _num == 1 and _decrypted_entry[0] != '':
                 print(f"\u001b[38;5;15;48;5;238mpassword:\u001b[0m\n{_entry_password}\n")
-            elif _num == 2 and _entry_lines[2] != '':
-                print(f"\u001b[38;5;15;48;5;238murl:\u001b[0m\n{_entry_lines[_num]}\n")
-            elif _num >= 3 and _entry_lines[_num] != '' and _notes_flag != 1:
+            elif _num == 2 and _decrypted_entry[2] != '':
+                print(f"\u001b[38;5;15;48;5;238murl:\u001b[0m\n{_decrypted_entry[_num]}\n")
+            elif _num >= 3 and _decrypted_entry[_num] != '' and _notes_flag != 1:
                 _notes_flag = 1
-                print('\u001b[38;5;15;48;5;238mnotes:\u001b[0m\n' + _entry_lines[_num])
+                print('\u001b[38;5;15;48;5;238mnotes:\u001b[0m\n' + _decrypted_entry[_num])
             elif _num >= 3 and _notes_flag == 1:
-                print(_entry_lines[_num])
+                print(_decrypted_entry[_num])
             if _notes_flag == 1:
                 try:
-                    _line_test = _entry_lines[_num + 1]
+                    _line_test = _decrypted_entry[_num + 1]
                 except IndexError:
                     print()
         except IndexError:
@@ -126,15 +126,16 @@ def shm_gen(_tmp_dir=f"{home}/.config/sshyp/tmp/"):
 
 
 # encrypts an entry and cleans up the temporary files
-def encrypt(_entry_dir, _shm_folder, _shm_entry, _gpg_id, _tmp_dir=f"{home}/.config/sshyp/tmp/"):
-    run(('gpg', '-qr', str(_gpg_id), '-e', f"{_tmp_dir}{_shm_folder}/{_shm_entry}"))
-    move(f"{_tmp_dir}{_shm_folder}/{_shm_entry}.gpg", f"{_entry_dir}.gpg")
-    rmtree(f"{_tmp_dir}{_shm_folder}")
+def encrypt(_entry_data, _entry_dir, _gpg_id, _tmp_dir=f"{home}/.config/sshyp/tmp/"):
+    _bytes_data = '\n'.join(_entry_data).encode()
+    _encrypted_data = run(('gpg', '-qr', str(_gpg_id), '-e'), input=_bytes_data, stdout=PIPE).stdout
+    open(_entry_dir + '.gpg', 'wb').write(_encrypted_data)
 
 
 # decrypts an entry to a temporary directory
-def decrypt(_entry_dir, _shm_folder, _shm_entry, _quick_verify=None, _quick_pass=None,
-            _tmp_dir=f"{home}/.config/sshyp/tmp/"):
+def decrypt(_entry_dir, _quick_verify=None, _quick_pass=None, _tmp_dir=f"{home}/.config/sshyp/tmp/"):
+    _contents = None
+
     # check quick-unlock status, fetch passphrase
     if _quick_verify == 'true':
         _quick_pass = whitelist_verify(port, username_ssh, ip, client_device_id)
@@ -142,30 +143,34 @@ def decrypt(_entry_dir, _shm_folder, _shm_entry, _quick_verify=None, _quick_pass
         if _quick_pass is None:
             _quick_pass = False
 
-    # if a quick-unlock password is available
+    # set decryption method based on quick-unlock availability
     if not isinstance(_quick_pass, bool):
-        _unlock_method = ('gpg', '--pinentry-mode', 'loopback', '--passphrase', _quick_pass, '-qd', '--output')
-    # if quick-unlock is disabled
+        _cmd = ['gpg', '--pinentry-mode', 'loopback', '--passphrase', _quick_pass, '-qd']
     else:
-        _unlock_method = ('gpg', '-qd', '--output')
-    if _shm_folder is None and _shm_entry is None:
-        _output_target = ('/dev/null', f"{home}/.config/sshyp/lock.gpg")
+        _cmd = ['gpg', '-qd']
+
+    # set decryption target based on lock file availability
+    if _entry_dir is None:
+        _dec_target = [f"{home}/.config/sshyp/lock.gpg"]
     else:
-        _output_target = (f"{_tmp_dir}{_shm_folder}/{_shm_entry}", f"{_entry_dir}.gpg")
+        _dec_target = [f"{_entry_dir}.gpg"]
+
+    # run decryption command
     try:
-        run(_unlock_method + _output_target, stderr=DEVNULL, check=True)
+        _contents = run(_cmd + _dec_target, stderr=DEVNULL, stdout=PIPE, text=True, check=True).stdout
     except CalledProcessError:
         if not isinstance(_quick_pass, bool):
             print('\n\u001b[38;5;9merror: quick-unlock failed as a result of an incorrect passphrase, an unreachable '
                   'sshyp server, or an invalid configuration\n\nfalling back to standard unlock\u001b[0m\n')
             try:
-                run(('gpg', '-qd', '--output') + _output_target, stderr=DEVNULL, check=True)
+                _contents = run(['gpg', '-qd'] + _dec_target, stderr=DEVNULL, stdout=PIPE, text=True, check=True).stdout
             except CalledProcessError:
                 print('\n\u001b[38;5;9merror: could not decrypt - ensure the correct gpg key is present\u001b[0m\n')
                 s_exit(4)
         else:
             print('\n\u001b[38;5;9merror: could not decrypt - ensure the correct gpg key is present\u001b[0m\n')
             s_exit(4)
+    return _contents.rstrip().split('\n')
 
 
 # checks the user's whitelist status and fetches the full gpg key password if possible
@@ -239,10 +244,7 @@ def optimized_edit(_lines, _edit_data, _edit_line):
     while len(_lines) < _edit_line + 1:
         _lines.append('\n')
     if _edit_data is not None:
-        _lines[_edit_line] = _edit_data.strip('\n').rstrip() + '\n'
-    for _num in range(len(_lines)):
-        if not _lines[_num].endswith('\n'):
-            _lines[_num] += '\n'
+        _lines[_edit_line] = _edit_data.rstrip()
     for _num in reversed(range(len(_lines))):
         if _lines[_num] == '\n':
             _lines = _lines[:-1]
@@ -252,18 +254,6 @@ def optimized_edit(_lines, _edit_data, _edit_line):
         else:
             break
     return _lines
-
-
-# edits the note attached to an entry
-def edit_note(_shm_folder, _shm_entry, _lines):
-    _reg_lines = _lines[0:3]
-    open(f"{tmp_dir}{_shm_folder}/{_shm_entry}-n", 'w').writelines(_lines[3:])
-    run((editor, f"{tmp_dir}{_shm_folder}/{_shm_entry}-n"))
-    _new_notes = open(f"{tmp_dir}{_shm_folder}/{_shm_entry}-n").readlines()
-    while len(_reg_lines) < 3:
-        _reg_lines.append('\n')
-    _noted_lines = _reg_lines + _new_notes
-    return _noted_lines
 
 
 # attempts to connect to the user's server via ssh to register the device for syncing
@@ -394,10 +384,7 @@ this program comes with absolutely no warranty; type 'sshyp license' for details
 # shortcut to quickly read an entry
 def read_shortcut():
     target_type_check(entry_name, True, True)
-    _shm_folder, _shm_entry = shm_gen()
-    decrypt(directory + entry_name, _shm_folder, _shm_entry, _quick_verify=quick_unlock_enabled)
-    entry_reader(f"{tmp_dir}{_shm_folder}/{_shm_entry}")
-    rmtree(f"{tmp_dir}{_shm_folder}")
+    entry_reader(decrypt(directory + entry_name, _quick_verify=quick_unlock_enabled))
 
 
 # calls sshync to sync changes to the user's server
@@ -414,36 +401,32 @@ def sync():
 
 # adds a new entry
 def add_entry():
-    # set to avoid PEP8 warnings
-    _shm_folder, _shm_entry = None, None
-
     # make sure the add target does not already exist
     target_exists_check(entry_name, False)
 
     # note entry
     if arguments[2] in ('note', '-n'):
         _shm_folder, _shm_entry = shm_gen()
-        run((editor, f"{tmp_dir}{_shm_folder}/{_shm_entry}-n"))
-        _notes = open(f"{tmp_dir}{_shm_folder}/{_shm_entry}-n", 'r').read()
-        open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'w').writelines(optimized_edit(['', '', '', _notes], None, -1))
+        run((editor, f"{tmp_dir}{_shm_folder}/{_shm_entry}"))
+        _password, _username, _url = '', '', ''
+        _notes = open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'r').read()
+        rmtree(f"{tmp_dir}{_shm_folder}")
     else:
-
         # password entry
         _username = str(input('username: '))
         _password = str(input('password: '))
         _url = str(input('url: '))
         _add_note = input('add a note to this entry? (y/N) ')
-        _shm_folder, _shm_entry = shm_gen()
         if _add_note.lower() == 'y':
-            run((editor, f"{tmp_dir}{_shm_folder}/{_shm_entry}-n"))
-            _notes = open(f"{tmp_dir}{_shm_folder}/{_shm_entry}-n", 'r').read()
+            _shm_folder, _shm_entry = shm_gen()  # TODO update notes to use new edit method
+            run((editor, f"{tmp_dir}{_shm_folder}/{_shm_entry}"))
+            _notes = open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'r').read()
+            rmtree(f"{tmp_dir}{_shm_folder}")
         else:
             _notes = ''
-        open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'w')\
-            .writelines(optimized_edit([_password, _username, _url, _notes], None, -1))
     print('\n\u001b[1mentry preview:\u001b[0m')
-    entry_reader(f"{tmp_dir}{_shm_folder}/{_shm_entry}")
-    encrypt(directory + entry_name, _shm_folder, _shm_entry, gpg_id)
+    entry_reader([_password, _username, _url, _notes])
+    encrypt([_password, _username, _url, _notes], directory + entry_name, gpg_id)
 
 
 # creates a new folder
@@ -492,13 +475,11 @@ def rename():
 # edits the contents of an entry
 def edit():
     # set to avoid PEP8 warnings
-    _shm_folder, _shm_entry, _detail, _edit_line = None, None, None, None
+    _detail, _edit_line = None, None
     
     # ensure the edit target is an entry
     target_type_check(entry_name, True, True)
-    
-    _shm_folder, _shm_entry = shm_gen()
-    decrypt(directory + entry_name, _shm_folder, _shm_entry, _quick_verify=quick_unlock_enabled)
+
     if arguments[2] in ('username', '-u'):
         _detail, _edit_line = str(input('username: ')), 1
     elif arguments[2] in ('password', '-p'):
@@ -506,31 +487,30 @@ def edit():
     elif arguments[2] in ('url', '-l'):
         _detail, _edit_line = str(input('url: ')), 2
     if arguments[2] in ('note', '-n'):
-        _edit_line = 2
-        _new_lines = optimized_edit(edit_note(_shm_folder, _shm_entry,
-                                              open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'r').readlines()), None, -1)
+        _shm_folder, _shm_entry = shm_gen()
+        _all_lines = decrypt(directory + entry_name, _quick_verify=quick_unlock_enabled)
+        open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'w').write('\n'.join(_all_lines[3:]))
+        run((editor, f"{tmp_dir}{_shm_folder}/{_shm_entry}"))
+        _new_notes = open(f"{tmp_dir}{_shm_folder}/{_shm_entry}").read().rstrip().split('\n')
+        _new_lines = _all_lines[0:3] + _new_notes
+        rmtree(f"{tmp_dir}{_shm_folder}")
     else:
-        _new_lines = optimized_edit(open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'r').readlines(), _detail, _edit_line)
-    open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'w').writelines(_new_lines)
-    remove(f"{directory}{entry_name}.gpg")
+        _new_lines = optimized_edit(decrypt(directory + entry_name, _quick_verify=quick_unlock_enabled), _detail,
+                                    _edit_line)
     print('\n\u001b[1mentry preview:\u001b[0m')
-    entry_reader(f"{tmp_dir}{_shm_folder}/{_shm_entry}")
-    encrypt(directory + entry_name, _shm_folder, _shm_entry, gpg_id)
+    entry_reader(_new_lines)
+    encrypt(_new_lines, directory + entry_name, gpg_id)
 
 
 # generates a password for a new or an existing entry
 def gen():
     # set to avoid PEP8 warnings
     _username, _url, _notes = None, None, None
-    _shm_folder, _shm_entry = shm_gen()
     # gen update
     if arg_count == 3 and arguments[2] in ('update', '-u'):
         # ensure the gen update target is an entry        
         target_type_check(entry_name, True, True)
-        decrypt(directory + entry_name, _shm_folder, _shm_entry, _quick_verify=quick_unlock_enabled)
-        _new_lines = optimized_edit(open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'r').readlines(), pass_gen(), 0)
-        open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'w').writelines(_new_lines)
-        remove(f"{directory}{entry_name}.gpg")
+        _new_lines = optimized_edit(decrypt(directory + entry_name, _quick_verify=quick_unlock_enabled), pass_gen(), 0)
     # gen
     else:
         # make sure the gen target does not already exist
@@ -540,15 +520,16 @@ def gen():
         _url = str(input('url: '))
         _add_note = input('add a note to this entry? (y/N) ')
         if _add_note.lower() == 'y':
-            run((editor, f"{tmp_dir}{_shm_folder}/{_shm_entry}-n"))
-            _notes = open(f"{tmp_dir}{_shm_folder}/{_shm_entry}-n", 'r').read()
+            _shm_folder, _shm_entry = shm_gen()
+            run((editor, f"{tmp_dir}{_shm_folder}/{_shm_entry}"))
+            _notes = open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'r').read()
+            rmtree(f"{tmp_dir}{_shm_folder}")
         else:
             _notes = ''
-        open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'w')\
-            .writelines(optimized_edit([_password, _username, _url, _notes], None, -1))
+        _new_lines = [_password, _username, _url, _notes]
     print('\n\u001b[1mentry preview:\u001b[0m')
-    entry_reader(f"{tmp_dir}{_shm_folder}/{_shm_entry}")
-    encrypt(directory + entry_name, _shm_folder, _shm_entry, gpg_id)
+    entry_reader(_new_lines)
+    encrypt(_new_lines, directory + entry_name, gpg_id)
 
 
 # copies a specified field of an entry to the clipboard
@@ -556,9 +537,7 @@ def copy_data():
     from subprocess import Popen
     # ensure the copy target is an entry
     target_type_check(entry_name, True, True)
-    _shm_folder, _shm_entry = shm_gen()
-    decrypt(directory + entry_name, _shm_folder, _shm_entry, _quick_verify=quick_unlock_enabled)
-    _copy_line, _index = [_line.rstrip() for _line in open(f"{tmp_dir}{_shm_folder}/{_shm_entry}", 'r').readlines()], 0
+    _index = 0
     if arguments[2] in ('username', '-u'):
         _index = 1
     elif arguments[2] in ('password', '-p'):
@@ -567,7 +546,7 @@ def copy_data():
         _index = 2
     elif arguments[2] in ('note', '-n'):
         _index = 3
-    _copy_subject = _copy_line[_index]
+    _copy_subject = decrypt(directory + entry_name, _quick_verify=quick_unlock_enabled)[_index]
     # ensure field is not blank
     if _copy_subject == '':
         raise IndexError
@@ -602,12 +581,11 @@ def copy_data():
         print('\n\u001b[38;5;9merror: clipboard tool could not be determined\n\nnote that the clipboard does not '
               'function in a raw tty\u001b[0m\n')
     # PORT END CLIPBOARD
-    rmtree(f"{tmp_dir}{_shm_folder}")
 
 
 # deletes an entry from the server and flags it for local deletion on sync
 def remove_data():
-    decrypt(f"{home}/.config/sshyp/lock.gpg", None, None, _quick_verify=quick_unlock_enabled)
+    decrypt(None, _quick_verify=quick_unlock_enabled)
     if not ssh_error:
         run(('ssh', '-i', f"{home}/.ssh/sshyp", '-p', port, f"{username_ssh}@{ip}",
              f'cd /usr/lib/sshyp; python3 -c \'from sshync import delete; delete("{entry_name}", "remotely", False)\''))

@@ -251,7 +251,7 @@ def refresh_encryption():
     from os import walk
     from os.path import isdir
     from shutil import move, rmtree
-    from sshyp import decrypt, encrypt, optimized_edit, shm_gen
+    from sshyp import decrypt, encrypt, optimized_edit
 
     # remove existing conflicts
     for _extension in ('.new', '.old'):
@@ -264,12 +264,9 @@ def refresh_encryption():
         for _root, _dirs, _files in sorted(walk(_directory, topdown=True)):
             for _filename in _files:
                 Path(_root.replace(_directory, _directory + '.new', 1)).mkdir(0o700, parents=True, exist_ok=True)
-                _shm_folder, _shm_entry = shm_gen()
-                decrypt(f"{_root}/{_filename[:-4]}", _shm_folder, _shm_entry)
-                _new_lines = optimized_edit(open(f"{_tmp_dir}{_shm_folder}/{_shm_entry}", 'r').readlines(), None, -1)
-                open(f"{_tmp_dir}{_shm_folder}/{_shm_entry}", 'w').writelines(_new_lines)
-                encrypt(f"{_root.replace(_directory, _directory + '.new', 1)}/{_filename[:-4]}", _shm_folder,
-                        _shm_entry, sshyp_data.get('CLIENT-GENERAL', 'gpg_id'))
+                _new_lines = optimized_edit(decrypt(f"{_root}/{_filename[:-4]}"), None, -1)
+                encrypt(_new_lines, f"{_root.replace(_directory, _directory + '.new', 1)}/{_filename[:-4]}",
+                        sshyp_data.get('CLIENT-GENERAL', 'gpg_id'))
 
         # create a backup of the original version and activate the new version        
         move(_directory, _directory + '.old')
@@ -310,10 +307,8 @@ def whitelist_setup():
     _gpg_id = run(('gpg', '-k', '--with-colons'), stdout=PIPE, text=True).stdout.splitlines()[-1].split(':')[9]
 
     # encrypt excluded with the assembly key
-    from sshyp import encrypt, shm_gen
-    _shm_folder, _shm_entry = shm_gen()
-    open(f"{home}/.config/sshyp/tmp/{_shm_folder}/{_shm_entry}", 'w').write(_quick_unlock_password_excluded)
-    encrypt(f"{home}/.config/sshyp/excluded", _shm_folder, _shm_entry, _gpg_id)
+    from sshyp import encrypt
+    encrypt(_quick_unlock_password_excluded, f"{home}/.config/sshyp/excluded", _gpg_id)
     curses_radio(['okay, I have it memorized'], f"your quick-unlock pin: {_quick_unlock_password}")
 
 
