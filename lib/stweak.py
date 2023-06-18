@@ -1,7 +1,7 @@
 from configparser import ConfigParser
 from curses import A_REVERSE, echo, KEY_DOWN, KEY_UP, cbreak, curs_set, endwin, initscr, newwin, noecho, nocbreak
 from curses.textpad import rectangle, Textbox
-from os import environ, listdir, remove, symlink
+from os import environ, listdir, remove
 from os.path import exists, expanduser, isfile
 from pathlib import Path
 from random import randint
@@ -235,7 +235,7 @@ def quick_unlock_config(_default):
 
 # re-encrypt/optimize all entries
 def refresh_encryption():
-    _directory, _tmp_dir = sshyp_data.get('SSHYNC', 'local_dir').rstrip('/'), f"{home}/.config/sshyp/tmp/"
+    _directory = sshyp_data.get('SSHYNC', 'local_dir').rstrip('/')
 
     # warn the user of potential data loss and prompt to continue
     _proceed = curses_radio(('yes', 'no'), "are you sure you wish to re-encrypt all entries with this key?"
@@ -440,17 +440,6 @@ def initial_setup():
     # removal of old config files
     if _exists_flag:
         sshyp_data.clear()
-
-    # temporary file symlink creation
-    if not exists(f"{home}/.config/sshyp/tmp"):
-        # PORT START UNAME-TMP
-        if uname()[0] in ('Haiku', 'FreeBSD', 'Darwin'):
-            symlink('/tmp', f"{home}/.config/sshyp/tmp")
-        elif exists('/data/data/com.termux'):
-            symlink('/data/data/com.termux/files/usr/tmp', f"{home}/.config/sshyp/tmp")
-        else:
-            symlink('/dev/shm', f"{home}/.config/sshyp/tmp")
-        # PORT END UNAME-TMP
 
     # curses initialization
     noecho()
