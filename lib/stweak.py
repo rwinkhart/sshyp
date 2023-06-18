@@ -217,7 +217,11 @@ def quick_unlock_config(_default):
     else:
         _quick_unlock_sel = curses_radio(('yes', 'no'), 'enable quick-unlock?\n\n\n\n\nquick-unlock allows you to use '
                                                         'a shorter version of your gpg key passphrase and\nrequires a '
-                                                        'constant connection to your sshyp server to authenticate')
+                                                        'constant connection to your sshyp server to authenticate\n\n'
+                                                        'WARNING: quick-unlock is only as secure as the environment'
+                                                        ' you use it in\n\na compromised program on your computer could'
+                                                        ' scan the process list in the\nbrief period during decryption '
+                                                        'to retrieve the necessary information to decrypt your entries')
         if _quick_unlock_sel == 0:
             _enabled = 'true'
         else:
@@ -372,7 +376,7 @@ def global_menu(_device_type, _top_message):
             if _device_type == 'client':
                 _options.extend(['change gpg key', 're-configure ssh(ync)', 'change device name',
                                  '[OPTIONAL, RECOMMENDED] set custom text editor',
-                                 '[OPTIONAL, RECOMMENDED] enable/disable quick-unlock',
+                                 '[OPTIONAL] enable/disable quick-unlock',
                                  '[OPTIONAL, NOT IMPLEMENTED] su security mode',
                                  '[OPTIONAL] re-encrypt/optimize entries',
                                  '[OPTIONAL, NOT IMPLEMENTED] extensions and updates'])
