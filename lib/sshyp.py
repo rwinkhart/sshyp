@@ -246,19 +246,12 @@ def target_type_check(_target_name, _expected_type=True, _error=False):
 
 
 # ensures an edited entry is optimized for best compatibility
-def optimized_edit(_lines, _edit_data, _edit_line):
+def line_edit(_lines, _edit_data, _edit_line):
+    # ensure enough lines are present for edited field
     while len(_lines) < _edit_line + 1:
         _lines.append('\n')
-    if _edit_data is not None:
-        _lines[_edit_line] = _edit_data.rstrip()
-    for _num in reversed(range(len(_lines))):
-        if _lines[_num] == '\n':
-            _lines = _lines[:-1]
-        elif _lines[_num].endswith('\n'):
-            _lines[_num] = _lines[_num].rstrip()
-            break
-        else:
-            break
+    # write the edited field
+    _lines[_edit_line] = _edit_data.rstrip()
     return _lines
 
 
@@ -488,7 +481,7 @@ def edit():
         _old_lines = decrypt(directory + entry_name, _quick_verify=quick_unlock_enabled)
         _new_lines = _old_lines[0:3] + edit_note(_old_lines[3:], True).split('\n')
     else:
-        _new_lines = optimized_edit(decrypt(directory + entry_name, _quick_verify=quick_unlock_enabled), _detail,
+        _new_lines = line_edit(decrypt(directory + entry_name, _quick_verify=quick_unlock_enabled), _detail,
                                     _edit_line)
     print('\n\u001b[1mentry preview:\u001b[0m')
     entry_reader(_new_lines)
@@ -503,7 +496,7 @@ def gen():
     if arg_count == 3 and arguments[2] in ('update', '-u'):
         # ensure the gen update target is an entry        
         target_type_check(entry_name, True, True)
-        _new_lines = optimized_edit(decrypt(directory + entry_name, _quick_verify=quick_unlock_enabled), pass_gen(), 0)
+        _new_lines = line_edit(decrypt(directory + entry_name, _quick_verify=quick_unlock_enabled), pass_gen(), 0)
     # gen
     else:
         # make sure the gen target does not already exist

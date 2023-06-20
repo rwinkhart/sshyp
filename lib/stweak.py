@@ -251,7 +251,7 @@ def refresh_encryption():
     from os import walk
     from os.path import isdir
     from shutil import move, rmtree
-    from sshyp import decrypt, encrypt, optimized_edit
+    from sshyp import decrypt, encrypt
 
     # remove existing conflicts
     for _extension in ('.new', '.old'):
