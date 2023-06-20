@@ -249,7 +249,7 @@ def target_type_check(_target_name, _expected_type=True, _error=False):
 def line_edit(_lines, _edit_data, _edit_line):
     # ensure enough lines are present for edited field
     while len(_lines) < _edit_line + 1:
-        _lines.append('\n')
+        _lines.append('')
     # write the edited field
     _lines[_edit_line] = _edit_data.rstrip()
     return _lines
