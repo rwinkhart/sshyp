@@ -70,7 +70,7 @@ def entry_reader(_decrypted_entry):
                 except IndexError:
                     print()
         except IndexError:
-            if _num == 0:
+            if _num == 0 and _decrypted_entry[0] != '':
                 print(f"\u001b[38;5;15;48;5;238mpassword:\u001b[0m\n{_entry_password}\n")
 
 
