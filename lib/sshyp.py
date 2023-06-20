@@ -408,8 +408,9 @@ def add_entry():
         _password, _username, _url, _note = '', '', '', edit_note([])
     else:
         # password entry
+        from getpass import getpass
         _username = str(input('\nusername: '))
-        _password = str(input('\npassword: '))
+        _password = str(getpass(prompt='\npassword: '))
         _url = str(input('\nurl: '))
         if input('\nadd a note to this entry? (y/N) ').lower() == 'y':
             _note = edit_note([])
@@ -474,7 +475,8 @@ def edit():
     if arguments[2] in ('username', '-u'):
         _detail, _edit_line = str(input('\nusername: ')), 1
     elif arguments[2] in ('password', '-p'):
-        _detail, _edit_line = str(input('\npassword: ')), 0
+        from getpass import getpass
+        _detail, _edit_line = str(getpass(prompt='\npassword: ')), 0
     elif arguments[2] in ('url', '-l'):
         _detail, _edit_line = str(input('\nurl: ')), 2
     if arguments[2] in ('note', '-n'):
