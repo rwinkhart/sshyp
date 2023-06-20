@@ -570,7 +570,7 @@ def remove_data():
     decrypt(None, _quick_verify=quick_unlock_enabled)
     if not ssh_error:
         run(('ssh', '-i', f"{home}/.ssh/sshyp", '-p', port, f"{username_ssh}@{ip}",
-             f'cd /usr/lib/sshyp; python3 -c \'from sshync import delete; delete("{entry_name}", "remotely", False)\''))
+             f'cd /usr/lib/sshyp; python3 -c \'from sshync import delete; delete("{entry_name}", "remotely", True)\''))
     else:
         offline_delete(entry_name, 'locally', silent_sync)
 

@@ -84,11 +84,15 @@ def remote_list_fetch(_user_data):
 
 # checks for and acts upon files and folders marked for deletion
 def deletion_sync(_deletion_database, _silent):
+    _synced = False
     for _file in _deletion_database:
         if _file != '':
             if not _silent:
+                _synced = True
                 print(f"\u001b[38;5;208m{_file}\u001b[0m has been sheared, removing...")
             delete(_file, 'locally', _silent)
+    if _synced:
+        print()
 
 
 # creates matches of remote folders on the local client
