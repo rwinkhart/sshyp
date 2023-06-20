@@ -238,10 +238,10 @@ def refresh_encryption():
     _directory = sshyp_data.get('SSHYNC', 'local_dir').rstrip('/')
 
     # warn the user of potential data loss and prompt to continue
-    _proceed = curses_radio(('yes', 'no'), "are you sure you wish to re-encrypt all entries with this key?"
-                                           "\n\n\n\n\nWARNING: proceeding with this action will remove/overwrite"
-                                           " any directories matching the following:" 
-                                           f"\n\n{home}/.local/share/sshyp.old\n{home}/.local/share/sshyp.new\n\n")
+    _proceed = curses_radio(('yes', 'no'), "are you sure you wish to re-encrypt all entries?\n\n\n\n\nWARNING: "
+                                           "proceeding with this action will remove/overwrite any directories matching"
+                                           " the following:\n\n" 
+                                           f"{home}/.local/share/sshyp.old\n{home}/.local/share/sshyp.new\n\n")
     if _proceed != 0:
         return 3    
 
@@ -261,12 +261,12 @@ def refresh_encryption():
     # decrypt, optimize, and re-encrypt each entry with the newly selected key
     if isdir(_directory):
         curses_terminate('\noptimizing and re-encrypting entries... please wait - do not terminate this process')
+        _gpg_id = sshyp_data.get('CLIENT-GENERAL', 'gpg_id')
         for _root, _dirs, _files in sorted(walk(_directory, topdown=True)):
             for _filename in _files:
                 Path(_root.replace(_directory, _directory + '.new', 1)).mkdir(0o700, parents=True, exist_ok=True)
-                _new_lines = optimized_edit(decrypt(f"{_root}/{_filename[:-4]}"), None, -1)
-                encrypt(_new_lines, f"{_root.replace(_directory, _directory + '.new', 1)}/{_filename[:-4]}",
-                        sshyp_data.get('CLIENT-GENERAL', 'gpg_id'))
+                encrypt(decrypt(f"{_root}/{_filename[:-4]}"), 
+                                f"{_root.replace(_directory, _directory + '.new', 1)}/{_filename[:-4]}", _gpg_id)
 
         # create a backup of the original version and activate the new version        
         move(_directory, _directory + '.old')
