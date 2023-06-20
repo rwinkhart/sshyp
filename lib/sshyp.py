@@ -387,8 +387,8 @@ def read_shortcut():
 
 
 # calls sshync to sync changes to the user's server
-def sync():
-    print('\nsyncing entries with the server device...\n')
+def sync(_start_text=''):
+    print(f"{_start_text}syncing entries with the server device...\n")
     # set permissions before uploading
     for _root, _dirs, _files in walk(f"{home}/.local/share/sshyp"):
         for _path in _root.splitlines():
@@ -720,8 +720,11 @@ if __name__ == "__main__":
                 extension_runner()
             else:
                 print_info()
-        elif not ssh_error and (sync_flag or (arg_count > 0 and arguments[0] == 'sync')):
-            sync()
+        elif not ssh_error:
+            if sync_flag: 
+                sync()
+            elif arg_count > 0 and arguments[0] == 'sync':
+                sync('\n')
 
     except KeyboardInterrupt:
         print('\n')
