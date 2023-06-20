@@ -412,7 +412,7 @@ def add_entry():
 
     # note entry
     if arguments[2] in ('note', '-n'):
-        _username, _password, _url, _note = '', '', '', edit_note([])
+        _password, _username, _url, _note = '', '', '', edit_note([])
     else:
         # password entry
         _username = str(input('username: '))
@@ -421,10 +421,10 @@ def add_entry():
         if input('add a note to this entry? (y/N) ').lower() == 'y':
             _note = edit_note([])
         else:
-            _note = []
+            _note = ''
     print('\n\u001b[1mentry preview:\u001b[0m')
-    entry_reader([_username, _password, _url, _note])
-    encrypt([_username, _password, _url, _note], directory + entry_name, gpg_id)
+    entry_reader([_password, _username, _url, _note])
+    encrypt([_password, _username, _url, _note], directory + entry_name, gpg_id)
 
 
 # creates a new folder
