@@ -101,7 +101,7 @@ def pass_gen():
     _length = 9
     while True:
         try:
-            _length = int(input('password length: '))
+            _length = int(input('\npassword length: '))
         except ValueError:
             continue
         else:
@@ -109,7 +109,7 @@ def pass_gen():
                 continue
             else:
                 break
-    _complexity = str(input('password complexity - simple (for compatibility) or complex (for security)? (s/C) '))
+    _complexity = str(input('\npassword complexity - simple (for compatibility) or complex (for security)? (s/C) '))
     if _complexity not in ('s', 'S'):
         _complexity = 'c'
     _gen = string_gen(_complexity.lower(), _length)
@@ -408,10 +408,10 @@ def add_entry():
         _password, _username, _url, _note = '', '', '', edit_note([])
     else:
         # password entry
-        _username = str(input('username: '))
-        _password = str(input('password: '))
-        _url = str(input('url: '))
-        if input('add a note to this entry? (y/N) ').lower() == 'y':
+        _username = str(input('\nusername: '))
+        _password = str(input('\npassword: '))
+        _url = str(input('\nurl: '))
+        if input('\nadd a note to this entry? (y/N) ').lower() == 'y':
             _note = edit_note([])
         else:
             _note = ''
@@ -472,11 +472,11 @@ def edit():
     target_type_check(entry_name, True, True)
 
     if arguments[2] in ('username', '-u'):
-        _detail, _edit_line = str(input('username: ')), 1
+        _detail, _edit_line = str(input('\nusername: ')), 1
     elif arguments[2] in ('password', '-p'):
-        _detail, _edit_line = str(input('password: ')), 0
+        _detail, _edit_line = str(input('\npassword: ')), 0
     elif arguments[2] in ('url', '-l'):
-        _detail, _edit_line = str(input('url: ')), 2
+        _detail, _edit_line = str(input('\nurl: ')), 2
     if arguments[2] in ('note', '-n'):
         _old_lines = decrypt(directory + entry_name, _quick_verify=quick_unlock_enabled)
         _new_lines = _old_lines[0:3] + edit_note(_old_lines[3:], True).split('\n')
@@ -501,10 +501,10 @@ def gen():
     else:
         # make sure the gen target does not already exist
         target_exists_check(entry_name, False)
-        _username = str(input('username: '))
+        _username = str(input('\nusername: '))
         _password = pass_gen()
-        _url = str(input('url: '))
-        if input('add a note to this entry? (y/N) ').lower() == 'y':
+        _url = str(input('\nurl: '))
+        if input('\nadd a note to this entry? (y/N) ').lower() == 'y':
             _note = edit_note([])
         else:
             _note = ''
