@@ -133,7 +133,7 @@ def edit_note(_note_lines, _exit_on_match=False):
 
 # encrypts an entry and cleans up the temporary files
 def encrypt(_entry_data, _entry_dir, _gpg_id):
-    _bytes_data = '\n'.join(_entry_data).encode()
+    _bytes_data = '\n'.join(_entry_data).rstrip().encode()
     _encrypted_data = run(('gpg', '-qr', str(_gpg_id), '-e'), input=_bytes_data, stdout=PIPE).stdout
     open(_entry_dir + '.gpg', 'wb').write(_encrypted_data)
 
