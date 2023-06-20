@@ -117,14 +117,17 @@ def pass_gen():
 
 
 # creates a temporary file to allow notes to be edited by standard editors
-def edit_note(_note_lines):
+def edit_note(_note_lines, _exit_on_match=False):
     from tempfile import NamedTemporaryFile
+    _joined_note_lines = '\n'.join(_note_lines)
     with NamedTemporaryFile(mode='w+') as _tmp:
-        _tmp.write('\n'.join(_note_lines))
+        _tmp.write(_joined_note_lines)
         _tmp.seek(0)
         run((editor, _tmp.name))
         _tmp.seek(0)
         _new_note = _tmp.read().rstrip()
+    if _exit_on_match and _joined_note_lines == _new_note:
+        s_exit(0)
     return _new_note
 
 
@@ -483,7 +486,7 @@ def edit():
         _detail, _edit_line = str(input('url: ')), 2
     if arguments[2] in ('note', '-n'):
         _old_lines = decrypt(directory + entry_name, _quick_verify=quick_unlock_enabled)
-        _new_lines = _old_lines[0:3] + edit_note(_old_lines[3:]).split('\n')
+        _new_lines = _old_lines[0:3] + edit_note(_old_lines[3:], True).split('\n')
     else:
         _new_lines = optimized_edit(decrypt(directory + entry_name, _quick_verify=quick_unlock_enabled), _detail,
                                     _edit_line)
