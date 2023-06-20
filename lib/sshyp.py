@@ -691,7 +691,7 @@ if __name__ == "__main__":
                     success_flag, sync_flag = True, True
                     gen()
                 elif arguments[1] == 'shear':
-                    success_flag, sync_flag = True, True
+                    success_flag = True
                     remove_data()
 
             elif arg_count == 1:
@@ -723,7 +723,7 @@ if __name__ == "__main__":
         elif not ssh_error:
             if sync_flag: 
                 sync()
-            elif arg_count > 0 and arguments[0] == 'sync':
+            elif (arg_count > 0 and arguments[0] == 'sync') or (arg_count > 1 and arguments[1] == 'shear'):
                 sync('\n')
 
     except KeyboardInterrupt:
