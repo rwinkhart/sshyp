@@ -150,25 +150,31 @@ def run_profile(_profile_dir, _silent):
     _index_local = sort_titles_mods(_remote_titles_mods, get_local_data(_user_data[3], 'client'))
     _index_remote = sort_titles_mods(_index_local, _remote_titles_mods)
     # sync new and updated files
-    _i = -1
+    _i, _synced = -1, False
     for _title in _index_local[0]:
         _i += 1
         if _title in _index_remote[0]:
             # compare mod times and sync
             if int(_index_local[1][_i]) > int(_index_remote[1][_i]):
+                _synced = True
                 print(f"\u001b[38;5;4m{_title[:-4]}\u001b[0m is newer locally, uploading...")
                 run(('scp', '-pqs', '-P', _user_data[2], '-i', _user_data[5], _user_data[3] + _title,
                      f"{_user_data[0]}@[{_user_data[1]}]:{_user_data[4]}{_title}"))
             elif int(_index_local[1][_i]) < int(_index_remote[1][_i]):
+                _synced = True
                 print(f"\u001b[38;5;2m{_title[:-4]}\u001b[0m is newer remotely, downloading...")
                 run(('scp', '-pqs', '-P', _user_data[2], '-i', _user_data[5],
                      f"{_user_data[0]}@[{_user_data[1]}]:{_user_data[4]}{_title}", f"{_user_data[3]}{_title}"))
         else:
+            _synced = True
             print(f"\u001b[38;5;4m{_title[:-4]}\u001b[0m is not on remote server, uploading...")
             run(('scp', '-pqs', '-P', _user_data[2], '-i', _user_data[5], _user_data[3] + _title,
                  f"{_user_data[0]}@[{_user_data[1]}]:{_user_data[4]}{_title}"))
     for _title in _index_remote[0]:
         if _title not in _index_local[0]:
+            _synced = True
             print(f"\u001b[38;5;2m{_title[:-4]}\u001b[0m is not in local directory, downloading...")
             run(('scp', '-pqs', '-P', _user_data[2], '-i', _user_data[5],
                  f"{_user_data[0]}@[{_user_data[1]}]:{_user_data[4]}{_title}", f"{_user_data[3]}{_title}"))
+    if _synced:
+        print()
