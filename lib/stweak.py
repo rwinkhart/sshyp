@@ -146,8 +146,8 @@ def editor_config(_env_mode):
         else:
             _editor = 'nano'
     else:
-        _editor = curses_text('enter the name of your preferred text editor:\n\n\n\n\n'
-                              '(ctrl+g/enter to confirm)\n\nexample input: vim')
+        _editor = curses_text('enter the name of your preferred text editor:\n\n\n\n\n(ctrl+g/enter to confirm)'
+                              '\n\nthis will be used for writing notes\n\nexample input: vim')
     if not sshyp_data.has_section('CLIENT-GENERAL'):
         sshyp_data.add_section('CLIENT-GENERAL')
     sshyp_data.set('CLIENT-GENERAL', 'text_editor', _editor)
