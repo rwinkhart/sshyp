@@ -43,7 +43,7 @@ _create_generic_linux() {
 _create_pkgbuild() {
     printf '\ngenerating PKGBUILD...\n'
     if [ "$1" = 'Deb' ]; then
-        local source='https://github.com/rwinkhart/sshyp/releases/download/v"$pkgver"/UBUNTU-sshyp_"$pkgver"-"$pkgrel"_all.deb'
+        local source='https://github.com/rwinkhart/sshyp/releases/download/v"$pkgver"/DEBIAN-sshyp_"$pkgver"-"$pkgrel"_all.deb'
         local decomp_target='data.tar.xz'
     else
         local source='https://github.com/rwinkhart/sshyp/releases/download/v"$pkgver"/GENERIC-LINUX-sshyp-"$pkgver".tar.xz'
@@ -76,8 +76,8 @@ package() {
 _create_apkbuild() {
     printf '\ngenerating APKBUILD...\n'
     if [ "$1" = 'Deb' ]; then
-        local source="https://github.com/rwinkhart/sshyp/releases/download/v\"\$pkgver\"/UBUNTU-sshyp_\"\$pkgver\"-"$revision"_all.deb"
-        local sumsname="UBUNTU-sshyp_\"\$pkgver\"-"$revision"_all.deb"
+        local source="https://github.com/rwinkhart/sshyp/releases/download/v\"\$pkgver\"/DEBIAN-sshyp_\"\$pkgver\"-"$revision"_all.deb"
+        local sumsname="DEBIAN-sshyp_\"\$pkgver\"-"$revision"_all.deb"
         local processing='mkdir -p "$pkgdir"
     7z x "$srcdir"/* -o"$srcdir"
     tar -xf "$srcdir"/data.tar -C "$pkgdir"
@@ -204,11 +204,11 @@ Installed-Size: 71680
     if [ "$1" = 'Debian' ]; then
         ./CLIPTOOL.py LINUX
         ./CLIPBOARD.py LINUX
-        special=UBUNTU
+        special=DEBIAN
     else
         ./CLIPTOOL.py
         ./CLIPBOARD.py WSL
-        special=WSL-ONLY-UBUNTU
+        special=WSL-ONLY-DEBIAN
     fi
     ./UNAME.py LINUX
     ./COMMENTS.py ALL
