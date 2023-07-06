@@ -494,7 +494,7 @@ def global_menu(_device_type, _top_message):
                 _exit_signal = True
             curses_terminate(_term_message)
             # if root is needed for extension management...
-            if _ext_name:
+            if _choice == 7 and _ext_name:
                 if _action:
                     # install with privilege escalation (outside of curses)
                     from tempfile import gettempdir
