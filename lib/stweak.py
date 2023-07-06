@@ -42,9 +42,9 @@ def curses_radio(_options, _pretext):
         _key = stdscr.getch()
         # update _selected based on user input
         if _key == KEY_UP:
-            _selected = (_selected - 1) % len(_options)
+            _selected = (_selected-1) % len(_options)
         elif _key == KEY_DOWN:
-            _selected = (_selected + 1) % len(_options)
+            _selected = (_selected+1) % len(_options)
         elif _key == ord('\n'):
             break
         stdscr.refresh()
@@ -57,8 +57,8 @@ def curses_text(_pretext):
     stdscr.clear()
     stdscr.addstr(0, 0, _pretext)
     _term_columns = get_terminal_size()[0]
-    _editwin = newwin(1, _term_columns - 2, 3, 1)
-    rectangle(stdscr, 2, 0, 4, _term_columns - 1)
+    _editwin = newwin(1, _term_columns-2, 3, 1)
+    rectangle(stdscr, 2, 0, 4, _term_columns-1)
     stdscr.refresh()
     _box = Textbox(_editwin)
     # let the user edit until ctrl+g/enter is struck
@@ -112,7 +112,7 @@ def gpg_config():
         _named_uid_list.append(_uid.split(':')[9])
     _named_uid_list.append('auto-generate')
     _gpg_id_sel = curses_radio(_named_uid_list, 'gpg key selection')
-    if _gpg_id_sel == len(_named_uid_list) - 1:
+    if _gpg_id_sel == len(_named_uid_list)-1:
         if not isfile(f"{home}/.config/sshyp/gpg-gen"):
             open(f"{home}/.config/sshyp/gpg-gen", 'w').writelines([
                 'Key-Type: 1\n', 'Key-Length: 4096\n', 'Key-Usage: sign encrypt\n', 'Name-Real: sshyp\n',
@@ -345,7 +345,7 @@ def whitelist_manage(_action):
 def whitelist_menu():
     while True:
         _choice = curses_radio(('setup/create pin', 'add to whitelist', 'remove from whitelist', 
-                                'exit/done'), 'quick-unlock/whitelist management')
+                                'BACK'), 'quick-unlock/whitelist management')
         if _choice == 0:
             whitelist_setup()
         elif _choice == 1:
@@ -366,7 +366,10 @@ def extension_downloader():
     _pointer = ConfigParser()
     _pointer.read_string(_file_data.decode('utf-8'))
     _extensions = _pointer.sections()
+    _extensions.append('CANCEL')
     _choice = curses_radio(_extensions, 'select an extension for more info')
+    if _choice == len(_extensions)-1:
+        return False, False
     _selected = _extensions[_choice-1]
     _choice = curses_radio(('no', 'yes'), f"install {_selected}?\n\n\n\n\ndescription: "
                                           f"{_pointer.get(_selected, 'desc')}\n\nusage: "
@@ -389,7 +392,10 @@ def extension_remover():
     _installed = []
     for _extension in listdir('/usr/lib/sshyp/extensions'):
         _installed.append(_extension[:-4])
+    _installed.append('CANCEL')
     _choice = curses_radio(_installed, 'select an extension to uninstall')
+    if _choice == len(_installed)-1:
+        return False, False
     _sure = curses_radio(('no', 'yes'), f"are you sure you want to remove {_installed[_choice]}?")
     if _sure == 0:
         return False, False
@@ -409,7 +415,7 @@ def extension_menu():
         return "\n\u001b[38;5;9merror: privilege escalation required\n\n" \
                "neither 'doas' nor 'sudo' were found in the system's $PATH\u001b[0m\n", False, None, None
     while True:
-        _choice = curses_radio(('download/update extensions', 'remove extensions', 'exit/done'), 'extension management')
+        _choice = curses_radio(('download/update extensions', 'remove extensions', 'BACK'), 'extension management')
         if _choice == 0:
             _term_message, _ext_name = extension_downloader()
             if _ext_name:
@@ -443,7 +449,7 @@ def global_menu(_device_type, _top_message):
                                  '[OPTIONAL] extension management'])
             else:
                 _options.extend(['manage quick-unlock/whitelist'])
-            _options.extend(['exit/done'])
+            _options.extend(['EXIT/DONE'])
             _choice += curses_radio(_options, _top_message)
 
             if _choice == 0:
