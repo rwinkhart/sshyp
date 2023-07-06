@@ -384,7 +384,8 @@ def extension_downloader():
         # set permissions under active user
         chmod(_exe_dir, 0o755)
         chmod(_ini_dir, 0o644)
-    return False, _selected
+        return False, _selected
+    return False, False
 
 
 # change ownership and install using system commands - requires running outside of curses (text input)
@@ -410,7 +411,8 @@ def extension_menu():
         _choice = curses_radio(('download/update extensions', 'remove extensions', 'exit/done'), 'extension management')
         if _choice == 0:
             _term_message, _ext_name = extension_downloader()
-            break
+            if _ext_name:
+                break
         elif _choice == 1:
             pass
         else:
