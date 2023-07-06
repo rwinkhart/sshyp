@@ -373,10 +373,6 @@ def extension_downloader():
                                           f"{_pointer.get(_selected, 'usage')}")
     # if installing the extension...
     if _choice == 1:
-        # ensure a supported privilege escalation utility is installed before downloading files
-        if which('doas') is None and which('sudo') is None:
-            return "\n\u001b[38;5;9merror: could not escalate privileges - " \
-                   "neither 'doas' nor 'sudo' were found\u001b[0m\n", False
         # download extension files to temporary directory
         _exe_dir, _ini_dir = f"{gettempdir()}/sshyp_exe", f"{gettempdir()}/sshyp_ini"
         _ext_exe = urlretrieve(_pointer.get(_selected, 'exe'), _exe_dir)
@@ -388,36 +384,45 @@ def extension_downloader():
     return False, False
 
 
-# change ownership and install using system commands - requires running outside of curses (text input)
-def extension_install(_ext_name):
-    from tempfile import gettempdir
-    _exe_dir, _ini_dir = f"{gettempdir()}/sshyp_exe", f"{gettempdir()}/sshyp_ini"
-    # determine which of the supported privilege escalation utilities is installed
-    if which('doas') is not None:
-        _escalator = 'doas'
-    else:
-        # it is assumed at least one of these is installed,
-        # as an error would have been thrown in a previous step, otherwise
-        _escalator = 'sudo'
-    run((_escalator, 'chown', 'root:root', _exe_dir, _ini_dir), check=True)
-    run((_escalator, 'mv', _exe_dir, f"/usr/lib/sshyp/{_ext_name}"), check=True)
-    run((_escalator, 'mv', _ini_dir, f"/usr/lib/sshyp/extensions/{_ext_name}.ini"), check=True)
+# uninstalls/deletes selected extensions
+def extension_remover():
+    _installed = []
+    for _extension in listdir('/usr/lib/sshyp/extensions'):
+        _installed.append(_extension[:-4])
+    _choice = curses_radio(_installed, 'select an extension to uninstall')
+    _sure = curses_radio(('no', 'yes'), f"are you sure you want to remove {_installed[_choice]}?")
+    if _sure == 0:
+        return False, False
+    return False, _installed[_choice]
 
 
 # provides options for managing extensions
 def extension_menu():
-    _term_message, _ext_name = False, False
+    _term_message, _ext_name, _action = False, False, False
+    # determine which of the supported privilege escalation utilities is installed
+    if which('doas') is not None:
+        _escalator = 'doas'
+    elif which('sudo') is not None:
+        _escalator = 'sudo'
+    else:
+        # throw an error if no supported privilege escalation utility is found
+        return "\n\u001b[38;5;9merror: privilege escalation required\n\n" \
+               "neither 'doas' nor 'sudo' were found in the system's $PATH\u001b[0m\n", False, None, None
     while True:
         _choice = curses_radio(('download/update extensions', 'remove extensions', 'exit/done'), 'extension management')
         if _choice == 0:
             _term_message, _ext_name = extension_downloader()
             if _ext_name:
+                # True represents installation
+                _action = True
                 break
         elif _choice == 1:
-            pass
+            _term_message, _ext_name = extension_remover()
+            if _ext_name:
+                break
         else:
             break
-    return _term_message, _ext_name
+    return _term_message, _ext_name, _escalator, _action
 
 
 # runs secondary configuration menu
@@ -484,14 +489,22 @@ def global_menu(_device_type, _top_message):
                     _term_message = '\n\u001b[38;5;9merror: re-encryption failed: ' \
                                     'entry directory not found\u001b[0m\n'
             elif _choice == 7:
-                _term_message, _ext_name = extension_menu()
+                _term_message, _ext_name, _escalator, _action = extension_menu()
             else:
                 _exit_signal = True
             curses_terminate(_term_message)
-            # if an extension needs installed...
+            # if root is needed for extension management...
             if _ext_name:
-                # run escalated installer function outside of curses
-                extension_install(_ext_name)
+                if _action:
+                    # install with privilege escalation (outside of curses)
+                    from tempfile import gettempdir
+                    _exe_dir, _ini_dir = f"{gettempdir()}/sshyp_exe", f"{gettempdir()}/sshyp_ini"
+                    run((_escalator, 'chown', 'root:root', _exe_dir, _ini_dir))
+                    run((_escalator, 'mv', _exe_dir, f"/usr/lib/sshyp/{_ext_name}"))
+                    run((_escalator, 'mv', _ini_dir, f"/usr/lib/sshyp/extensions/{_ext_name}.ini"))
+                else:
+                    # uninstall with privilege escalation (outside of curses)
+                    run((_escalator, 'rm', '-I', f"/usr/lib/sshyp/{_ext_name}", f"/usr/lib/sshyp/extensions/{_ext_name}.ini"))
                 break
         except KeyboardInterrupt:
             curses_terminate(False)
