@@ -215,14 +215,14 @@ def quick_unlock_config(_default):
     if _default:
         _enabled = 'false'
     else:
-        _quick_unlock_sel = curses_radio(('yes', 'no'), 'enable quick-unlock?\n\n\n\n\nquick-unlock allows you to use '
+        _quick_unlock_sel = curses_radio(('no', 'yes'), 'enable quick-unlock?\n\n\n\n\nquick-unlock allows you to use '
                                                         'a shorter version of your gpg key passphrase and\nrequires a '
                                                         'constant connection to your sshyp server to authenticate\n\n'
                                                         'WARNING: quick-unlock is only as secure as the environment'
                                                         ' you use it in\n\na compromised program on your computer could'
                                                         ' scan the process list in the\nbrief period during decryption '
                                                         'to retrieve the necessary information to decrypt your entries')
-        if _quick_unlock_sel == 0:
+        if _quick_unlock_sel == 1:
             _enabled = 'true'
         else:
             _enabled = 'false'
@@ -238,11 +238,11 @@ def refresh_encryption():
     _directory = sshyp_data.get('SSHYNC', 'local_dir').rstrip('/')
 
     # warn the user of potential data loss and prompt to continue
-    _proceed = curses_radio(('yes', 'no'), "are you sure you wish to re-encrypt all entries?\n\n\n\n\nWARNING: "
+    _proceed = curses_radio(('no', 'yes'), "are you sure you wish to re-encrypt all entries?\n\n\n\n\nWARNING: "
                                            "proceeding with this action will remove/overwrite any directories matching"
                                            " the following:\n\n" 
                                            f"{home}/.local/share/sshyp.old\n{home}/.local/share/sshyp.new\n\n")
-    if _proceed != 0:
+    if _proceed != 1:
         return 3    
 
     # set new gpg key
