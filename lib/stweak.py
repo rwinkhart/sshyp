@@ -265,8 +265,8 @@ def refresh_encryption():
         for _root, _dirs, _files in sorted(walk(_directory, topdown=True)):
             for _filename in _files:
                 Path(_root.replace(_directory, _directory + '.new', 1)).mkdir(0o700, parents=True, exist_ok=True)
-                encrypt(decrypt(f"{_root}/{_filename[:-4]}"), 
-                                f"{_root.replace(_directory, _directory + '.new', 1)}/{_filename[:-4]}", _gpg_id)
+                encrypt(decrypt(f"{_root}/{_filename[:-4]}"),
+                        f"{_root.replace(_directory, _directory + '.new', 1)}/{_filename[:-4]}", _gpg_id)
 
         # create a backup of the original version and activate the new version        
         move(_directory, _directory + '.old')
@@ -346,7 +346,6 @@ def whitelist_menu():
     while True:
         _choice = curses_radio(('setup/create pin', 'add to whitelist', 'remove from whitelist', 
                                 'exit/done'), 'quick-unlock/whitelist management')
-
         if _choice == 0:
             whitelist_setup()
         elif _choice == 1:
@@ -356,6 +355,67 @@ def whitelist_menu():
         else:
             break
 # PORT END WHITELIST-SERVER
+
+
+# downloads/updates extensions
+def extension_downloader():
+    from os import chmod
+    from tempfile import gettempdir
+    from urllib.request import urlopen, urlretrieve
+    _file_data = urlopen("https://raw.githubusercontent.com/rwinkhart/sshyp-labs/ext-manager/pointers/v1.5.0").read()
+    _pointer = ConfigParser()
+    _pointer.read_string(_file_data.decode('utf-8'))
+    _extensions = _pointer.sections()
+    _choice = curses_radio(_extensions, 'select an extension for more info')
+    _selected = _extensions[_choice-1]
+    _choice = curses_radio(('no', 'yes'), f"install {_selected}?\n\n\n\n\ndescription: "
+                                          f"{_pointer.get(_selected, 'desc')}\n\nusage: "
+                                          f"{_pointer.get(_selected, 'usage')}")
+    # if installing the extension...
+    if _choice == 1:
+        # ensure a supported privilege escalation utility is installed before downloading files
+        if which('doas') is None and which('sudo') is None:
+            return "\n\u001b[38;5;9merror: could not escalate privileges - " \
+                   "neither 'doas' nor 'sudo' were found\u001b[0m\n", False
+        # download extension files to temporary directory
+        _exe_dir, _ini_dir = f"{gettempdir()}/sshyp_exe", f"{gettempdir()}/sshyp_ini"
+        _ext_exe = urlretrieve(_pointer.get(_selected, 'exe'), _exe_dir)
+        _ext_ini = urlretrieve(_pointer.get(_selected, 'ini'), _ini_dir)
+        # set permissions under active user
+        chmod(_exe_dir, 0o755)
+        chmod(_ini_dir, 0o644)
+    return False, _selected
+
+
+# change ownership and install using system commands - requires running outside of curses (text input)
+def extension_install(_ext_name):
+    from tempfile import gettempdir
+    _exe_dir, _ini_dir = f"{gettempdir()}/sshyp_exe", f"{gettempdir()}/sshyp_ini"
+    # determine which of the supported privilege escalation utilities is installed
+    if which('doas') is not None:
+        _escalator = 'doas'
+    else:
+        # it is assumed at least one of these is installed,
+        # as an error would have been thrown in a previous step, otherwise
+        _escalator = 'sudo'
+    run((_escalator, 'chown', 'root:root', _exe_dir, _ini_dir), check=True)
+    run((_escalator, 'mv', _exe_dir, f"/usr/lib/sshyp/{_ext_name}"), check=True)
+    run((_escalator, 'mv', _ini_dir, f"/usr/lib/sshyp/extensions/{_ext_name}.ini"), check=True)
+
+
+# provides options for managing extensions
+def extension_menu():
+    _term_message, _ext_name = False, False
+    while True:
+        _choice = curses_radio(('download/update extensions', 'remove extensions', 'exit/done'), 'extension management')
+        if _choice == 0:
+            _term_message, _ext_name = extension_downloader()
+            break
+        elif _choice == 1:
+            pass
+        else:
+            break
+    return _term_message, _ext_name
 
 
 # runs secondary configuration menu
@@ -373,7 +433,7 @@ def global_menu(_device_type, _top_message):
                                  '[OPTIONAL, RECOMMENDED] set custom text editor',
                                  '[OPTIONAL] enable/disable quick-unlock',
                                  '[OPTIONAL] re-encrypt/optimize entries',
-                                 '[OPTIONAL, NOT IMPLEMENTED] extensions and updates'])
+                                 '[OPTIONAL] extension management'])
             else:
                 _options.extend(['manage quick-unlock/whitelist'])
             _options.extend(['exit/done'])
@@ -421,9 +481,16 @@ def global_menu(_device_type, _top_message):
                 elif _success == 2:
                     _term_message = '\n\u001b[38;5;9merror: re-encryption failed: ' \
                                     'entry directory not found\u001b[0m\n'
-            elif _choice > 6:  # TODO update once displayed options are all implemented
+            elif _choice == 7:
+                _term_message, _ext_name = extension_menu()
+            else:
                 _exit_signal = True
             curses_terminate(_term_message)
+            # if an extension needs installed...
+            if _ext_name:
+                # run escalated installer function outside of curses
+                extension_install(_ext_name)
+                break
         except KeyboardInterrupt:
             curses_terminate(False)
             _exit_signal = True
