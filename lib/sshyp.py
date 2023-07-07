@@ -292,10 +292,10 @@ def print_info():
         print(f"{_border}{_blank}\n\u001b[38;5;7;48;5;8m/\u001b[38;5;15;48;5;15m{3*' '}\u001b[38;5;15;48;5;8m"
               f"sshyp ", f"copyright (c) 2021-2023 ", f"randall winkhart\u001b[38;5;15;48;5;15m{3*' '}"
               f"\u001b[38;5;7;48;5;8m/\u001b[0m\n{_blank}")
-        print(f"\u001b[38;5;7;48;5;8m/\u001b[38;5;15;48;5;15m{20*' '}\u001b[38;5;15;48;5;8mversion 1.4.99"
-              f"\u001b[38;5;15;48;5;15m{20*' '}\u001b[38;5;7;48;5;8m/\u001b[0m")
-        print(f"\u001b[38;5;7;48;5;8m/\u001b[38;5;15;48;5;15m{9*' '}\u001b[38;5;15;48;5;8mthe argumentative "
-              f"agronomist update\u001b[38;5;15;48;5;15m{10*' '}\u001b[38;5;7;48;5;8m/\u001b[0m")
+        print(f"\u001b[38;5;7;48;5;8m/\u001b[38;5;15;48;5;15m{20*' '}\u001b[38;5;15;48;5;8mversion 1.5.0"
+              f"\u001b[38;5;15;48;5;15m{21*' '}\u001b[38;5;7;48;5;8m/\u001b[0m")
+        print(f"\u001b[38;5;7;48;5;8m/\u001b[38;5;15;48;5;15m{14*' '}\u001b[38;5;15;48;5;8mthe fortified flock"
+              f" update\u001b[38;5;15;48;5;15m{14*' '}\u001b[38;5;7;48;5;8m/\u001b[0m")
         print(f"{_blank}\n{_border}\nsee https://github.com/rwinkhart/sshyp for more information\n")
     elif arguments[0] == 'license':
         print('\nThis program is free software: you can redistribute it and/or modify it under the terms\nof version 3 '

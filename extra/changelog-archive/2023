@@ -1,7 +1,74 @@
-sshyp v1.4.99
-06/08/2023
+sshyp v1.5.0
+07/07/2023
 
-this is an in-progress update
+the fortified flock update
+
+this release implements new curses-based TUI configuration menus and improves the security of sshyp
+
+compatibility-breaking changes:
+
+- a completely new configuration system calls for a new configuration file
+    ^ before using sshyp v1.5.0 for the first time, 'sshyp init' will need to be ran to create the
+    new configuration file
+    ^ 'sshyp tweak' has been repurposed as the configuration menu for changing individual options,
+    rather than re-doing setup entirely - after initialization, this is the one you want to use
+- the new extension manager is replacing the old method of installing extensions as system packages
+    ^ any older extensions you have installed should be uninstalled to prevent conflicts
+    ^ extensions are now installed and removed through the 'sshyp tweak' menu's extension manager
+- all clients and servers must be updated to this release for the folder renaming bug fix to work
+    ^ failure to update all devices will result in errors and/or potential data loss
+- various packaging changes
+    ^ x-clip and wl-clipboard are now marked as optional dependencies, so the correct tool will
+    need to be installed as needed - a warning has been added for this if neither package is installed
+    ^ the changelog no longer ships with sshyp - it is still available on GitHub
+
+user-facing features:
+
+- the old configuration menu, 'sshyp tweak', has been split into two new curses-based TUI menus
+    ^ 'sshyp init' is for first-time setup/initialization
+    ^ 'sshyp tweak' can be used at any time to quickly adjust individual settings
+    ^ whitelist management tools have been moved to the new 'sshyp tweak' menu
+    ^ clients and servers now each have their own dedicated 'sshyp tweak' menu
+    ^ the new config file is in .INI format, making it easier to edit the config without sshyp
+- added a 'sshyp tweak' option for re-encrypting all entries with a new gpg key
+- added a security advisory when enabling quick-unlock to ensure the user understands potential risks
+- the user is now warned if the clipboard tool relevant to their platform is not installed
+- passwords are now hidden by default in the entry reader
+    ^ they can be displayed by appending '--show' or '-s' to the end of the command
+- input is now hidden when adding/editing a password in an entry
+- entries are no longer re-encrypted and synced if the note editor is quit without saving
+
+
+fixes/optimizations:
+
+- a tmpfs is no longer used for decrypting entries unless editing notes
+    ^ data is now decrypted directly into sshyp and written to entries pre-encrypted
+    ^ this makes reading entries much more secure
+    ^ editing entries is similarly secure to before - greater improvements coming in a future update
+- folder renaming has been re-enabled and now functions as intended
+- some unnecessarily verbose outputs were silenced and/or made to appear more cleanly
+- FreeBSD packaging fixes
+    ^ no longer incorrectly includes and uses the logic for the Termux clipboard
+    ^ now specifies 'python3' dependency instead of 'python'
+- many lists provided to the subprocess module have been swapped with tuples
+- more correct and clear language is used to describe options and arguments in the help menus
+- properly display an error when attempting to copy blank fields from entries
+- shebangs have been removed from libraries not meant to be run directly
+
+other factors of note:
+
+- with the release of Debian 12 Bookworm, sshyp is once again fully supported on vanilla Debian
+    ^ previously, it was only working correctly in offline mode due to Debian 11's old OpenSSH package
+- this is the biggest release of sshyp ever
+    ^ it includes LOTS of minor changes and optimizations not included in the patch notes summary
+    ^ as such, keep an eye out for new bugs!
+- the next major release of sshyp may be even larger...
+    ^ but it is also likely very far away
+    ^ GnuPG is great, but it is inherently incompatibile with sshyp's future security model
+    ^ if all goes according to plan, GnuPG will be replaced in the next release
+    ^ assuming this happens, this next release will be crowned v2.0.0
+    ^ sshyp v1.5.X is expected to be the latest stable release for a longer amount of time than usual
+    ^ sshyp v1.5.X may recieve security/bug fix patches after the release of v2.0.0, as needed
 
 <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 

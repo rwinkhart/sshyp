@@ -362,7 +362,7 @@ def extension_downloader():
     from os import chmod
     from tempfile import gettempdir
     from urllib.request import urlopen, urlretrieve
-    _file_data = urlopen("https://raw.githubusercontent.com/rwinkhart/sshyp-labs/ext-manager/pointers/v1.5.0").read()
+    _file_data = urlopen("https://raw.githubusercontent.com/rwinkhart/sshyp-labs/main/pointers/v1.5.0").read()
     _pointer = ConfigParser()
     _pointer.read_string(_file_data.decode('utf-8'))
     _extensions = _pointer.sections()
