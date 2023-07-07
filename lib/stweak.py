@@ -370,7 +370,7 @@ def extension_downloader():
     _choice = curses_radio(_extensions, 'select an extension for more info')
     if _choice == len(_extensions)-1:
         return False, False
-    _selected = _extensions[_choice-1]
+    _selected = _extensions[_choice]
     _choice = curses_radio(('no', 'yes'), f"install {_selected}?\n\n\n\n\ndescription: "
                                           f"{_pointer.get(_selected, 'desc')}\n\nusage: "
                                           f"{_pointer.get(_selected, 'usage')}")
