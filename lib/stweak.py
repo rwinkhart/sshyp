@@ -6,7 +6,6 @@ from os.path import exists, expanduser, isfile
 from pathlib import Path
 from random import randint
 from shutil import get_terminal_size, which
-from sshyp import copy_id_check, string_gen
 from subprocess import PIPE, run
 # PORT START UNAME-IMPORT-STWEAK
 from os import uname
@@ -197,6 +196,7 @@ def ssh_config():
 
 # device id configuration
 def dev_id_config(_ip, _username_ssh, _port):
+    from sshyp import copy_id_check, string_gen
     _device_id_prefix = curses_text('name this device:\n\n\n\n\n(ctrl+g/enter to confirm)\n\nimportant: this '
                                     'id must be unique amongst your client devices\n\nthis is used to keep track of '
                                     'database syncing and quick-unlock permissions\n')
@@ -454,13 +454,29 @@ def global_menu(_device_type, _top_message):
 
             if _choice == 0:
                 _dev_sync_types = install_type()
-                # if not running in server or offline mode and a sshync config has not been made
-                if _dev_sync_types[0] != 'server' and _dev_sync_types[1] != 'true' \
-                        and not sshyp_data.has_section('SSHYNC'):
-                    _ip, _username_ssh, _port = ssh_config()
-                    # if no device id is set
-                    if not listdir(f"{home}/.config/sshyp/devices"):
-                        dev_id_config(_ip, _username_ssh, _port)
+                # if switching to client mode...
+                if _dev_sync_types[0] == 'client':
+                    # ...and gpg settings are missing
+                    if not sshyp_data.has_option('CLIENT-GENERAL', 'gpg_id'):
+                        gpg_config()
+                    # ...and text editor settings are missing
+                    if not sshyp_data.has_option('CLIENT-GENERAL', 'text_editor'):
+                        editor_config(True)
+                    # ...and online (synced) mode is enabled...
+                    if _dev_sync_types[1] == 'false':
+                        # ...and quick-unlock settings are missing
+                        if not sshyp_data.has_option('CLIENT-ONLINE', 'quick_unlock_enabled'):
+                            quick_unlock_config(True)
+                        # ...and there is no sshync config present
+                        if not sshyp_data.has_section('SSHYNC'):
+                            _ip, _username_ssh, _port = ssh_config()
+                        # ...and there is no device ID present
+                        if not listdir(f"{home}/.config/sshyp/devices"):
+                            dev_id_config(_ip, _username_ssh, _port)
+                        # ...or ssh_error is missing
+                        elif not sshyp_data.has_option('CLIENT-ONLINE', 'ssh_error'):
+                            sshyp_data.set('CLIENT-ONLINE', 'ssh_error', '1')    
+                            write_config()
                 _device_type = _dev_sync_types[0]
             elif _choice == 1:
                 if _device_type == 'client':

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from configparser import ConfigParser, NoSectionError
+from configparser import ConfigParser, NoSectionError, NoOptionError
 from os import chmod, environ, listdir, walk
 from os.path import expanduser, isdir, isfile, realpath
 from pathlib import Path
@@ -646,7 +646,7 @@ if __name__ == "__main__":
                         ssh_error = int(sshyp_data.get('CLIENT-ONLINE', 'ssh_error'))
                         if ssh_error == 1:
                             ssh_error = copy_id_check(port, username_ssh, ip, client_device_id, sshyp_data)
-            except (FileNotFoundError, NoSectionError):
+            except (FileNotFoundError):
                 print(f"\n{73*'!'}")
                 print("not all necessary configurations have been made - please run 'sshyp init'")
                 print(f"{73*'!'}\n")
