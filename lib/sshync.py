@@ -2,7 +2,7 @@ from os import listdir, remove, walk
 from os.path import expanduser, isdir, isfile, getmtime, join
 from subprocess import CalledProcessError, PIPE, run
 from sys import exit as s_exit
-home = expanduser("~")
+home = expanduser('~')
 
 
 # PORT START SSHYNC-REMOTE

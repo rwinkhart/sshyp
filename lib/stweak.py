@@ -10,7 +10,7 @@ from subprocess import PIPE, run
 # PORT START UNAME-IMPORT-STWEAK
 from os import uname
 # PORT END UNAME-IMPORT-STWEAK
-home, stdscr, sshyp_data = expanduser("~"), initscr(), ConfigParser()
+home, sshyp_data, stdscr, term_messages = expanduser('~'), ConfigParser(), None, []
 if isfile(f"{home}/.config/sshyp/sshyp.ini"):
     _exists_flag = True
     sshyp_data.read(f"{home}/.config/sshyp/sshyp.ini")
@@ -66,15 +66,6 @@ def curses_text(_pretext):
     return _box.gather().strip()
 
 
-# cleanly exit curses and optionally prints an exit message
-def curses_terminate(_term_message):
-    nocbreak()
-    echo()
-    endwin()
-    if _term_message:
-        print(_term_message)
-
-
 # device+sync type selection
 def install_type():
     _offline_mode = 'false'
@@ -86,7 +77,7 @@ def install_type():
         _dev_type = 'server'
         Path(f"{home}/.config/sshyp/deleted").mkdir(mode=0o700, exist_ok=True)
         Path(f"{home}/.config/sshyp/whitelist").mkdir(mode=0o700, exist_ok=True)
-        curses_terminate('\nmake sure the ssh service is running and properly configured\n')
+        term_messages.append('make sure the ssh service is running and properly configured')
     else:
         _dev_type = 'client'
         if _install_type == 1:
@@ -260,7 +251,6 @@ def refresh_encryption():
     
     # decrypt, optimize, and re-encrypt each entry with the newly selected key
     if isdir(_directory):
-        curses_terminate('\noptimizing and re-encrypting entries... please wait - do not terminate this process')
         _gpg_id = sshyp_data.get('CLIENT-GENERAL', 'gpg_id')
         for _root, _dirs, _files in sorted(walk(_directory, topdown=True)):
             for _filename in _files:
@@ -369,7 +359,7 @@ def extension_downloader():
     _extensions.append('CANCEL')
     _choice = curses_radio(_extensions, 'select an extension for more info')
     if _choice == len(_extensions)-1:
-        return False, False
+        return False
     _selected = _extensions[_choice]
     _choice = curses_radio(('no', 'yes'), f"install {_selected}?\n\n\n\n\ndescription: "
                                           f"{_pointer.get(_selected, 'desc')}\n\nusage: "
@@ -383,8 +373,8 @@ def extension_downloader():
         # set permissions under active user
         chmod(_exe_dir, 0o755)
         chmod(_ini_dir, 0o644)
-        return False, _selected
-    return False, False
+        return _selected
+    return False
 
 
 # uninstalls/deletes selected extensions
@@ -395,16 +385,16 @@ def extension_remover():
     _installed.append('CANCEL')
     _choice = curses_radio(_installed, 'select an extension to uninstall')
     if _choice == len(_installed)-1:
-        return False, False
+        return False
     _sure = curses_radio(('no', 'yes'), f"are you sure you want to remove {_installed[_choice]}?")
     if _sure == 0:
-        return False, False
-    return False, _installed[_choice]
+        return False
+    return _installed[_choice]
 
 
 # provides options for managing extensions
 def extension_menu():
-    _term_message, _ext_name, _action = False, False, False
+    _ext_name, _action = False, False
     # determine which of the supported privilege escalation utilities is installed
     if which('doas') is not None:
         _escalator = 'doas'
@@ -417,126 +407,124 @@ def extension_menu():
     while True:
         _choice = curses_radio(('download/update extensions', 'remove extensions', 'BACK'), 'extension management')
         if _choice == 0:
-            _term_message, _ext_name = extension_downloader()
+            _ext_name = extension_downloader()
             if _ext_name:
                 # True represents installation
                 _action = True
                 break
         elif _choice == 1:
-            _term_message, _ext_name = extension_remover()
+            _ext_name = extension_remover()
             if _ext_name:
                 break
         else:
             break
-    return _term_message, _ext_name, _escalator, _action
+    return _ext_name, _escalator, _action
 
 
 # runs secondary configuration menu
-def global_menu(_device_type, _top_message):
+def global_menu(_scr, _device_type, _top_message):
+    global stdscr
+    # only set global stdscr if running as entry point
+    if not isinstance(_scr, bool):
+        stdscr = _scr
+
     while True:
-        # curses initialization
-        noecho()
-        cbreak()
-        stdscr.keypad(True)
+        _options, _choice, _exit_signal = ['change device/synchronization types'], 0, False
+        if _device_type == 'client':
+            _options.extend(['change gpg key', 're-configure ssh(ync)', 'change device name',
+                             '[OPTIONAL, RECOMMENDED] set custom text editor',
+                             '[OPTIONAL] enable/disable quick-unlock',
+                             '[OPTIONAL] re-encrypt/optimize entries',
+                             '[OPTIONAL] extension management'])
+        else:
+            _options.extend(['manage quick-unlock/whitelist'])
+        _options.extend(['EXIT/DONE'])
+        _choice += curses_radio(_options, _top_message)
 
-        _options, _choice, _term_message, _exit_signal = ['change device/synchronization types'], 0, False, False
-        try:
-            if _device_type == 'client':
-                _options.extend(['change gpg key', 're-configure ssh(ync)', 'change device name',
-                                 '[OPTIONAL, RECOMMENDED] set custom text editor',
-                                 '[OPTIONAL] enable/disable quick-unlock',
-                                 '[OPTIONAL] re-encrypt/optimize entries',
-                                 '[OPTIONAL] extension management'])
-            else:
-                _options.extend(['manage quick-unlock/whitelist'])
-            _options.extend(['EXIT/DONE'])
-            _choice += curses_radio(_options, _top_message)
-
-            if _choice == 0:
-                _dev_sync_types = install_type()
-                # if switching to client mode...
-                if _dev_sync_types[0] == 'client':
-                    # ...and gpg settings are missing
-                    if not sshyp_data.has_option('CLIENT-GENERAL', 'gpg_id'):
-                        gpg_config()
-                    # ...and text editor settings are missing
-                    if not sshyp_data.has_option('CLIENT-GENERAL', 'text_editor'):
-                        editor_config(True)
-                    # ...and online (synced) mode is enabled...
-                    if _dev_sync_types[1] == 'false':
-                        # ...and quick-unlock settings are missing
-                        if not sshyp_data.has_option('CLIENT-ONLINE', 'quick_unlock_enabled'):
-                            quick_unlock_config(True)
-                        # ...and there is no sshync config present
-                        if not sshyp_data.has_section('SSHYNC'):
-                            _ip, _username_ssh, _port = ssh_config()
-                        # ...and there is no device ID present
-                        if not listdir(f"{home}/.config/sshyp/devices"):
-                            dev_id_config(_ip, _username_ssh, _port)
-                        # ...or ssh_error is missing
-                        elif not sshyp_data.has_option('CLIENT-ONLINE', 'ssh_error'):
-                            sshyp_data.set('CLIENT-ONLINE', 'ssh_error', '1')    
-                            write_config()
-                _device_type = _dev_sync_types[0]
-            elif _choice == 1:
-                if _device_type == 'client':
+        if _choice == 0:
+            _dev_sync_types = install_type()
+            # if switching to client mode...
+            if _dev_sync_types[0] == 'client':
+                # ...and gpg settings are missing
+                if not sshyp_data.has_option('CLIENT-GENERAL', 'gpg_id'):
                     gpg_config()
-                else:
-                    whitelist_menu()
-            elif _choice == 2:
-                if _device_type == 'client':
-                    ssh_config()
-                else:
-                    _exit_signal = True
-            elif _choice == 3:
-                if not sshyp_data.has_section('SSHYNC'):
-                    ssh_config()
-                dev_id_config(sshyp_data.get('SSHYNC', 'ip'), sshyp_data.get('SSHYNC', 'user'),
-                              sshyp_data.get('SSHYNC', 'port'))
-            elif _choice == 4:
-                editor_config(False)
-            elif _choice == 5:
-                _enabled = quick_unlock_config(False)
-                if _enabled == 'true':
-                    _term_message = ('\nquick-unlock has been enabled client-side - in order for this feature to '
-                                     'function,\nyou must first log in to the sshyp server and run:\n\nsshyp tweak\n\n'
-                                     'from there you can create a quick-unlock pin and add this device to the '
-                                     'whitelist\n')
-            elif _choice == 6:
-                _success = refresh_encryption()
-                if _success == 1:
-                    _term_message = "\na backup of your previous entry directory has been created:\n\n" \
-                                    f"{home}/.local/share/sshyp.old\n"
-                elif _success == 2:
-                    _term_message = '\n\u001b[38;5;9merror: re-encryption failed: ' \
-                                    'entry directory not found\u001b[0m\n'
-            elif _choice == 7:
-                _term_message, _ext_name, _escalator, _action = extension_menu()
+                # ...and text editor settings are missing
+                if not sshyp_data.has_option('CLIENT-GENERAL', 'text_editor'):
+                    editor_config(True)
+                # ...and online (synced) mode is enabled...
+                if _dev_sync_types[1] == 'false':
+                    # ...and quick-unlock settings are missing
+                    if not sshyp_data.has_option('CLIENT-ONLINE', 'quick_unlock_enabled'):
+                        quick_unlock_config(True)
+                    # ...and there is no sshync config present
+                    if not sshyp_data.has_section('SSHYNC'):
+                        _ip, _username_ssh, _port = ssh_config()
+                    # ...and there is no device ID present
+                    if not listdir(f"{home}/.config/sshyp/devices"):
+                        dev_id_config(_ip, _username_ssh, _port)
+                    # ...or ssh_error is missing
+                    elif not sshyp_data.has_option('CLIENT-ONLINE', 'ssh_error'):
+                        sshyp_data.set('CLIENT-ONLINE', 'ssh_error', '1')    
+                        write_config()
+            _device_type = _dev_sync_types[0]
+        elif _choice == 1:
+            if _device_type == 'client':
+                gpg_config()
+            else:
+                whitelist_menu()
+        elif _choice == 2:
+            if _device_type == 'client':
+                ssh_config()
             else:
                 _exit_signal = True
-            curses_terminate(_term_message)
-            # if root is needed for extension management...
-            if _choice == 7 and _ext_name:
-                if _action:
-                    # install with privilege escalation (outside of curses)
-                    from tempfile import gettempdir
-                    _exe_dir, _ini_dir = f"{gettempdir()}/sshyp_exe", f"{gettempdir()}/sshyp_ini"
-                    run((_escalator, 'chown', 'root:root', _exe_dir, _ini_dir))
-                    run((_escalator, 'mv', _exe_dir, f"/usr/lib/sshyp/{_ext_name}"))
-                    run((_escalator, 'mv', _ini_dir, f"/usr/lib/sshyp/extensions/{_ext_name}.ini"))
-                else:
-                    # uninstall with privilege escalation (outside of curses)
-                    run((_escalator, 'rm', '-I', f"/usr/lib/sshyp/{_ext_name}", f"/usr/lib/sshyp/extensions/{_ext_name}.ini"))
-                break
-        except KeyboardInterrupt:
-            curses_terminate(False)
+        elif _choice == 3:
+            if not sshyp_data.has_section('SSHYNC'):
+                ssh_config()
+            dev_id_config(sshyp_data.get('SSHYNC', 'ip'), sshyp_data.get('SSHYNC', 'user'),
+                          sshyp_data.get('SSHYNC', 'port'))
+        elif _choice == 4:
+            editor_config(False)
+        elif _choice == 5:
+            _enabled = quick_unlock_config(False)
+            if _enabled == 'true':
+                term_messages.append('quick-unlock has been enabled client-side - in order for this feature to '
+                                     'function,\nyou must first log in to the sshyp server and run:\n\nsshyp tweak\n\n'
+                                     'from there you can create a quick-unlock pin and add this device to the '
+                                     'whitelist')
+        elif _choice == 6:
+            _success = refresh_encryption()
+            if _success == 1:
+                term_messages.append("a backup of your previous entry directory has been created:\n\n"
+                                     f"{home}/.local/share/sshyp.old")
+            elif _success == 2:
+                term_messages.append('\u001b[38;5;9merror: re-encryption failed: '
+                                     'entry directory not found\u001b[0m')
+        elif _choice == 7:
+            _ext_name, _escalator, _action = extension_menu()
+        else:
             _exit_signal = True
+        # if root is needed for extension management...
+        if _choice == 7 and _ext_name:
+            if _action:
+                # install with privilege escalation (outside of curses)
+                from tempfile import gettempdir
+                _exe_dir, _ini_dir = f"{gettempdir()}/sshyp_exe", f"{gettempdir()}/sshyp_ini"
+                run((_escalator, 'chown', 'root:root', _exe_dir, _ini_dir))
+                run((_escalator, 'mv', _exe_dir, f"/usr/lib/sshyp/{_ext_name}"))
+                run((_escalator, 'mv', _ini_dir, f"/usr/lib/sshyp/extensions/{_ext_name}.ini"))
+            else:
+                # uninstall with privilege escalation (outside of curses)
+                run((_escalator, 'rm', '-I', f"/usr/lib/sshyp/{_ext_name}", f"/usr/lib/sshyp/extensions/{_ext_name}.ini"))
+            break
         if _exit_signal:
             break
 
 
 # runs initial configuration wizard
-def initial_setup():
+def initial_setup(_scr):
+    global stdscr
+    stdscr = _scr
+
     # required directory creation
     Path(f"{home}/.config/sshyp/devices").mkdir(mode=0o700, parents=True, exist_ok=True)
     Path(f"{home}/.local/share/sshyp").mkdir(mode=0o700, parents=True, exist_ok=True)
@@ -545,60 +533,57 @@ def initial_setup():
     if _exists_flag:
         sshyp_data.clear()
 
-    # curses initialization
-    noecho()
-    cbreak()
-    stdscr.keypad(True)
-
     # curses menu tree
-    try:
-        # device+sync type selection
-        _dev_sync_types = install_type()
+    # device+sync type selection
+    _dev_sync_types = install_type()
 
-        if _dev_sync_types[0] == 'client':
+    if _dev_sync_types[0] == 'client':
 
-            # gpg configuration
-            gpg_config()
+        # gpg configuration
+        gpg_config()
 
-            # text editor configuration (automated)
-            editor_config(True)
+        # text editor configuration (automated)
+        editor_config(True)
 
-            # quick-unlock configuration (disabled by default)
-            quick_unlock_config(True)
+        # quick-unlock configuration (disabled by default)
+        quick_unlock_config(True)
 
-            # online (synchronized mode) configuration
-            if _dev_sync_types[1] != 'true':
+        # online (synchronized mode) configuration
+        if _dev_sync_types[1] != 'true':
 
-                # ssh+sshync configuration
-                _ip, _username_ssh, _port = ssh_config()
+            # ssh+sshync configuration
+            _ip, _username_ssh, _port = ssh_config()
 
-                # device id configuration
-                dev_id_config(_ip, _username_ssh, _port)
+            # device id configuration
+            dev_id_config(_ip, _username_ssh, _port)
 
-                # cleanly exit curses
-                curses_terminate(False)
+        # PORT START CLIPTOOL TODO fix printing with new curses wrapper
+        # check for clipboard tool and display warning if missing
+        if uname()[0] in ('Linux', 'FreeBSD') and 'WSL_DISTRO_NAME' not in environ \
+                and not exists("/data/data/com.termux"):
+            _display_server, _clipboard_tool, _clipboard_package = None, None, None
+            if 'WAYLAND_DISPLAY' in environ:
+                _display_server, _clipboard_tool, _clipboard_package = 'Wayland', 'wl-copy', 'wl-clipboard'
+            elif 'DISPLAY' in environ:
+                _display_server, _clipboard_tool, _clipboard_package = 'X11', 'xclip', 'xclip'
+            if _display_server is not None and which(_clipboard_tool) is None:
+                print(f'\n\u001b[38;5;9mwarning: you are using {_display_server} and "{_clipboard_tool}" is not '
+                      f'present - \ncopying entry fields will not function until '
+                      f'"{_clipboard_package}" is installed\u001b[0m')
+        # PORT END CLIPTOOL
 
-            else:
-                # cleanly exit curses
-                curses_terminate(False)
+    # run optional configuration menu
+    wrapped_entry(_dev_sync_types[0], 'additional configuration options:')
 
-            # PORT START CLIPTOOL
-            # check for clipboard tool and display warning if missing
-            if uname()[0] in ('Linux', 'FreeBSD') and 'WSL_DISTRO_NAME' not in environ \
-                    and not exists("/data/data/com.termux"):
-                _display_server, _clipboard_tool, _clipboard_package = None, None, None
-                if 'WAYLAND_DISPLAY' in environ:
-                    _display_server, _clipboard_tool, _clipboard_package = 'Wayland', 'wl-copy', 'wl-clipboard'
-                elif 'DISPLAY' in environ:
-                    _display_server, _clipboard_tool, _clipboard_package = 'X11', 'xclip', 'xclip'
-                if _display_server is not None and which(_clipboard_tool) is None:
-                    print(f'\n\u001b[38;5;9mwarning: you are using {_display_server} and "{_clipboard_tool}" is not '
-                          f'present - \ncopying entry fields will not function until '
-                          f'"{_clipboard_package}" is installed\u001b[0m')
-            # PORT END CLIPTOOL
 
-        global_menu(_dev_sync_types[0], 'additional configuration options:')
-
-    except KeyboardInterrupt:
-        # cleanly exit curses
-        curses_terminate(False)
+# runs the specified entry function (menu start point) within a curses wrapper
+def wrapped_entry(_gm_device_type, _gm_top_message='configuration options:'):
+    from curses import wrapper, use_default_colors
+    # a boolean value represents init
+    if isinstance(_gm_device_type, bool):
+        wrapper(lambda _wrap_stdscr: (use_default_colors(), initial_setup(_wrap_stdscr)))
+    # any other vlaue will be provided as the global menu device type
+    else:
+        wrapper(lambda _wrap_stdscr: (use_default_colors(), global_menu(_wrap_stdscr, _gm_device_type, _gm_top_message)))
+    for _message in term_messages:
+        print(f"\n{_message}\n")

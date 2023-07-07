@@ -10,7 +10,7 @@ from sys import argv, exit as s_exit
 # PORT START UNAME-IMPORT-SSHYP
 from os import uname
 # PORT END UNAME-IMPORT-SSHYP
-home = expanduser("~")
+home = expanduser('~')
 
 
 # UTILITY FUNCTIONS
@@ -652,8 +652,8 @@ if __name__ == "__main__":
                 print(f"{73*'!'}\n")
                 s_exit(1)
         else:
-            from stweak import initial_setup
-            initial_setup()
+            from stweak import wrapped_entry
+            wrapped_entry(False)
             s_exit()
 
         # run function based on arguments
@@ -702,8 +702,8 @@ if __name__ == "__main__":
                     read_shortcut()
                 elif arguments[0] == 'tweak':
                     success_flag = True
-                    from stweak import global_menu
-                    global_menu('client', 'configuration options:')
+                    from stweak import wrapped_entry
+                    wrapped_entry(device_type)
        
         # PORT START ARGS-SERVER
         # server arguments
@@ -713,8 +713,8 @@ if __name__ == "__main__":
                 print_info()
             elif arg_count == 1 and arguments[0] == 'tweak':
                 success_flag = True
-                from stweak import global_menu
-                global_menu('server', 'configuration options:')
+                from stweak import wrapped_entry
+                wrapped_entry(device_type)
         # PORT END ARGS-SERVER
 
         if arg_count > 0 and success_flag == 0 and arguments[0] != 'sync':
