@@ -549,7 +549,7 @@ def initial_setup(_scr):
             # device id configuration
             dev_id_config(_ip, _username_ssh, _port)
 
-        # PORT START CLIPTOOL TODO fix printing with new curses wrapper
+        # PORT START CLIPTOOL
         # check for clipboard tool and display warning if missing
         if uname()[0] in ('Linux', 'FreeBSD') and 'WSL_DISTRO_NAME' not in environ \
                 and not exists("/data/data/com.termux"):
@@ -559,9 +559,9 @@ def initial_setup(_scr):
             elif 'DISPLAY' in environ:
                 _display_server, _clipboard_tool, _clipboard_package = 'X11', 'xclip', 'xclip'
             if _display_server is not None and which(_clipboard_tool) is None:
-                print(f'\n\u001b[38;5;9mwarning: you are using {_display_server} and "{_clipboard_tool}" is not '
-                      f'present - \ncopying entry fields will not function until '
-                      f'"{_clipboard_package}" is installed\u001b[0m')
+                curses_radio(['okay'], f'WARNING: you are using {_display_server} and "{_clipboard_tool}" is not '
+                                       'present - \ncopying entry fields will not function until '
+                                       f'"{_clipboard_package}" is installed')
         # PORT END CLIPTOOL
 
     # run optional configuration menu
