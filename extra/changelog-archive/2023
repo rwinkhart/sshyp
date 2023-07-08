@@ -1,5 +1,5 @@
 sshyp v1.5.0
-07/07/2023
+07/08/2023
 
 the fortified flock update
 
@@ -64,11 +64,11 @@ other factors of note:
     ^ as such, keep an eye out for new bugs!
 - the next major release of sshyp may be even larger...
     ^ but it is also likely very far away
-    ^ GnuPG is great, but it is inherently incompatibile with sshyp's future security model
+    ^ GnuPG is great, but it is inherently incompatible with sshyp's future security model
     ^ if all goes according to plan, GnuPG will be replaced in the next release
     ^ assuming this happens, this next release will be crowned v2.0.0
     ^ sshyp v1.5.X is expected to be the latest stable release for a longer amount of time than usual
-    ^ sshyp v1.5.X may recieve security/bug fix patches after the release of v2.0.0, as needed
+    ^ sshyp v1.5.X may receive security/bug fix patches after the release of v2.0.0, as needed
 
 <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 

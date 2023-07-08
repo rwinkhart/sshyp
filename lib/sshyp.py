@@ -304,14 +304,14 @@ def print_info():
               'warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\nSee the GNU General Public License for'
               ' more details.\n\nhttps://opensource.org/licenses/GPL-3.0\n')
     elif arguments[0] == 'add' and device_type == 'client':
-        print(f"""\n\u001b[1musage:\u001b[0m sshyp </entry name> add <option>\u001b[0m\n
+        print(f"""\n\u001b[1musage:\u001b[0m sshyp /<entry name> add <option>\u001b[0m\n
 \u001b[1moptions:\u001b[0m
  add:
   password/-p{12*' '}add a password entry
   note/-n{16*' '}add a note entry
   folder/-f{14*' '}add a new folder for entries\n""")
     elif arguments[0] == 'edit' and device_type == 'client':
-        print(f"""\n\u001b[1musage:\u001b[0m sshyp </entry name> edit <option>\u001b[0m\n
+        print(f"""\n\u001b[1musage:\u001b[0m sshyp /<entry name> edit <option>\u001b[0m\n
 \u001b[1moptions:\u001b[0m
  edit:
   rename/relocate/-r{5*' '}rename or relocate an entry
@@ -320,7 +320,7 @@ def print_info():
   url/-l{17*' '}change the url attached to an entry
   note/-n{16*' '}change the note attached to an entry\n""")
     elif arguments[0] == 'copy' and device_type == 'client':
-        print(f"""\n\u001b[1musage:\u001b[0m sshyp </entry name> copy <option>\u001b[0m\n
+        print(f"""\n\u001b[1musage:\u001b[0m sshyp /<entry name> copy <option>\u001b[0m\n
 \u001b[1moptions:\u001b[0m
  copy:
   username/-u{12*' '}copy the username of an entry to your clipboard
@@ -328,7 +328,7 @@ def print_info():
   url/-l{17*' '}copy the url of an entry to your clipboard
   note/-n{16*' '}copy the note of an entry to your clipboard\n""")
     elif arguments[0] == 'gen' and device_type == 'client':
-        print(f"""\n\u001b[1musage:\u001b[0m sshyp </entry name> gen [option]\u001b[0m\n
+        print(f"""\n\u001b[1musage:\u001b[0m sshyp /<entry name> gen [option]\u001b[0m\n
 \u001b[1moptions:\u001b[0m
  gen:
   update/-u{14*' '}generate a password for an existing entry\n""")
@@ -337,7 +337,7 @@ def print_info():
 this is free software, and you are welcome to redistribute it under certain conditions;
 this program comes with absolutely no warranty; type 'sshyp license' for details""")
         if device_type == 'client':
-            print(f"""\n\u001b[1musage:\u001b[0m sshyp [</entry name> [argument] [option]] | [argument]\n
+            print(f"""\n\u001b[1musage:\u001b[0m sshyp [/<entry name> [argument] [option]] | [argument]\n
 \u001b[1marguments:\u001b[0m
  help/-h{17*' '}bring up this menu
  version/-v{14*' '}display sshyp version info
@@ -367,7 +367,7 @@ this program comes with absolutely no warranty; type 'sshyp license' for details
   note/-n{16*' '}copy the note of an entry to your clipboard
  gen:
   update/-u{14*' '}generate a password for an existing entry
-\n\u001b[1mtip 1:\u001b[0m you can quickly read an entry with 'sshyp </entry name>'
+\n\u001b[1mtip 1:\u001b[0m you can quickly read an entry with 'sshyp /<entry name>'
 \u001b[1mtip 2:\u001b[0m type 'sshyp' to view a list of saved entries\n""")
         # PORT START HELP-SERVER
         else:
