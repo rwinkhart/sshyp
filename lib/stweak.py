@@ -507,22 +507,12 @@ def global_menu(_scr, _device_type, _top_message):
             _ext_name, _escalator, _action = extension_menu()
             # if root is needed for extension management...
             if _ext_name:
-                if _action:
-                    # install with privilege escalation (outside of curses)
-                    from tempfile import gettempdir
-                    _exe_dir, _ini_dir = f"{gettempdir()}/sshyp_exe", f"{gettempdir()}/sshyp_ini"
-                    run((_escalator, 'chown', 'root:root', _exe_dir, _ini_dir))
-                    run((_escalator, 'mv', _exe_dir, f"/usr/lib/sshyp/{_ext_name}"))
-                    run((_escalator, 'mv', _ini_dir, f"/usr/lib/sshyp/extensions/{_ext_name}.ini"))
-                else:
-                    # uninstall with privilege escalation (outside of curses)
-                    run((_escalator, 'rm', '-I', f"/usr/lib/sshyp/{_ext_name}",
-                         f"/usr/lib/sshyp/extensions/{_ext_name}.ini"))
-                break
+                return _ext_name, _escalator, _action
         else:
             _exit_signal = True
         if _exit_signal:
             break
+    return False, False, False
 
 
 # runs initial configuration wizard
@@ -589,7 +579,19 @@ def wrapped_entry(_gm_device_type, _gm_top_message='configuration options:'):
         wrapper(lambda _wrap_stdscr: (use_default_colors(), initial_setup(_wrap_stdscr)))
     # any other value will be provided as the global menu device type
     else:
-        wrapper(lambda _wrap_stdscr: (use_default_colors(),
-                                      global_menu(_wrap_stdscr, _gm_device_type, _gm_top_message)))
+        _ext_name, _escalator, _action = \
+            wrapper(lambda _wrap_stdscr: (use_default_colors(),
+                                          global_menu(_wrap_stdscr, _gm_device_type, _gm_top_message)))[1]
+        if _action:
+            # install with privilege escalation (outside of curses)
+            from tempfile import gettempdir
+            _exe_dir, _ini_dir = f"{gettempdir()}/sshyp_exe", f"{gettempdir()}/sshyp_ini"
+            run((_escalator, 'chown', 'root:root', _exe_dir, _ini_dir))
+            run((_escalator, 'mv', _exe_dir, f"/usr/lib/sshyp/{_ext_name}"))
+            run((_escalator, 'mv', _ini_dir, f"/usr/lib/sshyp/extensions/{_ext_name}.ini"))
+        else:
+            # uninstall with privilege escalation (outside of curses)
+            run((_escalator, 'rm', '-I', f"/usr/lib/sshyp/{_ext_name}",
+                 f"/usr/lib/sshyp/extensions/{_ext_name}.ini"))
     for _message in term_messages:
         print(f"\n{_message}\n")
