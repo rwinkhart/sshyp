@@ -10,7 +10,7 @@ from subprocess import PIPE, run
 # PORT START UNAME-IMPORT-STWEAK
 from os import uname
 # PORT END UNAME-IMPORT-STWEAK
-home, sshyp_data, stdscr, term_messages = expanduser('~'), ConfigParser(), None, []
+home, sshyp_data, stdscr = expanduser('~'), ConfigParser(), None
 if isfile(f"{home}/.config/sshyp/sshyp.ini"):
     _exists_flag = True
     sshyp_data.read(f"{home}/.config/sshyp/sshyp.ini")
@@ -77,7 +77,7 @@ def install_type():
         _dev_type = 'server'
         Path(f"{home}/.config/sshyp/deleted").mkdir(mode=0o700, exist_ok=True)
         Path(f"{home}/.config/sshyp/whitelist").mkdir(mode=0o700, exist_ok=True)
-        term_messages.append('make sure the ssh service is running and properly configured')
+        curses_radio(['okay'], 'make sure the ssh service is running and properly configured')
     else:
         _dev_type = 'client'
         if _install_type == 1:
@@ -361,9 +361,8 @@ def extension_downloader():
     if _choice == len(_extensions)-1:
         return False
     _selected = _extensions[_choice]
-    _choice = curses_radio(('no', 'yes'), f"install {_selected}?\n\n\n\n\ndescription: "
-                                          f"{_pointer.get(_selected, 'desc')}\n\nusage: "
-                                          f"{_pointer.get(_selected, 'usage')}")
+    _choice = curses_radio(('no', 'yes'), f"description: {_pointer.get(_selected, 'desc')}\n\nusage: "
+                                          f"{_pointer.get(_selected, 'usage')}\n\ninstall {_selected}?")
     # if installing the extension...
     if _choice == 1:
         # download extension files to temporary directory
@@ -402,8 +401,7 @@ def extension_menu():
         _escalator = 'sudo'
     else:
         # throw an error if no supported privilege escalation utility is found
-        return "\n\u001b[38;5;9merror: privilege escalation required\n\n" \
-               "neither 'doas' nor 'sudo' were found in the system's $PATH\u001b[0m\n", False, None, None
+        raise ChildProcessError
     while True:
         _choice = curses_radio(('download/update extensions', 'remove extensions', 'BACK'), 'extension management')
         if _choice == 0:
@@ -491,18 +489,17 @@ def global_menu(_scr, _device_type, _top_message):
         elif _choice == 5:
             _enabled = quick_unlock_config(False)
             if _enabled == 'true':
-                term_messages.append('quick-unlock has been enabled client-side - in order for this feature to '
-                                     'function,\nyou must first log in to the sshyp server and run:\n\nsshyp tweak\n\n'
-                                     'from there you can create a quick-unlock pin and add this device to the '
-                                     'whitelist')
+                curses_radio(['okay'], 'quick-unlock has been enabled client-side - in order for this feature to '
+                                       'function,\nyou must first log in to the sshyp server and run:\n\nsshyp tweak\n'
+                                       '\nfrom there you can create a quick-unlock pin and add this device to the '
+                                       'whitelist')
         elif _choice == 6:
             _success = refresh_encryption()
             if _success == 1:
-                term_messages.append("a backup of your previous entry directory has been created:\n\n"
-                                     f"{home}/.local/share/sshyp.old")
+                curses_radio(['okay'], "a backup of your previous entry directory has been created:\n\n"
+                                       f"{home}/.local/share/sshyp.old")
             elif _success == 2:
-                term_messages.append('\u001b[38;5;9merror: re-encryption failed: '
-                                     'entry directory not found\u001b[0m')
+                curses_radio(['okay'], '\u001b[38;5;9merror: re-encryption failed: entry directory not found\u001b[0m')
         elif _choice == 7:
             _ext_name, _escalator, _action = extension_menu()
             # if root is needed for extension management...
@@ -579,9 +576,14 @@ def wrapped_entry(_gm_device_type, _gm_top_message='configuration options:'):
         wrapper(lambda _wrap_stdscr: (use_default_colors(), initial_setup(_wrap_stdscr)))
     # any other value will be provided as the global menu device type
     else:
-        _ext_name, _escalator, _action = \
-            wrapper(lambda _wrap_stdscr: (use_default_colors(),
-                                          global_menu(_wrap_stdscr, _gm_device_type, _gm_top_message)))[1]
+        try:
+            _ext_name, _escalator, _action = \
+                wrapper(lambda _wrap_stdscr: (use_default_colors(),
+                                              global_menu(_wrap_stdscr, _gm_device_type, _gm_top_message)))[1]
+        except ChildProcessError:
+            print("\n\u001b[38;5;9merror: privilege escalation required\n\nneither 'doas' nor 'sudo' were found in "
+                  "the system's $PATH\u001b[0m\n")
+            return
         # only run if privilege escalation is needed
         if _action is not None:
             if _action:
@@ -595,5 +597,3 @@ def wrapped_entry(_gm_device_type, _gm_top_message='configuration options:'):
                 # uninstall with privilege escalation (outside of curses)
                 run((_escalator, 'rm', '-I', f"/usr/lib/sshyp/{_ext_name}",
                      f"/usr/lib/sshyp/extensions/{_ext_name}.ini"))
-    for _message in term_messages:
-        print(f"\n{_message}\n")
