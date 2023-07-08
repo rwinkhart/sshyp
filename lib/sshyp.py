@@ -484,7 +484,7 @@ def edit():
         _new_lines = _old_lines[0:3] + edit_note(_old_lines[3:], True).split('\n')
     else:
         _new_lines = line_edit(decrypt(directory + entry_name, _quick_verify=quick_unlock_enabled), _detail,
-                                    _edit_line)
+                               _edit_line)
     print('\n\u001b[1mentry preview:\u001b[0m')
     entry_reader(_new_lines)
     encrypt(_new_lines, directory + entry_name, gpg_id)

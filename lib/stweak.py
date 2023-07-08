@@ -1,5 +1,5 @@
 from configparser import ConfigParser
-from curses import A_REVERSE, echo, KEY_DOWN, KEY_UP, cbreak, curs_set, endwin, initscr, newwin, noecho, nocbreak
+from curses import A_REVERSE, KEY_DOWN, KEY_UP, curs_set, newwin
 from curses.textpad import rectangle, Textbox
 from os import environ, listdir, remove
 from os.path import exists, expanduser, isfile
@@ -456,11 +456,15 @@ def global_menu(_scr, _device_type, _top_message):
                     # ...and quick-unlock settings are missing
                     if not sshyp_data.has_option('CLIENT-ONLINE', 'quick_unlock_enabled'):
                         quick_unlock_config(True)
+                    # set to None to check if modified later
+                    _ip, _username_ssh, _port = None, None, None
                     # ...and there is no sshync config present
                     if not sshyp_data.has_section('SSHYNC'):
                         _ip, _username_ssh, _port = ssh_config()
                     # ...and there is no device ID present
                     if not listdir(f"{home}/.config/sshyp/devices"):
+                        if None in (_ip, _username_ssh, _port):
+                            _ip, _username_ssh, _port = ssh_config()
                         dev_id_config(_ip, _username_ssh, _port)
                     # ...or ssh_error is missing
                     elif not sshyp_data.has_option('CLIENT-ONLINE', 'ssh_error'):
@@ -501,21 +505,22 @@ def global_menu(_scr, _device_type, _top_message):
                                      'entry directory not found\u001b[0m')
         elif _choice == 7:
             _ext_name, _escalator, _action = extension_menu()
+            # if root is needed for extension management...
+            if _ext_name:
+                if _action:
+                    # install with privilege escalation (outside of curses)
+                    from tempfile import gettempdir
+                    _exe_dir, _ini_dir = f"{gettempdir()}/sshyp_exe", f"{gettempdir()}/sshyp_ini"
+                    run((_escalator, 'chown', 'root:root', _exe_dir, _ini_dir))
+                    run((_escalator, 'mv', _exe_dir, f"/usr/lib/sshyp/{_ext_name}"))
+                    run((_escalator, 'mv', _ini_dir, f"/usr/lib/sshyp/extensions/{_ext_name}.ini"))
+                else:
+                    # uninstall with privilege escalation (outside of curses)
+                    run((_escalator, 'rm', '-I', f"/usr/lib/sshyp/{_ext_name}",
+                         f"/usr/lib/sshyp/extensions/{_ext_name}.ini"))
+                break
         else:
             _exit_signal = True
-        # if root is needed for extension management...
-        if _choice == 7 and _ext_name:
-            if _action:
-                # install with privilege escalation (outside of curses)
-                from tempfile import gettempdir
-                _exe_dir, _ini_dir = f"{gettempdir()}/sshyp_exe", f"{gettempdir()}/sshyp_ini"
-                run((_escalator, 'chown', 'root:root', _exe_dir, _ini_dir))
-                run((_escalator, 'mv', _exe_dir, f"/usr/lib/sshyp/{_ext_name}"))
-                run((_escalator, 'mv', _ini_dir, f"/usr/lib/sshyp/extensions/{_ext_name}.ini"))
-            else:
-                # uninstall with privilege escalation (outside of curses)
-                run((_escalator, 'rm', '-I', f"/usr/lib/sshyp/{_ext_name}", f"/usr/lib/sshyp/extensions/{_ext_name}.ini"))
-            break
         if _exit_signal:
             break
 
@@ -582,8 +587,9 @@ def wrapped_entry(_gm_device_type, _gm_top_message='configuration options:'):
     # a boolean value represents init
     if isinstance(_gm_device_type, bool):
         wrapper(lambda _wrap_stdscr: (use_default_colors(), initial_setup(_wrap_stdscr)))
-    # any other vlaue will be provided as the global menu device type
+    # any other value will be provided as the global menu device type
     else:
-        wrapper(lambda _wrap_stdscr: (use_default_colors(), global_menu(_wrap_stdscr, _gm_device_type, _gm_top_message)))
+        wrapper(lambda _wrap_stdscr: (use_default_colors(),
+                                      global_menu(_wrap_stdscr, _gm_device_type, _gm_top_message)))
     for _message in term_messages:
         print(f"\n{_message}\n")
