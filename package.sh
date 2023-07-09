@@ -301,6 +301,7 @@ cp -r %%{_sourcedir}/usr %%{buildroot}
 /usr/bin/sshyp
 /usr/lib/sshyp/sshyp.py
 /usr/lib/sshyp/sshync.py
+/usr/lib/sshyp/stweak.py
 /usr/share/bash-completion/completions/sshyp
 /usr/share/zsh/site-functions/_sshyp
 %%license /usr/share/licenses/sshyp/license
@@ -361,8 +362,9 @@ prefix: /
                 },
 " > output/freebsdtemp/+MANIFEST
 printf "/usr/bin/sshyp
-/usr/lib/sshyp/sshync.py
 /usr/lib/sshyp/sshyp.py
+/usr/lib/sshyp/sshync.py
+/usr/lib/sshyp/stweak.py
 /usr/local/share/bash-completion/completions/sshyp
 /usr/local/share/zsh/site-functions/_sshyp
 /usr/share/licenses/sshyp/license
