@@ -244,6 +244,11 @@ def refresh_encryption():
     from shutil import move, rmtree
     from sshyp import decrypt, encrypt
 
+    # prompt for unlock and display do not close warning
+    decrypt(None)
+    curses_radio(['okay'], 'entry optimization may take some time - select "okay" to start - '
+                           'do not terminate this process!')
+
     # remove existing conflicts
     for _extension in ('.new', '.old'):
         if exists(f"{_directory}{_extension}"):
