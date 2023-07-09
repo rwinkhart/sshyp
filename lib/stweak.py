@@ -130,11 +130,11 @@ def gpg_config():
 # text editor configuration
 def editor_config(_env_mode):
     if _env_mode:
-        # set default text editor to value of EDITOR environment variable, otherwise default to nano
+        # set default text editor to value of EDITOR environment variable, otherwise default to vi
         if 'EDITOR' in environ:
             _editor = environ['EDITOR']
         else:
-            _editor = 'nano'
+            _editor = 'vi'
     else:
         _editor = curses_text('enter the name of your preferred text editor:\n\n\n\n\n(ctrl+g/enter to confirm)'
                               '\n\nthis will be used for writing notes\n\nexample input: vim')
