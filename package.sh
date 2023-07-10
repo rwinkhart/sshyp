@@ -157,8 +157,8 @@ urls {
     ./RMSERVER.py
     ./CLIPTOOL.py
     ./CLIPBOARD.py HAIKU
-    ./COMMENTS.py ALL
     ./UNAME.py TMP
+    ./COMMENTS.py ALL
     ./BLANKS.py
     ./TABS.sh TABS
     cd ..
@@ -232,13 +232,13 @@ Installed-Size: 71680
 
 _create_termux() {
     printf '\npackaging for Termux...\n'
-    mkdir -p output/termuxtemp/sshyp_"$version"-"$revision"_all_termux/DEBIAN \
-         output/termuxtemp/sshyp_"$version"-"$revision"_all_termux/data/data/com.termux/files/usr/lib/sshyp/extensions \
-         output/termuxtemp/sshyp_"$version"-"$revision"_all_termux/data/data/com.termux/files/usr/bin \
-         output/termuxtemp/sshyp_"$version"-"$revision"_all_termux/data/data/com.termux/files/usr/share/man/man1 \
-         output/termuxtemp/sshyp_"$version"-"$revision"_all_termux/data/data/com.termux/files/usr/share/bash-completion/completions \
-         output/termuxtemp/sshyp_"$version"-"$revision"_all_termux/data/data/com.termux/files/usr/share/zsh/site-functions
-    printf "Package: sshyp
+    mkdir -p output/termuxtemp/TERMUX-sshyp-client_"$version"-"$revision"_all_termux/DEBIAN \
+         output/termuxtemp/TERMUX-sshyp-client_"$version"-"$revision"_all_termux/data/data/com.termux/files/usr/lib/sshyp/extensions \
+         output/termuxtemp/TERMUX-sshyp-client_"$version"-"$revision"_all_termux/data/data/com.termux/files/usr/bin \
+         output/termuxtemp/TERMUX-sshyp-client_"$version"-"$revision"_all_termux/data/data/com.termux/files/usr/share/man/man1 \
+         output/termuxtemp/TERMUX-sshyp-client_"$version"-"$revision"_all_termux/data/data/com.termux/files/usr/share/bash-completion/completions \
+         output/termuxtemp/TERMUX-sshyp-client_"$version"-"$revision"_all_termux/data/data/com.termux/files/usr/share/zsh/site-functions
+    printf "Package: sshyp-client
 Version: $version
 Section: utils
 Architecture: all
@@ -248,10 +248,11 @@ Depends: python, gnupg, openssh, termux-api, termux-am
 Suggests: bash-completion
 Priority: optional
 Installed-Size: 71680
-" > output/termuxtemp/sshyp_"$version"-"$revision"_all_termux/DEBIAN/control
+" > output/termuxtemp/TERMUX-sshyp-client_"$version"-"$revision"_all_termux/DEBIAN/control
     # START PORT
     cp lib/* port-jobs/working/
     cd port-jobs
+    ./RMSERVER.py
     ./CLIPTOOL.py
     ./CLIPBOARD.py TERMUX
     ./UNAME.py TERMUX
@@ -259,16 +260,16 @@ Installed-Size: 71680
     ./BLANKS.py
     ./TABS.sh TABS
     cd ..
-    mv port-jobs/working/* output/termuxtemp/sshyp_"$version"-"$revision"_all_termux/data/data/com.termux/files/usr/lib/sshyp/
+    mv port-jobs/working/* output/termuxtemp/TERMUX-sshyp-client_"$version"-"$revision"_all_termux/data/data/com.termux/files/usr/lib/sshyp/
     # END PORT
-    ln -s /data/data/com.termux/files/usr/lib/sshyp/sshyp.py output/termuxtemp/sshyp_"$version"-"$revision"_all_termux/data/data/com.termux/files/usr/bin/sshyp
-    cp -r share output/termuxtemp/sshyp_"$version"-"$revision"_all_termux/data/data/com.termux/files/usr/
-    cp extra/completion.bash output/termuxtemp/sshyp_"$version"-"$revision"_all_termux/data/data/com.termux/files/usr/share/bash-completion/completions/sshyp
-    cp extra/completion.zsh output/termuxtemp/sshyp_"$version"-"$revision"_all_termux/data/data/com.termux/files/usr/share/zsh/site-functions/_sshyp
-    cp extra/manpage output/termuxtemp/sshyp_"$version"-"$revision"_all_termux/data/data/com.termux/files/usr/share/man/man1/sshyp.1
-    gzip output/termuxtemp/sshyp_"$version"-"$revision"_all_termux/data/data/com.termux/files/usr/share/man/man1/sshyp.1
-    dpkg-deb --build --root-owner-group -z6 -Sextreme -Zxz output/termuxtemp/sshyp_"$version"-"$revision"_all_termux/
-    mv output/termuxtemp/sshyp_"$version"-"$revision"_all_termux.deb output/TERMUX-sshyp_"$version"-"$revision"_all_termux.deb
+    ln -s /data/data/com.termux/files/usr/lib/sshyp/sshyp.py output/termuxtemp/TERMUX-sshyp-client_"$version"-"$revision"_all_termux/data/data/com.termux/files/usr/bin/sshyp
+    cp -r share output/termuxtemp/TERMUX-sshyp-client_"$version"-"$revision"_all_termux/data/data/com.termux/files/usr/
+    cp extra/completion.bash output/termuxtemp/TERMUX-sshyp-client_"$version"-"$revision"_all_termux/data/data/com.termux/files/usr/share/bash-completion/completions/sshyp
+    cp extra/completion.zsh output/termuxtemp/TERMUX-sshyp-client_"$version"-"$revision"_all_termux/data/data/com.termux/files/usr/share/zsh/site-functions/_sshyp
+    cp extra/manpage output/termuxtemp/TERMUX-sshyp-client_"$version"-"$revision"_all_termux/data/data/com.termux/files/usr/share/man/man1/sshyp.1
+    gzip output/termuxtemp/TERMUX-sshyp-client_"$version"-"$revision"_all_termux/data/data/com.termux/files/usr/share/man/man1/sshyp.1
+    dpkg-deb --build --root-owner-group -z6 -Sextreme -Zxz output/termuxtemp/TERMUX-sshyp-client_"$version"-"$revision"_all_termux/
+    mv output/termuxtemp/TERMUX-sshyp-client_"$version"-"$revision"_all_termux.deb output/
     rm -rf output/termuxtemp
     printf '\nTermux packaging complete\n\n'
 } &&
@@ -459,6 +460,6 @@ case "$1" in
         esac
         ;;
     *)
-    printf '\nusage: package.sh [target] <revision>\n\ntargets:\n mainline: pkgbuild pkgbuild-deb apkbuild apkbuild-deb fedora debian wsl haiku freebsd\n experimental: termux\n groups: buildable-arch buildable-arch-deb\n\n'
+    printf '\nusage: package.sh [target] <revision>\n\ntargets:\n full support: pkgbuild pkgbuild-deb apkbuild apkbuild-deb fedora debian wsl freebsd\n client-only: haiku termux\n groups: buildable-arch buildable-arch-deb\n\n'
     ;;
 esac
