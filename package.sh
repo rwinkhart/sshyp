@@ -187,17 +187,6 @@ _create_deb() {
          output/debiantemp/sshyp_"$version"-"$revision"_all/usr/share/man/man1 \
          output/debiantemp/sshyp_"$version"-"$revision"_all/usr/share/bash-completion/completions \
          output/debiantemp/sshyp_"$version"-"$revision"_all/usr/share/zsh/functions/Completion/Unix
-    printf "Package: sshyp
-Version: $version
-Section: utils
-Architecture: all
-Maintainer: Randall Winkhart <idgr at tutanota dot com>
-Description: A light-weight, self-hosted, synchronized password manager
-Depends: python3, gnupg, openssh-client
-Suggests: wl-clipboard, xclip, bash-completion
-Priority: optional
-Installed-Size: 71680
-" > output/debiantemp/sshyp_"$version"-"$revision"_all/DEBIAN/control
     # START PORT
     cp lib/* port-jobs/working/
     cd port-jobs
@@ -223,6 +212,18 @@ Installed-Size: 71680
     cp extra/completion.zsh output/debiantemp/sshyp_"$version"-"$revision"_all/usr/share/zsh/functions/Completion/Unix/_sshyp
     cp extra/manpage output/debiantemp/sshyp_"$version"-"$revision"_all/usr/share/man/man1/sshyp.1
     gzip output/debiantemp/sshyp_"$version"-"$revision"_all/usr/share/man/man1/sshyp.1
+    size=$(du --block-size=1024 -s output/debiantemp/sshyp_"$version"-"$revision"_all | cut -f1)
+    printf "Package: sshyp
+Version: $version
+Section: utils
+Architecture: all
+Maintainer: Randall Winkhart <idgr at tutanota dot com>
+Description: A light-weight, self-hosted, synchronized password manager
+Depends: python3, gnupg, openssh-client
+Suggests: wl-clipboard, xclip, bash-completion
+Priority: optional
+Installed-Size: $size
+" > output/debiantemp/sshyp_"$version"-"$revision"_all/DEBIAN/control
     dpkg-deb --build --root-owner-group -z6 -Sextreme -Zxz output/debiantemp/sshyp_"$version"-"$revision"_all/
     mv output/debiantemp/sshyp_"$version"-"$revision"_all.deb output/"$special"-sshyp_"$version"-"$revision"_all.deb
     rm -rf output/debiantemp
@@ -238,17 +239,6 @@ _create_termux() {
          output/termuxtemp/TERMUX-sshyp-client_"$version"-"$revision"_all_termux/data/data/com.termux/files/usr/share/man/man1 \
          output/termuxtemp/TERMUX-sshyp-client_"$version"-"$revision"_all_termux/data/data/com.termux/files/usr/share/bash-completion/completions \
          output/termuxtemp/TERMUX-sshyp-client_"$version"-"$revision"_all_termux/data/data/com.termux/files/usr/share/zsh/site-functions
-    printf "Package: sshyp-client
-Version: $version
-Section: utils
-Architecture: all
-Maintainer: Randall Winkhart <idgr at tutanota dot com>
-Description: A light-weight, self-hosted, synchronized password manager
-Depends: python, gnupg, openssh, termux-api, termux-am
-Suggests: bash-completion
-Priority: optional
-Installed-Size: 71680
-" > output/termuxtemp/TERMUX-sshyp-client_"$version"-"$revision"_all_termux/DEBIAN/control
     # START PORT
     cp lib/* port-jobs/working/
     cd port-jobs
@@ -268,6 +258,18 @@ Installed-Size: 71680
     cp extra/completion.zsh output/termuxtemp/TERMUX-sshyp-client_"$version"-"$revision"_all_termux/data/data/com.termux/files/usr/share/zsh/site-functions/_sshyp
     cp extra/manpage output/termuxtemp/TERMUX-sshyp-client_"$version"-"$revision"_all_termux/data/data/com.termux/files/usr/share/man/man1/sshyp.1
     gzip output/termuxtemp/TERMUX-sshyp-client_"$version"-"$revision"_all_termux/data/data/com.termux/files/usr/share/man/man1/sshyp.1
+    size=$(du --block-size=1024 -s output/termuxtemp/TERMUX-sshyp-client_"$version"-"$revision"_all_termux | cut -f1)
+    printf "Package: sshyp-client
+Version: $version
+Section: utils
+Architecture: all
+Maintainer: Randall Winkhart <idgr at tutanota dot com>
+Description: A light-weight, self-hosted, synchronized password manager
+Depends: python, gnupg, openssh, termux-api, termux-am
+Suggests: bash-completion
+Priority: optional
+Installed-Size: $size
+" > output/termuxtemp/TERMUX-sshyp-client_"$version"-"$revision"_all_termux/DEBIAN/control
     dpkg-deb --build --root-owner-group -z6 -Sextreme -Zxz output/termuxtemp/TERMUX-sshyp-client_"$version"-"$revision"_all_termux/
     mv output/termuxtemp/TERMUX-sshyp-client_"$version"-"$revision"_all_termux.deb output/
     rm -rf output/termuxtemp
