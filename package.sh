@@ -171,10 +171,10 @@ urls {
     cp extra/manpage output/haikutemp/documentation/man/man1/sshyp.1
     gzip output/haikutemp/documentation/man/man1/sshyp.1
     cd output/haikutemp
-    package create -b HAIKU-sshyp-client-"$version"-"$revision"_all.hpkg
-    package add HAIKU-sshyp-client-"$version"-"$revision"_all.hpkg bin lib documentation data
+    package create -b HAIKU-sshyp_client-"$version"-"$revision"_all.hpkg
+    package add HAIKU-sshyp_client-"$version"-"$revision"_all.hpkg bin lib documentation data
     cd ../..
-    mv output/haikutemp/HAIKU-sshyp-client-"$version"-"$revision"_all.hpkg output/
+    mv output/haikutemp/HAIKU-sshyp_client-"$version"-"$revision"_all.hpkg output/
     rm -rf output/haikutemp
     printf '\nHaiku packaging complete\n\n'
 } &&
