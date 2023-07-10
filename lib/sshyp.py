@@ -705,28 +705,29 @@ if __name__ == "__main__":
                     from stweak import wrapped_entry
                     wrapped_entry(device_type)
        
+            if arg_count > 0 and success_flag == 0 and arguments[0] != 'sync':
+                if arguments[0] not in ('help', '-h', 'version', '-v', 'license'):
+                    extension_runner()
+                else:
+                    print_info()
+            elif not ssh_error:
+                if sync_flag: 
+                    sync()
+                elif (arg_count > 0 and arguments[0] == 'sync') or (arg_count > 1 and arguments[1] == 'shear'):
+                    sync('\n')
+
         # PORT START ARGS-SERVER
         # server arguments
         else:
-            if arg_count < 1:
-                arguments.append('help')
-                print_info()
-            elif arg_count == 1 and arguments[0] == 'tweak':
+            if arg_count == 1 and arguments[0] == 'tweak':
                 success_flag = True
                 from stweak import wrapped_entry
                 wrapped_entry(device_type)
-        # PORT END ARGS-SERVER
-
-        if arg_count > 0 and success_flag == 0 and arguments[0] != 'sync':
-            if device_type == 'client' and arguments[0] not in ('help', '-h', 'version', '-v', 'license'):
-                extension_runner()
             else:
+                if arg_count < 1:
+                    arguments.append('help')
                 print_info()
-        elif not ssh_error:
-            if sync_flag: 
-                sync()
-            elif (arg_count > 0 and arguments[0] == 'sync') or (arg_count > 1 and arguments[1] == 'shear'):
-                sync('\n')
+        # PORT END ARGS-SERVER
 
     except KeyboardInterrupt:
         print('\n')
