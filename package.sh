@@ -1,6 +1,6 @@
 #!/bin/sh
 
-version=$(sed -n '1{p;q}' extra/changelog-archive/2023 | cut -c8-)
+version=$(head -n1 extra/changelog-archive/2023 | cut -c8-)
 if [ -z "$2" ]; then
     revision=1
 else
@@ -36,7 +36,7 @@ _create_generic_linux() {
     gzip output/linuxtemp/usr/share/man/man1/sshyp.1
     XZ_OPT=-e6 tar -C output/linuxtemp -cvJf output/GENERIC-LINUX-sshyp-"$version".tar.xz usr/
     rm -rf output/linuxtemp
-    sha512="$(sha512sum output/GENERIC-LINUX-sshyp-"$version".tar.xz | awk '{print $1;}')"
+    sha512="$(sha512sum output/GENERIC-LINUX-sshyp-"$version".tar.xz | cut -d' ' -f1)"
     printf '\ngeneric (Linux) packaging complete\n\n'
 } &&
 
@@ -227,7 +227,7 @@ Installed-Size: $size
     dpkg-deb --build --root-owner-group -z6 -Sextreme -Zxz output/debiantemp/sshyp_"$version"-"$revision"_all/
     mv output/debiantemp/sshyp_"$version"-"$revision"_all.deb output/"$special"-sshyp_"$version"-"$revision"_all.deb
     rm -rf output/debiantemp
-    sha512="$(sha512sum output/"$special"-sshyp_"$version"-"$revision"_all.deb | awk '{print $1;}')"
+    sha512="$(sha512sum output/"$special"-sshyp_"$version"-"$revision"_all.deb | cut -d' ' -f1)"
     printf "\n$1 packaging complete\n\n"
 } &&
 
