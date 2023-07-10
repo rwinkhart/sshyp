@@ -148,6 +148,8 @@ def editor_config(_env_mode):
 def ssh_config():
     # private key selection/generation
     _keys = []
+    # ensure ~/.ssh directory exists
+    Path(f"{home}/.ssh").mkdir(mode=0o700, exist_ok=True)
     for _file in listdir(f"{home}/.ssh"):
         if not _file.startswith('.') and _file not in ('known_hosts', 'authorized_keys') \
                 and not _file.endswith('.pub') and isfile(f"{home}/.ssh/{_file}"):
