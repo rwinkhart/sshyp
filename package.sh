@@ -155,6 +155,7 @@ urls {
     cd port-jobs
     ./SHEBANG.sh
     ./RMSERVER.py
+    ./RMEXTMAN.py
     ./CLIPTOOL.py
     ./CLIPBOARD.py HAIKU
     ./UNAME.py TMP
@@ -243,6 +244,7 @@ _create_termux() {
     cp lib/* port-jobs/working/
     cd port-jobs
     ./RMSERVER.py
+    ./RMEXTMAN.py
     ./CLIPTOOL.py
     ./CLIPBOARD.py TERMUX
     ./UNAME.py TERMUX

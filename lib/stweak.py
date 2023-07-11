@@ -354,6 +354,7 @@ def whitelist_menu():
 # PORT END WHITELIST-SERVER
 
 
+# PORT START TWEAK-EXTEND-FUNCTIONS
 # downloads/updates extensions
 def extension_downloader():
     from os import chmod
@@ -424,6 +425,7 @@ def extension_menu():
         else:
             break
     return _ext_name, _escalator, _action
+# PORT END TWEAK-EXTEND-FUNCTIONS
 
 
 # runs secondary configuration menu
@@ -508,10 +510,12 @@ def global_menu(_scr, _device_type, _top_message):
             elif _success == 2:
                 curses_radio(['okay'], '\u001b[38;5;9merror: re-encryption failed: entry directory not found\u001b[0m')
         elif _choice == 7:
+            # PORT START TWEAK-EXTEND-OPTION
             _ext_name, _escalator, _action = extension_menu()
             # if root is needed for extension management...
             if _ext_name:
                 return _ext_name, _escalator, _action
+            # PORT END TWEAK-EXTEND-OPTION
         else:
             _exit_signal = True
         if _exit_signal:
