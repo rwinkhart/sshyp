@@ -281,21 +281,20 @@ def copy_id_check(_port, _username_ssh, _ip, _client_device_id, _sshyp_data):
 # prints help text based on argument
 def print_info():
     if arguments[0] in ('version', '-v'):
-        _blank = '\u001b[38;5;7;48;5;8m/\u001b[38;5;15;48;5;15m' + 54*' ' + '\u001b[38;5;7;48;5;8m/\u001b[0m'
-        _border = '\u001b[38;5;7;48;5;8m' + 28*'<>' + '\u001b[0m\n'
+        _blank = '\u001b[38;5;7;48;5;8m\\\u001b[38;5;15;48;5;15m' + 55*' ' + '\u001b[38;5;7;48;5;8m/\u001b[0m'
+        _border = '\u001b[38;5;7;48;5;8m' + 14*'<>' + '-' + 14*'<>' + '\u001b[0m\n'
         print(f"""\nsshyp is a simple, self-hosted, sftp-synchronized\npassword manager for unix(-like) systems\n
-{16*' '}..{7*' '}\u001b[38;5;9m♥♥ ♥♥\u001b[0m{7*' '}..
-{9*' '}.''.''/()\\{5*' '}\u001b[38;5;13m♥♥♥♥♥♥♥\u001b[0m{5*' '}/()\\''.''.
-{8*' '}*{7*' '}:{8*' '}\u001b[38;5;9m♥♥♥♥♥\u001b[0m{8*' '}:{7*' '}*
-{9*' '}`..'..'{10*' '}\u001b[38;5;13m♥♥♥\u001b[0m{10*' '}`..'..'
-{9*' '}//{3*' '}\\\\{11*' '}\u001b[38;5;9m♥\u001b[0m{11*' '}//{3*' '}\\\\""")
-        print(f"{_border}{_blank}\n\u001b[38;5;7;48;5;8m/\u001b[38;5;15;48;5;15m{3*' '}\u001b[38;5;15;48;5;8m"
-              f"sshyp ", f"copyright (c) 2021-2023 ", f"randall winkhart\u001b[38;5;15;48;5;15m{3*' '}"
-              f"\u001b[38;5;7;48;5;8m/\u001b[0m\n{_blank}")
-        print(f"\u001b[38;5;7;48;5;8m/\u001b[38;5;15;48;5;15m{20*' '}\u001b[38;5;15;48;5;8mversion 1.5.0"
-              f"\u001b[38;5;15;48;5;15m{21*' '}\u001b[38;5;7;48;5;8m/\u001b[0m")
-        print(f"\u001b[38;5;7;48;5;8m/\u001b[38;5;15;48;5;15m{14*' '}\u001b[38;5;15;48;5;8mthe fortified flock"
-              f" update\u001b[38;5;15;48;5;15m{14*' '}\u001b[38;5;7;48;5;8m/\u001b[0m")
+{9*' '}..{15*' '}\u001b[38;5;12m♥♥ \u001b[38;5;9m♥♥\u001b[0m{15*' '}..
+{8*' '}/()\\''.''.{7*' '}\u001b[38;5;12m♥♥♥\u001b[38;5;15m♥♥♥♥\u001b[0m{7*' '}.''.''/()\\{3*' '}_)
+{5*' '}_.{3*' '}:{7*' '}*{7*' '}\u001b[38;5;9m♥♥♥♥♥\u001b[0m{7*' '}*{7*' '}:{3*' '}<[◎]|_|=
+ }}-}}-*]{4*' '}`..'..'{9*' '}\u001b[38;5;15m♥♥♥\u001b[0m{9*' '}`..'..'{6*' '}|
+{4*' '}◎-◎{4*' '}//{3*' '}\\\\{10*' '}\u001b[38;5;9m♥\u001b[0m{10*' '}//{3*' '}\\\\{5*' '}/|\\""")
+        print(f"{_border}{_blank}\n\u001b[38;5;7;48;5;8m\\\u001b[38;5;15;48;5;15m{18*' '}\u001b[38;5;15;48;5;8msshyp "
+              f"version 1.5.0\u001b[38;5;15;48;5;15m{18*' '}\u001b[38;5;7;48;5;8m/\u001b[0m")
+        print(f"\u001b[38;5;7;48;5;8m\\\u001b[38;5;15;48;5;15m{14*' '}\u001b[38;5;15;48;5;8mthe fortified flock"
+              f" update\u001b[38;5;15;48;5;15m{15*' '}\u001b[38;5;7;48;5;8m/\u001b[0m\n{_blank}")
+        print(f"\u001b[38;5;7;48;5;8m\\\u001b[38;5;15;48;5;15m{9*' '}\u001b[38;5;15;48;5;8mcopyright 2021-2023 ", 
+              f"randall winkhart\u001b[38;5;15;48;5;15m{9*' '}\u001b[38;5;7;48;5;8m/\u001b[0m")
         print(f"{_blank}\n{_border}\nsee https://github.com/rwinkhart/sshyp for more information\n")
     elif arguments[0] == 'license':
         print('\nThis program is free software: you can redistribute it and/or modify it under the terms\nof version 3 '
