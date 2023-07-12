@@ -44,9 +44,9 @@ Pre-built packages exist for Haiku, FreeBSD, Alpine Linux, Debian/Ubuntu Linux, 
 
 Additionally, sshyp is distributed on the AUR.
 
-Support for additional environments, such as MacOS and OpenBSD, is coming soon.
+Extensions can be installed from the `sshyp tweak` menu on most supported platforms.
 
-Extensions are available in the [sshyp-labs](https://github.com/rwinkhart/sshyp-labs) repository.
+For Haiku and Termux, extensions must instead be installed through the [system package manager](https://github.com/rwinkhart/sshyp-labs/releases).
 
 # Building
 A packaging script is included in the root directory of the repo in order to package sshyp for your distribution. To package sshyp from source, simply run:
@@ -66,36 +66,20 @@ The AUR version and the packages attached to the release tags were already packa
 Currently, the script can create packages for Haiku, FreeBSD, Alpine Linux (APKBUILD), Arch Linux (PKGBUILD), Debian/Ubuntu Linux, Fedora Linux, Termux, and WSL.
 
 # Usage
-Upon initial installation (on both the server and client devices), be sure to run:
+Upon initial installation (on both the server and client devices), run `sshyp init` to configure the settings necessary for sshyp to function.
 
-```
-sshyp tweak
-```
-
-This command will allow you to configure the settings necessary for sshyp to function. To ensure configuration compatibility, it is a good idea to run 'sshyp tweak' after each major update.
+In order to configure optional settings or change already configured settings, run `sshyp tweak`.
 
 Please note that decrypting and reading entries is disabled on server devices for security reasons. Only devices configured as clients can use the GPG key to decrypt entries.
 
-All available options can be found with:
-
-```
-sshyp help
-```
-
-Or alternatively, in the man page:
-
-```
-man sshyp
-```
+All available options can be found with `sshyp help`, or alternatively, in the man page.
 
 # Roadmap
 Short-term Goals:
 
-- MacOS support
-- improved temporary directory security
-- a minimal GUI app - being made as an [extension](https://github.com/rwinkhart/sshyp-labs)
+- migrate from gpg to a better-suited utility focused on symmetric cipher encryption
 
 Long-term Goals:
 
-- a fun surprise
+- improve OS compatibility
 - seize the thrones, shear the humans
