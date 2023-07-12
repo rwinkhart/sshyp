@@ -307,6 +307,7 @@ cp -r %%{_sourcedir}/usr %%{buildroot}
 /usr/lib/sshyp/sshyp.py
 /usr/lib/sshyp/sshync.py
 /usr/lib/sshyp/stweak.py
+/usr/lib/sshyp/extensions/
 /usr/share/bash-completion/completions/sshyp
 /usr/share/zsh/site-functions/_sshyp
 %%license /usr/share/licenses/sshyp/license
