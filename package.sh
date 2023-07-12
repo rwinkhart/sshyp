@@ -374,6 +374,7 @@ printf "/usr/bin/sshyp
 /usr/local/share/zsh/site-functions/_sshyp
 /usr/share/licenses/sshyp/license
 /usr/share/man/man1/sshyp.1.gz
+@dir /usr/lib/sshyp/extensions/
 " > output/freebsdtemp/plist
     # START PORT
     cp lib/* port-jobs/working/
