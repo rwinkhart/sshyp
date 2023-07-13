@@ -229,7 +229,7 @@ def quick_unlock_config(_default):
 
 # re-encrypt/optimize all entries
 def refresh_encryption():
-    _directory = sshyp_data.get('SSHYNC', 'local_dir').rstrip('/')
+    _directory = f"{home}/.local/share/sshyp"
 
     # warn the user of potential data loss and prompt to continue
     _proceed = curses_radio(('no', 'yes'), "WARNING: proceeding with this action will remove/overwrite any directories"
