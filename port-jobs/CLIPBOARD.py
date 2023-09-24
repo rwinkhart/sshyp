@@ -22,7 +22,8 @@ if len(arguments) > 0:
     Popen("sleep 30; termux-clipboard-set ''", shell=True)"""
     elif arguments[0] == 'LINUX':
         replacement = """if 'WAYLAND_DISPLAY' in environ:
-        run(('wl-copy', _copy_subject))
+        run('wl-copy', stdin=Popen(('printf', _copy_subject
+        .replace('\\\\\\', '\\\\\\\\\\\\\\').replace('%', '%%')), stdout=PIPE).stdout)
         Popen('sleep 30; wl-copy -c', shell=True)
     else:
         run(('xclip', '-sel', 'c'), stdin=Popen(('printf', _copy_subject

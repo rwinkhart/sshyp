@@ -544,7 +544,8 @@ def copy_data():
         Popen("sleep 30; powershell.exe -c Set-Clipboard ''", shell=True, stdout=DEVNULL, stderr=DEVNULL)
     # Wayland clipboard detection
     elif 'WAYLAND_DISPLAY' in environ:
-        run(('wl-copy', _copy_subject))
+        run('wl-copy', stdin=Popen(('printf', _copy_subject.replace('\\', '\\\\').replace('%', '%%')),
+                                   stdout=PIPE).stdout)
         Popen('sleep 30; wl-copy -c', shell=True)
     # Haiku clipboard detection
     elif uname()[0] == 'Haiku':
@@ -561,9 +562,9 @@ def copy_data():
         Popen("sleep 30; termux-clipboard-set ''", shell=True)
     # X11 clipboard detection
     elif 'DISPLAY' in environ:
-        run(('xclip', '-sel', 'c'), stdin=Popen(('printf', _copy_subject.replace('\\', '\\\\')
+        run(('xclip', '-se', 'c'), stdin=Popen(('printf', _copy_subject.replace('\\', '\\\\')
                                                 .replace('%', '%%')), stdout=PIPE).stdout)
-        Popen("sleep 30; printf '' | xclip -sel c", shell=True)
+        Popen("sleep 30; printf '' | xclip -se c", shell=True)
     else:
         print('\n\u001b[38;5;9merror: clipboard tool could not be determined\n\nnote that the clipboard does not '
               'function in a raw tty\u001b[0m\n')
