@@ -123,7 +123,10 @@ def edit_note(_note_lines, _exit_on_match=False):
     with NamedTemporaryFile(mode='w+') as _tmp:
         _tmp.write(_joined_note_lines)
         _tmp.seek(0)
-        run((editor, _tmp.name))
+        try:
+            run((editor, _tmp.name))
+        except FileNotFoundError:
+            print(f"\n\u001b[38;5;9merror: the configured text editor ({editor}) cannot be found on this system\n\nplease either install the editor or re-configure the active editor using 'sshyp tweak'\u001b[0m\n")
         _tmp.seek(0)
         _new_note = _tmp.read().rstrip()
     if _exit_on_match and _joined_note_lines == _new_note:
@@ -717,7 +720,7 @@ if __name__ == "__main__":
                     sync('\n')
             elif offline_mode_enabled == 'true':
                 print("\n\u001b[38;5;9mwarning: sshyp is currently configured in offline mode - ssh synchronization is "
-                      "disabled\n")
+                      "disabled\u001b[0m\n")
 
         # PORT START ARGS-SERVER
         # server arguments
