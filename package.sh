@@ -144,7 +144,7 @@ provides {
 requires {
     gnupg
     openssh
-    python310
+    python3.11
 }
 urls {
     \"https://github.com/rwinkhart/sshyp\"
