@@ -126,7 +126,8 @@ def edit_note(_note_lines, _exit_on_match=False):
         try:
             run((editor, _tmp.name))
         except FileNotFoundError:
-            print(f"\n\u001b[38;5;9merror: the configured text editor ({editor}) cannot be found on this system\n\nplease either install the editor or re-configure the active editor using 'sshyp tweak'\u001b[0m\n")
+            print(f"\n\u001b[38;5;9merror: the configured text editor ({editor}) cannot be found on this system\n\n"
+                  f"please either install the editor or re-configure the active editor using 'sshyp tweak'\u001b[0m\n")
         _tmp.seek(0)
         _new_note = _tmp.read().rstrip()
     if _exit_on_match and _joined_note_lines == _new_note:
@@ -146,7 +147,7 @@ def decrypt(_entry_dir, _quick_verify=None, _quick_pass=None):
     _contents = None
 
     # check quick-unlock status, fetch passphrase
-    if _quick_verify == 'true':
+    if _quick_verify:
         _quick_pass = whitelist_verify(port, username_ssh, ip, client_device_id)
     else:
         if _quick_pass is None:
@@ -271,10 +272,10 @@ def copy_id_check(_port, _username_ssh, _ip, _client_device_id, _sshyp_data):
         print(f'\n\u001b[38;5;9mwarning: ssh connection could not be made - ensure the public key ({identity}) is '
               'registered on the remote server and that the entered ip, port, and username are correct\n\nsyncing '
               'functionality will be disabled until this is addressed\u001b[0m\n')
-        _sshyp_data.set('CLIENT-ONLINE', 'ssh_error', '1')
+        _sshyp_data.set('CLIENT-ONLINE', 'ssh_error', 'true')
         write_config(_sshyp_data)
         return True
-    _sshyp_data.set('CLIENT-ONLINE', 'ssh_error', '0')
+    _sshyp_data.set('CLIENT-ONLINE', 'ssh_error', 'false')
     write_config(_sshyp_data)
     return False
 
@@ -634,20 +635,20 @@ if __name__ == "__main__":
                     directory = f"{home}/.local/share/sshyp/"
                     gpg_id = sshyp_data.get('CLIENT-GENERAL', 'gpg_id')
                     editor = sshyp_data.get('CLIENT-GENERAL', 'text_editor')
-                    offline_mode_enabled = sshyp_data.get('CLIENT-GENERAL', 'offline_mode_enabled')
-                    if offline_mode_enabled == 'true':
+                    offline_mode_enabled = sshyp_data.getboolean('CLIENT-GENERAL', 'offline_mode_enabled')
+                    if offline_mode_enabled:
                         ssh_error = True
-                        quick_unlock_enabled = 'false'
+                        quick_unlock_enabled = False
                     else:
-                        quick_unlock_enabled = sshyp_data.get('CLIENT-ONLINE', 'quick_unlock_enabled')
+                        quick_unlock_enabled = sshyp_data.getboolean('CLIENT-ONLINE', 'quick_unlock_enabled')
                         username_ssh = sshyp_data.get('SSHYNC', 'user')
                         ip = sshyp_data.get('SSHYNC', 'ip')
                         port = sshyp_data.get('SSHYNC', 'port')
                         directory_ssh = sshyp_data.get('SSHYNC', 'remote_dir')
                         identity = sshyp_data.get('SSHYNC', 'identity_file')
                         client_device_id = listdir(f"{home}/.config/sshyp/devices")[0]
-                        ssh_error = int(sshyp_data.get('CLIENT-ONLINE', 'ssh_error'))
-                        if ssh_error == 1:
+                        ssh_error = sshyp_data.getboolean('CLIENT-ONLINE', 'ssh_error')
+                        if ssh_error:
                             ssh_error = copy_id_check(port, username_ssh, ip, client_device_id, sshyp_data)
             except (FileNotFoundError, NoSectionError, NoOptionError):
                 print(f"\n{73*'!'}")
@@ -718,7 +719,7 @@ if __name__ == "__main__":
                     sync()
                 elif (arg_count > 0 and arguments[0] == 'sync') or (arg_count > 1 and arguments[1] == 'shear'):
                     sync('\n')
-            elif offline_mode_enabled == 'true':
+            elif offline_mode_enabled:
                 print("\n\u001b[38;5;9mwarning: sshyp is currently configured in offline mode - ssh synchronization is "
                       "disabled\u001b[0m\n")
 
