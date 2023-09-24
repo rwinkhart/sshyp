@@ -187,7 +187,7 @@ def whitelist_verify(_port, _username_ssh, _ip, _client_device_id):
         return False
     except CalledProcessError:
         _i, _full_password = 0, ''
-        _server_whitelist = run(('ssh', '-i', f"{home}/.ssh/sshyp", '-p', _port, f"{_username_ssh}@{_ip}",
+        _server_whitelist = run(('ssh', '-i', identity, '-p', _port, f"{_username_ssh}@{_ip}",
                                  f'python3 -c \'from os import listdir; print(*listdir("/home/{_username_ssh}'
                                  f'/.config/sshyp/whitelist"))\''), stdout=PIPE, text=True).stdout.rstrip().split()
         for _device_id in _server_whitelist:
@@ -195,7 +195,7 @@ def whitelist_verify(_port, _username_ssh, _ip, _client_device_id):
                 from getpass import getpass
                 _quick_unlock_password = getpass(prompt='\nquick-unlock pin: ')
                 _quick_unlock_password_excluded = \
-                    run(('ssh', '-i', f"{home}/.ssh/sshyp", '-p',  _port, f"{_username_ssh}@{_ip}",
+                    run(('ssh', '-i', identity, '-p',  _port, f"{_username_ssh}@{_ip}",
                          f"gpg --pinentry-mode loopback --passphrase '{_quick_unlock_password}' "
                          f"-qd ~/.config/sshyp/excluded.gpg"), stdout=PIPE, text=True).stdout.rstrip()
                 while _i < len(_quick_unlock_password_excluded):
@@ -261,11 +261,11 @@ def copy_id_check(_port, _username_ssh, _ip, _client_device_id, _sshyp_data):
     if not _sshyp_data.has_section('CLIENT-ONLINE'):
         _sshyp_data.add_section('CLIENT-ONLINE')
     try:
-        run(('ssh', '-o', 'ConnectTimeout=3', '-i', f"{home}/.ssh/sshyp", '-p', _port, f"{_username_ssh}@{_ip}",
+        run(('ssh', '-o', 'ConnectTimeout=3', '-i', identity, '-p', _port, f"{_username_ssh}@{_ip}",
              f'python3 -c \'from pathlib import Path; Path("/home/{_username_ssh}/.config/sshyp/devices/'
              f'{_client_device_id}").touch(mode=0o400, exist_ok=True)\''), stderr=DEVNULL, check=True)
     except CalledProcessError:
-        print('\n\u001b[38;5;9mwarning: ssh connection could not be made - ensure the public key (~/.ssh/sshyp.pub) is '
+        print(f'\n\u001b[38;5;9mwarning: ssh connection could not be made - ensure the public key ({identity}) is '
               'registered on the remote server and that the entered ip, port, and username are correct\n\nsyncing '
               'functionality will be disabled until this is addressed\u001b[0m\n')
         _sshyp_data.set('CLIENT-ONLINE', 'ssh_error', '1')
@@ -424,7 +424,7 @@ def add_entry():
 def add_folder():
     Path(directory + entry_name).mkdir(mode=0o700, parents=True, exist_ok=True)
     if not ssh_error:
-        run(('ssh', '-i', f"{home}/.ssh/sshyp", '-p', port, f"{username_ssh}@{ip}",
+        run(('ssh', '-i', identity, '-p', port, f"{username_ssh}@{ip}",
              f'python3 -c \'from pathlib import Path; Path("{directory_ssh}{entry_name}")'
              f'.mkdir(mode=0o700, parents=True, exist_ok=True)\''))
 
@@ -453,13 +453,13 @@ def rename():
         # if renaming a folder
         if not ssh_error:
             Path(f"{directory}{_new_name}").mkdir(mode=0o700, parents=True, exist_ok=True)
-            run(('ssh', '-i', f"{home}/.ssh/sshyp", '-p', port, f"{username_ssh}@{ip}",
+            run(('ssh', '-i', identity, '-p', port, f"{username_ssh}@{ip}",
                  f'python3 -c \'from pathlib import Path; Path("{directory_ssh}{entry_name}")'
                  f'.rename(Path("{directory_ssh}{_new_name}"))\''))                 
         else:
             move(f"{directory}{entry_name}", f"{directory}{_new_name}")
     if not ssh_error:
-        run(('ssh', '-i', f"{home}/.ssh/sshyp", '-p', port, f"{username_ssh}@{ip}",
+        run(('ssh', '-i', identity, '-p', port, f"{username_ssh}@{ip}",
              f'cd /usr/lib/sshyp; python3 -c \'from sshync import delete; delete("{entry_name}", "remotely", True)\''))
 
 
@@ -570,7 +570,7 @@ def copy_data():
 def remove_data():
     decrypt(None, _quick_verify=quick_unlock_enabled)
     if not ssh_error:
-        run(('ssh', '-i', f"{home}/.ssh/sshyp", '-p', port, f"{username_ssh}@{ip}",
+        run(('ssh', '-i', identity, '-p', port, f"{username_ssh}@{ip}",
              f'cd /usr/lib/sshyp; python3 -c \'from sshync import delete; delete("{entry_name}", "remotely", True)\''))
     else:
         offline_delete(entry_name, 'locally', silent_sync)
@@ -641,6 +641,7 @@ if __name__ == "__main__":
                         ip = sshyp_data.get('SSHYNC', 'ip')
                         port = sshyp_data.get('SSHYNC', 'port')
                         directory_ssh = sshyp_data.get('SSHYNC', 'remote_dir')
+                        identity = sshyp_data.get('SSHYNC', 'identity_file')
                         client_device_id = listdir(f"{home}/.config/sshyp/devices")[0]
                         ssh_error = int(sshyp_data.get('CLIENT-ONLINE', 'ssh_error'))
                         if ssh_error == 1:
