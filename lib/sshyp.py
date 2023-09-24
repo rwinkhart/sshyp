@@ -603,7 +603,7 @@ if __name__ == "__main__":
         ssh_error, success_flag, sync_flag, silent_sync, pass_show = False, False, False, False, False
         
         # set to avoid PEP8 warnings
-        arg_start, device_type = None, None
+        arg_start, device_type, offline_mode_enabled = None, None, None
         
         # retrieve typed argument
         arguments = argv[1:]
@@ -715,6 +715,9 @@ if __name__ == "__main__":
                     sync()
                 elif (arg_count > 0 and arguments[0] == 'sync') or (arg_count > 1 and arguments[1] == 'shear'):
                     sync('\n')
+            elif offline_mode_enabled == 'true':
+                print("\n\u001b[38;5;9mwarning: sshyp is currently configured in offline mode - ssh synchronization is "
+                      "disabled\n")
 
         # PORT START ARGS-SERVER
         # server arguments
