@@ -720,7 +720,7 @@ if __name__ == "__main__":
                     sync()
                 elif (arg_count > 0 and arguments[0] == 'sync') or (arg_count > 1 and arguments[1] == 'shear'):
                     sync('\n')
-            elif offline_mode_enabled:
+            elif arg_count > 0 and arguments[0] == 'sync' and offline_mode_enabled:
                 print("\n\u001b[38;5;9mwarning: sshyp is currently configured in offline mode - ssh synchronization is "
                       "disabled\u001b[0m\n")
 
