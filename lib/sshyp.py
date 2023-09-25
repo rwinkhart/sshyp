@@ -542,7 +542,7 @@ def copy_data():
     # store hashed _copy_subject for later comparison
     _hash = sha512()
     _hash.update(_copy_subject.encode('utf-8'))
-    _hash = _hash.hexdigest() + '  -'
+    _hash = _hash.hexdigest() + f"{2*' '}-"
 
     # PORT START CLIPBOARD
     # WSL clipboard detection
