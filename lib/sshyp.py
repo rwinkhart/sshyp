@@ -556,7 +556,7 @@ def copy_data():
         run('wl-copy', stdin=Popen(('printf', _copy_subject.replace('\\', '\\\\').replace('%', '%%')),
                                    stdout=PIPE).stdout)
         Popen(f"sleep 30; test \'{_hash.hexdigest() + 2*' ' + '-'}\' = \"$(printf \"$(wl-paste)\" | sha512sum)\" "
-               "&& wl-copy -c", shell=True)
+              "&& wl-copy -c", shell=True)
     # Haiku clipboard detection
     elif uname()[0] == 'Haiku':
         run(('clipboard', '-c', _copy_subject))
@@ -574,7 +574,8 @@ def copy_data():
     elif 'DISPLAY' in environ:
         run(('xclip', '-se', 'c'), stdin=Popen(('printf', _copy_subject.replace('\\', '\\\\')
                                                 .replace('%', '%%')), stdout=PIPE).stdout)
-        Popen("sleep 30; printf '' | xclip -se c", shell=True)
+        Popen(f"sleep 30; test \'{_hash.hexdigest() + 2*' ' + '-'}\' = \"$(printf \"$(xclip -o -se c)\" | sha512sum)\" "
+              "&& xclip -i /dev/null -se c", shell=True)
     else:
         print('\n\u001b[38;5;9merror: clipboard tool could not be determined\n\nnote that the clipboard does not '
               'function in a raw tty\u001b[0m\n')
