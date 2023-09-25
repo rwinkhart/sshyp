@@ -542,18 +542,21 @@ def copy_data():
     # store hashed _copy_subject for later comparison
     _hash = sha512()
     _hash.update(_copy_subject.encode('utf-8'))
-    _hash = _hash.hexdigest() + f"{2*' '}-"
 
     # PORT START CLIPBOARD
     # WSL clipboard detection
     if 'WSL_DISTRO_NAME' in environ:
         run(('powershell.exe', '-c', "Set-Clipboard '" + _copy_subject.replace("'", "''") + "'"))
-        Popen("sleep 30; powershell.exe -c Set-Clipboard ''", shell=True, stdout=DEVNULL, stderr=DEVNULL)
+        Popen("sleep 30; temp=$(echo \"$(powershell.exe -Command \'Get-FileHash -InputStream $([IO.MemoryStream]"
+              "::new([byte[]][char[]]\"$(Get-Clipboard)\")) -Algorithm SHA512 | Select-Object -ExpandProperty "
+              f"Hash\')\" | dos2unix); test \'{_hash.hexdigest().upper()}\' = \"$temp\" && powershell.exe -c "
+              "Set-Clipboard", shell=True, stdout=DEVNULL, stderr=DEVNULL)
     # Wayland clipboard detection
     elif 'WAYLAND_DISPLAY' in environ:
         run('wl-copy', stdin=Popen(('printf', _copy_subject.replace('\\', '\\\\').replace('%', '%%')),
                                    stdout=PIPE).stdout)
-        Popen(f"sleep 30; test \'{_hash}\' = \"$(printf \"$(wl-paste)\" | sha512sum)\" && wl-copy -c", shell=True)
+        Popen(f"sleep 30; test \'{_hash.hexdigest() + 2*' ' + '-'}\' = \"$(printf \"$(wl-paste)\" | sha512sum)\" "
+               "&& wl-copy -c", shell=True)
     # Haiku clipboard detection
     elif uname()[0] == 'Haiku':
         run(('clipboard', '-c', _copy_subject))
