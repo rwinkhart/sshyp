@@ -220,11 +220,18 @@ Section: utils
 Architecture: all
 Maintainer: Randall Winkhart <idgr at tutanota dot com>
 Description: A light-weight, self-hosted, synchronized password manager
-Depends: python3, gnupg, openssh-client
-Suggests: wl-clipboard, xclip, bash-completion
 Priority: optional
 Installed-Size: $size
 " > output/debiantemp/sshyp_"$version"-"$revision"_all/DEBIAN/control
+    if [ "$1" = 'Debian' ]; then
+        printf "Depends: python3, gnupg, openssh-client
+Suggests: wl-clipboard, xclip, bash-completion
+" >> output/debiantemp/sshyp_"$version"-"$revision"_all/DEBIAN/control
+    else
+        printf "Depends: python3, gnupg, openssh-client, dos2unix
+Suggests: bash-completion
+" >> output/debiantemp/sshyp_"$version"-"$revision"_all/DEBIAN/control
+    fi
     dpkg-deb --build --root-owner-group -z6 -Sextreme -Zxz output/debiantemp/sshyp_"$version"-"$revision"_all/
     mv output/debiantemp/sshyp_"$version"-"$revision"_all.deb output/"$special"-sshyp_"$version"-"$revision"_all.deb
     rm -rf output/debiantemp
