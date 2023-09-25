@@ -521,6 +521,7 @@ def gen():
 
 # copies a specified field of an entry to the clipboard
 def copy_data():
+    from hashlib import sha512
     from subprocess import Popen
     # ensure the copy target is an entry
     target_type_check(entry_name, True, True)
@@ -537,6 +538,12 @@ def copy_data():
     # ensure field is not blank
     if _copy_subject == '':
         raise IndexError
+
+    # store hashed _copy_subject for later comparison
+    _hash = sha512()
+    _hash.update(_copy_subject.encode('utf-8'))
+    _hash = _hash.hexdigest() + '  -'
+
     # PORT START CLIPBOARD
     # WSL clipboard detection
     if 'WSL_DISTRO_NAME' in environ:
@@ -546,7 +553,7 @@ def copy_data():
     elif 'WAYLAND_DISPLAY' in environ:
         run('wl-copy', stdin=Popen(('printf', _copy_subject.replace('\\', '\\\\').replace('%', '%%')),
                                    stdout=PIPE).stdout)
-        Popen('sleep 30; wl-copy -c', shell=True)
+        Popen(f"sleep 30; test \'{_hash}\' = \"$(printf \"$(wl-paste)\" | sha512sum)\" && wl-copy -c", shell=True)
     # Haiku clipboard detection
     elif uname()[0] == 'Haiku':
         run(('clipboard', '-c', _copy_subject))
