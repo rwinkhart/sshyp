@@ -572,10 +572,10 @@ def copy_data():
         Popen("sleep 30; termux-clipboard-set ''", shell=True)
     # X11 clipboard detection
     elif 'DISPLAY' in environ:
-        run(('xclip', '-se', 'c'), stdin=Popen(('printf', _copy_subject.replace('\\', '\\\\')
+        run(('xclip', '-sel', 'c'), stdin=Popen(('printf', _copy_subject.replace('\\', '\\\\')
                                                 .replace('%', '%%')), stdout=PIPE).stdout)
-        Popen(f"sleep 30; test \'{_hash.hexdigest() + 2*' ' + '-'}\' = \"$(printf \"$(xclip -o -se c)\" | sha512sum)\" "
-              "&& xclip -i /dev/null -se c", shell=True)
+        Popen(f"sleep 30; test \'{_hash.hexdigest() + 2*' ' + '-'}\' = \"$(printf \"$(xclip -o -sel c)\" | sha512sum)\" "
+              "&& xclip -i /dev/null -sel c", shell=True)
     else:
         print('\n\u001b[38;5;9merror: clipboard tool could not be determined\n\nnote that the clipboard does not '
               'function in a raw tty\u001b[0m\n')
