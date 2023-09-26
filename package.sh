@@ -388,7 +388,7 @@ printf "/usr/bin/sshyp
     cp lib/* port-jobs/working/
     cd port-jobs
     ./CLIPTOOL.py LINUX
-    ./CLIPBOARD.py LINUX
+    ./CLIPBOARD.py BSD
     ./UNAME.py TMP
     ./COMMENTS.py ALL
     ./BLANKS.py
