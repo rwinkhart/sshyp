@@ -22,7 +22,8 @@ if len(arguments) > 0:
     Popen('sleep 30; clipboard -r', shell=True)"""
     elif arguments[0] == 'TERMUX':
         replacement = """run(('termux-clipboard-set', _copy_subject))
-    Popen("sleep 30; termux-clipboard-set ''", shell=True)"""
+    Popen(f"sleep 30; test \\'{_hash.hexdigest() + 2 * ' ' + '-'}\\' = \\"$(printf \\"$(termux-clipboard-get)\\" | "
+              f"sha512sum)\\" && termux-clipboard-set ''", shell=True)"""
     elif arguments[0] == 'LINUX':
         replacement = """if 'WAYLAND_DISPLAY' in environ:
         run('wl-copy', stdin=Popen(('printf', _copy_subject
