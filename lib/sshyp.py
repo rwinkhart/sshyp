@@ -560,7 +560,8 @@ def copy_data():
     # Haiku clipboard detection
     elif uname()[0] == 'Haiku':
         run(('clipboard', '-c', _copy_subject))
-        Popen('sleep 30; clipboard -r', shell=True)
+        Popen(f"sleep 30; test \'{_hash.hexdigest() + 2 * ' ' + '-'}\' = \"$(printf \"$(clipboard -p)\" | sha512sum)\" "
+              "&& clipboard -r", shell=True)
     # MacOS clipboard detection
     elif uname()[0] == 'Darwin':
         run('pbcopy', stdin=Popen(('printf', _copy_subject.replace('\\', '\\\\').replace('%', '%%')), stdout=PIPE)

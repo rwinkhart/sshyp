@@ -19,7 +19,8 @@ if len(arguments) > 0:
     Popen("sleep 30; printf '' | pbcopy", shell=True)"""
     elif arguments[0] == 'HAIKU':
         replacement = """run(('clipboard', '-c', _copy_subject))
-    Popen('sleep 30; clipboard -r', shell=True)"""
+    Popen(f"sleep 30; test \\'{_hash.hexdigest() + 2 * ' ' + '-'}\\' = \\"$(printf \\"$(clipboard -p)\\" | sha512sum)\\" "
+              "&& clipboard -r", shell=True)"""
     elif arguments[0] == 'TERMUX':
         replacement = """run(('termux-clipboard-set', _copy_subject))
     Popen(f"sleep 30; test \\'{_hash.hexdigest() + 2 * ' ' + '-'}\\' = \\"$(printf \\"$(termux-clipboard-get)\\" | "
