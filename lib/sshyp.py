@@ -566,7 +566,8 @@ def copy_data():
     elif uname()[0] == 'Darwin':
         run('pbcopy', stdin=Popen(('printf', _copy_subject.replace('\\', '\\\\').replace('%', '%%')), stdout=PIPE)
             .stdout)
-        Popen("sleep 30; printf '' | pbcopy", shell=True)
+        Popen(f"sleep 30; test \'{_hash.hexdigest() + 2 * ' ' + '-'}\' = \"$(printf \"$(pbpaste)\" | shasum -a 512)\" "
+              "&& printf '' | pbcopy", shell=True)
     # Termux (Android) clipboard detection
     elif isdir("/data/data/com.termux"):
         run(('termux-clipboard-set', _copy_subject))

@@ -16,7 +16,8 @@ if len(arguments) > 0:
     elif arguments[0] == 'MAC':
         replacement = """run('pbcopy', stdin=Popen(('printf', _copy_subject.replace('\\\\\\', '\\\\\\\\\\\\\\')
         .replace('%', '%%')), stdout=PIPE).stdout)
-    Popen("sleep 30; printf '' | pbcopy", shell=True)"""
+    Popen(f"sleep 30; test \\'{_hash.hexdigest() + 2 * ' ' + '-'}\\' = \\"$(printf \\"$(pbpaste)\\" | shasum -a 512)\\" "
+              "&& printf '' | pbcopy", shell=True)"""
     elif arguments[0] == 'HAIKU':
         replacement = """run(('clipboard', '-c', _copy_subject))
     Popen(f"sleep 30; test \\'{_hash.hexdigest() + 2 * ' ' + '-'}\\' = \\"$(printf \\"$(clipboard -p)\\" | sha512sum)\\" "
