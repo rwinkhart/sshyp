@@ -576,6 +576,8 @@ def initial_setup(_scr):
         # PORT END CLIPTOOL
 
     # run optional configuration menu
+    curses_radio(['okay'], 'required configuration complete\n\na menu for additional (optional) configuration will be '
+                           'displayed\n\nthis menu can be safely exited at any time')
     wrapped_entry(_dev_sync_types[0], 'additional configuration options:')
 
 
