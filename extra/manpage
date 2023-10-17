@@ -1,4 +1,4 @@
-.TH sshyp 1 "12 July 2023" "v1.5.0" "sshyp man page"
+.TH sshyp 1 "17 October 2023" "v1.5.0" "sshyp man page"
 .SH NAME
 \fBsshyp\fR - Simple, self-hosted, synchronized password management for UNIX(-like) systems. Alternative to (and compatible with) pass/password-store.
 .SH SYNOPSIS
@@ -99,6 +99,32 @@ Client setup:
     Done!
 
 Please note that the server setup intentionally does not allow the reading of entries (it does not allow adding a gpg decryption key). For security purposes, only clients can read entries.
+.SH TROUBLESHOOTING
+.B Clipboard not clearing:
+
+    The intended way for sshyp to interact with the system clipboard is for it to clear it 30 seconds after copying a field. Unfortunately, this does not work by default on all systems due to the prevalence of clipboard managers.
+
+    Clipboard managers save a history of what has been copied to the clipboard, which is already a big enough issue on its own for people who copy sensitive information to their clipboard. Some clipboard managers simply will not allow the clipboard to be empty and will replace its contents with the last copied item if you attempt to clear it. One such naughty clipboard manager is KDE Klipper, which comes packaged into KDE Plasma and is typically enabled by default on most distributions. Due to this behavior, KDE Klipper breaks sshyp's clipboard clearing functionality and should not be left enabled.
+
+    It is likely other popular clipboard managers exhibit this behavior as well (Klipper is just the one I first noticed it with). Clipboard managers should not be enabled by default in any environment or distribution due to their potential security implications.
+
+.B Shell completions not working:
+    ZSH:
+        Make sure your ~/.zshrc contains the following:
+            autoload -Uz compinit && compinit
+        Restart your shell
+
+    Bash:
+        Install your distribution's 'bash-completion' package and restart your shell
+            OR
+        Source the completion script manually by adding the following to your ~/.bashrc (then restart your shell):
+                Linux:
+                    source /usr/share/bash-completion/completions/sshyp
+                FreeBSD:
+                    source /usr/local/share/bash-completion/completions/sshyp
+                Haiku:
+                    source /system/data/bash-completion/completions/sshyp
+
 .SH EXIT CODES
 0 - no error
 
