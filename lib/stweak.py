@@ -151,7 +151,7 @@ def ssh_config():
     # ensure ~/.ssh directory exists
     Path(f"{home}/.ssh").mkdir(mode=0o700, exist_ok=True)
     for _file in listdir(f"{home}/.ssh"):
-        if not _file.startswith('.') and _file not in ('known_hosts', 'authorized_keys') \
+        if not _file.startswith('.') and _file not in ('known_hosts', 'known_hosts.old', 'authorized_keys') \
                 and not _file.endswith('.pub') and isfile(f"{home}/.ssh/{_file}"):
             _keys.append(f"{home}/.ssh/{_file}")
     _keys.extend(['auto-generate', 'other (type the location)'])
