@@ -260,16 +260,16 @@ def line_edit(_lines, _edit_data, _edit_line):
 
 
 # attempts to connect to the user's server via ssh to register the device for syncing
-def copy_id_check(_port, _username_ssh, _ip, _client_device_id, _sshyp_data):
+def copy_id_check(_port, _username_ssh, _ip, _client_device_id, _identity, _sshyp_data):
     from stweak import write_config
     if not _sshyp_data.has_section('CLIENT-ONLINE'):
         _sshyp_data.add_section('CLIENT-ONLINE')
     try:
-        run(('ssh', '-o', 'ConnectTimeout=3', '-i', identity, '-p', _port, f"{_username_ssh}@{_ip}",
+        run(('ssh', '-o', 'ConnectTimeout=3', '-i', _identity, '-p', _port, f"{_username_ssh}@{_ip}",
              f'python3 -c \'from pathlib import Path; Path("/home/{_username_ssh}/.config/sshyp/devices/'
              f'{_client_device_id}").touch(mode=0o400, exist_ok=True)\''), stderr=DEVNULL, check=True)
     except CalledProcessError:
-        print(f'\n\u001b[38;5;9mwarning: ssh connection could not be made - ensure the public key ({identity}) is '
+        print(f'\n\u001b[38;5;9mwarning: ssh connection could not be made - ensure the public key ({_identity}) is '
               'registered on the remote server and that the entered ip, port, and username are correct\n\nsyncing '
               'functionality will be disabled until this is addressed\u001b[0m\n')
         _sshyp_data.set('CLIENT-ONLINE', 'ssh_error', 'true')
@@ -664,7 +664,7 @@ if __name__ == "__main__":
                         client_device_id = listdir(f"{home}/.config/sshyp/devices")[0]
                         ssh_error = sshyp_data.getboolean('CLIENT-ONLINE', 'ssh_error')
                         if ssh_error:
-                            ssh_error = copy_id_check(port, username_ssh, ip, client_device_id, sshyp_data)
+                            ssh_error = copy_id_check(port, username_ssh, ip, client_device_id, identity, sshyp_data)
             except (FileNotFoundError, NoSectionError, NoOptionError):
                 print(f"\n{73*'!'}")
                 print("not all necessary configurations have been made - please run 'sshyp init'")
