@@ -9,30 +9,23 @@ arguments, replacement = argv[1:], None
 if len(arguments) > 0:
     if arguments[0] == 'WSL':
         replacement = """run(('powershell.exe', '-c', "Set-Clipboard '" + _copy_subject.replace("'", "''") + "'"))
-    Popen(f"sleep 30; temp=$(echo \\"$(powershell.exe -Command \\'Get-FileHash -InputStream $([IO.MemoryStream]::new([byte[]][char[]]\\"$(Get-Clipboard)\\")) -Algorithm SHA512 | Select-Object -ExpandProperty Hash\\')\\" | dos2unix); test \\'{_hash.hexdigest().upper()}\\' = \\"$temp\\" && powershell.exe -c Set-Clipboard", shell=True, stdout=DEVNULL, stderr=DEVNULL)"""
+    Popen((realpath(__file__).rsplit('/', 1)[0] + "/clipclear.py", _hash.hexdigest(), 'wsl'), stdout=DEVNULL, stderr=DEVNULL)"""
     elif arguments[0] == 'MAC':
         replacement = """run('pbcopy', stdin=Popen(('printf', '%b', _copy_subject.replace('\\\\\\', '\\\\\\\\\\\\\\')), stdout=PIPE).stdout)
-    Popen(f"sleep 30; test \\'{_hash.hexdigest() + 2 * ' ' + '-'}\\' = \\"$(printf \\"$(pbpaste)\\" | shasum -a 512)\\" && printf '' | pbcopy", shell=True)"""
+    Popen((realpath(__file__).rsplit('/', 1)[0] + "/clipclear.py", _hash.hexdigest(), 'mac'))"""
     elif arguments[0] == 'HAIKU':
         replacement = """run(('clipboard', '-c', _copy_subject))
-    Popen(f"sleep 30; test \\'{_hash.hexdigest() + 2 * ' ' + '-'}\\' = \\"$(printf \\"$(clipboard -p)\\" | sha512sum)\\" && clipboard -r", shell=True)"""
+    Popen((realpath(__file__).rsplit('/', 1)[0] + "/clipclear.py", _hash.hexdigest(), 'haiku'))"""
     elif arguments[0] == 'TERMUX':
         replacement = """run(('termux-clipboard-set', _copy_subject))
-    Popen(f"sleep 30; test \\'{_hash.hexdigest() + 2 * ' ' + '-'}\\' = \\"$(printf \\"$(termux-clipboard-get)\\" | sha512sum)\\" && termux-clipboard-set ''", shell=True)"""
-    elif arguments[0] == 'LINUX':
+    Popen((realpath(__file__).rsplit('/', 1)[0] + "/clipclear.py", _hash.hexdigest(), 'termux'))"""
+    elif arguments[0] in ('LINUX', 'BSD'):
         replacement = """if 'WAYLAND_DISPLAY' in environ:
         run('wl-copy', stdin=Popen(('printf', '%b', _copy_subject.replace('\\\\\\', '\\\\\\\\\\\\\\')), stdout=PIPE).stdout)
-        Popen(f"sleep 30; test \\'{_hash.hexdigest() + 2*' ' + '-'}\\' = \\"$(printf \\"$(wl-paste)\\" | sha512sum)\\" && wl-copy -c", shell=True)
+        Popen((realpath(__file__).rsplit('/', 1)[0] + "/clipclear.py", _hash.hexdigest(), 'wayland'))
     else:
         run(('xclip', '-sel', 'c'), stdin=Popen(('printf', '%b', _copy_subject.replace('\\\\\\', '\\\\\\\\\\\\\\')), stdout=PIPE).stdout)
-        Popen(f"sleep 30; test \\'{_hash.hexdigest() + 2*' ' + '-'}\\' = \\"$(printf \\"$(xclip -o -sel c)\\" | sha512sum)\\" && xclip -i /dev/null -sel c", shell=True)"""
-    elif arguments[0] == 'BSD':
-        replacement = """if 'WAYLAND_DISPLAY' in environ:
-        run('wl-copy', stdin=Popen(('printf', '%b', _copy_subject.replace('\\\\\\', '\\\\\\\\\\\\\\')), stdout=PIPE).stdout)
-        Popen(f"sleep 30; test \\'{_hash.hexdigest() + 2*' ' + '-'}\\' = \\"$(printf \\"$(wl-paste)\\" | sha512sum)\\" && wl-copy -c", shell=True)
-    else:
-        run(('xclip', '-sel', 'c'), stdin=Popen(('printf', '%b', _copy_subject.replace('\\\\\\', '\\\\\\\\\\\\\\')), stdout=PIPE).stdout)
-        Popen(f"sleep 30; test \\'{_hash.hexdigest()}\\' = \\"$(printf \\"$(xclip -o -sel c)\\" | sha512sum)\\" && xclip -i /dev/null -sel c", shell=True)"""
+        Popen((realpath(__file__).rsplit('/', 1)[0] + "/clipclear.py", _hash.hexdigest(), 'x11'))"""
 else:
     s_exit()
 

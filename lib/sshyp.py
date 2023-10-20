@@ -547,36 +547,29 @@ def copy_data():
     # WSL clipboard detection
     if 'WSL_DISTRO_NAME' in environ:
         run(('powershell.exe', '-c', "Set-Clipboard '" + _copy_subject.replace("'", "''") + "'"))
-        Popen("sleep 30; temp=$(echo \"$(powershell.exe -Command \'Get-FileHash -InputStream $([IO.MemoryStream]"
-              "::new([byte[]][char[]]\"$(Get-Clipboard)\")) -Algorithm SHA512 | Select-Object -ExpandProperty "
-              f"Hash\')\" | dos2unix); test \'{_hash.hexdigest().upper()}\' = \"$temp\" && powershell.exe -c "
-              "Set-Clipboard", shell=True, stdout=DEVNULL, stderr=DEVNULL)
+        Popen((realpath(__file__).rsplit('/', 1)[0] + "/clipclear.py", _hash.hexdigest(), 'wsl'), stdout=DEVNULL,
+              stderr=DEVNULL)
     # Wayland clipboard detection
     elif 'WAYLAND_DISPLAY' in environ:
         run('wl-copy', stdin=Popen(('printf', '%b', _copy_subject.replace('\\', '\\\\')), stdout=PIPE).stdout)
-        Popen(f"sleep 30; test \'{_hash.hexdigest() + 2*' ' + '-'}\' = \"$(printf \"$(wl-paste)\" | sha512sum)\" "
-              "&& wl-copy -c", shell=True)
+        Popen((realpath(__file__).rsplit('/', 1)[0] + "/clipclear.py", _hash.hexdigest(), 'wayland'))
     # Haiku clipboard detection
     elif uname()[0] == 'Haiku':
         run(('clipboard', '-c', _copy_subject))
-        Popen(f"sleep 30; test \'{_hash.hexdigest() + 2 * ' ' + '-'}\' = \"$(printf \"$(clipboard -p)\" | sha512sum)\" "
-              "&& clipboard -r", shell=True)
+        Popen((realpath(__file__).rsplit('/', 1)[0] + "/clipclear.py", _hash.hexdigest(), 'haiku'))
     # MacOS clipboard detection
     elif uname()[0] == 'Darwin':
         run('pbcopy', stdin=Popen(('printf', '%b', _copy_subject.replace('\\', '\\\\')), stdout=PIPE).stdout)
-        Popen(f"sleep 30; test \'{_hash.hexdigest() + 2 * ' ' + '-'}\' = \"$(printf \"$(pbpaste)\" | shasum -a 512)\" "
-              "&& printf '' | pbcopy", shell=True)
+        Popen((realpath(__file__).rsplit('/', 1)[0] + "/clipclear.py", _hash.hexdigest(), 'mac'))
     # Termux (Android) clipboard detection
     elif isdir("/data/data/com.termux"):
         run(('termux-clipboard-set', _copy_subject))
-        Popen(f"sleep 30; test \'{_hash.hexdigest() + 2 * ' ' + '-'}\' = \"$(printf \"$(termux-clipboard-get)\" | "
-              f"sha512sum)\" && termux-clipboard-set ''", shell=True)
+        Popen((realpath(__file__).rsplit('/', 1)[0] + "/clipclear.py", _hash.hexdigest(), 'termux'))
     # X11 clipboard detection
     elif 'DISPLAY' in environ:
         run(('xclip', '-sel', 'c'), stdin=Popen(('printf', '%b', _copy_subject.replace('\\', '\\\\')), stdout=PIPE)
             .stdout)
-        Popen(f"sleep 30; test \'{_hash.hexdigest() + 2*' ' + '-'}\' = \"$(printf \"$(xclip -o -sel c)\" | sha512sum)\""
-              " && xclip -i /dev/null -sel c", shell=True)
+        Popen((realpath(__file__).rsplit('/', 1)[0] + "/clipclear.py", _hash.hexdigest(), 'x11'))
     else:
         print('\n\u001b[38;5;9merror: clipboard tool could not be determined\n\nnote that the clipboard does not '
               'function in a raw tty\u001b[0m\n')
