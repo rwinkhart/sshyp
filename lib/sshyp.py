@@ -553,8 +553,7 @@ def copy_data():
               "Set-Clipboard", shell=True, stdout=DEVNULL, stderr=DEVNULL)
     # Wayland clipboard detection
     elif 'WAYLAND_DISPLAY' in environ:
-        run('wl-copy', stdin=Popen(('printf', _copy_subject.replace('\\', '\\\\').replace('%', '%%')),
-                                   stdout=PIPE).stdout)
+        run('wl-copy', stdin=Popen(('printf', '%b', _copy_subject.replace('\\', '\\\\')), stdout=PIPE).stdout)
         Popen(f"sleep 30; test \'{_hash.hexdigest() + 2*' ' + '-'}\' = \"$(printf \"$(wl-paste)\" | sha512sum)\" "
               "&& wl-copy -c", shell=True)
     # Haiku clipboard detection
@@ -564,8 +563,7 @@ def copy_data():
               "&& clipboard -r", shell=True)
     # MacOS clipboard detection
     elif uname()[0] == 'Darwin':
-        run('pbcopy', stdin=Popen(('printf', _copy_subject.replace('\\', '\\\\').replace('%', '%%')), stdout=PIPE)
-            .stdout)
+        run('pbcopy', stdin=Popen(('printf', '%b', _copy_subject.replace('\\', '\\\\')), stdout=PIPE).stdout)
         Popen(f"sleep 30; test \'{_hash.hexdigest() + 2 * ' ' + '-'}\' = \"$(printf \"$(pbpaste)\" | shasum -a 512)\" "
               "&& printf '' | pbcopy", shell=True)
     # Termux (Android) clipboard detection
@@ -575,8 +573,8 @@ def copy_data():
               f"sha512sum)\" && termux-clipboard-set ''", shell=True)
     # X11 clipboard detection
     elif 'DISPLAY' in environ:
-        run(('xclip', '-sel', 'c'), stdin=Popen(('printf', _copy_subject.replace('\\', '\\\\')
-                                                .replace('%', '%%')), stdout=PIPE).stdout)
+        run(('xclip', '-sel', 'c'), stdin=Popen(('printf', '%b', _copy_subject.replace('\\', '\\\\')), stdout=PIPE)
+            .stdout)
         Popen(f"sleep 30; test \'{_hash.hexdigest() + 2*' ' + '-'}\' = \"$(printf \"$(xclip -o -sel c)\" | sha512sum)\""
               " && xclip -i /dev/null -sel c", shell=True)
     else:
