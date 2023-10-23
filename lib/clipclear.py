@@ -6,12 +6,12 @@ from time import sleep
 
 # set period of time to wait before attempting to clear clipboard
 sleep(30)
-
-# store a hash of the current clipboard contents for later comparison
+# enable the storing of clipboard contents hash for later comparison
 _hash_paste = sha512()
+
+# PORT START CLIPCLEAR
 if argv[2] == 'wsl':
     _hash_paste.update(run(('powershell.exe', '-c', 'Get-Clipboard'), stdout=PIPE).stdout.strip())
-    # if the supplied hash matches the hash of the current clipboard contents, clear the clipboard
     if argv[1] == _hash_paste.hexdigest():
         run(('powershell.exe', '-c', 'Set-Clipboard'))
 
@@ -39,3 +39,4 @@ elif argv[2] == 'x11':
     _hash_paste.update(run(('xclip', '-o', '-sel', 'c'), stdout=PIPE).stdout.strip())
     if argv[1] == _hash_paste.hexdigest():
         run(('xclip', '-i', '/dev/null', '-sel', 'c'))
+# PORT END CLIPCLEAR
