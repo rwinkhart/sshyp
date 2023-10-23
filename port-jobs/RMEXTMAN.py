@@ -1,14 +1,12 @@
 #!/usr/bin/env python3
 import re
 
-devtype_replacement = """_install_type = curses_radio(('client (ssh-synchronized)', 'client (offline)'),
-                                 'device + sync type configuration')"""
-
 targets = (('TWEAK-EXTEND-FUNCTIONS', 'stweak.py', '\n', '\n\n', ''), 
            ('TWEAK-EXTEND-OPTION', 'stweak.py', '', '', "curses_radio(['okay'], "
             "'extension management is not supported on this platform\\\\n\\\\ninstead, you may install and manage "
             "extensions through your system package manager\\\\n\\\\nofficial extension packages are available "
             "at https://github.com/rwinkhart/sshyp-labs/releases')"))
+
 for target in targets:
     # read text from target file
     text = open(f"working/{target[1]}", 'r').read()
