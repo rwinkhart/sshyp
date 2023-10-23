@@ -222,14 +222,13 @@ Maintainer: Randall Winkhart <idgr at tutanota dot com>
 Description: A light-weight, self-hosted, synchronized password manager
 Priority: optional
 Installed-Size: $size
+Depends: python3, gnupg, openssh-client
 " > output/debiantemp/sshyp_"$version"-"$revision"_all/DEBIAN/control
     if [ "$1" = 'Debian' ]; then
-        printf "Depends: python3, gnupg, openssh-client
-Suggests: wl-clipboard, xclip, bash-completion
+        printf "Suggests: wl-clipboard, xclip, bash-completion, openssh-server
 " >> output/debiantemp/sshyp_"$version"-"$revision"_all/DEBIAN/control
     else
-        printf "Depends: python3, gnupg, openssh-client, dos2unix
-Suggests: bash-completion
+        printf "Suggests: bash-completion, openssh-server
 " >> output/debiantemp/sshyp_"$version"-"$revision"_all/DEBIAN/control
     fi
     dpkg-deb --build --root-owner-group -z6 -Sextreme -Zxz output/debiantemp/sshyp_"$version"-"$revision"_all/
@@ -303,7 +302,7 @@ License:        GPL-3.0-only
 URL:            https://github.com/rwinkhart/sshyp
 Source0:        GENERIC-FEDORA-sshyp-"$version".tar.xz
 Requires:       python gnupg openssh-clients
-Recommends:     wl-clipboard xclip bash-completion
+Recommends:     wl-clipboard xclip bash-completion openssh-server
 %%description
 sshyp is a password-store compatible CLI password manager available for UNIX(-like) systems - its primary goal is to make syncing passwords and notes across devices as easy as possible via CLI.
 %%install
