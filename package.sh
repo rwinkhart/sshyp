@@ -313,6 +313,7 @@ cp -r %%{_sourcedir}/usr %%{buildroot}
 /usr/lib/sshyp/sshyp.py
 /usr/lib/sshyp/sshync.py
 /usr/lib/sshyp/stweak.py
+/usr/lib/sshyp/clipclear.py
 /usr/lib/sshyp/extensions/
 /usr/share/bash-completion/completions/sshyp
 /usr/share/zsh/site-functions/_sshyp
@@ -377,6 +378,7 @@ printf "/usr/bin/sshyp
 /usr/lib/sshyp/sshyp.py
 /usr/lib/sshyp/sshync.py
 /usr/lib/sshyp/stweak.py
+/usr/lib/sshyp/clipclear.py
 /usr/local/share/bash-completion/completions/sshyp
 /usr/local/share/zsh/site-functions/_sshyp
 /usr/share/licenses/sshyp/license
