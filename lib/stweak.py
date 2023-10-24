@@ -99,7 +99,7 @@ def gpg_config():
                                         stdout=PIPE, text=True).stdout.splitlines() if _item.startswith('uid')]
     _named_uid_list = []
     for _uid in _uid_list:
-        _named_uid_list.append(_uid.split(':')[9])
+        _named_uid_list.append(_uid.split(':')[9].replace('\\x3a', ':').replace('\\x5c', '\\'))
     _named_uid_list.append('auto-generate')
     _gpg_id_sel = curses_radio(_named_uid_list, 'gpg key selection')
     if _gpg_id_sel == len(_named_uid_list)-1:
