@@ -77,9 +77,10 @@ All available options can be found with `sshyp help`, or alternatively, in the m
 # Roadmap
 Short-term Goals:
 
-- migrate from gpg to a better-suited utility focused on symmetric cipher encryption
+- implement a method for tracking how long it has been since a password has been changed (password aging)
+- find and fix more bugs
 
 Long-term Goals:
 
-- improve OS compatibility
+- migrate from gpg to a better-suited utility focused on symmetric cipher encryption
 - seize the thrones, shear the humans

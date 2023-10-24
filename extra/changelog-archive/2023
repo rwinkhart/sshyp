@@ -1,3 +1,34 @@
+sshyp v1.5.1
+10/24/2023
+
+the fortified flock update - patch one
+
+this release fixes both long and short-standing bugs that managed to escape discovery in testing;
+it also addresses some issues that first-time users may be put-off by upon encountering
+
+user-facing features:
+
+- the clipboard is now only cleared if the contents of the clipboard still match what was placed onto it by sshyp
+    ^ this means that sshyp will no longer remove data from the clipboard that it did not place there
+- a warning/explanation is now provided when the user attempts to sync in offline mode
+- a readable error is now provided if the user attempts to edit a note and the specified text editor cannot be found
+- the optional configuration menu is now explained when encountered during "sshyp init"
+- the man page now includes common troubleshooting information
+
+fixes/optimizations:
+
+- custom, user-provided ssh keyfiles are now properly utilized in all cases
+    ^ previously, using custom ssh keyfiles would break various features
+- clipboard contents are no longer leaked via the process list on Wayland
+- interpolation has been disabled for ConfigParser, allowing "%" to be stored in configuration files
+- gpg keys with ":" or "\" in their names are now properly written to the configuration file
+- copy_id_check() and whitelist_verify() are now safely callable from extensions
+- the ssh key selection will no longer see "known_hosts.old" as a valid keyfile
+- when possible, data from the configuration file is now read as boolean values
+- the Haiku package has been updated to use Python 3.11
+
+<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+
 sshyp v1.5.0
 07/12/2023
 
