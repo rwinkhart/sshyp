@@ -10,7 +10,7 @@ from subprocess import PIPE, run
 # PORT START UNAME-IMPORT-STWEAK
 from os import uname
 # PORT END UNAME-IMPORT-STWEAK
-home, sshyp_data, stdscr = expanduser('~'), ConfigParser(), None
+home, sshyp_data, stdscr = expanduser('~'), ConfigParser(interpolation=None), None
 if isfile(f"{home}/.config/sshyp/sshyp.ini"):
     _exists_flag = True
     sshyp_data.read(f"{home}/.config/sshyp/sshyp.ini")
@@ -361,7 +361,7 @@ def extension_downloader():
     from tempfile import gettempdir
     from urllib.request import urlopen, urlretrieve
     _file_data = urlopen("https://raw.githubusercontent.com/rwinkhart/sshyp-labs/main/pointers/v1.5.1").read()
-    _pointer = ConfigParser()
+    _pointer = ConfigParser(interpolation=None)
     _pointer.read_string(_file_data.decode('utf-8'))
     _extensions = _pointer.sections()
     _extensions.append('CANCEL')

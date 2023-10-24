@@ -591,7 +591,7 @@ def extension_runner():
     _output_com, _extension_dir = None, realpath(__file__).rsplit('/', 1)[0] + '/extensions/'
     if isdir(_extension_dir):
         for _extension in listdir(_extension_dir):
-            _extension_config = ConfigParser()
+            _extension_config = ConfigParser(interpolation=None)
             _extension_config.read(_extension_dir + _extension)
             _input_com = _extension_config.get('config', 'input').split()
             if _input_com == arguments[arg_start:]:
@@ -634,7 +634,7 @@ if __name__ == "__main__":
 
             # import saved userdata
             try:
-                sshyp_data = ConfigParser()
+                sshyp_data = ConfigParser(interpolation=None)
                 sshyp_data.read(f"{home}/.config/sshyp/sshyp.ini")
                 device_type = sshyp_data.get('GENERAL', 'device_type')
                 if device_type == 'client':

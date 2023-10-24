@@ -124,7 +124,7 @@ def sort_titles_mods(_list_1, _list_2):
 # returns a list of data read from a sshync job profile
 def get_profile(_profile_dir):
     from configparser import ConfigParser
-    _profile_data = ConfigParser()
+    _profile_data = ConfigParser(interpolation=None)
     if isfile(_profile_dir):
         _profile_data.read(_profile_dir)
     else:
