@@ -10,26 +10,26 @@ if len(arguments) > 0:
     if arguments[0] == 'WSL':
         clip_replacement = """run(('powershell.exe', '-c', "Set-Clipboard '" + _copy_subject.replace("'", "''") + "'"))
     Popen((realpath(__file__).rsplit('/', 1)[0] + "/clipclear.py", _hash.hexdigest(), 'wsl'), stdout=DEVNULL, stderr=DEVNULL)"""
-        clear_replacement = """_hash_paste.update(run(('powershell.exe', '-c', 'Get-Clipboard'), stdout=PIPE).stdout.strip())
-if argv[1] == _hash_paste.hexdigest():
+        clear_replacement = """hash_paste.update(run(('powershell.exe', '-c', 'Get-Clipboard'), stdout=PIPE).stdout.strip())
+if argv[1] == hash_paste.hexdigest():
     run(('powershell.exe', '-c', 'Set-Clipboard'))"""
     elif arguments[0] == 'MAC':
         clip_replacement = """run('pbcopy', stdin=Popen(('printf', '%b', _copy_subject.replace('\\\\\\', '\\\\\\\\\\\\\\')), stdout=PIPE).stdout)
     Popen((realpath(__file__).rsplit('/', 1)[0] + "/clipclear.py", _hash.hexdigest(), 'mac'))"""
-        clear_replacement = """_hash_paste.update(run(('pbpaste'), stdout=PIPE).stdout.strip())
-if argv[1] == _hash_paste.hexdigest():
+        clear_replacement = """hash_paste.update(run('pbpaste', stdout=PIPE).stdout.strip())
+if argv[1] == hash_paste.hexdigest():
     run('pbcopy', input=b'')"""
     elif arguments[0] == 'HAIKU':
         clip_replacement = """run(('clipboard', '-c', _copy_subject))
     Popen((realpath(__file__).rsplit('/', 1)[0] + "/clipclear.py", _hash.hexdigest(), 'haiku'))"""
-        clear_replacement = """_hash_paste.update(run(('clipboard', '-p'), stdout=PIPE).stdout.strip())
-if argv[1] == _hash_paste.hexdigest():
+        clear_replacement = """hash_paste.update(run(('clipboard', '-p'), stdout=PIPE).stdout.strip())
+if argv[1] == hash_paste.hexdigest():
     run(('clipboard', '-r'))"""
     elif arguments[0] == 'TERMUX':
         clip_replacement = """run(('termux-clipboard-set', _copy_subject))
     Popen((realpath(__file__).rsplit('/', 1)[0] + "/clipclear.py", _hash.hexdigest(), 'termux'))"""
-        clear_replacement = """_hash_paste.update(run(('termux-clipboard-get'), stdout=PIPE).stdout.strip())
-if argv[1] == _hash_paste.hexdigest():
+        clear_replacement = """hash_paste.update(run('termux-clipboard-get', stdout=PIPE).stdout.strip())
+if argv[1] == hash_paste.hexdigest():
     run(("termux-clipboard-set", "''"))"""
     elif arguments[0] in ('LINUX', 'BSD'):
         clip_replacement = """if 'WAYLAND_DISPLAY' in environ:
@@ -39,18 +39,18 @@ if argv[1] == _hash_paste.hexdigest():
         run(('xclip', '-sel', 'c'), stdin=Popen(('printf', '%b', _copy_subject.replace('\\\\\\', '\\\\\\\\\\\\\\')), stdout=PIPE).stdout)
         Popen((realpath(__file__).rsplit('/', 1)[0] + "/clipclear.py", _hash.hexdigest(), 'x11'))"""
         clear_replacement = """if argv[2] == 'wayland':
-    _hash_paste.update(run('wl-paste', stdout=PIPE).stdout.strip())
-    if argv[1] == _hash_paste.hexdigest():
+    hash_paste.update(run('wl-paste', stdout=PIPE).stdout.strip())
+    if argv[1] == hash_paste.hexdigest():
         run(('wl-copy', '-c'))
-else
-    _hash_paste.update(run(('xclip', '-o', '-sel', 'c'), stdout=PIPE).stdout.strip())
-    if argv[1] == _hash_paste.hexdigest():
+else:
+    hash_paste.update(run(('xclip', '-o', '-sel', 'c'), stdout=PIPE).stdout.strip())
+    if argv[1] == hash_paste.hexdigest():
         run(('xclip', '-i', '/dev/null', '-sel', 'c'))"""
 else:
     s_exit()
 
-targets = (('CLIPBOARD', 'sshyp.py', '', '', clip_replacement), 
-    ('CLIPCLEAR', 'clipclear.py', '\n', '', clear_replacement))
+targets = (('CLIPBOARD', 'sshyp.py', '', '', clip_replacement),
+           ('CLIPCLEAR', 'clipclear.py', '\n', '', clear_replacement))
 
 for target in targets:
     # read text from target file
