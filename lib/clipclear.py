@@ -33,7 +33,7 @@ elif argv[2] == 'mac':
 elif argv[2] == 'termux':
     hash_paste.update(run('termux-clipboard-get', stdout=PIPE).stdout.strip())
     if argv[1] == hash_paste.hexdigest():
-        run(("termux-clipboard-set", "''"))
+        run(("termux-clipboard-set", ''))
 
 elif argv[2] == 'x11':
     hash_paste.update(run(('xclip', '-o', '-sel', 'c'), stdout=PIPE).stdout.strip())
