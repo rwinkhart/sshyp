@@ -360,6 +360,8 @@ def extension_downloader():
     from os import chmod
     from tempfile import gettempdir
     from urllib.request import urlopen, urlretrieve
+    # the version listed below will NOT always match the version of sshyp being used
+    # it is only updated if new extensions are incompatible with previous sshyp versions
     _file_data = urlopen("https://raw.githubusercontent.com/rwinkhart/sshyp-labs/main/pointers/v1.5.1").read()
     _pointer = ConfigParser(interpolation=None)
     _pointer.read_string(_file_data.decode('utf-8'))
@@ -369,8 +371,8 @@ def extension_downloader():
     if _choice == len(_extensions)-1:
         return False
     _selected = _extensions[_choice]
-    _choice = curses_radio(('no', 'yes'), f"description: {_pointer.get(_selected, 'desc')}\n\nusage: "
-                                          f"{_pointer.get(_selected, 'usage')}\n\ninstall {_selected}?")
+    _choice = curses_radio(('no', 'yes'), 'description: ' + _pointer.get(_selected, 'desc') + '\n\nusage: ' +
+                           _pointer.get(_selected, 'usage').replace('<br>', '\n') + '\n\ninstall ' + _selected + '?')
     # if installing the extension...
     if _choice == 1:
         # download extension files to temporary directory
