@@ -610,7 +610,7 @@ def wrapped_entry(_gm_device_type, _gm_top_message='configuration options:'):
                     run((_escalator, 'mv', _ini_dir, f"/usr/lib/sshyp/extensions/{_ext_name}.ini"))
                 else:
                     # uninstall with privilege escalation (outside of curses)
-                    run((_escalator, 'rm', '-I', f"/usr/lib/sshyp/{_ext_name}",
+                    run((_escalator, 'rm', f"/usr/lib/sshyp/{_ext_name}",
                          f"/usr/lib/sshyp/extensions/{_ext_name}.ini"))
             else:
                 _repeat = False
