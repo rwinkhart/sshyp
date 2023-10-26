@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from hashlib import sha512
-from subprocess import PIPE, run
+from subprocess import DEVNULL, PIPE, run
 from sys import argv
 from time import sleep
 
@@ -16,7 +16,7 @@ if argv[2] == 'wsl':
         run(('powershell.exe', '-c', 'Set-Clipboard'))
 
 elif argv[2] == 'wayland':
-    hash_paste.update(run('wl-paste', stdout=PIPE).stdout.strip())
+    hash_paste.update(run('wl-paste', stdout=PIPE, stderr=DEVNULL).stdout.strip())
     if argv[1] == hash_paste.hexdigest():
         run(('wl-copy', '-c'))
 
