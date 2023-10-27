@@ -371,8 +371,10 @@ def extension_downloader():
     if _choice == len(_extensions)-1:
         return False
     _selected = _extensions[_choice]
-    _choice = curses_radio(('no', 'yes'), 'description: ' + _pointer.get(_selected, 'desc') + '\n\nusage: ' +
-                           _pointer.get(_selected, 'usage').replace('<br>', '\n') + '\n\ninstall ' + _selected + '?')
+    _divider = (get_terminal_size()[0]//2)*'-'
+    _choice = curses_radio(('no', 'yes'), '/description/\n' + _divider + '\n\n' + _pointer.get(_selected, 'desc') +
+                           '\n\n/usage/\n' + _divider + '\n\n' + _pointer.get(_selected, 'usage').replace('<br>', '\n')
+                           + '\n\n' + _divider + '\n\ninstall ' + _selected + '?')
     # if installing the extension...
     if _choice == 1:
         # download extension files to temporary directory
