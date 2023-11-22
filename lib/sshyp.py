@@ -301,11 +301,11 @@ def print_info():
               f"randall winkhart\u001b[38;5;15;48;5;15m{9*' '}\u001b[38;5;7;48;5;8m/\u001b[0m")
         print(f"{_blank}\n{_border}\nsee https://github.com/rwinkhart/sshyp for more information\n")
     elif arguments[0] == 'license':
-        print('\nThis program is free software: you can redistribute it and/or modify it under the terms\nof version 3 '
+        print('\nThis program is free software: you can redistribute it and/or modify it under the terms of\nversion 3 '
               '(only) of the GNU General Public License as published by the Free Software Foundation.\n\nThis program '
               'is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;\nwithout even the implied '
-              'warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\nSee the GNU General Public License for'
-              ' more details.\n\nhttps://opensource.org/licenses/GPL-3.0\n')
+              'warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n\nSee the GNU General Public License '
+              'for more details:\nhttps://opensource.org/licenses/GPL-3.0\n')
     elif arguments[0] == 'add' and device_type == 'client':
         print(f"""\n\u001b[1musage:\u001b[0m sshyp /<entry name> add <option>\u001b[0m\n
 \u001b[1moptions:\u001b[0m
