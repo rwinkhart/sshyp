@@ -39,7 +39,7 @@ if argv[1] == hash_paste.hexdigest():
         run(('xclip', '-sel', 'c'), stdin=Popen(('printf', '%b', _copy_subject.replace('\\\\\\', '\\\\\\\\\\\\\\')), stdout=PIPE).stdout)
         Popen((realpath(__file__).rsplit('/', 1)[0] + "/clipclear.py", _hash.hexdigest(), 'x11'))"""
         clear_replacement = """if argv[2] == 'wayland':
-    hash_paste.update(run('wl-paste', stdout=PIPE).stdout.strip())
+    hash_paste.update(run('wl-paste', stdout=PIPE, stderr=DEVNULL).stdout.strip())
     if argv[1] == hash_paste.hexdigest():
         run(('wl-copy', '-c'))
 else:
