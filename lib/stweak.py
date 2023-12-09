@@ -362,7 +362,7 @@ def extension_downloader():
     from urllib.request import urlopen, urlretrieve
     # the version listed below will NOT always match the version of sshyp being used
     # it is only updated if new extensions are incompatible with previous sshyp versions
-    _file_data = urlopen("https://raw.githubusercontent.com/rwinkhart/sshyp-labs/main/pointers/v1.5.1").read()
+    _file_data = urlopen("https://raw.githubusercontent.com/rwinkhart/sshyp-labs/main/pointers/v1.5.2").read()
     _pointer = ConfigParser(interpolation=None)
     _pointer.read_string(_file_data.decode('utf-8'))
     _extensions = _pointer.sections()
