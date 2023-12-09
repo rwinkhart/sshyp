@@ -10,7 +10,7 @@ from subprocess import CalledProcessError, PIPE, run
 # PORT START UNAME-IMPORT-STWEAK
 from os import uname
 # PORT END UNAME-IMPORT-STWEAK
-home, sshyp_data, stdscr = expanduser('~'), ConfigParser(interpolation=None), None
+home, sshyp_data, stdscr, gm_device_type = expanduser('~'), ConfigParser(interpolation=None), None, None
 if isfile(f"{home}/.config/sshyp/sshyp.ini"):
     _exists_flag = True
     sshyp_data.read(f"{home}/.config/sshyp/sshyp.ini")
@@ -589,39 +589,47 @@ def initial_setup(_scr):
     # run optional configuration menu
     curses_radio(['okay'], 'required configuration complete\n\na menu for additional (optional) configuration will be '
                            'displayed\n\nthis menu can be safely exited at any time')
-    wrapped_entry(_dev_sync_types[0], 'additional configuration options:')
+
+    # set gm_device_type so that after the init menu is terminated the global menu knows the device type
+    global gm_device_type
+    gm_device_type = _dev_sync_types[0]
+    return
 
 
 # runs the specified entry function (menu start point) within a curses wrapper
 def wrapped_entry(_gm_device_type, _gm_top_message='configuration options:'):
     from curses import wrapper, use_default_colors
+
+    global gm_device_type
+    gm_device_type = _gm_device_type
+
     # a boolean value represents init
-    if isinstance(_gm_device_type, bool):
+    if isinstance(gm_device_type, bool):
         wrapper(lambda _wrap_stdscr: (use_default_colors(), initial_setup(_wrap_stdscr)))
-    # any other value will be provided as the global menu device type
-    else:
-        _repeat = True
-        while _repeat:
-            try:
-                _ext_name, _escalator, _action = \
-                    wrapper(lambda _wrap_stdscr: (use_default_colors(),
-                                                  global_menu(_wrap_stdscr, _gm_device_type, _gm_top_message)))[1]
-            except ChildProcessError:
-                print("\n\u001b[38;5;9merror: privilege escalation required\n\nneither 'doas' nor 'sudo' were found in "
-                      "the system's $PATH\u001b[0m\n")
-                return
-            # only run if privilege escalation is needed
-            if _action is not None:
-                if _action:
-                    # install with privilege escalation (outside of curses)
-                    from tempfile import gettempdir
-                    _exe_dir, _ini_dir = f"{gettempdir()}/sshyp_exe", f"{gettempdir()}/sshyp_ini"
-                    run((_escalator, 'chown', 'root:root', _exe_dir, _ini_dir))
-                    run((_escalator, 'mv', _exe_dir, f"/usr/lib/sshyp/{_ext_name}"))
-                    run((_escalator, 'mv', _ini_dir, f"/usr/lib/sshyp/extensions/{_ext_name}.ini"))
-                else:
-                    # uninstall with privilege escalation (outside of curses)
-                    run((_escalator, 'rm', f"/usr/lib/sshyp/{_ext_name}",
-                         f"/usr/lib/sshyp/extensions/{_ext_name}.ini"))
+    # any other value will be interpreted as the global menu device type
+    # this code still runs when called for init once the init menu terminates
+    _repeat = True
+    while _repeat:
+        try:
+            _ext_name, _escalator, _action = \
+                wrapper(lambda _wrap_stdscr: (use_default_colors(),
+                                              global_menu(_wrap_stdscr, gm_device_type, _gm_top_message)))[1]
+        except ChildProcessError:
+            print("\n\u001b[38;5;9merror: privilege escalation required\n\nneither 'doas' nor 'sudo' were found in "
+                  "the system's $PATH\u001b[0m\n")
+            return
+        # only run if privilege escalation is needed
+        if _action is not None:
+            if _action:
+                # install with privilege escalation (outside of curses)
+                from tempfile import gettempdir
+                _exe_dir, _ini_dir = f"{gettempdir()}/sshyp_exe", f"{gettempdir()}/sshyp_ini"
+                run((_escalator, 'chown', 'root:root', _exe_dir, _ini_dir))
+                run((_escalator, 'mv', _exe_dir, f"/usr/lib/sshyp/{_ext_name}"))
+                run((_escalator, 'mv', _ini_dir, f"/usr/lib/sshyp/extensions/{_ext_name}.ini"))
             else:
-                _repeat = False
+                # uninstall with privilege escalation (outside of curses)
+                run((_escalator, 'rm', f"/usr/lib/sshyp/{_ext_name}",
+                     f"/usr/lib/sshyp/extensions/{_ext_name}.ini"))
+        else:
+            _repeat = False
