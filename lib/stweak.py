@@ -6,7 +6,7 @@ from os.path import exists, expanduser, isfile
 from pathlib import Path
 from random import randint
 from shutil import get_terminal_size, which
-from subprocess import PIPE, run
+from subprocess import CalledProcessError, PIPE, run
 # PORT START UNAME-IMPORT-STWEAK
 from os import uname
 # PORT END UNAME-IMPORT-STWEAK
@@ -108,7 +108,14 @@ def gpg_config():
                 'Key-Type: 1\n', 'Key-Length: 4096\n', 'Key-Usage: sign encrypt\n', 'Name-Real: sshyp\n',
                 'Name-Comment: gpg-sshyp\n', 'Name-Email: github.com/rwinkhart/sshyp\n',
                 'Expire-Date: 0'])
-        run(('gpg', '-q', '--batch', '--generate-key', f"{home}/.config/sshyp/gpg-gen"))
+        try:
+            run(('gpg', '-q', '--batch', '--generate-key', f"{home}/.config/sshyp/gpg-gen"), stderr=PIPE, check=True)
+        except CalledProcessError as e:
+            if 'No pinentry' in e.stderr.decode("utf-8"):
+                curses_radio(['okay'], 'either a valid pinentry program is missing or gpg is not configured to use an '
+                                       'available pinentry program\n\nsshyp will now exit')
+                from sys import exit as s_exit
+                s_exit(6)
         remove(f"{home}/.config/sshyp/gpg-gen")
         _gpg_id = run(('gpg', '-k', '--with-colons'), stdout=PIPE, text=True).stdout.splitlines()[-1].split(':')[9]
     else:
