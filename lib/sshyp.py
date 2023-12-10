@@ -24,7 +24,7 @@ def entry_list_gen(_directory=f"{home}/.local/share/sshyp/"):
     for _root, _dirs, _files in sorted(walk(_directory, topdown=True)):
         _entry_list, _color_alternator = [], 1
         if _ran:
-            print(f"\u001b[38;5;15;48;5;238m{_root.replace(f'{home}/.local/share/sshyp', '', 1)}/\u001b[0m")
+            print(f"\u001b[38;5;7;48;5;8m{_root.replace(f'{home}/.local/share/sshyp', '', 1)}/\u001b[0m")
         for filename in sorted(_files):
             if _color_alternator > 0:
                 _entry_list.append(filename[:-4])
@@ -54,14 +54,14 @@ def entry_reader(_decrypted_entry):
     for _num in range(len(_decrypted_entry)):
         try:
             if _num == 0 and _decrypted_entry[1] != '':
-                print(f"\u001b[38;5;15;48;5;238musername:\u001b[0m\n{_decrypted_entry[1]}\n")
+                print(f"\u001b[38;5;7;48;5;8musername:\u001b[0m\n{_decrypted_entry[1]}\n")
             elif _num == 1 and _decrypted_entry[0] != '':
-                print(f"\u001b[38;5;15;48;5;238mpassword:\u001b[0m\n{_entry_password}\n")
+                print(f"\u001b[38;5;7;48;5;8mpassword:\u001b[0m\n{_entry_password}\n")
             elif _num == 2 and _decrypted_entry[2] != '':
-                print(f"\u001b[38;5;15;48;5;238murl:\u001b[0m\n{_decrypted_entry[_num]}\n")
+                print(f"\u001b[38;5;7;48;5;8murl:\u001b[0m\n{_decrypted_entry[_num]}\n")
             elif _num >= 3 and _decrypted_entry[_num] != '' and _notes_flag != 1:
                 _notes_flag = 1
-                print('\u001b[38;5;15;48;5;238mnotes:\u001b[0m\n' + _decrypted_entry[_num])
+                print('\u001b[38;5;7;48;5;8mnotes:\u001b[0m\n' + _decrypted_entry[_num])
             elif _num >= 3 and _notes_flag == 1:
                 print(_decrypted_entry[_num])
             if _notes_flag == 1:
@@ -71,7 +71,7 @@ def entry_reader(_decrypted_entry):
                     print()
         except IndexError:
             if _num == 0 and _decrypted_entry[0] != '':
-                print(f"\u001b[38;5;15;48;5;238mpassword:\u001b[0m\n{_entry_password}\n")
+                print(f"\u001b[38;5;7;48;5;8mpassword:\u001b[0m\n{_entry_password}\n")
 
 
 # generates and returns a random string based on input
