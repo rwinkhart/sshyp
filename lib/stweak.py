@@ -5,7 +5,7 @@ from os import environ, listdir, remove
 from os.path import exists, expanduser, isfile
 from pathlib import Path
 from random import randint
-from shutil import get_terminal_size, which
+from shutil import which
 from subprocess import CalledProcessError, PIPE, run
 # PORT START UNAME-IMPORT-STWEAK
 from os import uname
@@ -28,18 +28,37 @@ def write_config(_sshyp_data=sshyp_data):
 def curses_radio(_options, _pretext):
     curs_set(0)
     _selected = 0
+
     while True:
+        # clear curses window
         stdscr.clear()
-        stdscr.addstr(0, 0, _pretext)
+        # get terminal size
+        _width = stdscr.getmaxyx()[1]
+        # split text based on new lines
+        _pretext_lines = _pretext.split('\n')
+
+        # iterate through lines, splitting further (wrapping) as needed, to add to curses window
+        _current_line = 0
+        for _line in _pretext_lines:
+            _remaining = _line
+            while len(_remaining) > _width:
+                stdscr.addstr(_current_line, 0, _remaining[:_width])
+                _remaining = _remaining[_width:]
+                _current_line += 1
+            stdscr.addstr(_current_line, 0, _remaining)
+            _current_line += 1
+
+        # create user-interactive options
         for _i, _option in enumerate(_options):
-            _y = _i + _pretext.count('\n') + 2
+            _y = _i + _current_line + 1
             if _i == _selected:
                 stdscr.addstr(_y, 0, "[*] " + _option, A_REVERSE)
             else:
                 stdscr.addstr(_y, 0, "[ ] " + _option)
         stdscr.refresh()
-        _key = stdscr.getch()
+
         # update _selected based on user input
+        _key = stdscr.getch()
         if _key == KEY_UP:
             _selected = (_selected-1) % len(_options)
         elif _key == KEY_DOWN:
@@ -47,6 +66,7 @@ def curses_radio(_options, _pretext):
         elif _key == ord('\n'):
             break
         stdscr.refresh()
+
     curs_set(1)
     return _selected
 
@@ -55,9 +75,9 @@ def curses_radio(_options, _pretext):
 def curses_text(_pretext):
     stdscr.clear()
     stdscr.addstr(0, 0, _pretext)
-    _term_columns = get_terminal_size()[0]
-    _editwin = newwin(1, _term_columns-2, 3, 1)
-    rectangle(stdscr, 2, 0, 4, _term_columns-1)
+    _width = stdscr.getmaxyx()[1]
+    _editwin = newwin(1, _width-2, 3, 1)
+    rectangle(stdscr, 2, 0, 4, _width-1)
     stdscr.refresh()
     _box = Textbox(_editwin)
     # let the user edit until ctrl+g/enter is struck
@@ -378,7 +398,7 @@ def extension_downloader():
     if _choice == len(_extensions)-1:
         return False
     _selected = _extensions[_choice]
-    _divider = (get_terminal_size()[0]//2)*'-'
+    _divider = (stdscr.getmaxyx()[1])*'-'
     _choice = curses_radio(('no', 'yes'), '/description/\n' + _divider + '\n\n' + _pointer.get(_selected, 'desc') +
                            '\n\n/usage/\n' + _divider + '\n\n' + _pointer.get(_selected, 'usage').replace('<br>', '\n')
                            + '\n\n' + _divider + '\n\ninstall ' + _selected + '?')
