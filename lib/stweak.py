@@ -62,10 +62,14 @@ def curses_radio(_options, _pretext):
         if _button_gen:
             for _i, _option in enumerate(_options):
                 _y = _i + _current_line + 1
-                if _i == _selected:
-                    stdscr.addstr(_y, 0, "[*] " + _option, A_REVERSE)
+                if _y < _height:
+                    if _i == _selected:
+                        stdscr.addstr(_y, 0, "[*] " + _option, A_REVERSE)
+                    else:
+                        stdscr.addstr(_y, 0, "[ ] " + _option)
                 else:
-                    stdscr.addstr(_y, 0, "[ ] " + _option)
+                    stdscr.addstr(_y-1, 0, '# warning: re-size terminal to see more information')
+                    break
 
         # update _selected based on user input
         _key = stdscr.getch()
