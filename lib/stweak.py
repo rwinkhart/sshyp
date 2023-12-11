@@ -33,38 +33,51 @@ def curses_radio(_options, _pretext):
         # clear curses window
         stdscr.clear()
         # get terminal size
-        _width = stdscr.getmaxyx()[1]
+        _height, _width = stdscr.getmaxyx()
+
+        # track whether to generate interactive buttons (depending on terminal size)
+        _button_gen = False
+
         # split text based on new lines
         _pretext_lines = _pretext.split('\n')
 
         # iterate through lines, splitting further (wrapping) as needed, to add to curses window
         _current_line = 0
         for _line in _pretext_lines:
-            _remaining = _line
-            while len(_remaining) > _width:
-                stdscr.addstr(_current_line, 0, _remaining[:_width])
-                _remaining = _remaining[_width:]
+            if _current_line <= _height-4:
+                _remaining, _button_gen = _line, True
+                while len(_remaining) > _width:
+                    stdscr.addstr(_current_line, 0, _remaining[:_width])
+                    _remaining = _remaining[_width:]
+                    _current_line += 1
+                stdscr.addstr(_current_line, 0, _remaining)
                 _current_line += 1
-            stdscr.addstr(_current_line, 0, _remaining)
-            _current_line += 1
-
-        # create user-interactive options
-        for _i, _option in enumerate(_options):
-            _y = _i + _current_line + 1
-            if _i == _selected:
-                stdscr.addstr(_y, 0, "[*] " + _option, A_REVERSE)
             else:
-                stdscr.addstr(_y, 0, "[ ] " + _option)
-        stdscr.refresh()
+                _button_gen = False
+                stdscr.addstr(_current_line, 0, '# warning: re-size terminal to see more information'[:_width-1])
+                _current_line += 1
+                break
+
+        # create user-interactive options if all information has been displayed to the user
+        if _button_gen:
+            for _i, _option in enumerate(_options):
+                _y = _i + _current_line + 1
+                if _i == _selected:
+                    stdscr.addstr(_y, 0, "[*] " + _option, A_REVERSE)
+                else:
+                    stdscr.addstr(_y, 0, "[ ] " + _option)
 
         # update _selected based on user input
         _key = stdscr.getch()
-        if _key == KEY_UP:
-            _selected = (_selected-1) % len(_options)
-        elif _key == KEY_DOWN:
-            _selected = (_selected+1) % len(_options)
-        elif _key == ord('\n'):
-            break
+        if _button_gen:
+            if _key == KEY_UP:
+                _selected = (_selected - 1) % len(_options)
+            elif _key == KEY_DOWN:
+                _selected = (_selected + 1) % len(_options)
+            # ord('\n') == 10
+            elif _key == 10:
+                break
+
         stdscr.refresh()
 
     curs_set(1)
