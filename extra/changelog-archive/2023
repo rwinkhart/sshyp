@@ -1,3 +1,41 @@
+sshyp v1.5.2
+release date tbd
+
+the fortified flock update - patch two
+
+this release focuses on fixing visual bugs, tweak/init menu crashes, clipboard oddities, and Alpine Linux bugs
+
+user-facing features:
+
+- the extension downloader now supports showing multiple lines of usage information
+    ^ sshyp-mfa is taking advantage of this to display the info from the old man page
+- basic tweak/init menu text wrapping and terminal-resizing has been added
+    ^ the tweak/init radio menus now warn if the terminal needs to be resized to see all content;
+    this resizing can be done in real time without restarting sshyp (layout dynamically adjusts)
+    ^ this avoids crashes on large radio menus in small terminals (crashes are still possible, but
+    only on unreasonably small terminals - this will probably stay the way it is now)
+- the user is now warned that gpg key generation may take time and that sshyp should not be terminated
+
+fixes/optimizations:
+
+- extension removal now works on Busybox environments (Alpine Linux)
+- instead of crashing with an unhelpful error, sshyp now warns if a valid pinentry program is not found (gpg)
+    ^ affects some Alpine Linux 3.19 base installs (pinentry does not always get installed with gpg)
+- a recursive curses.wrapper() function is no longer used (fixes menu crash on Alpine Linux 3.19)
+    ^ the new method of transitioning menus is more efficient on all platforms
+- the wl-paste empty clipboard warning is no longer shown when multiple copies are done within 30 seconds (Wayland)
+- quotes are no longer copied to the Termux clipboard on clear
+- the entry reader and entry list should now be more visible in light terminals
+    ^ in testing, I noticed some solarized dark themes bind color 8 to the same color as the terminal background,
+    leading to some invisible text - this will not be fixed (unless custom accent colors are added), as
+    I believe this is poor theme design and the fault of the particular solarized dark themes I tested
+- entry list text wrapping has been vastly improved
+    ^ better utilization of full terminal width
+    ^ less prone to splitting entry names in half (should be impossible now)
+    ^ no longer crashes on small terminals
+
+<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+
 sshyp v1.5.1
 10/24/2023
 
