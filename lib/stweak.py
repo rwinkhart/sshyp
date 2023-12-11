@@ -45,12 +45,12 @@ def curses_radio(_options, _pretext):
         _current_line = 0
         for _line in _pretext_lines:
             if _current_line <= _height-4:
-                _remaining, _button_gen = _line, True
-                while len(_remaining) > _width:
-                    stdscr.addstr(_current_line, 0, _remaining[:_width])
-                    _remaining = _remaining[_width:]
+                _button_gen = True
+                while len(_line) > _width:
+                    stdscr.addstr(_current_line, 0, _line[:_width])
+                    _line = _line[_width:]
                     _current_line += 1
-                stdscr.addstr(_current_line, 0, _remaining)
+                stdscr.addstr(_current_line, 0, _line)
                 _current_line += 1
             else:
                 _button_gen = False

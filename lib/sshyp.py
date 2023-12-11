@@ -18,29 +18,28 @@ home = expanduser('~')
 # generates and prints full entry list
 def entry_list_gen(_directory=f"{home}/.local/share/sshyp/"):
     from shutil import get_terminal_size
-    from textwrap import fill
-    _ran = False
-    print("\nfor a list of usable commands, run 'sshyp help'\n\n\u001b[38;5;0;48;5;15msshyp entries:\u001b[0m\n")
+    _ran, _width = False, get_terminal_size().columns
+    print(f"\nfor a list of usable commands, run 'sshyp help'\n\n\u001b[38;5;0;48;5;15msshyp entries ({str(_width)} cols):\u001b[0m", end='')
     for _root, _dirs, _files in sorted(walk(_directory, topdown=True)):
-        _entry_list, _color_alternator = [], 1
+        _color_alternator = 1
         if _ran:
-            print(f"\u001b[38;5;7;48;5;8m{_root.replace(f'{home}/.local/share/sshyp', '', 1)}/\u001b[0m")
-        for filename in sorted(_files):
+            print(f"\n\n\u001b[38;5;7;48;5;8m{_root.replace(f'{home}/.local/share/sshyp', '', 1)}/\u001b[0m")
+        _char_counter = 0
+        for _filename in sorted(_files):
             if _color_alternator > 0:
-                _entry_list.append(filename[:-4])
+                _print_string = _filename[:-4]
             else:
-                _entry_list.append(f"\u001b[38;5;8m{filename[:-4]}\u001b[0m")
+                _print_string = f"\u001b[38;5;8m{_filename[:-4]}\u001b[0m"
+            # -3 instead of -4 to account for trailing space character
+            _char_counter += len(_filename)-3
+            if _char_counter >= _width:
+                # reset _char_counter to length of first entry in new line
+                _char_counter = len(_filename)-3
+                print()
+            print(_print_string + ' ', end='')
             _color_alternator = _color_alternator * -1
-        _real = len(' '.join(_entry_list)) - (5.5 * len(_entry_list))
-        if _real <= get_terminal_size()[0]:
-            _width = len(' '.join(_entry_list))
-        else:
-            _width = (len(' '.join(_entry_list)) / (_real / get_terminal_size()[0]) - 25)
-        if len(_entry_list) > 0:
-            print(fill(' '.join(_entry_list), width=_width) + '\n')
-        elif _ran:
-            print('\u001b[38;5;9m-empty directory-\u001b[0m\n')
         _ran = True
+    print('\n')
 
 
 # displays the contents of an entry in a readable format
