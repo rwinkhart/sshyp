@@ -145,6 +145,8 @@ def gpg_config():
                 'Key-Type: 1\n', 'Key-Length: 4096\n', 'Key-Usage: sign encrypt\n', 'Name-Real: sshyp\n',
                 'Name-Comment: gpg-sshyp\n', 'Name-Email: github.com/rwinkhart/sshyp\n',
                 'Expire-Date: 0'])
+        curses_radio(['okay'], 'gpg key generation may take some time (especially on slower devices)\n\nselect "okay" '
+                               'to start\n\ndo not terminate this process!')
         try:
             run(('gpg', '-q', '--batch', '--generate-key', f"{home}/.config/sshyp/gpg-gen"), stderr=PIPE, check=True)
         except CalledProcessError as e:
@@ -292,8 +294,8 @@ def refresh_encryption():
 
     # prompt for unlock and display do not close warning
     decrypt(None)
-    curses_radio(['okay'], 'entry optimization may take some time - select "okay" to start - '
-                           'do not terminate this process!')
+    curses_radio(['okay'], 'entry optimization may take some time (especially on slower devices)\n\nselect "okay" '
+                           'to start\n\ndo not terminate this process!')
 
     # remove existing conflicts
     for _extension in ('.new', '.old'):
@@ -342,6 +344,8 @@ def whitelist_setup():
     open(f"{home}/.config/sshyp/gpg-gen", 'w').writelines([
         'Key-Type: 1\n', 'Key-Length: 4096\n', 'Key-Usage: sign encrypt\n', 'Name-Real: sshyp\n',
         'Name-Comment: gpg-sshyp-whitelist\n', 'Name-Email: github.com/rwinkhart/sshyp\n', 'Expire-Date: 0'])
+    curses_radio(['okay'], 'gpg key generation may take some time (especially on slower devices)\n\nselect "okay" '
+                           'to start\n\ndo not terminate this process!')
     run(('gpg', '-q', '--pinentry-mode', 'loopback', '--batch', '--generate-key', '--passphrase',
          _quick_unlock_password, f"{home}/.config/sshyp/gpg-gen"))
     remove(f"{home}/.config/sshyp/gpg-gen")
