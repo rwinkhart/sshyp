@@ -664,7 +664,7 @@ if __name__ == "__main__":
                 s_exit(1)
         else:
             from stweak import wrapped_entry
-            wrapped_entry(False)
+            wrapped_entry(False, 'additional configuration options:')
             s_exit()
 
         # run function based on arguments
