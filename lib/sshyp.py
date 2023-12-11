@@ -19,7 +19,7 @@ home = expanduser('~')
 def entry_list_gen(_directory=f"{home}/.local/share/sshyp/"):
     from shutil import get_terminal_size
     _ran, _width = False, get_terminal_size().columns
-    print(f"\nfor a list of usable commands, run 'sshyp help'\n\n\u001b[38;5;0;48;5;15msshyp entries ({str(_width)} cols):\u001b[0m", end='')
+    print("\nfor a list of usable commands, run 'sshyp help'\n\n\u001b[38;5;0;48;5;15msshyp entries:\u001b[0m", end='')
     for _root, _dirs, _files in sorted(walk(_directory, topdown=True)):
         _color_alternator = 1
         if _ran:
@@ -38,6 +38,8 @@ def entry_list_gen(_directory=f"{home}/.local/share/sshyp/"):
                 print()
             print(_print_string + ' ', end='')
             _color_alternator = _color_alternator * -1
+        if _ran and _char_counter < 1:
+            print('\u001b[38;5;9m-empty directory-\u001b[0m', end='')
         _ran = True
     print('\n')
 
