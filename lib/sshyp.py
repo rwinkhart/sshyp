@@ -298,7 +298,7 @@ def print_info():
               f"version 1.5.2\u001b[38;5;15;48;5;15m{18*' '}\u001b[38;5;7;48;5;8m/\u001b[0m")
         print(f"\u001b[38;5;7;48;5;8m\\\u001b[38;5;15;48;5;15m{14*' '}\u001b[38;5;15;48;5;8mthe fortified flock"
               f" update\u001b[38;5;15;48;5;15m{15*' '}\u001b[38;5;7;48;5;8m/\u001b[0m\n{_blank}")
-        print(f"\u001b[38;5;7;48;5;8m\\\u001b[38;5;15;48;5;15m{9*' '}\u001b[38;5;15;48;5;8mcopyright 2021-2023 ", 
+        print(f"\u001b[38;5;7;48;5;8m\\\u001b[38;5;15;48;5;15m{9*' '}\u001b[38;5;15;48;5;8mcopyright 2021-2024 ", 
               f"randall winkhart\u001b[38;5;15;48;5;15m{9*' '}\u001b[38;5;7;48;5;8m/\u001b[0m")
         print(f"{_blank}\n{_border}\nsee https://github.com/rwinkhart/sshyp for more information\n")
     elif arguments[0] == 'license':
@@ -337,7 +337,7 @@ def print_info():
  gen:
   update/-u{14*' '}generate a password for an existing entry\n""")
     else:
-        print("\n\u001b[1msshyp ", "copyright (c) 2021-2023 ", """randall winkhart\u001b[0m
+        print("\n\u001b[1msshyp ", "copyright (c) 2021-2024 ", """randall winkhart\u001b[0m
 this is free software, and you are welcome to redistribute it under certain conditions;
 this program comes with absolutely no warranty; type 'sshyp license' for details""")
         if device_type == 'client':

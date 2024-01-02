@@ -1,6 +1,6 @@
 #!/bin/sh
 
-version=$(head -n1 extra/changelog-archive/2023 | cut -c8-)
+version=$(head -n1 extra/changelog-archive/2024 | cut -c8-)
 if [ -z "$2" ]; then
     revision=1
 else
@@ -135,7 +135,7 @@ licenses {
     \"GNU GPL v3\"
 }
 copyrights {
-    \"2021-2023 Randall Winkhart\"
+    \"2021-2024 Randall Winkhart\"
 }
 provides {
     sshyp_client = "$version"
