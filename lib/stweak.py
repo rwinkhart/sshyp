@@ -325,7 +325,7 @@ def registered_remover():
     _device_ids = listdir(f"{home}/.config/sshyp/devices")
     _whitelisted_ids = listdir(f"{home}/.config/sshyp/whitelist")
 
-    _choices = _device_ids + ['cancel']
+    _choices = _device_ids + ['BACK']
     _del_id = curses_radio(_choices, 'registered device to remove:')
     if _del_id == len(_choices)-1:
         return
@@ -386,13 +386,13 @@ def whitelist_manage(_action):
         for _id in _device_ids:
             if _id not in _whitelisted_ids:
                 _unwhitelisted_ids.append(_id)
-        _unwhitelisted_ids.append('cancel')
+        _unwhitelisted_ids.append('BACK')
         _add_id = curses_radio(_unwhitelisted_ids, 'id to add to whitelist:')
         if _add_id == len(_unwhitelisted_ids)-1:
             return
         open(f"{home}/.config/sshyp/whitelist/{_unwhitelisted_ids[_add_id]}", 'w').write('')
     else:
-        _whitelisted_choices = _whitelisted_ids + ['cancel']
+        _whitelisted_choices = _whitelisted_ids + ['BACK']
         _del_id = curses_radio(_whitelisted_choices, 'id to remove from whitelist:')
         if _del_id == len(_whitelisted_choices)-1:
             return
@@ -427,7 +427,7 @@ def extension_downloader():
     _pointer = ConfigParser(interpolation=None)
     _pointer.read_string(_file_data.decode('utf-8'))
     _extensions = _pointer.sections()
-    _extensions.append('CANCEL')
+    _extensions.append('BACK')
     _choice = curses_radio(_extensions, 'select an extension for more info')
     if _choice == len(_extensions)-1:
         return False
@@ -454,7 +454,7 @@ def extension_remover():
     _installed = []
     for _extension in listdir('/usr/lib/sshyp/extensions'):
         _installed.append(_extension[:-4])
-    _installed.append('CANCEL')
+    _installed.append('BACK')
     _choice = curses_radio(_installed, 'select an extension to uninstall')
     if _choice == len(_installed)-1:
         return False
