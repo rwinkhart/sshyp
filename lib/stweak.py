@@ -319,6 +319,8 @@ def refresh_encryption():
         return 2
     
 
+# PORT START WHITELIST-SERVER
+# removes a registered device id from the server-side pool and prunes the quick-unlock whitelist
 def registered_remover():
     _device_ids = listdir(f"{home}/.config/sshyp/devices")
     _whitelisted_ids = listdir(f"{home}/.config/sshyp/whitelist")
@@ -336,7 +338,6 @@ def registered_remover():
             remove(f"{home}/.config/sshyp/whitelist/{_id}")
 
 
-# PORT START WHITELIST-SERVER
 # takes input from the user to set up quick-unlock pin
 def whitelist_setup():
     _gpg_password_temp = str(curses_text('full gpg passphrase:\n\n\n\n\n(ctrl+g/enter to confirm)'))
