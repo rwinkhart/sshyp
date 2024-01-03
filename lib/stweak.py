@@ -319,6 +319,23 @@ def refresh_encryption():
         return 2
     
 
+def registered_remover():
+    _device_ids = listdir(f"{home}/.config/sshyp/devices")
+    _whitelisted_ids = listdir(f"{home}/.config/sshyp/whitelist")
+
+    _choices = _device_ids + ['cancel']
+    _del_id = curses_radio(_choices, 'registered device to remove:')
+    if _del_id == len(_choices)-1:
+        return
+    remove(f"{home}/.config/sshyp/devices/{_device_ids[_del_id]}")
+    del _device_ids[_del_id]
+
+    # prune deleted device ids from whitelist
+    for _id in _whitelisted_ids:
+        if _id not in _device_ids:
+            remove(f"{home}/.config/sshyp/whitelist/{_id}")
+
+
 # PORT START WHITELIST-SERVER
 # takes input from the user to set up quick-unlock pin
 def whitelist_setup():
@@ -379,11 +396,6 @@ def whitelist_manage(_action):
         if _del_id == len(_whitelisted_choices)-1:
             return
         remove(f"{home}/.config/sshyp/whitelist/{_whitelisted_ids[_del_id]}")
-
-    # prune deleted device ids from whitelist
-    for _id in _whitelisted_ids:
-        if _id not in _device_ids:
-            remove(f"{home}/.config/sshyp/whitelist/{_id}")
 
 
 # runs quick-unlock configuration menu
@@ -496,7 +508,7 @@ def global_menu(_scr, _device_type, _top_message):
                              '[OPTIONAL] re-encrypt/optimize entries',
                              '[OPTIONAL] extension management'])
         else:
-            _options.extend(['manage quick-unlock/whitelist'])
+            _options.extend(['remove registered devices', 'manage quick-unlock/whitelist'])
         _options.extend(['EXIT/DONE'])
         _choice += curses_radio(_options, _top_message)
 
@@ -534,17 +546,20 @@ def global_menu(_scr, _device_type, _top_message):
             if _device_type == 'client':
                 gpg_config()
             else:
-                whitelist_menu()
+                registered_remover()
         elif _choice == 2:
             if _device_type == 'client':
                 ssh_config()
             else:
-                _exit_signal = True
+                whitelist_menu()
         elif _choice == 3:
-            if not sshyp_data.has_section('SSHYNC'):
-                ssh_config()
-            dev_id_config(sshyp_data.get('SSHYNC', 'ip'), sshyp_data.get('SSHYNC', 'user'),
-                          sshyp_data.get('SSHYNC', 'port'), sshyp_data.get('SSHYNC', 'identity_file'))
+            if _device_type == 'client':
+                if not sshyp_data.has_section('SSHYNC'):
+                    ssh_config()
+                dev_id_config(sshyp_data.get('SSHYNC', 'ip'), sshyp_data.get('SSHYNC', 'user'),
+                              sshyp_data.get('SSHYNC', 'port'), sshyp_data.get('SSHYNC', 'identity_file'))
+            else:
+                _exit_signal = True
         elif _choice == 4:
             editor_config(False)
         elif _choice == 5:
