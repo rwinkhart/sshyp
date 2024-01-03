@@ -627,7 +627,7 @@ if __name__ == "__main__":
                 entry_name = arguments[0].strip('/')
                 # determine whether to show passwords in entry previews
                 if arg_count > 1 and arguments[arg_count-1] in ('--show', '-s'):
-                    arguments.pop()
+                    del arguments[-1]
                     arg_count -= 1
                     pass_show = True
             else:
