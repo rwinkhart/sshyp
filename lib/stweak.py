@@ -191,7 +191,7 @@ def editor_config(_env_mode):
 
 
 # ssh+sshync configuration
-def ssh_config():
+def ssh_config(_reconfig=False):
     # private key selection/generation
     _keys = []
     # ensure ~/.ssh directory exists
@@ -201,7 +201,12 @@ def ssh_config():
                 and not _file.endswith('.pub') and isfile(f"{home}/.ssh/{_file}"):
             _keys.append(f"{home}/.ssh/{_file}")
     _keys.extend(['auto-generate', 'other (type the location)'])
+    # append a back button if launched optionally
+    if _reconfig:
+        _keys.extend(['BACK'])
     _key_selected_num = curses_radio(_keys, 'which private ssh key would you like to use for sshyp?')
+    if _reconfig and _key_selected_num == len(_keys)-1:
+        return
     _gen_index = len(_keys)-2
     if _key_selected_num >= _gen_index:
         _ssh_key = expanduser(curses_text('enter the location for your private ssh key:\n\n\n\n\n(ctrl+g/enter to '
@@ -550,7 +555,7 @@ def global_menu(_scr, _device_type, _top_message):
                 registered_remover()
         elif _choice == 2:
             if _device_type == 'client':
-                ssh_config()
+                ssh_config(True)
             else:
                 whitelist_menu()
         elif _choice == 3:
