@@ -239,7 +239,13 @@ def ssh_config(_reconfig=False):
 
 
 # device id configuration
-def dev_id_config(_ip, _username_ssh, _port, _identity):
+def dev_id_config(_ip, _username_ssh, _port, _identity, _reconfig=False):
+    if _reconfig:
+        _proceed = curses_radio(('no', 'yes'), "WARNING: ensure this sshyp client is synchronized (up-to-date) before "
+                                               "changing the device id\n\nfailure to do so may result in sync"
+                                               "hronization issues\n\nare you sure you wish to change the device id?")
+        if _proceed != 1:
+            return
     from sshyp import copy_id_check, string_gen
     _device_id_prefix = curses_text('name this device:\n\n\n\n\n(ctrl+g/enter to confirm)\n\nimportant: this '
                                     'id must be unique amongst your client devices\n\nthis is used to keep track of '
@@ -563,7 +569,7 @@ def global_menu(_scr, _device_type, _top_message):
                 if not sshyp_data.has_section('SSHYNC'):
                     ssh_config()
                 dev_id_config(sshyp_data.get('SSHYNC', 'ip'), sshyp_data.get('SSHYNC', 'user'),
-                              sshyp_data.get('SSHYNC', 'port'), sshyp_data.get('SSHYNC', 'identity_file'))
+                              sshyp_data.get('SSHYNC', 'port'), sshyp_data.get('SSHYNC', 'identity_file'), True)
             else:
                 _exit_signal = True
         elif _choice == 4:
