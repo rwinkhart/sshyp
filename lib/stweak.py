@@ -337,7 +337,7 @@ def registered_dev_id_remover():
     _whitelisted_ids = listdir(f"{home}/.config/sshyp/whitelist")
 
     _choices = _device_ids + ['BACK']
-    _del_id = curses_radio(_choices, 'registered device to remove:')
+    _del_id = curses_radio(_choices, 'registered device id to remove:')
     if _del_id == len(_choices)-1:
         return
     remove(f"{home}/.config/sshyp/devices/{_device_ids[_del_id]}")
@@ -520,7 +520,7 @@ def global_menu(_scr, _device_type, _top_message):
                              '[OPTIONAL] re-encrypt/optimize entries',
                              '[OPTIONAL] extension management'])
         else:
-            _options.extend(['remove registered devices', 'manage quick-unlock/whitelist'])
+            _options.extend(['remove registered device ids', 'manage quick-unlock/whitelist'])
         _options.extend(['EXIT/DONE'])
         _choice += curses_radio(_options, _top_message)
 
