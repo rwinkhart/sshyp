@@ -247,9 +247,9 @@ def dev_id_config(_ip, _username_ssh, _port, _identity, _reconfig=False):
         if _proceed != 1:
             return
     from sshyp import copy_id_check, string_gen
-    _device_id_prefix = curses_text('name this device:\n\n\n\n\n(ctrl+g/enter to confirm)\n\nimportant: this '
+    _device_id_prefix = curses_text('set this device\'s id:\n\n\n\n\n(ctrl+g/enter to confirm)\n\nimportant: this '
                                     'id must be unique amongst your client devices\n\nthis is used to keep track of '
-                                    'database syncing and quick-unlock permissions\n')
+                                    'database synchronization and quick-unlock permissions\n')
     _device_id_suffix = string_gen('f', randint(24, 48))
     _device_id = _device_id_prefix + '-' + _device_id_suffix
     # remove existing device ids
@@ -332,7 +332,7 @@ def refresh_encryption():
 
 # PORT START WHITELIST-SERVER
 # removes a registered device id from the server-side pool and prunes the quick-unlock whitelist
-def registered_remover():
+def registered_dev_id_remover():
     _device_ids = listdir(f"{home}/.config/sshyp/devices")
     _whitelisted_ids = listdir(f"{home}/.config/sshyp/whitelist")
 
@@ -514,7 +514,7 @@ def global_menu(_scr, _device_type, _top_message):
     while True:
         _options, _choice, _exit_signal = ['change device/synchronization types'], 0, False
         if _device_type == 'client':
-            _options.extend(['change gpg key', 're-configure ssh(ync)', 'change device name',
+            _options.extend(['change gpg key', 're-configure ssh(ync)', 'change device id',
                              '[OPTIONAL, RECOMMENDED] set custom text editor',
                              '[OPTIONAL] enable/disable quick-unlock',
                              '[OPTIONAL] re-encrypt/optimize entries',
@@ -534,7 +534,7 @@ def global_menu(_scr, _device_type, _top_message):
                 # ...and text editor settings are missing
                 if not sshyp_data.has_option('CLIENT-GENERAL', 'text_editor'):
                     editor_config(True)
-                # ...and online (synced) mode is enabled...
+                # ...and online (synchronized) mode is enabled...
                 if _dev_sync_types[1] == 'false':
                     # ...and quick-unlock settings are missing
                     if not sshyp_data.has_option('CLIENT-ONLINE', 'quick_unlock_enabled'):
@@ -558,7 +558,7 @@ def global_menu(_scr, _device_type, _top_message):
             if _device_type == 'client':
                 gpg_config()
             else:
-                registered_remover()
+                registered_dev_id_remover()
         elif _choice == 2:
             if _device_type == 'client':
                 ssh_config(True)

@@ -14,7 +14,7 @@ sshyp is compatible with entries created by pass/password-store, as its original
 
 sshyp makes use of a custom sftp wrapper, called sshync (ssh+sync), to reliably sync user entries with a local or remote server.
 
-The name "sshyp" is a combination of its syncing library, "sshync", and "passwords".
+The name "sshyp" is a combination of its synchronization library, "sshync", and "passwords".
 
 # WARNING
 It is your responsibility to assess the security and stability of "sshyp" before using it and ensure it meets your needs.

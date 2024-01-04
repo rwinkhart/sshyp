@@ -38,7 +38,7 @@ Making a new entry saved as '~/.local/share/sshyp/school/university.gpg' using t
 Creating a note-only entry saved as '~/.local/share/sshyp/notes/test note.gpg':
     sshyp /notes/test\ note add -n
 
-Manually syncing entries with the server:
+Manually synchronizing entries with the server:
     sshyp sync
 .SH ARGUMENTS (CLIENT)
  help/-h                 bring up the help menu

@@ -8,12 +8,12 @@ home = expanduser('~')
 # PORT START SSHYNC-REMOTE
 # REMOTE
 # prints all necessary remote data to stdout
-def remote_list_gen(_client_device_name, _remote_dir):
+def remote_list_gen(_client_device_id, _remote_dir):
     # deletions
     for _file in listdir(f"{home}/.config/sshyp/deleted"):
         _file_path, _sep, _device = _file.partition('\x1f')
         _file_path = _file_path.replace('\x1e', '/')
-        if _device == _client_device_name:
+        if _device == _client_device_id:
             print(_file_path)
             try:
                 remove(f"{home}/.config/sshyp/deleted/{_file}")
@@ -31,7 +31,7 @@ def remote_list_gen(_client_device_name, _remote_dir):
 
 
 # HYBRID
-# deletes a file or folder and/or marks it for deletion upon syncing
+# deletes a file or folder and/or marks it for deletion upon synchronizing
 def delete(_file_path, _target_database, _silent):
     from shutil import rmtree
     _directory = f"{home}/.local/share/sshyp/"
@@ -44,8 +44,8 @@ def delete(_file_path, _target_database, _silent):
         if not _silent:
             print(f"location does not exist {_target_database}")
     if _target_database == 'remotely':
-        for _device_name in listdir(f"{home}/.config/sshyp/devices"):
-            open(f"{home}/.config/sshyp/deleted/" + _file_path.replace('/', '\x1e') + '\x1f' + _device_name, 'w')
+        for _device_id in listdir(f"{home}/.config/sshyp/devices"):
+            open(f"{home}/.config/sshyp/deleted/" + _file_path.replace('/', '\x1e') + '\x1f' + _device_id, 'w')
 
 
 # retrieves and returns titles and mod times from the local device
