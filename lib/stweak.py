@@ -239,7 +239,7 @@ def ssh_config(_reconfig=False):
 
 
 # device id configuration
-def dev_id_config(_ip, _username_ssh, _port, _identity, _reconfig=False):
+def dev_id_config(_port, _username_ssh, _ip, _identity, _reconfig=False):
     if _reconfig:
         _proceed = curses_radio(('no', 'yes'), "WARNING: ensure this sshyp client is synchronized (up-to-date) before "
                                                "changing the device id\n\nfailure to do so may result in sync"
@@ -257,7 +257,7 @@ def dev_id_config(_ip, _username_ssh, _port, _identity, _reconfig=False):
         remove(f"{home}/.config/sshyp/devices/{_id}")
     open(f"{home}/.config/sshyp/devices/{_device_id}", 'w')
     # test server connection and attempt to register device id
-    copy_id_check(_ip, _username_ssh, _port, _device_id, _identity, sshyp_data)
+    copy_id_check(_port, _username_ssh, _ip, _device_id, _identity, sshyp_data)
 
 
 # quick-unlock configuration
@@ -548,7 +548,7 @@ def global_menu(_scr, _device_type, _top_message):
                     if not listdir(f"{home}/.config/sshyp/devices"):
                         if None in (_ip, _username_ssh, _port):
                             _ip, _username_ssh, _port, _identity = ssh_config()
-                        dev_id_config(_ip, _username_ssh, _port, _identity)
+                        dev_id_config(_port, _username_ssh, _ip, _identity)
                     # ...or ssh_error is missing
                     elif not sshyp_data.has_option('CLIENT-ONLINE', 'ssh_error'):
                         sshyp_data.set('CLIENT-ONLINE', 'ssh_error', '1')    
@@ -568,8 +568,8 @@ def global_menu(_scr, _device_type, _top_message):
             if _device_type == 'client':
                 if not sshyp_data.has_section('SSHYNC'):
                     ssh_config()
-                dev_id_config(sshyp_data.get('SSHYNC', 'ip'), sshyp_data.get('SSHYNC', 'user'),
-                              sshyp_data.get('SSHYNC', 'port'), sshyp_data.get('SSHYNC', 'identity_file'), True)
+                dev_id_config(sshyp_data.get('SSHYNC', 'port'), sshyp_data.get('SSHYNC', 'user'),
+                              sshyp_data.get('SSHYNC', 'ip'), sshyp_data.get('SSHYNC', 'identity_file'), True)
             else:
                 _exit_signal = True
         elif _choice == 4:
@@ -637,7 +637,7 @@ def initial_setup(_scr):
             _ip, _username_ssh, _port, _identity = ssh_config()
 
             # device id configuration
-            dev_id_config(_ip, _username_ssh, _port, _identity)
+            dev_id_config(_port, _username_ssh, _ip, _identity)
 
         # PORT START CLIPTOOL
         # check for clipboard tool and display warning if missing
