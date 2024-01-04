@@ -6,7 +6,7 @@ from os.path import exists, expanduser, isfile
 from pathlib import Path
 from random import randint
 from shutil import which
-from subprocess import CalledProcessError, PIPE, run
+from subprocess import CalledProcessError, DEVNULL, PIPE, run
 # PORT START UNAME-IMPORT-STWEAK
 from os import uname
 # PORT END UNAME-IMPORT-STWEAK
@@ -253,11 +253,18 @@ def dev_id_config(_port, _username_ssh, _ip, _identity, _reconfig=False):
     _device_id_suffix = string_gen('f', randint(24, 48))
     _device_id = _device_id_prefix + '-' + _device_id_suffix
     # remove existing device ids
-    for _id in listdir(f"{home}/.config/sshyp/devices"):
+    _device_id_list = listdir(f"{home}/.config/sshyp/devices")
+    for _id in _device_id_list:
         remove(f"{home}/.config/sshyp/devices/{_id}")
     open(f"{home}/.config/sshyp/devices/{_device_id}", 'w')
-    # test server connection and attempt to register device id
-    copy_id_check(_port, _username_ssh, _ip, _device_id, _identity, sshyp_data)
+    # test server connection and attempt to register device id - copy_id_check() returns false if successful
+    if not copy_id_check(_port, _username_ssh, _ip, _device_id, _identity, sshyp_data):
+        # remove old device id from registered pool and whitelist
+        run(('ssh', '-o', 'ConnectTimeout=3', '-i', _identity, '-p', _port, f"{_username_ssh}@{_ip}",
+             'python3 -c \'from pathlib import Path; '
+             f'Path("/home/{_username_ssh}/.config/sshyp/devices/{_device_id_list[0]}").unlink(missing_ok=True); '
+             f'Path("/home/{_username_ssh}/.config/sshyp/whitelist/{_device_id_list[0]}").unlink(missing_ok=True)\''),
+            stderr=DEVNULL, stdout=DEVNULL)
 
 
 # quick-unlock configuration
@@ -290,8 +297,8 @@ def refresh_encryption():
 
     # warn the user of potential data loss and prompt to continue
     _sure = curses_radio(('no', 'yes'), "WARNING: proceeding with this action will remove/overwrite any directories"
-                                           f" matching the following:\n\n{home}/.local/share/sshyp.old\n{home}/.local/"
-                                           "share/sshyp.new\n\nare you sure you wish to re-encrypt all entries?")
+                                        f" matching the following:\n\n{home}/.local/share/sshyp.old\n{home}/.local/"
+                                        "share/sshyp.new\n\nare you sure you wish to re-encrypt all entries?")
     if _sure != 1:
         return 3    
 

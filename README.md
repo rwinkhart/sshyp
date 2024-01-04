@@ -1,7 +1,7 @@
 ![sshyp](https://github.com/rwinkhart/sshyp-labs/blob/main/extra/artwork/sshyp-banner.png)
 
 [![release](https://img.shields.io/github/v/release/rwinkhart/sshyp)](https://github.com/rwinkhart/sshyp/releases)
-![python](https://img.shields.io/badge/python-3.7--3.12-yellow)
+![python](https://img.shields.io/badge/python-3.8--3.12-yellow)
 [![downloads](https://img.shields.io/github/downloads/rwinkhart/sshyp/total)](https://github.com/rwinkhart/sshyp/releases)
 
 [![CodeQL](https://github.com/rwinkhart/sshyp/actions/workflows/codeql-analysis.yml/badge.svg?branch=main)](https://github.com/rwinkhart/sshyp/actions/workflows/codeql-analysis.yml)
