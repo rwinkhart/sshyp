@@ -193,8 +193,9 @@ def whitelist_verify(_port, _username_ssh, _ip, _client_device_id, _identity):
     except CalledProcessError:
         _i, _full_password = 0, ''
         _server_whitelist = run(('ssh', '-i', _identity, '-p', _port, f"{_username_ssh}@{_ip}",
-                                 f'python3 -c \'from os import listdir; print(*listdir("/home/{_username_ssh}'
-                                 f'/.config/sshyp/whitelist"))\''), stdout=PIPE, text=True).stdout.rstrip().split()
+                                 f'python3 -c \'from os import listdir; print(listdir("/home/{_username_ssh}'
+                                 f'/.config/sshyp/whitelist"))\''),
+                                stdout=PIPE, text=True).stdout.rstrip()[2:-2].split("', '")
         for _device_id in _server_whitelist:
             if _device_id == _client_device_id:
                 from getpass import getpass
