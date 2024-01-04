@@ -241,10 +241,10 @@ def ssh_config(_reconfig=False):
 # device id configuration
 def dev_id_config(_port, _username_ssh, _ip, _identity, _reconfig=False):
     if _reconfig:
-        _proceed = curses_radio(('no', 'yes'), "WARNING: ensure this sshyp client is synchronized (up-to-date) before "
-                                               "changing the device id\n\nfailure to do so may result in sync"
-                                               "hronization issues\n\nare you sure you wish to change the device id?")
-        if _proceed != 1:
+        _sure = curses_radio(('no', 'yes'), "WARNING: ensure this sshyp client is synchronized (up-to-date) before "
+                                            "changing the device id\n\nfailure to do so may result in sync"
+                                            "hronization issues\n\nare you sure you wish to change the device id?")
+        if _sure != 1:
             return
     from sshyp import copy_id_check, string_gen
     _device_id_prefix = curses_text('set this device\'s id:\n\n\n\n\n(ctrl+g/enter to confirm)\n\nimportant: this '
@@ -289,10 +289,10 @@ def refresh_encryption():
     _directory = f"{home}/.local/share/sshyp"
 
     # warn the user of potential data loss and prompt to continue
-    _proceed = curses_radio(('no', 'yes'), "WARNING: proceeding with this action will remove/overwrite any directories"
+    _sure = curses_radio(('no', 'yes'), "WARNING: proceeding with this action will remove/overwrite any directories"
                                            f" matching the following:\n\n{home}/.local/share/sshyp.old\n{home}/.local/"
                                            "share/sshyp.new\n\nare you sure you wish to re-encrypt all entries?")
-    if _proceed != 1:
+    if _sure != 1:
         return 3    
 
     # set new gpg key
