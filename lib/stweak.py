@@ -217,7 +217,7 @@ def ssh_config(_reconfig=False):
             run(('ssh-keygen', '-q', '-t', 'ed25519', '-N', _passphrase, '-f', _ssh_key))
     else:
         _ssh_key = _keys[_key_selected_num]
-    
+
     # ssh+sshync configuration
     _uiport = curses_text('enter the username, ip, and ssh port of your sshyp server:\n\n\n\n\n(ctrl+g/enter to '
                           'confirm)\n\nexample inputs:\n\n ipv4: user@10.10.10.10:22\n ipv6: user@[2000:2000:2000:2000'
@@ -300,7 +300,7 @@ def refresh_encryption():
                                         f" matching the following:\n\n{home}/.local/share/sshyp.old\n{home}/.local/"
                                         "share/sshyp.new\n\nare you sure you wish to re-encrypt all entries?")
     if _sure != 1:
-        return 3    
+        return 3
 
     # set new gpg key
     gpg_config()
@@ -319,7 +319,7 @@ def refresh_encryption():
     for _extension in ('.new', '.old'):
         if exists(f"{_directory}{_extension}"):
             rmtree(f"{_directory}{_extension}")
-    
+
     # decrypt, optimize, and re-encrypt each entry with the newly selected key
     if isdir(_directory):
         _gpg_id = sshyp_data.get('CLIENT-GENERAL', 'gpg_id')
@@ -329,13 +329,13 @@ def refresh_encryption():
                 encrypt(decrypt(f"{_root}/{_filename[:-4]}"),
                         f"{_root.replace(_directory, _directory + '.new', 1)}/{_filename[:-4]}", _gpg_id)
 
-        # create a backup of the original version and activate the new version        
+        # create a backup of the original version and activate the new version
         move(_directory, _directory + '.old')
         move(_directory + '.new', _directory)
         return 1
     else:
         return 2
-    
+
 
 # PORT START WHITELIST-SERVER
 # removes a registered device id from the server-side pool and prunes the quick-unlock whitelist
@@ -426,7 +426,7 @@ def whitelist_manage(_action, _back=False):
 # runs quick-unlock configuration menu
 def whitelist_menu():
     while True:
-        _choice = curses_radio(('setup/create pin', 'add to whitelist', 'remove from whitelist', 
+        _choice = curses_radio(('setup/create pin', 'add to whitelist', 'remove from whitelist',
                                 'BACK'), 'quick-unlock/whitelist management')
         if _choice == 0:
             whitelist_setup()
@@ -564,7 +564,7 @@ def global_menu(_scr, _device_type, _top_message):
                         dev_id_config(_port, _username_ssh, _ip, _identity)
                     # ...or ssh_error is missing
                     elif not sshyp_data.has_option('CLIENT-ONLINE', 'ssh_error'):
-                        sshyp_data.set('CLIENT-ONLINE', 'ssh_error', '1')    
+                        sshyp_data.set('CLIENT-ONLINE', 'ssh_error', '1')
                         write_config()
             _device_type = _dev_sync_types[0]
         elif _choice == 1:

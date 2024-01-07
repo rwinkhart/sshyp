@@ -232,7 +232,7 @@ def target_exists_check(_target_name, _expected_presence):
         else:
             print(f"\n\u001b[38;5;9merror: (/{_target_name}) does not exist\u001b[0m\n")
             s_exit(2)
-        
+
 
 # returns target type (entry == True, folder == False, null == None), optional errors
 def target_type_check(_target_name, _expected_type=True, _error=False):
@@ -299,7 +299,7 @@ def print_info():
               f"version 1.5.2\u001b[38;5;15;48;5;15m{18*' '}\u001b[38;5;7;48;5;8m/\u001b[0m")
         print(f"\u001b[38;5;7;48;5;8m\\\u001b[38;5;15;48;5;15m{14*' '}\u001b[38;5;15;48;5;8mthe fortified flock"
               f" update\u001b[38;5;15;48;5;15m{15*' '}\u001b[38;5;7;48;5;8m/\u001b[0m\n{_blank}")
-        print(f"\u001b[38;5;7;48;5;8m\\\u001b[38;5;15;48;5;15m{9*' '}\u001b[38;5;15;48;5;8mcopyright 2021-2024 ", 
+        print(f"\u001b[38;5;7;48;5;8m\\\u001b[38;5;15;48;5;15m{9*' '}\u001b[38;5;15;48;5;8mcopyright 2021-2024 ",
               f"randall winkhart\u001b[38;5;15;48;5;15m{9*' '}\u001b[38;5;7;48;5;8m/\u001b[0m")
         print(f"{_blank}\n{_border}\nsee https://github.com/rwinkhart/sshyp for more information\n")
     elif arguments[0] == 'license':
@@ -461,7 +461,7 @@ def rename():
             Path(f"{directory}{_new_name}").mkdir(mode=0o700, parents=True, exist_ok=True)
             run(('ssh', '-i', identity, '-p', port, f"{username_ssh}@{ip}",
                  f'python3 -c \'from pathlib import Path; Path("{directory_ssh}{entry_name}")'
-                 f'.rename(Path("{directory_ssh}{_new_name}"))\''))                 
+                 f'.rename(Path("{directory_ssh}{_new_name}"))\''))
         else:
             move(f"{directory}{entry_name}", f"{directory}{_new_name}")
     if not ssh_error:
@@ -473,7 +473,7 @@ def rename():
 def edit():
     # set to avoid PEP8 warnings
     _detail, _edit_line = None, None
-    
+
     # ensure the edit target is an entry
     target_type_check(entry_name, True, True)
 
@@ -501,7 +501,7 @@ def gen():
     _username, _url, _notes = None, None, None
     # gen update
     if arg_count == 3 and arguments[2] in ('update', '-u'):
-        # ensure the gen update target is an entry        
+        # ensure the gen update target is an entry
         target_type_check(entry_name, True, True)
         _new_lines = line_edit(decrypt(directory + entry_name, _quick_verify=quick_unlock_enabled), pass_gen(), 0)
     # gen
@@ -613,10 +613,10 @@ if __name__ == "__main__":
     try:
         # set default states
         ssh_error, success_flag, sync_flag, silent_sync, pass_show = False, False, False, False, False
-        
+
         # set to avoid PEP8 warnings
         arg_start, device_type, offline_mode_enabled = None, None, None
-        
+
         # retrieve typed argument
         arguments = argv[1:]
         arg_count = len(arguments)
@@ -716,14 +716,14 @@ if __name__ == "__main__":
                     success_flag = True
                     from stweak import wrapped_entry
                     wrapped_entry(device_type)
-       
+
             if arg_count > 0 and success_flag == 0 and arguments[0] != 'sync':
                 if arguments[0] not in ('help', '-h', 'version', '-v', 'license'):
                     extension_runner()
                 else:
                     print_info()
             elif not ssh_error:
-                if sync_flag: 
+                if sync_flag:
                     sync()
                 elif (arg_count > 0 and arguments[0] == 'sync') or (arg_count > 1 and arguments[1] == 'shear'):
                     sync('\n')

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import re
 
-targets = (('TWEAK-EXTEND-FUNCTIONS', 'stweak.py', '\n', '\n\n', ''), 
+targets = (('TWEAK-EXTEND-FUNCTIONS', 'stweak.py', '\n', '\n\n', ''),
            ('TWEAK-EXTEND-OPTION', 'stweak.py', '', '', "curses_radio(['okay'], "
             "'extension management is not supported on this platform\\\\n\\\\ninstead, you may install and manage "
             "extensions through your system package manager\\\\n\\\\nofficial extension packages are available "
