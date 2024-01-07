@@ -339,21 +339,21 @@ def refresh_encryption():
 
 # PORT START WHITELIST-SERVER
 # removes a registered device id from the server-side pool and prunes the quick-unlock whitelist
-def registered_dev_id_remover():
-    _device_ids = listdir(f"{home}/.config/sshyp/devices")
+def registered_dev_id_remover(_back=False):
+    _device_ids = listdir(f"{home}/.config/sshyp/devices") + ['BACK']
     _whitelisted_ids = listdir(f"{home}/.config/sshyp/whitelist")
-
-    _choices = _device_ids + ['BACK']
-    _del_id = curses_radio(_choices, 'registered device id to remove:')
-    if _del_id == len(_choices)-1:
-        return
-    remove(f"{home}/.config/sshyp/devices/{_device_ids[_del_id]}")
-    del _device_ids[_del_id]
-
-    # prune deleted device ids from whitelist
-    for _id in _whitelisted_ids:
-        if _id not in _device_ids:
-            remove(f"{home}/.config/sshyp/whitelist/{_id}")
+    while not _back:
+        _del_id = curses_radio(_device_ids, 'registered device id to remove:')
+        if _del_id == len(_device_ids) - 1:
+            _back = True
+        else:
+            # remove deleted device id from whitelist
+            if _device_ids[_del_id] in _whitelisted_ids:
+                remove(f"{home}/.config/sshyp/whitelist/{_whitelisted_ids[_del_id]}")
+                _whitelisted_ids = [_id for _id in _whitelisted_ids if _id != _device_ids[_del_id]]
+            # remove deleted device id from device pool
+            remove(f"{home}/.config/sshyp/devices/{_device_ids[_del_id]}")
+            del _device_ids[_del_id]
 
 
 # takes input from the user to set up quick-unlock pin
@@ -394,27 +394,33 @@ def whitelist_setup():
 
 
 # adds or removes quick-unlock whitelisted device ids
-def whitelist_manage(_action):
-    _whitelisted_ids = listdir(f"{home}/.config/sshyp/whitelist")
+def whitelist_manage(_action, _back=False):
+    _whitelisted_ids = listdir(f"{home}/.config/sshyp/whitelist") + ['BACK']
     _device_ids = listdir(f"{home}/.config/sshyp/devices")
 
-    # a value of True indicates adding
-    if _action:
-        _unwhitelisted_ids = []    
-        for _id in _device_ids:
-            if _id not in _whitelisted_ids:
-                _unwhitelisted_ids.append(_id)
-        _unwhitelisted_ids.append('BACK')
-        _add_id = curses_radio(_unwhitelisted_ids, 'id to add to whitelist:')
-        if _add_id == len(_unwhitelisted_ids)-1:
-            return
-        open(f"{home}/.config/sshyp/whitelist/{_unwhitelisted_ids[_add_id]}", 'w').write('')
-    else:
-        _whitelisted_choices = _whitelisted_ids + ['BACK']
-        _del_id = curses_radio(_whitelisted_choices, 'id to remove from whitelist:')
-        if _del_id == len(_whitelisted_choices)-1:
-            return
-        remove(f"{home}/.config/sshyp/whitelist/{_whitelisted_ids[_del_id]}")
+    _unwhitelisted_ids = []
+    for _id in _device_ids:
+        if _id not in _whitelisted_ids:
+            _unwhitelisted_ids.append(_id)
+    _unwhitelisted_ids.append('BACK')
+
+    while not _back:
+        # _action == True indicates adding
+        if _action:
+            _add_id = curses_radio(_unwhitelisted_ids, 'id to add to whitelist:')
+            if _add_id == len(_unwhitelisted_ids) - 1:
+                _back = True
+            else:
+                open(f"{home}/.config/sshyp/whitelist/{_unwhitelisted_ids[_add_id]}", 'w').write('')
+                del _unwhitelisted_ids[_add_id]
+        # _action == False indicates removing
+        else:
+            _del_id = curses_radio(_whitelisted_ids, 'id to remove from whitelist:')
+            if _del_id == len(_whitelisted_ids) - 1:
+                _back = True
+            else:
+                remove(f"{home}/.config/sshyp/whitelist/{_whitelisted_ids[_del_id]}")
+                del _whitelisted_ids[_del_id]
 
 
 # runs quick-unlock configuration menu
