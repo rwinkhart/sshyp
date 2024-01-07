@@ -31,10 +31,10 @@ def entry_list_gen(_directory=f"{home}/.local/share/sshyp/"):
             else:
                 _print_string = f"\u001b[38;5;8m{_filename[:-4]}\u001b[0m"
             # -3 instead of -4 to account for trailing space character
-            _char_counter += len(_filename)-3
+            _char_counter += len(_filename) - 3
             if _char_counter >= _width:
                 # reset _char_counter to length of first entry in new line
-                _char_counter = len(_filename)-3
+                _char_counter = len(_filename) - 3
                 print()
             print(_print_string + ' ', end='')
             _color_alternator = _color_alternator * -1
@@ -82,7 +82,7 @@ def string_gen(_complexity, _length):
     if _complexity == 's':
         _character_pool = string.ascii_letters + string.digits
     elif _complexity == 'f':
-        _character_pool = string.digits + string.ascii_letters + string.punctuation.replace('/', '').replace('\\', '')\
+        _character_pool = string.digits + string.ascii_letters + string.punctuation.replace('/', '').replace('\\', '') \
             .replace("'", '').replace('"', '').replace('`', '').replace('~', '')
     else:
         _character_pool = string.digits + string.ascii_letters + string.punctuation
@@ -201,7 +201,7 @@ def whitelist_verify(_port, _username_ssh, _ip, _client_device_id, _identity):
                 from getpass import getpass
                 _quick_unlock_password = getpass(prompt='\nquick-unlock pin: ')
                 _quick_unlock_password_excluded = \
-                    run(('ssh', '-i', _identity, '-p',  _port, f"{_username_ssh}@{_ip}",
+                    run(('ssh', '-i', _identity, '-p', _port, f"{_username_ssh}@{_ip}",
                          f"gpg --pinentry-mode loopback --passphrase '{_quick_unlock_password}' "
                          f"-qd ~/.config/sshyp/excluded.gpg"), stdout=PIPE, text=True).stdout.rstrip()
                 while _i < len(_quick_unlock_password_excluded):
@@ -287,20 +287,20 @@ def copy_id_check(_port, _username_ssh, _ip, _client_device_id, _identity, _sshy
 # prints help text based on argument
 def print_info():
     if arguments[0] in ('version', '-v'):
-        _blank = '\u001b[38;5;7;48;5;8m\\\u001b[38;5;15;48;5;15m' + 55*' ' + '\u001b[38;5;7;48;5;8m/\u001b[0m'
-        _border = '\u001b[38;5;7;48;5;8m' + 14*'<>' + '-' + 14*'<>' + '\u001b[0m\n'
+        _blank = '\u001b[38;5;7;48;5;8m\\\u001b[38;5;15;48;5;15m' + 55 * ' ' + '\u001b[38;5;7;48;5;8m/\u001b[0m'
+        _border = '\u001b[38;5;7;48;5;8m' + 14 * '<>' + '-' + 14 * '<>' + '\u001b[0m\n'
         print(f"""\nsshyp is a simple, self-hosted, sftp-synchronized\npassword manager for unix(-like) systems\n
-{9*' '}..{15*' '}\u001b[38;5;12m♥♥ \u001b[38;5;9m♥♥\u001b[0m{15*' '}..
-{8*' '}/()\\''.''.{7*' '}\u001b[38;5;12m♥♥♥\u001b[0m♥♥♥♥\u001b[0m{7*' '}.''.''/()\\{3*' '}_)
-{5*' '}_.{3*' '}:{7*' '}*{7*' '}\u001b[38;5;9m♥♥♥♥♥\u001b[0m{7*' '}*{7*' '}:{3*' '}<[◎]|_|=
- }}-}}-*]{4*' '}`..'..'{9*' '}\u001b[0m♥♥♥\u001b[0m{9*' '}`..'..'{6*' '}|
-{4*' '}◎-◎{4*' '}//{3*' '}\\\\{10*' '}\u001b[38;5;9m♥\u001b[0m{10*' '}//{3*' '}\\\\{5*' '}/|\\""")
-        print(f"{_border}{_blank}\n\u001b[38;5;7;48;5;8m\\\u001b[38;5;15;48;5;15m{18*' '}\u001b[38;5;15;48;5;8msshyp "
-              f"version 1.5.2\u001b[38;5;15;48;5;15m{18*' '}\u001b[38;5;7;48;5;8m/\u001b[0m")
-        print(f"\u001b[38;5;7;48;5;8m\\\u001b[38;5;15;48;5;15m{14*' '}\u001b[38;5;15;48;5;8mthe fortified flock"
-              f" update\u001b[38;5;15;48;5;15m{15*' '}\u001b[38;5;7;48;5;8m/\u001b[0m\n{_blank}")
-        print(f"\u001b[38;5;7;48;5;8m\\\u001b[38;5;15;48;5;15m{9*' '}\u001b[38;5;15;48;5;8mcopyright 2021-2024 ",
-              f"randall winkhart\u001b[38;5;15;48;5;15m{9*' '}\u001b[38;5;7;48;5;8m/\u001b[0m")
+{9 * ' '}..{15 * ' '}\u001b[38;5;12m♥♥ \u001b[38;5;9m♥♥\u001b[0m{15 * ' '}..
+{8 * ' '}/()\\''.''.{7 * ' '}\u001b[38;5;12m♥♥♥\u001b[0m♥♥♥♥\u001b[0m{7 * ' '}.''.''/()\\{3 * ' '}_)
+{5 * ' '}_.{3 * ' '}:{7 * ' '}*{7 * ' '}\u001b[38;5;9m♥♥♥♥♥\u001b[0m{7 * ' '}*{7 * ' '}:{3 * ' '}<[◎]|_|=
+ }}-}}-*]{4 * ' '}`..'..'{9 * ' '}\u001b[0m♥♥♥\u001b[0m{9 * ' '}`..'..'{6 * ' '}|
+{4 * ' '}◎-◎{4 * ' '}//{3 * ' '}\\\\{10 * ' '}\u001b[38;5;9m♥\u001b[0m{10 * ' '}//{3 * ' '}\\\\{5 * ' '}/|\\""")
+        print(f"{_border}{_blank}\n\u001b[38;5;7;48;5;8m\\\u001b[38;5;15;48;5;15m{18 * ' '}\u001b[38;5;15;48;5;8msshyp "
+              f"version 1.5.2\u001b[38;5;15;48;5;15m{18 * ' '}\u001b[38;5;7;48;5;8m/\u001b[0m")
+        print(f"\u001b[38;5;7;48;5;8m\\\u001b[38;5;15;48;5;15m{14 * ' '}\u001b[38;5;15;48;5;8mthe fortified flock"
+              f" update\u001b[38;5;15;48;5;15m{15 * ' '}\u001b[38;5;7;48;5;8m/\u001b[0m\n{_blank}")
+        print(f"\u001b[38;5;7;48;5;8m\\\u001b[38;5;15;48;5;15m{9 * ' '}\u001b[38;5;15;48;5;8mcopyright 2021-2024 ",
+              f"randall winkhart\u001b[38;5;15;48;5;15m{9 * ' '}\u001b[38;5;7;48;5;8m/\u001b[0m")
         print(f"{_blank}\n{_border}\nsee https://github.com/rwinkhart/sshyp for more information\n")
     elif arguments[0] == 'license':
         print('\nThis program is free software: you can redistribute it and/or modify it under the terms of\nversion 3 '
@@ -312,31 +312,31 @@ def print_info():
         print(f"""\n\u001b[1musage:\u001b[0m sshyp /<entry name> add <option>\u001b[0m\n
 \u001b[1moptions:\u001b[0m
  add:
-  password/-p{12*' '}add a password entry
-  note/-n{16*' '}add a note entry
-  folder/-f{14*' '}add a new folder for entries\n""")
+  password/-p{12 * ' '}add a password entry
+  note/-n{16 * ' '}add a note entry
+  folder/-f{14 * ' '}add a new folder for entries\n""")
     elif arguments[0] == 'edit' and device_type == 'client':
         print(f"""\n\u001b[1musage:\u001b[0m sshyp /<entry name> edit <option>\u001b[0m\n
 \u001b[1moptions:\u001b[0m
  edit:
-  rename/relocate/-r{5*' '}rename or relocate an entry
-  username/-u{12*' '}change the username of an entry
-  password/-p{12*' '}change the password of an entry
-  url/-l{17*' '}change the url attached to an entry
-  note/-n{16*' '}change the note attached to an entry\n""")
+  rename/relocate/-r{5 * ' '}rename or relocate an entry
+  username/-u{12 * ' '}change the username of an entry
+  password/-p{12 * ' '}change the password of an entry
+  url/-l{17 * ' '}change the url attached to an entry
+  note/-n{16 * ' '}change the note attached to an entry\n""")
     elif arguments[0] == 'copy' and device_type == 'client':
         print(f"""\n\u001b[1musage:\u001b[0m sshyp /<entry name> copy <option>\u001b[0m\n
 \u001b[1moptions:\u001b[0m
  copy:
-  username/-u{12*' '}copy the username of an entry to your clipboard
-  password/-p{12*' '}copy the password of an entry to your clipboard
-  url/-l{17*' '}copy the url of an entry to your clipboard
-  note/-n{16*' '}copy the note of an entry to your clipboard\n""")
+  username/-u{12 * ' '}copy the username of an entry to your clipboard
+  password/-p{12 * ' '}copy the password of an entry to your clipboard
+  url/-l{17 * ' '}copy the url of an entry to your clipboard
+  note/-n{16 * ' '}copy the note of an entry to your clipboard\n""")
     elif arguments[0] == 'gen' and device_type == 'client':
         print(f"""\n\u001b[1musage:\u001b[0m sshyp /<entry name> gen [option]\u001b[0m\n
 \u001b[1moptions:\u001b[0m
  gen:
-  update/-u{14*' '}generate a password for an existing entry\n""")
+  update/-u{14 * ' '}generate a password for an existing entry\n""")
     else:
         print("\n\u001b[1msshyp ", "copyright (c) 2021-2024 ", """randall winkhart\u001b[0m
 this is free software, and you are welcome to redistribute it under certain conditions;
@@ -344,44 +344,44 @@ this program comes with absolutely no warranty; type 'sshyp license' for details
         if device_type == 'client':
             print(f"""\n\u001b[1musage:\u001b[0m sshyp [/<entry name> [argument] [option]] | [argument]\n
 \u001b[1marguments:\u001b[0m
- help/-h{17*' '}bring up this menu
- version/-v{14*' '}display sshyp version info
- init{20*' '}set up sshyp
- tweak{19*' '}change configuration options/manage extensions and updates
- add{21*' '}add an entry
- gen{21*' '}generate a new password
- edit{20*' '}edit an existing entry
- copy{20*' '}copy details of an entry to your clipboard
- shear{19*' '}delete an existing entry
- sync{20*' '}manually sync the entry directory via sshync
+ help/-h{17 * ' '}bring up this menu
+ version/-v{14 * ' '}display sshyp version info
+ init{20 * ' '}set up sshyp
+ tweak{19 * ' '}change configuration options/manage extensions and updates
+ add{21 * ' '}add an entry
+ gen{21 * ' '}generate a new password
+ edit{20 * ' '}edit an existing entry
+ copy{20 * ' '}copy details of an entry to your clipboard
+ shear{19 * ' '}delete an existing entry
+ sync{20 * ' '}manually sync the entry directory via sshync
 \n\u001b[1moptions:\u001b[0m
  add:
-  password/-p{12*' '}add a password entry
-  note/-n{16*' '}add a note entry
-  folder/-f{14*' '}add a new folder for entries
+  password/-p{12 * ' '}add a password entry
+  note/-n{16 * ' '}add a note entry
+  folder/-f{14 * ' '}add a new folder for entries
  edit:
-  rename/relocate/-r{5*' '}rename or relocate an entry
-  username/-u{12*' '}change the username of an entry
-  password/-p{12*' '}change the password of an entry
-  url/-l{17*' '}change the url attached to an entry
-  note/-n{16*' '}change the note attached to an entry
+  rename/relocate/-r{5 * ' '}rename or relocate an entry
+  username/-u{12 * ' '}change the username of an entry
+  password/-p{12 * ' '}change the password of an entry
+  url/-l{17 * ' '}change the url attached to an entry
+  note/-n{16 * ' '}change the note attached to an entry
  copy:
-  username/-u{12*' '}copy the username of an entry to your clipboard
-  password/-p{12*' '}copy the password of an entry to your clipboard
-  url/-l{17*' '}copy the url of an entry to your clipboard
-  note/-n{16*' '}copy the note of an entry to your clipboard
+  username/-u{12 * ' '}copy the username of an entry to your clipboard
+  password/-p{12 * ' '}copy the password of an entry to your clipboard
+  url/-l{17 * ' '}copy the url of an entry to your clipboard
+  note/-n{16 * ' '}copy the note of an entry to your clipboard
  gen:
-  update/-u{14*' '}generate a password for an existing entry
+  update/-u{14 * ' '}generate a password for an existing entry
 \n\u001b[1mtip 1:\u001b[0m you can quickly read an entry with 'sshyp /<entry name>'
 \u001b[1mtip 2:\u001b[0m type 'sshyp' to view a list of saved entries\n""")
         # PORT START HELP-SERVER
         else:
             print(f"""\n\u001b[1musage:\u001b[0m sshyp <argument>\n
 \u001b[1marguments:\u001b[0m
- help/-h{17*' '}bring up this menu
- version/-v{14*' '}display sshyp version info
- init{20*' '}set up sshyp
- tweak{19*' '}change configuration options/manage extensions and updates\n""")
+ help/-h{17 * ' '}bring up this menu
+ version/-v{14 * ' '}display sshyp version info
+ init{20 * ' '}set up sshyp
+ tweak{19 * ' '}change configuration options/manage extensions and updates\n""")
         # PORT END HELP-SERVER
 
 
@@ -627,7 +627,7 @@ if __name__ == "__main__":
                 arg_start = 1
                 entry_name = arguments[0].strip('/')
                 # determine whether to show passwords in entry previews
-                if arg_count > 1 and arguments[arg_count-1] in ('--show', '-s'):
+                if arg_count > 1 and arguments[arg_count - 1] in ('--show', '-s'):
                     del arguments[-1]
                     arg_count -= 1
                     pass_show = True
@@ -659,9 +659,9 @@ if __name__ == "__main__":
                         if ssh_error:
                             ssh_error = copy_id_check(port, username_ssh, ip, client_device_id, identity, sshyp_data)
             except (FileNotFoundError, NoSectionError, NoOptionError):
-                print(f"\n{73*'!'}")
+                print(f"\n{73 * '!'}")
                 print("not all necessary configurations have been made - please run 'sshyp init'")
-                print(f"{73*'!'}\n")
+                print(f"{73 * '!'}\n")
                 s_exit(1)
         else:
             from stweak import wrapped_entry

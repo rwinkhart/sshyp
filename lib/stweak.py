@@ -44,7 +44,7 @@ def curses_radio(_options, _pretext):
         # iterate through lines, splitting further (wrapping) as needed, to add to curses window
         _current_line = 0
         for _line in _pretext_lines:
-            if _current_line <= _height-4:
+            if _current_line <= _height - 4:
                 _button_gen = True
                 while len(_line) > _width:
                     stdscr.addstr(_current_line, 0, _line[:_width])
@@ -54,7 +54,7 @@ def curses_radio(_options, _pretext):
                 _current_line += 1
             else:
                 _button_gen = False
-                stdscr.addstr(_current_line, 0, '# warning: re-size terminal to see more information'[:_width-1])
+                stdscr.addstr(_current_line, 0, '# warning: re-size terminal to see more information'[:_width - 1])
                 _current_line += 1
                 break
 
@@ -68,7 +68,7 @@ def curses_radio(_options, _pretext):
                     else:
                         stdscr.addstr(_y, 0, "[ ] " + _option)
                 else:
-                    stdscr.addstr(_y-1, 0, '# warning: re-size terminal to see more information')
+                    stdscr.addstr(_y - 1, 0, '# warning: re-size terminal to see more information')
                     break
 
         # update _selected based on user input
@@ -93,8 +93,8 @@ def curses_text(_pretext):
     stdscr.clear()
     stdscr.addstr(0, 0, _pretext)
     _width = stdscr.getmaxyx()[1]
-    _editwin = newwin(1, _width-2, 3, 1)
-    rectangle(stdscr, 2, 0, 4, _width-1)
+    _editwin = newwin(1, _width - 2, 3, 1)
+    rectangle(stdscr, 2, 0, 4, _width - 1)
     stdscr.refresh()
     _box = Textbox(_editwin)
     # let the user edit until ctrl+g/enter is struck
@@ -139,7 +139,7 @@ def gpg_config():
         _named_uid_list.append(_uid.split(':')[9].replace('\\x3a', ':').replace('\\x5c', '\\'))
     _named_uid_list.append('auto-generate')
     _gpg_id_sel = curses_radio(_named_uid_list, 'gpg key selection')
-    if _gpg_id_sel == len(_named_uid_list)-1:
+    if _gpg_id_sel == len(_named_uid_list) - 1:
         if not isfile(f"{home}/.config/sshyp/gpg-gen"):
             open(f"{home}/.config/sshyp/gpg-gen", 'w').writelines([
                 'Key-Type: 1\n', 'Key-Length: 4096\n', 'Key-Usage: sign encrypt\n', 'Name-Real: sshyp\n',
@@ -205,9 +205,9 @@ def ssh_config(_reconfig=False):
     if _reconfig:
         _keys.append('BACK')
     _key_selected_num = curses_radio(_keys, 'which private ssh key would you like to use for sshyp?')
-    if _reconfig and _key_selected_num == len(_keys)-1:
+    if _reconfig and _key_selected_num == len(_keys) - 1:
         return
-    _gen_index = len(_keys)-2
+    _gen_index = len(_keys) - 2
     if _key_selected_num >= _gen_index:
         _ssh_key = expanduser(curses_text('enter the location for your private ssh key:\n\n\n\n\n(ctrl+g/enter to '
                                           'confirm)\n\nexample input:\n\n~/.ssh/privkey'))
@@ -359,7 +359,7 @@ def registered_dev_id_remover(_back=False):
 # takes input from the user to set up quick-unlock pin
 def whitelist_setup():
     _gpg_password_temp = str(curses_text('full gpg passphrase:\n\n\n\n\n(ctrl+g/enter to confirm)'))
-    _half_length = int(len(_gpg_password_temp)/2)
+    _half_length = int(len(_gpg_password_temp) / 2)
     try:
         _short_password_length = int(curses_text(f"quick unlock pin length ({_half_length}):\n\n\n\n\n(ctrl+g/enter "
                                                  "to confirm)\n\npin must be half the length of the gpg passphrase "
@@ -370,7 +370,7 @@ def whitelist_setup():
         _short_password_length = _half_length
     _i, _quick_unlock_password, _quick_unlock_password_excluded = 0, '', ''
     for _char in _gpg_password_temp:
-        if _i % 2 == 1 and _i < _short_password_length*2:
+        if _i % 2 == 1 and _i < _short_password_length * 2:
             _quick_unlock_password += _char
         else:
             _quick_unlock_password_excluded += _char
@@ -453,10 +453,10 @@ def extension_downloader():
     _extensions = _pointer.sections()
     _extensions.append('BACK')
     _choice = curses_radio(_extensions, 'select an extension for more info')
-    if _choice == len(_extensions)-1:
+    if _choice == len(_extensions) - 1:
         return False
     _selected = _extensions[_choice]
-    _divider = (stdscr.getmaxyx()[1])*'-'
+    _divider = (stdscr.getmaxyx()[1]) * '-'
     _choice = curses_radio(('no', 'yes'), '# description\n' + _divider + '\n\n' + _pointer.get(_selected, 'desc') +
                            '\n\n# usage\n' + _divider + '\n\n' + _pointer.get(_selected, 'usage').replace('<br>', '\n')
                            + '\n\n' + _divider + '\n\ninstall ' + _selected + '?')
@@ -480,7 +480,7 @@ def extension_remover():
         _installed.append(_extension[:-4])
     _installed.append('BACK')
     _choice = curses_radio(_installed, 'select an extension to uninstall')
-    if _choice == len(_installed)-1:
+    if _choice == len(_installed) - 1:
         return False
     _sure = curses_radio(('no', 'yes'), f"are you sure you want to remove {_installed[_choice]}?")
     if _sure == 0:
@@ -645,7 +645,6 @@ def initial_setup(_scr):
 
         # online (synchronized mode) configuration
         if _dev_sync_types[1] != 'true':
-
             # ssh+sshync configuration
             _ip, _username_ssh, _port, _identity = ssh_config()
 
