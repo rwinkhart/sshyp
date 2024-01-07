@@ -213,7 +213,8 @@ def ssh_config(_reconfig=False):
                                           'confirm)\n\nexample input:\n\n~/.ssh/privkey'))
         if _key_selected_num == _gen_index:
             _passphrase = curses_text('enter your desired ssh keyfile passphrase:\n\n\n\n\n(ctrl+g/enter to confirm)'
-                                      '\n\ntip: you can leave this blank to use the keyfile without a passphrase')
+                                      '\n\nnote: it is recommended to leave this blank and to use the keyfile without '
+                                      'a passphrase (the keyfile itself serves as your identity)')
             run(('ssh-keygen', '-q', '-t', 'ed25519', '-N', _passphrase, '-f', _ssh_key))
     else:
         _ssh_key = _keys[_key_selected_num]
