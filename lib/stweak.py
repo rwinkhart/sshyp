@@ -203,7 +203,7 @@ def ssh_config(_reconfig=False):
     _keys.extend(['auto-generate', 'other (type the location)'])
     # append a back button if launched optionally
     if _reconfig:
-        _keys.extend(['BACK'])
+        _keys.append('BACK')
     _key_selected_num = curses_radio(_keys, 'which private ssh key would you like to use for sshyp?')
     if _reconfig and _key_selected_num == len(_keys)-1:
         return
@@ -534,7 +534,7 @@ def global_menu(_scr, _device_type, _top_message):
                              '[OPTIONAL] extension management'])
         else:
             _options.extend(['remove registered device ids', 'manage quick-unlock/whitelist'])
-        _options.extend(['EXIT/DONE'])
+        _options.append('EXIT/DONE')
         _choice += curses_radio(_options, _top_message)
 
         if _choice == 0:
