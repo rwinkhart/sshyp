@@ -343,7 +343,9 @@ def registered_dev_id_remover(_back=False):
     _device_ids = listdir(f"{home}/.config/sshyp/devices") + ['BACK']
     _whitelisted_ids = listdir(f"{home}/.config/sshyp/whitelist")
     while not _back:
-        _del_id = curses_radio(_device_ids, 'registered device id to remove:')
+        _del_id = curses_radio(_device_ids, 'WARNING: only remove registered device ids if they are no longer in use'
+                                            '\n\nthe removal of an active device id will result in the malfunction of '
+                                            'the device still using the removed id\n\nregistered device id to remove:')
         if _del_id == len(_device_ids) - 1:
             _back = True
         else:
