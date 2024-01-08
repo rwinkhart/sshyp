@@ -60,11 +60,11 @@ def entry_reader(_decrypted_entry):
                 print(f"\u001b[38;5;7;48;5;8mpassword:\u001b[0m\n{_entry_password}\n")
             elif _num == 2 and _decrypted_entry[2] != '':
                 print(f"\u001b[38;5;7;48;5;8murl:\u001b[0m\n{_decrypted_entry[_num]}\n")
-            elif _num >= 3 and _decrypted_entry[_num] != '' and _notes_flag != 1:
+            elif _notes_flag == 1 and _num >= 3:
+                print(_decrypted_entry[_num])
+            elif _notes_flag != 1 and _num >= 3 and _decrypted_entry[_num] != '':
                 _notes_flag = 1
                 print('\u001b[38;5;7;48;5;8mnotes:\u001b[0m\n' + _decrypted_entry[_num])
-            elif _num >= 3 and _notes_flag == 1:
-                print(_decrypted_entry[_num])
             if _notes_flag == 1:
                 try:
                     _line_test = _decrypted_entry[_num + 1]
