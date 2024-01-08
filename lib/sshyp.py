@@ -24,6 +24,8 @@ def entry_list_gen(_directory=f"{home}/.local/share/sshyp/"):
         _color_alternator = 1
         if _ran:
             print(f"\n\n\u001b[38;5;7;48;5;8m{_root.replace(f'{home}/.local/share/sshyp', '', 1)}/\u001b[0m")
+        elif _root == f"{home}/.local/share/sshyp/" and len(_files) > 0:
+            print(f"\n\n\u001b[38;5;7;48;5;8m/\u001b[0m")
         _char_counter = 0
         for _filename in sorted(_files):
             if _color_alternator > 0:
