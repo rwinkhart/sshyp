@@ -258,14 +258,23 @@ def dev_id_config(_port, _username_ssh, _ip, _identity, _reconfig=False):
     for _id in _device_id_list:
         remove(f"{home}/.config/sshyp/devices/{_id}")
     open(f"{home}/.config/sshyp/devices/{_device_id}", 'w')
-    # test server connection and attempt to register device id - copy_id_check() returns false if successful
-    if not copy_id_check(_port, _username_ssh, _ip, _device_id, _identity, sshyp_data):
-        # remove old device id from registered pool and whitelist
-        run(('ssh', '-o', 'ConnectTimeout=3', '-i', _identity, '-p', _port, f"{_username_ssh}@{_ip}",
-             'python3 -c \'from pathlib import Path; '
-             f'Path("/home/{_username_ssh}/.config/sshyp/devices/{_device_id_list[0]}").unlink(missing_ok=True); '
-             f'Path("/home/{_username_ssh}/.config/sshyp/whitelist/{_device_id_list[0]}").unlink(missing_ok=True)\''),
-            stderr=DEVNULL, stdout=DEVNULL)
+    # test server connection and attempt to register device id - only run if _reconfig is True, since the keyfile
+    # needs to be registered with the server before a successful connection can be made
+    if _reconfig:
+        # copy_id_check() returns false if successful
+        if not copy_id_check(_port, _username_ssh, _ip, _device_id, _identity, sshyp_data):
+            # remove old device id from registered pool and whitelist
+            run(('ssh', '-o', 'ConnectTimeout=3', '-i', _identity, '-p', _port, f"{_username_ssh}@{_ip}",
+                 'python3 -c \'from pathlib import Path; '
+                 f'Path("/home/{_username_ssh}/.config/sshyp/devices/{_device_id_list[0]}").unlink(missing_ok=True); '
+                 f'Path("/home/{_username_ssh}/.config/sshyp/whitelist/{_device_id_list[0]}")'
+                 f'.unlink(missing_ok=True)\''), stderr=DEVNULL, stdout=DEVNULL)
+    else:
+        sshyp_data.set('CLIENT-ONLINE', 'ssh_error', 'true')
+        write_config()
+        curses_radio(['okay'], 'this device will be registered with the server upon the first successful sync\n\n'
+                               'you can force this now by running "sshyp sync"\n\nif you have not done so already, '
+                               'ensure your ssh pubkey has been appended to the server\'s authorized_keys file!')
 
 
 # quick-unlock configuration
