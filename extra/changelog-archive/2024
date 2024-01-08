@@ -1,12 +1,24 @@
 sshyp v1.5.2
-release date tbd
+01/07/2024
 
 the fortified flock update - patch two
 
-this release focuses on fixing visual bugs, tweak/init menu crashes, clipboard oddities, and Alpine Linux bugs
+this release focuses on fixing various bugs, crashes, and visual oddities;
+additionally, the new-user setup experience has been vastly improved
+
+compatibility-breaking changes:
+
+- this release is fully compatible with sshyp v1.5.0-v1.5.1
+- the minimum Python version has been raised from Python 3.7 to Python 3.8
+    ^ this was needed for the new device id changing behavior
+    ^ Python 3.7 no longer receives security updates, so this should have minimal impact
+    ^ please create an issue on GitHub if any Python version (3.8 or newer) does not work as intended
 
 user-facing features:
 
+- registered device ids can now be removed from the server tweak menu
+    ^ all device id menus now stay open until the user manually exits
+- changing a client's device id now attempts to automatically remove the previous id from the server
 - the extension downloader now supports showing multiple lines of usage information
     ^ sshyp-mfa is taking advantage of this to display the info from the old man page
 - basic tweak/init menu text wrapping and terminal-resizing has been added
@@ -14,10 +26,16 @@ user-facing features:
     this resizing can be done in real time without restarting sshyp (layout dynamically adjusts)
     ^ this avoids crashes on large radio menus in small terminals (crashes are still possible, but
     only on unreasonably small terminals - this will probably stay the way it is now)
+- ssh connections are no longer made from the init menu
+    ^ this is to give the user time to register their ssh pubkey with the server
 - the user is now warned that gpg key generation may take time and that sshyp should not be terminated
+- the user is now warned about risks associated with changing or removing active device ids
+- back buttons have been added to menus that were missing a safe way to exit
 
 fixes/optimizations:
 
+- quick-unlock has been fixed - invalid pins have been generated since v1.5.0
+    ^ if quick-unlock is not working for you, re-generate your pin after this update!
 - extension removal now works on Busybox environments (Alpine Linux)
 - instead of crashing with an unhelpful error, sshyp now warns if a valid pinentry program is not found (gpg)
     ^ affects some Alpine Linux 3.19 base installs (pinentry does not always get installed with gpg)
@@ -33,3 +51,10 @@ fixes/optimizations:
     ^ better utilization of full terminal width
     ^ less prone to splitting entry names in half (should be impossible now)
     ^ no longer crashes on small terminals
+- multi-word device ids can now verify via quick-unlock
+- various language standardization changes
+    ^ all back buttons in menus are now named "BACK"
+    ^ all mentions of device ids are now referred to as "ids", rather than "names"
+    ^ various non-user-facing variable renamings have also been made
+- various menu helptext have been made more clear
+    ^ this includes quick-unlock configuration, ssh configuration, device id configuration, and more
