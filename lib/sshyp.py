@@ -422,7 +422,7 @@ def add_entry():
         else:
             _note = ''
     print('\n\u001b[1mentry preview:\u001b[0m')
-    entry_reader([_password, _username, _url, _note])
+    entry_reader([_password, _username, _url] + _note.split('\n'))
     encrypt([_password, _username, _url, _note], directory + entry_name, gpg_id)
 
 
@@ -515,7 +515,7 @@ def gen():
             _note = edit_note([])
         else:
             _note = ''
-        _new_lines = [_password, _username, _url, _note]
+        _new_lines = [_password, _username, _url] + _note.split('\n')
     print('\n\u001b[1mentry preview:\u001b[0m')
     entry_reader(_new_lines)
     encrypt(_new_lines, directory + entry_name, gpg_id)
