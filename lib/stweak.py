@@ -362,14 +362,14 @@ def registered_dev_id_remover(_back=False):
 # takes input from the user to set up quick-unlock pin
 def whitelist_setup():
     _gpg_password_temp = str(curses_text('full gpg passphrase:\n\n\n\n\n(ctrl+g/enter to confirm)'))
-    _half_length = int(len(_gpg_password_temp) / 2)
+    _half_length = len(_gpg_password_temp) // 2
     try:
         _short_password_length = int(curses_text(f"quick unlock pin length ({_half_length}):\n\n\n\n\n(ctrl+g/enter "
                                                  "to confirm)\n\nnote: do NOT enter your desired pin - this is simply "
                                                  "an integer used to determine the length of the auto-generated pin"
                                                  "\n\npin must be half the length of the gpg passphrase or less and "
-                                                 "cannot be a negative number"))
-        if not 0 <= _short_password_length <= _half_length:
+                                                 "must be greater than 0"))
+        if not 0 < _short_password_length <= _half_length:
             _short_password_length = _half_length
     except ValueError:
         _short_password_length = _half_length
@@ -394,7 +394,7 @@ def whitelist_setup():
 
     # encrypt excluded with the assembly key
     from sshyp import encrypt
-    encrypt(_quick_unlock_password_excluded, f"{home}/.config/sshyp/excluded", _gpg_id)
+    encrypt([_quick_unlock_password_excluded], f"{home}/.config/sshyp/excluded", _gpg_id)
     curses_radio(['okay, I have it memorized'], f"your quick-unlock pin: {_quick_unlock_password}")
 
 
