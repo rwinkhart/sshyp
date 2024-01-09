@@ -21,6 +21,7 @@ _create_generic_linux() {
     cd port-jobs
     ./CLIPTOOL.py LINUX
     ./CLIPBOARD.py LINUX
+    ./CHOWN.py
     ./UNAME.py LINUX
     ./COMMENTS.py ALL
     ./BLANKS.py
@@ -158,6 +159,7 @@ urls {
     ./RMEXTMAN.py
     ./CLIPTOOL.py
     ./CLIPBOARD.py HAIKU
+    ./CHOWN.py
     ./UNAME.py TMP
     ./COMMENTS.py ALL
     ./BLANKS.py
@@ -200,6 +202,7 @@ _create_deb() {
         ./CLIPBOARD.py WSL
         special=WSL-ONLY-DEBIAN
     fi
+    ./CHOWN.py
     ./UNAME.py LINUX
     ./COMMENTS.py ALL
     ./BLANKS.py
@@ -253,6 +256,7 @@ _create_termux() {
     ./RMEXTMAN.py
     ./CLIPTOOL.py
     ./CLIPBOARD.py TERMUX
+    ./CHOWN.py
     ./UNAME.py TERMUX
     ./COMMENTS.py ALL
     ./BLANKS.py
@@ -326,6 +330,7 @@ cp -r %%{_sourcedir}/usr %%{buildroot}
     cd port-jobs
     ./CLIPTOOL.py LINUX
     ./CLIPBOARD.py LINUX
+    ./CHOWN.py
     ./UNAME.py LINUX
     ./COMMENTS.py ALL
     ./BLANKS.py
@@ -390,6 +395,7 @@ printf "/usr/bin/sshyp
     cd port-jobs
     ./CLIPTOOL.py LINUX
     ./CLIPBOARD.py BSD
+    ./CHOWN.py BSD
     ./UNAME.py TMP
     ./COMMENTS.py ALL
     ./BLANKS.py
