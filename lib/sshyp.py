@@ -138,14 +138,14 @@ def edit_note(_note_lines, _exit_on_match=False):
     return _new_note
 
 
-# encrypts an entry and cleans up the temporary files
+# encrypts an entry
 def encrypt(_entry_data, _entry_dir, _gpg_id):
     _bytes_data = '\n'.join(_entry_data).rstrip().encode()
     _encrypted_data = run(('gpg', '-qr', str(_gpg_id), '-e'), input=_bytes_data, stdout=PIPE).stdout
     open(_entry_dir + '.gpg', 'wb').write(_encrypted_data)
 
 
-# decrypts an entry to a temporary directory
+# decrypts an entry and returns its contents
 def decrypt(_entry_dir, _quick_verify=None, _quick_pass=None):
     _contents = None
 
@@ -253,13 +253,14 @@ def target_type_check(_target_name, _expected_type=True, _error=False):
         s_exit(2)
 
 
-# ensures an edited entry is optimized for best compatibility
-def line_edit(_lines, _edit_data, _edit_line):
+# ensures an entry has enough lines to complete an edit and optionally carries out the edit
+def line_edit(_lines, _edit_line, _edit_data=None):
     # ensure enough lines are present for edited field
     while len(_lines) < _edit_line + 1:
         _lines.append('')
-    # write the edited field
-    _lines[_edit_line] = _edit_data.rstrip()
+    if _edit_data is not None:
+        # write the edited field
+        _lines[_edit_line] = _edit_data.rstrip()
     return _lines
 
 
@@ -488,10 +489,10 @@ def edit():
         _detail, _edit_line = str(input('\nurl: ')), 2
     if arguments[2] in ('note', '-n'):
         _old_lines = decrypt(directory + entry_name, _quick_verify=quick_unlock_enabled)
-        _new_lines = _old_lines[0:3] + edit_note(_old_lines[3:], True).split('\n')
+        # pass 2 as _edit_line to simulate a full entry minus notes so that notes are appended correctly
+        _new_lines = line_edit(_old_lines[0:3], 2) + edit_note(_old_lines[3:], True).split('\n')
     else:
-        _new_lines = line_edit(decrypt(directory + entry_name, _quick_verify=quick_unlock_enabled), _detail,
-                               _edit_line)
+        _new_lines = line_edit(decrypt(directory + entry_name, _quick_verify=quick_unlock_enabled), _edit_line, _detail)
     print('\n\u001b[1mentry preview:\u001b[0m')
     entry_reader(_new_lines)
     encrypt(_new_lines, directory + entry_name, gpg_id)
@@ -505,7 +506,7 @@ def gen():
     if arg_count == 3 and arguments[2] in ('update', '-u'):
         # ensure the gen update target is an entry
         target_type_check(entry_name, True, True)
-        _new_lines = line_edit(decrypt(directory + entry_name, _quick_verify=quick_unlock_enabled), pass_gen(), 0)
+        _new_lines = line_edit(decrypt(directory + entry_name, _quick_verify=quick_unlock_enabled), 0, pass_gen())
     # gen
     else:
         # make sure the gen target does not already exist
