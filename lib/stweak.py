@@ -718,7 +718,12 @@ def wrapped_entry(_gm_device_type, _gm_top_message='configuration options:'):
                 # install with privilege escalation (outside of curses)
                 from tempfile import gettempdir
                 _exe_dir, _ini_dir = f"{gettempdir()}/sshyp_exe", f"{gettempdir()}/sshyp_ini"
-                run((_escalator, 'chown', 'root:root', _exe_dir, _ini_dir))
+                # PORT START TWEAK-EXT-CHOWN
+                if uname()[0] == 'FreeBSD':
+                    run((_escalator, 'chown', 'root:wheel', _exe_dir, _ini_dir))
+                else:
+                    run((_escalator, 'chown', 'root:root', _exe_dir, _ini_dir))
+                # PORT END TWEAK-EXT-CHOWN
                 run((_escalator, 'mv', _exe_dir, f"/usr/lib/sshyp/{_ext_name}"))
                 run((_escalator, 'mv', _ini_dir, f"/usr/lib/sshyp/extensions/{_ext_name}.ini"))
             else:
