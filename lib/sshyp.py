@@ -25,7 +25,7 @@ def entry_list_gen(_directory=f"{home}/.local/share/sshyp/"):
         if _ran:
             print(f"\n\n\u001b[38;5;7;48;5;8m{_root.replace(f'{home}/.local/share/sshyp', '', 1)}/\u001b[0m")
         elif _root == f"{home}/.local/share/sshyp/" and len(_files) > 0:
-            print(f"\n\n\u001b[38;5;7;48;5;8m/\u001b[0m")
+            print("\n\n\u001b[38;5;7;48;5;8m/\u001b[0m")
         _char_counter = 0
         for _filename in sorted(_files):
             if _color_alternator > 0:
@@ -52,7 +52,7 @@ def entry_reader(_decrypted_entry):
     if pass_show:
         _entry_password = f'\u001b[38;5;10m{_decrypted_entry[0]}\u001b[0m'
     else:
-        _entry_password = f'\u001b[38;5;3mend command in "--show" or "-s" to view\u001b[0m'
+        _entry_password = '\u001b[38;5;3mend command in "--show" or "-s" to view\u001b[0m'
     print()
     for _num in range(len(_decrypted_entry)):
         try:
@@ -69,7 +69,7 @@ def entry_reader(_decrypted_entry):
                 print('\u001b[38;5;7;48;5;8mnotes:\u001b[0m\n' + _decrypted_entry[_num])
             if _notes_flag == 1:
                 try:
-                    _line_test = _decrypted_entry[_num + 1]
+                    _ = _decrypted_entry[_num + 1]
                 except IndexError:
                     print()
         except IndexError:
@@ -500,7 +500,7 @@ def edit():
 # generates a password for a new or an existing entry
 def gen():
     # set to avoid PEP8 warnings
-    _username, _url, _notes = None, None, None
+    _username, _url = None, None
     # gen update
     if arg_count == 3 and arguments[2] in ('update', '-u'):
         # ensure the gen update target is an entry

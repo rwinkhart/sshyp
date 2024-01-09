@@ -478,8 +478,8 @@ def extension_downloader():
     if _choice == 1:
         # download extension files to temporary directory
         _exe_dir, _ini_dir = f"{gettempdir()}/sshyp_exe", f"{gettempdir()}/sshyp_ini"
-        _ext_exe = urlretrieve(_pointer.get(_selected, 'exe'), _exe_dir)
-        _ext_ini = urlretrieve(_pointer.get(_selected, 'ini'), _ini_dir)
+        urlretrieve(_pointer.get(_selected, 'exe'), _exe_dir)
+        urlretrieve(_pointer.get(_selected, 'ini'), _ini_dir)
         # set permissions under active user
         chmod(_exe_dir, 0o755)
         chmod(_ini_dir, 0o644)
