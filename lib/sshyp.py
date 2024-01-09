@@ -147,8 +147,6 @@ def encrypt(_entry_data, _entry_dir, _gpg_id):
 
 # decrypts an entry and returns its contents
 def decrypt(_entry_dir, _quick_verify=None, _quick_pass=None):
-    _contents = None
-
     # check quick-unlock status, fetch passphrase
     if _quick_verify:
         _quick_pass = whitelist_verify(port, username_ssh, ip, client_device_id, identity)
@@ -474,9 +472,6 @@ def rename():
 
 # edits the contents of an entry
 def edit():
-    # set to avoid PEP8 warnings
-    _detail, _edit_line = None, None
-
     # ensure the edit target is an entry
     target_type_check(entry_name, True, True)
 
@@ -500,8 +495,6 @@ def edit():
 
 # generates a password for a new or an existing entry
 def gen():
-    # set to avoid PEP8 warnings
-    _username, _url = None, None
     # gen update
     if arg_count == 3 and arguments[2] in ('update', '-u'):
         # ensure the gen update target is an entry
@@ -616,9 +609,6 @@ if __name__ == "__main__":
     try:
         # set default states
         ssh_error, success_flag, sync_flag, silent_sync, pass_show = False, False, False, False, False
-
-        # set to avoid PEP8 warnings
-        arg_start, device_type, offline_mode_enabled = None, None, None
 
         # retrieve typed argument
         arguments = argv[1:]
