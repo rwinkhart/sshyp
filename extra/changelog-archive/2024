@@ -1,3 +1,25 @@
+sshyp v1.5.3
+01/08/2024
+
+the fortified flock update - patch three
+
+this release is a quick hot-fix for some bugs that were noticed after the release of v1.5.2
+
+fixes/optimizations:
+
+- fixed a regression with the entry list causing entries not part of a subdirectory to appear 
+in-line with the entry list header
+- fixed extension group ownership under FreeBSD
+    ^ the "wheel" group is now used where previously the non-existent "root" group was used
+- fixed notes sometimes being appended in the wrong position after editing an incomplete entry
+- addressed flake8 suggestions (slight optimization)
+- removed unnecessary empty variable declarations
+    ^ these were previously included to silence PyCharm's PEP8 warnings
+    ^ the project is now primarily developed in VSCodium with the flake8 linter
+    ^ the only change to flake8 defaults in the line length limit (79->120)
+
+<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+
 sshyp v1.5.2
 01/07/2024
 
