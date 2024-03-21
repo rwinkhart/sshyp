@@ -14,9 +14,9 @@ sshyp makes use of a custom sftp wrapper, called sshync (ssh+sync), to reliably 
 The name "sshyp" is a combination of its synchronization library, "sshync", and "passwords".
 
 # WARNING
-It is your responsibility to assess the security and stability of "sshyp" before using it and ensure it meets your needs.
-I am not responsible for any data loss or breaches of your information resulting from the use of "sshyp".
-"sshyp" is a new project that is constantly being updated, and though safety and security are priorities, they cannot be guaranteed.
+It is your responsibility to assess the security and stability of sshyp and to ensure it meets your needs before using it.
+I am not responsible for any data loss or breaches of your information resulting from the use of sshyp.
+sshyp has not been extensively tested by the public; safety and security are priorities, but they cannot be guaranteed.
 
 Always check the [known bugs](https://github.com/rwinkhart/sshyp/wiki/Known-Bugs) list before updating or installing sshyp.
 
@@ -72,12 +72,26 @@ Please note that decrypting and reading entries is disabled on server devices fo
 All available options can be found with `sshyp help`, or alternatively, in the man page.
 
 # Roadmap
-Short-term Goals:
 
-- implement a method for tracking how long it has been since a password has been changed (password aging)
-- find and fix more bugs
+The successor to sshyp is currently being developed in private. The repository will be made public once it is in a state I find to be respectable. It is being developed in Go and features a very similar design to sshyp.
 
-Long-term Goals:
+Some key differences are:
+- Modularity/Maintainability
+    - sshyp's successor is being designed to be usable as a library to build different front-ends off of
+    - Due to the modularity of the code, there will be no more "extension" support
+        - sshyp-mfa functionality is built into the successor
+    - Server and client code are now two completely separate projects
+        - This greatly simplifies the code and makes it easier to maintain
+        - This also means that third-party clients do not need to maintain separate server code
+- Stability
+    - sshyp has a track-record of making breaking changes in most of its updates
+        - This will not be the case with its successor (starting with release v1.0.0)
+- Efficiency
+    - sshyp's successor is written in a compiled language (Go)
+        - This means that encryption and SSH-sync can be done natively in Go rather than relying on GnuPG/OpenSSH (this is possible with Python, but it would require users to install third-party libraries)
+    - sshyp's successor makes small tweaks to the design of sshyp to make user interactions less frustrating
+- Platform support
+    - sshyp's successor is being built from the ground-up to support both UNIX-like platforms AND Windows
+        - Unfortunately, using Go means dropping Haiku support, as newer versions of Go do not (yet) support Haiku
 
-- migrate from gpg to a better-suited utility focused on symmetric cipher encryption
-- seize the thrones, shear the humans
+Progress is already _well underway_. sshyp's successor is already developed to the point of being at feature-parity with sshyp (without online syncing _just yet_). From this point forward, sshyp will only receive minimal support (as needed) and transitional updates.
