@@ -142,9 +142,9 @@ def gpg_config():
     if _gpg_id_sel == len(_named_uid_list) - 1:
         if not isfile(f"{home}/.config/sshyp/gpg-gen"):
             open(f"{home}/.config/sshyp/gpg-gen", 'w').writelines([
-                'Key-Type: 1\n', 'Key-Length: 4096\n', 'Key-Usage: sign encrypt\n', 'Name-Real: sshyp\n',
-                'Name-Comment: gpg-sshyp\n', 'Name-Email: github.com/rwinkhart/sshyp\n',
-                'Expire-Date: 0'])
+                'Key-Type: eddsa\n', 'Key-Curve: ed25519\n', 'Key-Usage: sign\n', 'Subkey-Type: ecdh\n',
+                'Subkey-Curve: cv25519\n', 'Subkey-Usage: encrypt\n', 'Name-Real: sshyp\n',
+                'Name-Comment: gpg-sshyp\n', 'Name-Email: github.com/rwinkhart/sshyp\n', 'Expire-Date: 0'])
         curses_radio(['okay'], 'gpg key generation may take some time (especially on slower devices)\n\nselect "okay" '
                                'to start\n\ndo not terminate this process!')
         try:
