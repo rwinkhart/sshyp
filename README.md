@@ -5,7 +5,7 @@
 
 pronounced as: 'sheep', 'shēp'
 
-sshyp is a self-hosted, synchronized password manager for UNIX(-like) systems (currently Haiku/FreeBSD/Linux). It has been succeeded by [MUTN](https://github.com/rwinkhart/MUTN).
+sshyp is a self-hosted, synchronized password manager for UNIX(-like) systems (currently Haiku/FreeBSD/Linux). It has been succeeded by [MUTN](https://github.com/rwinkhart/MUTN) due to its many [flaws](https://github.com/rwinkhart/sshyp/blob/main/wiki/postmortem.md).
 
 sshyp is compatible with entries created by pass/password-store, as its original goal was to be like pass/password-store, but far more user-friendly to synchronize with a self-hosted server.
 
