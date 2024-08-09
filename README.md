@@ -18,12 +18,10 @@ It is your responsibility to assess the security and stability of sshyp and to e
 I am not responsible for any data loss or breaches of your information resulting from the use of sshyp.
 sshyp has not been extensively tested by the public; safety and security are priorities, but they cannot be guaranteed.
 
-Always check the [known bugs](https://github.com/rwinkhart/sshyp/wiki/Known-Bugs) list before updating or installing sshyp.
-
 # Installation
-**Important:** *Shell completions (both Bash and ZSH) may require additional configuration on some distributions - please see [this page](https://github.com/rwinkhart/sshyp/wiki/Completions) of the wiki for support.*
+**Important:** *Shell completions (both Bash and ZSH) may require additional configuration on some distributions - please see [this page](https://github.com/rwinkhart/sshyp/blob/main/wiki/completions.md) of the wiki for support.*
 
-Please see the [installation guide](https://github.com/rwinkhart/sshyp/wiki/Installation) in the sshyp wiki for directions specific to your distribution/OS.
+Please see the [installation guide](https://github.com/rwinkhart/sshyp/blob/main/wiki/install.md) in the sshyp wiki for directions specific to your distribution/OS.
 
 Pre-built packages exist for Haiku, FreeBSD, Alpine Linux, Debian/Ubuntu Linux, Fedora Linux, Termux, and WSL. These can be downloaded from the releases page.
 
@@ -61,7 +59,7 @@ All available options can be found with `sshyp help`, or alternatively, in the m
 
 # Roadmap (successor)
 
-[MUTN] has been developed as a direct successor to sshyp. It is not yet at release v1.0.0, therefore breaking changes will be made.
+[MUTN](https://github.com/rwinkhart/MUTN) has been developed as a direct successor to sshyp. It is not yet at release v1.0.0, therefore breaking changes will be made.
 
 If you're interested in migrating to MUTN early, please see the [migration guide](https://github.com/rwinkhart/libmutton/blob/main/wiki/migration.md).
 
