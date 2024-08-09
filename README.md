@@ -5,7 +5,7 @@
 
 pronounced as: 'sheep', 'shēp'
 
-sshyp is a very simple self-hosted, synchronized password manager for UNIX(-like) systems (currently Haiku/FreeBSD/Linux).
+sshyp is a self-hosted, synchronized password manager for UNIX(-like) systems (currently Haiku/FreeBSD/Linux). It has been succeeded by [MUTN](https://github.com/rwinkhart/MUTN).
 
 sshyp is compatible with entries created by pass/password-store, as its original goal was to be like pass/password-store, but far more user-friendly to synchronize with a self-hosted server.
 
@@ -19,18 +19,6 @@ I am not responsible for any data loss or breaches of your information resulting
 sshyp has not been extensively tested by the public; safety and security are priorities, but they cannot be guaranteed.
 
 Always check the [known bugs](https://github.com/rwinkhart/sshyp/wiki/Known-Bugs) list before updating or installing sshyp.
-
-# Mission Statement
-sshyp aims to make it as simple as possible to manage passwords and notes via CLI across multiple devices in a secure, self-hosted fashion.
-
-What sshyp can do:
-
-- securely manage a collection of encrypted passwords and notes via CLI
-- generate new, secure passwords to the user's choice in length and complexity
-- securely sync said passwords and notes seamlessly between devices (or just manage them offline)
-- utilize [extensions](https://github.com/rwinkhart/sshyp-labs) to interact with your entries is additional ways (such as generating TOTP keys or managing your entries in a GUI)
-- everything above with entries created by pass/password-store!
-- everything above on Haiku, FreeBSD, Linux, and Termux!
 
 # Installation
 **Important:** *Shell completions (both Bash and ZSH) may require additional configuration on some distributions - please see [this page](https://github.com/rwinkhart/sshyp/wiki/Completions) of the wiki for support.*
@@ -71,27 +59,29 @@ Please note that decrypting and reading entries is disabled on server devices fo
 
 All available options can be found with `sshyp help`, or alternatively, in the man page.
 
-# Roadmap
+# Roadmap (successor)
 
-The successor to sshyp is currently being developed in private. The repository will be made public once it is in a state I find to be respectable. It is being developed in Go and features a very similar design to sshyp.
+[MUTN] has been developed as a direct successor to sshyp. It is not yet at release v1.0.0, therefore breaking changes will be made.
+
+If you're interested in migrating to MUTN early, please see the [migration guide](https://github.com/rwinkhart/libmutton/blob/main/wiki/migration.md).
 
 Some key differences are:
 - Modularity/Maintainability
-    - sshyp's successor is being designed to be usable as a library to build different front-ends off of
+    - MUTN is based off of [libmutton](https://github.com/rwinkhart/libmutton), enabling third-party clients
     - Due to the modularity of the code, there will be no more "extension" support
         - sshyp-mfa functionality is built into the successor
     - Server and client code are now two completely separate projects
         - This greatly simplifies the code and makes it easier to maintain
         - This also means that third-party clients do not need to maintain separate server code
 - Stability
-    - sshyp has a track-record of making breaking changes in most of its updates
-        - This will not be the case with its successor (starting with release v1.0.0)
+    - sshyp has a track record of making breaking changes in most of its updates
+        - This will not be the case with MUTN (starting with release v1.0.0)
 - Efficiency
-    - sshyp's successor is written in a compiled language (Go)
+    - MUTN is written in a compiled language (Go)
         - This means that encryption and SSH-sync can be done natively in Go rather than relying on GnuPG/OpenSSH (this is possible with Python, but it would require users to install third-party libraries)
-    - sshyp's successor makes small tweaks to the design of sshyp to make user interactions less frustrating
+    - MUTN makes small tweaks to the design established by sshyp to make user interactions less frustrating
 - Platform support
-    - sshyp's successor is being built from the ground-up to support both UNIX-like platforms AND Windows
+    - MUTN was built from the ground-up to support both UNIX-like platforms AND Windows
         - Unfortunately, using Go means dropping Haiku support, as newer versions of Go do not (yet) support Haiku
 
-Progress is already _well underway_. sshyp's successor is already developed to the point of being at feature-parity with sshyp (without online syncing _just yet_). From this point forward, sshyp will only receive minimal support (as needed) and transitional updates.
+From this point forward, sshyp will only receive minimal support (as needed) and transitional updates.
